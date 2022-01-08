@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:watrix/resources/constants.dart';
-import 'package:watrix/screens/home.dart';
+import 'package:watrix/resources/strings.dart';
+import 'package:watrix/resources/style.dart';
+import 'package:watrix/widgets/bottom_nav_bar.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,10 +13,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: Constants.appName,
+      title: Strings.appName,
       debugShowCheckedModeBanner: false,
-      theme: Constants.themeData,
-      home: Home(),
+      theme: Style.themeData,
+      home: BottomNavBar(),
     );
   }
 }

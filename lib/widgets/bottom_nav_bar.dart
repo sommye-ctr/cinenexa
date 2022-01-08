@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:watrix/resources/strings.dart';
+import 'package:watrix/resources/style.dart';
 import 'package:watrix/screens/home_page.dart';
 import 'package:watrix/screens/profile_page.dart';
 import 'package:watrix/screens/search_page.dart';
 import 'package:watrix/screens/wishlist_page.dart';
 
-class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+class BottomNavBar extends StatefulWidget {
+  const BottomNavBar({Key? key}) : super(key: key);
 
   @override
-  State<Home> createState() => _HomeState();
+  State<BottomNavBar> createState() => _BottomNavBarState();
 }
 
-class _HomeState extends State<Home> {
+class _BottomNavBarState extends State<BottomNavBar> {
   final List<Widget> _pages = [
     HomePage(),
     SearchPage(),
@@ -49,7 +51,6 @@ class _HomeState extends State<Home> {
           elevation: 16,
           backgroundColor: Colors.blueGrey.shade100.withOpacity(0.4),
           currentIndex: _pageIndex,
-          showSelectedLabels: false,
           showUnselectedLabels: false,
           type: BottomNavigationBarType.fixed,
           selectedIconTheme: IconThemeData(
@@ -62,22 +63,10 @@ class _HomeState extends State<Home> {
           ),
           onTap: onBottomNavChanged,
           items: [
-            BottomNavigationBarItem(
-              label: "Home",
-              icon: Icon(Icons.home_outlined),
-            ),
-            BottomNavigationBarItem(
-              label: "Search",
-              icon: Icon(Icons.search_outlined),
-            ),
-            BottomNavigationBarItem(
-              label: "Wishlist",
-              icon: Icon(Icons.favorite_outline),
-            ),
-            BottomNavigationBarItem(
-              label: "Profile",
-              icon: Icon(Icons.person_outline),
-            ),
+            Style.getbottomNavItem(Strings.home, Icons.home_outlined),
+            Style.getbottomNavItem(Strings.search, Icons.search_outlined),
+            Style.getbottomNavItem(Strings.wishlist, Icons.favorite_outline),
+            Style.getbottomNavItem(Strings.profile, Icons.person_outline),
           ],
         ),
       ),
