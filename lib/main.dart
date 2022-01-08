@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:watrix/resources/constants.dart';
+import 'package:watrix/screens/home.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,14 +13,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: Constants.appName,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const Scaffold(
-        body: Center(
-          child: Text("This is movie streaming app - Watrix"),
-        ),
-      ),
+      debugShowCheckedModeBanner: false,
+      theme: Constants.themeData,
+      home: Home(),
     );
   }
 }
