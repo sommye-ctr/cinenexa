@@ -69,11 +69,11 @@ class _BottomNavBarState extends State<BottomNavBar> {
                 type: BottomNavigationBarType.fixed,
                 selectedIconTheme: IconThemeData(
                   color: Colors.black,
-                  size: 36,
+                  size: 24,
                 ),
                 unselectedIconTheme: IconThemeData(
                   color: Colors.brown.shade500,
-                  size: 36,
+                  size: 24,
                 ),
                 onTap: onBottomNavChanged,
                 items: [

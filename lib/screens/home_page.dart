@@ -26,7 +26,7 @@ class HomePage extends StatelessWidget {
     return Container(
       child: Padding(
         padding: EdgeInsets.only(
-          left: ScreenSize.getPercentOfWidth(context, 0.025),
+          left: ScreenSize.getPercentOfWidth(context, 0.02),
         ),
         child: ListView(
           children: [
@@ -34,7 +34,7 @@ class HomePage extends StatelessWidget {
             SizedBox(
               height: ScreenSize.getPercentOfHeight(
                 context,
-                0.025,
+                0.02,
               ),
             ),
             CustomTab([
@@ -46,7 +46,7 @@ class HomePage extends StatelessWidget {
             SizedBox(
               height: ScreenSize.getPercentOfHeight(
                 context,
-                0.025,
+                0.02,
               ),
             ),
             HorizontalList(
@@ -58,7 +58,7 @@ class HomePage extends StatelessWidget {
             SizedBox(
               height: ScreenSize.getPercentOfHeight(
                 context,
-                0.025,
+                0.02,
               ),
             ),
             HorizontalList(
@@ -70,7 +70,7 @@ class HomePage extends StatelessWidget {
             SizedBox(
               height: ScreenSize.getPercentOfHeight(
                 context,
-                0.025,
+                0.02,
               ),
             ),
             HorizontalList(

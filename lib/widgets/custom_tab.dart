@@ -30,8 +30,7 @@ class _CustomTabState extends State<CustomTab> {
             child: Text(
               item,
               style: TextStyle(
-                color: Colors.black,
-                fontSize: 18,
+                fontSize: 16,
               ),
             ),
             onPressed: () {},

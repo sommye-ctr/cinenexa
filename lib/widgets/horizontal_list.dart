@@ -25,7 +25,7 @@ class HorizontalList extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           separatorBuilder: (context, index) {
             return SizedBox(
-              width: 16,
+              width: 8,
             );
           },
           itemCount: snapshot.data!.length,
@@ -47,11 +47,11 @@ class HorizontalList extends StatelessWidget {
         Text(
           heading,
           style: TextStyle(
-            fontSize: 20,
+            fontSize: 16,
           ),
         ),
         SizedBox(
-          height: 16,
+          height: 8,
         ),
         FutureBuilder<List<Home>>(
           future: future,
