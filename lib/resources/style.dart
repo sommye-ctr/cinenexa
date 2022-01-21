@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class Style {
   static ThemeData themeData = ThemeData(
-    primarySwatch: Colors.red,
+    primarySwatch: Colors.brown,
   );
 
   static BottomNavigationBarItem getbottomNavItem(String label, IconData icon) {

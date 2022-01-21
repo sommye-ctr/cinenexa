@@ -14,7 +14,7 @@ class UserProfileView extends StatelessWidget {
               backgroundImage: NetworkImage(
                 "https://blogs.umb.edu/cinemastudies/files/2018/04/robert-downey-jr-gty-bio-223yxhg.jpg",
               ),
-              radius: ScreenSize.getPercentOfWidth(context, 0.08),
+              radius: ScreenSize.getPercentOfWidth(context, 0.06),
             ),
             SizedBox(
               width: ScreenSize.getPercentOfWidth(context, 0.025),
@@ -23,7 +23,7 @@ class UserProfileView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("Hello RDJ"),
-                Text("Enjoy your favourites movies!"),
+                Text("Enjoy your favourtie movies!"),
               ],
             )
           ],

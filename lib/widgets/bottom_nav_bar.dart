@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
@@ -29,45 +31,61 @@ class _BottomNavBarState extends State<BottomNavBar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        child: _pages[_pageIndex],
+      body: Stack(
+        children: [
+          Container(
+            child: _pages[_pageIndex],
+          ),
+          getNavBar(context),
+        ],
       ),
       extendBody: true,
-      bottomNavigationBar: getNavBar(context),
     );
   }
 
   Widget getNavBar(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(8),
-      child: ClipRRect(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(8),
-          topRight: Radius.circular(8),
-          bottomLeft: Radius.circular(16),
-          bottomRight: Radius.circular(16),
-        ),
-        child: BottomNavigationBar(
-          elevation: 16,
-          backgroundColor: Colors.blueGrey.shade100.withOpacity(0.4),
-          currentIndex: _pageIndex,
-          showUnselectedLabels: false,
-          type: BottomNavigationBarType.fixed,
-          selectedIconTheme: IconThemeData(
-            color: Colors.black,
-            size: 36,
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ClipRRect(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(8),
+              topRight: Radius.circular(8),
+              bottomLeft: Radius.circular(16),
+              bottomRight: Radius.circular(16)),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(
+              sigmaX: 10,
+              sigmaY: 10,
+            ),
+            child: Opacity(
+              opacity: 0.5,
+              child: BottomNavigationBar(
+                elevation: 16,
+                backgroundColor: Colors.blueGrey.shade100,
+                currentIndex: _pageIndex,
+                showUnselectedLabels: false,
+                type: BottomNavigationBarType.fixed,
+                selectedIconTheme: IconThemeData(
+                  color: Colors.black,
+                  size: 36,
+                ),
+                unselectedIconTheme: IconThemeData(
+                  color: Colors.brown.shade500,
+                  size: 36,
+                ),
+                onTap: onBottomNavChanged,
+                items: [
+                  Style.getbottomNavItem(Strings.home, Icons.home_outlined),
+                  Style.getbottomNavItem(Strings.search, Icons.search_outlined),
+                  Style.getbottomNavItem(
+                      Strings.wishlist, Icons.favorite_outline),
+                  Style.getbottomNavItem(Strings.profile, Icons.person_outline),
+                ],
+              ),
+            ),
           ),
-          unselectedIconTheme: IconThemeData(
-            color: Colors.brown.shade500,
-            size: 36,
-          ),
-          onTap: onBottomNavChanged,
-          items: [
-            Style.getbottomNavItem(Strings.home, Icons.home_outlined),
-            Style.getbottomNavItem(Strings.search, Icons.search_outlined),
-            Style.getbottomNavItem(Strings.wishlist, Icons.favorite_outline),
-            Style.getbottomNavItem(Strings.profile, Icons.person_outline),
-          ],
         ),
       ),
     );
