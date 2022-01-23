@@ -21,6 +21,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       ImageCarousel(
         Requests.homeMoviesFuture(
           Requests.dailyTrendingMovies,
+          limit: 5,
         ),
       ),
       SizedBox(
@@ -129,15 +130,66 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         () {},
         0.3,
       ),
+    ],
+  );
+  late Widget tv = Column(
+    children: [
+      HorizontalList(
+        Requests.homeTvFuture(Requests.dailyTrendingTv),
+        "Trending Today",
+        () {},
+        0.3,
+      ),
       SizedBox(
         height: ScreenSize.getPercentOfHeight(
           context,
           0.02,
         ),
       ),
+      HorizontalList(
+        Requests.homeTvFuture(Requests.topRatedTv),
+        "Top Rated",
+        () {},
+        0.3,
+      ),
+      SizedBox(
+        height: ScreenSize.getPercentOfHeight(
+          context,
+          0.02,
+        ),
+      ),
+      HorizontalList(
+        Requests.homeTvFuture(Requests.popularTv),
+        "Popular",
+        () {},
+        0.3,
+      ),
+      SizedBox(
+        height: ScreenSize.getPercentOfHeight(
+          context,
+          0.02,
+        ),
+      ),
+      HorizontalList(
+        Requests.homeTvFuture(Requests.weeklyTrendingTv),
+        "Trending this Week",
+        () {},
+        0.3,
+      ),
+      SizedBox(
+        height: ScreenSize.getPercentOfHeight(
+          context,
+          0.02,
+        ),
+      ),
+      HorizontalList(
+        Requests.homeTvFuture(Requests.airingTodayTv),
+        "Airing Today",
+        () {},
+        0.3,
+      ),
     ],
   );
-  late Widget tv = Column();
   late Widget myList = Column();
 
   @override

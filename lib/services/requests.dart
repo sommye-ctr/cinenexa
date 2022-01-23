@@ -26,8 +26,8 @@ class Requests {
   static String topRatedTv =
       "${Constants.baseUrl}${Constants.tv}${Constants.topRated}?api_key=${Constants.apiKey}&language=en-US&page=1";
 
-  static String nowPlayingTv =
-      "${Constants.baseUrl}${Constants.tv}${Constants.nowPlaying}?api_key=${Constants.apiKey}&language=en-US&page=1";
+  static String airingTodayTv =
+      "${Constants.baseUrl}${Constants.tv}${Constants.airingToday}?api_key=${Constants.apiKey}&language=en-US&page=1";
 
   static String dailyTrendingTv =
       "${Constants.baseUrl}${Constants.trending}${Constants.tv}/day?api_key=${Constants.apiKey}";
@@ -35,20 +35,21 @@ class Requests {
   static String weeklyTrendingTv =
       "${Constants.baseUrl}${Constants.trending}${Constants.tv}/week?api_key=${Constants.apiKey}";
 
-  static Future<List<HomeMovie>> homeMoviesFuture(String request) async {
+  static Future<List<HomeMovie>> homeMoviesFuture(String request,
+      {int? limit}) async {
     final response = await http.get(Uri.parse(request));
     var parsedList = json.decode(response.body)['results'];
     return (parsedList as List)
-        .sublist(0, Constants.homeLimit)
+        .sublist(0, limit ?? Constants.homeLimit)
         .map((e) => HomeMovie.fromMap(e))
         .toList();
   }
 
-  static Future<List<HomeTv>> homeTvFuture(String request) async {
+  static Future<List<HomeTv>> homeTvFuture(String request, {int? limit}) async {
     final response = await http.get(Uri.parse(request));
     var parsedList = json.decode(response.body)['results'];
     return (parsedList as List)
-        .sublist(0, Constants.homeLimit)
+        .sublist(0, limit ?? Constants.homeLimit)
         .map((e) => HomeTv.fromMap(e))
         .toList();
   }

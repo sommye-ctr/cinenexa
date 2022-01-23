@@ -13,36 +13,64 @@ class ImageCarousel extends StatefulWidget {
 }
 
 class _ImageCarouselState extends State<ImageCarousel> {
+  int _currentIndex = 0;
+
   Widget handleListBuilder(
       BuildContext context, AsyncSnapshot<List<HomeMovie>> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
-      return Container(
-        height: (ScreenSize.getPercentOfWidth(context, 1) /
-                Constants.backdropAspectRatio) +
-            ScreenSize.getPercentOfHeight(context, 0.02),
-        child: PageView.builder(
-          itemCount: snapshot.data!.length,
-          pageSnapping: true,
-          physics: BouncingScrollPhysics(),
-          itemBuilder: (context, index) {
-            return Container(
-              margin: EdgeInsets.all(4),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  RoundedImage(
-                    "${Constants.imageBaseUrl}${Constants.backdropSize}${snapshot.data![index].backdropPath}",
-                    ScreenSize.getPercentOfWidth(
-                      context,
-                      1,
-                    ),
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            height: (ScreenSize.getPercentOfWidth(context, 1) /
+                    Constants.backdropAspectRatio) +
+                ScreenSize.getPercentOfHeight(context, 0.02),
+            child: PageView.builder(
+              itemCount: snapshot.data!.length,
+              pageSnapping: true,
+              physics: BouncingScrollPhysics(),
+              itemBuilder: (context, index) {
+                return Container(
+                  margin: EdgeInsets.all(4),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      RoundedImage(
+                        "${Constants.imageBaseUrl}${Constants.backdropSize}${snapshot.data![index].backdropPath}",
+                        ScreenSize.getPercentOfWidth(
+                          context,
+                          1,
+                        ),
+                      ),
+                      Text(snapshot.data![index].title),
+                    ],
                   ),
-                  Text(snapshot.data![index].title),
-                ],
-              ),
-            );
-          },
-        ),
+                );
+              },
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              for (int i = 0; i < snapshot.data!.length; i++)
+                Row(
+                  children: [
+                    Container(
+                      height: ScreenSize.getPercentOfWidth(context, 0.025),
+                      width: ScreenSize.getPercentOfWidth(context, 0.025),
+                      decoration: BoxDecoration(
+                        color: i == _currentIndex ? Colors.black : Colors.grey,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    SizedBox(
+                      width: ScreenSize.getPercentOfWidth(context, 0.008),
+                    ),
+                  ],
+                )
+            ],
+          ),
+        ],
       );
     }
     return CircularProgressIndicator();
