@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:watrix/models/home.dart';
+import 'package:watrix/models/home_movie.dart';
 import 'package:watrix/services/constants.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/widgets/rounded_image.dart';
@@ -9,6 +10,7 @@ class HorizontalList extends StatelessWidget {
   final String heading;
   final Function() onClick;
   final double widthPercent;
+
   const HorizontalList(
       this.future, this.heading, this.onClick, this.widthPercent,
       {Key? key})
@@ -21,16 +23,17 @@ class HorizontalList extends StatelessWidget {
         height: ScreenSize.getPercentOfWidth(context, widthPercent) /
             Constants.posterAspectRatio,
         child: ListView.separated(
+          physics: BouncingScrollPhysics(),
           shrinkWrap: true,
           scrollDirection: Axis.horizontal,
           separatorBuilder: (context, index) {
             return SizedBox(
-              width: 8,
+              width: 4,
             );
           },
           itemCount: snapshot.data!.length,
           itemBuilder: (context, index) => RoundedImage(
-            "https://image.tmdb.org/t/p/w342${snapshot.data![index].posterPath}",
+            "${Constants.imageBaseUrl}${Constants.posterSize}${snapshot.data![index].posterPath}",
             ScreenSize.getPercentOfWidth(context, widthPercent),
           ),
         ),
@@ -51,7 +54,7 @@ class HorizontalList extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 8,
+          height: 4,
         ),
         FutureBuilder<List<Home>>(
           future: future,

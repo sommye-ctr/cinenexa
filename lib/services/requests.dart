@@ -1,26 +1,55 @@
 import 'dart:convert';
-import 'package:watrix/models/home.dart';
+import 'package:watrix/models/home_movie.dart';
 import 'package:http/http.dart' as http;
+import 'package:watrix/models/home_tv.dart';
 import 'package:watrix/services/constants.dart';
 
 class Requests {
-  static String _baseUrl = "https://api.themoviedb.org/3";
-
   static String popularMovies =
-      "$_baseUrl/movie/popular?api_key=${Constants.apiKey}&language=en-US&page=1";
+      "${Constants.baseUrl}${Constants.movie}${Constants.popular}?api_key=${Constants.apiKey}&language=en-US&page=1";
 
   static String topRatedMovies =
-      "$_baseUrl/movie/top_rated?api_key=${Constants.apiKey}&language=en-US&page=1";
+      "${Constants.baseUrl}${Constants.movie}${Constants.topRated}?api_key=${Constants.apiKey}&language=en-US&page=1";
 
   static String nowPlayingMovies =
-      "$_baseUrl/movie/now_playing?api_key=${Constants.apiKey}&language=en-US&page=1";
+      "${Constants.baseUrl}${Constants.movie}${Constants.nowPlaying}?api_key=${Constants.apiKey}&language=en-US&page=1";
 
-  static Future<List<Home>> homeMoviesFuture(String request) async {
+  static String dailyTrendingMovies =
+      "${Constants.baseUrl}${Constants.trending}${Constants.movie}/day?api_key=${Constants.apiKey}";
+
+  static String weeklyTrendingMovies =
+      "${Constants.baseUrl}${Constants.trending}${Constants.movie}/week?api_key=${Constants.apiKey}";
+
+  static String popularTv =
+      "${Constants.baseUrl}${Constants.tv}${Constants.popular}?api_key=${Constants.apiKey}&language=en-US&page=1";
+
+  static String topRatedTv =
+      "${Constants.baseUrl}${Constants.tv}${Constants.topRated}?api_key=${Constants.apiKey}&language=en-US&page=1";
+
+  static String nowPlayingTv =
+      "${Constants.baseUrl}${Constants.tv}${Constants.nowPlaying}?api_key=${Constants.apiKey}&language=en-US&page=1";
+
+  static String dailyTrendingTv =
+      "${Constants.baseUrl}${Constants.trending}${Constants.tv}/day?api_key=${Constants.apiKey}";
+
+  static String weeklyTrendingTv =
+      "${Constants.baseUrl}${Constants.trending}${Constants.tv}/week?api_key=${Constants.apiKey}";
+
+  static Future<List<HomeMovie>> homeMoviesFuture(String request) async {
     final response = await http.get(Uri.parse(request));
     var parsedList = json.decode(response.body)['results'];
     return (parsedList as List)
         .sublist(0, Constants.homeLimit)
-        .map((e) => Home.fromMap(e))
+        .map((e) => HomeMovie.fromMap(e))
+        .toList();
+  }
+
+  static Future<List<HomeTv>> homeTvFuture(String request) async {
+    final response = await http.get(Uri.parse(request));
+    var parsedList = json.decode(response.body)['results'];
+    return (parsedList as List)
+        .sublist(0, Constants.homeLimit)
+        .map((e) => HomeTv.fromMap(e))
         .toList();
   }
 }
