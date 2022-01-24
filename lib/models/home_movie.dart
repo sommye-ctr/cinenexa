@@ -5,12 +5,16 @@ import 'package:watrix/models/home.dart';
 class HomeMovie extends Home {
   String title;
 
+  String backdropPath;
+
+  String posterPath;
+
   HomeMovie({
     required int id,
-    required String posterPath,
+    required this.posterPath,
     required this.title,
-    required String backdropPath,
-  }) : super(id: id, backdropPath: backdropPath, posterPath: posterPath);
+    required this.backdropPath,
+  }) : super(id: id);
 
   HomeMovie copyWith({
     int? id,

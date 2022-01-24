@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:watrix/resources/strings.dart';
+import 'package:watrix/services/constants.dart';
 import 'package:watrix/services/requests.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/widgets/horizontal_list.dart';
@@ -35,6 +36,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         "Popular Movies",
         () {},
         0.3,
+        Constants.movie,
       ),
       SizedBox(
         height: ScreenSize.getPercentOfHeight(
@@ -47,6 +49,20 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         "Popular TV Shows",
         () {},
         0.3,
+        Constants.tv,
+      ),
+      SizedBox(
+        height: ScreenSize.getPercentOfHeight(
+          context,
+          0.02,
+        ),
+      ),
+      HorizontalList(
+        Requests.homePeopleFuture(Requests.popularPerson),
+        "Popular Actors",
+        () {},
+        0.3,
+        Constants.person,
       ),
       SizedBox(
         height: ScreenSize.getPercentOfHeight(
@@ -59,6 +75,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         "Weekly Trending Movies",
         () {},
         0.3,
+        Constants.movie,
       ),
       SizedBox(
         height: ScreenSize.getPercentOfHeight(
@@ -71,6 +88,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         "Weekly Trending TV Shows",
         () {},
         0.3,
+        Constants.tv,
       ),
     ],
   );
@@ -81,6 +99,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         "Trending Today",
         () {},
         0.3,
+        Constants.movie,
       ),
       SizedBox(
         height: ScreenSize.getPercentOfHeight(
@@ -93,6 +112,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         "Top Rated",
         () {},
         0.3,
+        Constants.movie,
       ),
       SizedBox(
         height: ScreenSize.getPercentOfHeight(
@@ -105,6 +125,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         "Popular",
         () {},
         0.3,
+        Constants.movie,
       ),
       SizedBox(
         height: ScreenSize.getPercentOfHeight(
@@ -117,6 +138,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         "Trending this Week",
         () {},
         0.3,
+        Constants.movie,
       ),
       SizedBox(
         height: ScreenSize.getPercentOfHeight(
@@ -129,6 +151,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         "Now Playing",
         () {},
         0.3,
+        Constants.movie,
       ),
     ],
   );
@@ -139,6 +162,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         "Trending Today",
         () {},
         0.3,
+        Constants.tv,
       ),
       SizedBox(
         height: ScreenSize.getPercentOfHeight(
@@ -151,6 +175,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         "Top Rated",
         () {},
         0.3,
+        Constants.tv,
       ),
       SizedBox(
         height: ScreenSize.getPercentOfHeight(
@@ -163,6 +188,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         "Popular",
         () {},
         0.3,
+        Constants.tv,
       ),
       SizedBox(
         height: ScreenSize.getPercentOfHeight(
@@ -175,6 +201,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         "Trending this Week",
         () {},
         0.3,
+        Constants.tv,
       ),
       SizedBox(
         height: ScreenSize.getPercentOfHeight(
@@ -187,6 +214,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         "Airing Today",
         () {},
         0.3,
+        Constants.tv,
       ),
     ],
   );

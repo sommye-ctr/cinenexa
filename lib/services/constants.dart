@@ -9,6 +9,7 @@ class Constants {
 
   static String movie = "/movie";
   static String tv = "/tv";
+  static String person = "/person";
 
   static String popular = "/popular";
   static String topRated = "/top_rated";

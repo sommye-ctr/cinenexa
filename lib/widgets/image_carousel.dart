@@ -29,6 +29,11 @@ class _ImageCarouselState extends State<ImageCarousel> {
               itemCount: snapshot.data!.length,
               pageSnapping: true,
               physics: BouncingScrollPhysics(),
+              onPageChanged: (value) {
+                setState(() {
+                  _currentIndex = value;
+                });
+              },
               itemBuilder: (context, index) {
                 return Container(
                   margin: EdgeInsets.all(4),
@@ -55,7 +60,11 @@ class _ImageCarouselState extends State<ImageCarousel> {
               for (int i = 0; i < snapshot.data!.length; i++)
                 Row(
                   children: [
-                    Container(
+                    AnimatedContainer(
+                      duration: Duration(
+                        seconds: 1,
+                      ),
+                      curve: Curves.decelerate,
                       height: ScreenSize.getPercentOfWidth(context, 0.025),
                       width: ScreenSize.getPercentOfWidth(context, 0.025),
                       decoration: BoxDecoration(

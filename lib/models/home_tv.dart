@@ -4,12 +4,17 @@ import 'package:watrix/models/home.dart';
 
 class HomeTv extends Home {
   String name;
+
+  String backdropPath;
+
+  String posterPath;
+
   HomeTv({
     required int id,
-    required String posterPath,
+    required this.posterPath,
     required this.name,
-    required String backdropPath,
-  }) : super(id: id, backdropPath: backdropPath, posterPath: posterPath);
+    required this.backdropPath,
+  }) : super(id: id);
 
   HomeTv copyWith({
     int? id,
