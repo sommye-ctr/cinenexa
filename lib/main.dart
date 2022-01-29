@@ -4,7 +4,6 @@ import 'package:watrix/resources/style.dart';
 import 'package:watrix/screens/home_page.dart';
 import 'package:watrix/screens/profile_page.dart';
 import 'package:watrix/screens/search_page.dart';
-import 'package:watrix/screens/wishlist_page.dart';
 import 'package:watrix/widgets/bottom_nav_bar.dart';
 
 void main() {
@@ -29,26 +28,27 @@ class _MyAppState extends State<MyApp> {
       theme: Style.themeData,
       home: Scaffold(
         extendBody: true,
-        body: Stack(
-          children: [
-            IndexedStack(
-              index: _pageIndex,
-              children: [
-                HomePage(),
-                SearchPage(),
-                WishlistPage(),
-                ProfilePage(),
-              ],
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: BottomNavBar((index) {
-                setState(() {
-                  _pageIndex = index;
-                });
-              }),
-            ),
-          ],
+        body: SafeArea(
+          child: Stack(
+            children: [
+              IndexedStack(
+                index: _pageIndex,
+                children: [
+                  HomePage(),
+                  SearchPage(),
+                  ProfilePage(),
+                ],
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: BottomNavBar((index) {
+                  setState(() {
+                    _pageIndex = index;
+                  });
+                }),
+              ),
+            ],
+          ),
         ),
       ),
     );

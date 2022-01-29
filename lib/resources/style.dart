@@ -11,4 +11,8 @@ class Style {
       icon: Icon(icon),
     );
   }
+
+  static TextStyle headingStyle = TextStyle(
+    fontSize: 30,
+  );
 }
