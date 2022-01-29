@@ -21,4 +21,5 @@ class Constants {
   static const double backdropAspectRatio = 16 / 9;
 
   static const int homeLimit = 10;
+  static const int skipLimit = 5;
 }

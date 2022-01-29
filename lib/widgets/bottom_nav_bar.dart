@@ -42,21 +42,18 @@ class _BottomNavBarState extends State<BottomNavBar> {
               backgroundColor: Colors.blueGrey.shade100,
               currentIndex: _pageIndex,
               showUnselectedLabels: false,
-              type: BottomNavigationBarType.fixed,
+              type: BottomNavigationBarType.shifting,
+              selectedItemColor: Colors.black,
               selectedIconTheme: IconThemeData(
                 color: Colors.black,
-                size: 24,
               ),
               unselectedIconTheme: IconThemeData(
                 color: Colors.brown.shade500,
-                size: 24,
               ),
               onTap: onBottomNavChanged,
               items: [
                 Style.getbottomNavItem(Strings.home, Icons.home_outlined),
                 Style.getbottomNavItem(Strings.search, Icons.search_outlined),
-                Style.getbottomNavItem(
-                    Strings.wishlist, Icons.favorite_outline),
                 Style.getbottomNavItem(Strings.profile, Icons.person_outline),
               ],
             ),

@@ -24,6 +24,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           Requests.dailyTrendingMovies,
           limit: 5,
         ),
+        onPageChanged: (page, home) {
+          print("the clicked is $page");
+        },
       ),
       SizedBox(
         height: ScreenSize.getPercentOfHeight(
@@ -71,7 +74,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         ),
       ),
       HorizontalList(
-        Requests.homeMoviesFuture(Requests.weeklyTrendingMovies),
+        Requests.homeMoviesFuture(
+          Requests.weeklyTrendingMovies,
+          skip: true,
+        ),
         "Weekly Trending Movies",
         () {},
         0.3,
@@ -84,11 +90,20 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         ),
       ),
       HorizontalList(
-        Requests.homeTvFuture(Requests.weeklyTrendingTv),
+        Requests.homeTvFuture(
+          Requests.weeklyTrendingTv,
+          skip: true,
+        ),
         "Weekly Trending TV Shows",
         () {},
         0.3,
         Constants.tv,
+      ),
+      SizedBox(
+        height: ScreenSize.getPercentOfHeight(
+          context,
+          0.1,
+        ),
       ),
     ],
   );
@@ -134,7 +149,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         ),
       ),
       HorizontalList(
-        Requests.homeMoviesFuture(Requests.weeklyTrendingMovies),
+        Requests.homeMoviesFuture(
+          Requests.weeklyTrendingMovies,
+          skip: true,
+        ),
         "Trending this Week",
         () {},
         0.3,
@@ -147,11 +165,20 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         ),
       ),
       HorizontalList(
-        Requests.homeMoviesFuture(Requests.nowPlayingMovies),
+        Requests.homeMoviesFuture(
+          Requests.nowPlayingMovies,
+          skip: true,
+        ),
         "Now Playing",
         () {},
         0.3,
         Constants.movie,
+      ),
+      SizedBox(
+        height: ScreenSize.getPercentOfHeight(
+          context,
+          0.1,
+        ),
       ),
     ],
   );
@@ -215,6 +242,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         () {},
         0.3,
         Constants.tv,
+      ),
+      SizedBox(
+        height: ScreenSize.getPercentOfHeight(
+          context,
+          0.1,
+        ),
       ),
     ],
   );
