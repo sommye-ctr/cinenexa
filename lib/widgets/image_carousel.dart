@@ -93,10 +93,8 @@ class _ImageCarouselState extends State<ImageCarousel> {
   }
 
   void onChanged(int page) {
-    print("hello there");
     setState(() {
       _currentIndex = page;
-      print("hello!");
       if (widget.onPageChanged != null) {
         widget.onPageChanged!(page, _list[page]);
       }

@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:flutter/widgets.dart';
 import 'package:watrix/models/home_movie.dart';
 import 'package:http/http.dart' as http;
 import 'package:watrix/models/home_people.dart';
 import 'package:watrix/models/home_tv.dart';
+import 'package:watrix/models/movie.dart';
 import 'package:watrix/services/constants.dart';
 
 class Requests {
@@ -39,6 +41,9 @@ class Requests {
 
   static String popularPerson =
       "${Constants.baseUrl}${Constants.person}${Constants.popular}?api_key=${Constants.apiKey}&language=en-US&page=1";
+
+  static String search =
+      "${Constants.baseUrl}${Constants.search}${Constants.movie}?api_key=${Constants.apiKey}&language=en-US";
 
   static Future<List<HomeMovie>> homeMoviesFuture(
     String request, {
@@ -86,5 +91,18 @@ class Requests {
         )
         .map((e) => HomePeople.fromMap(e))
         .toList();
+  }
+
+  static Future<List<Movie>> searchMovie(String query) async {
+    if (query.length < 1) {
+      throw ErrorHint(
+          "The length of query term cannot be less than 1 characters");
+    }
+
+    String encoded = Uri.encodeFull(query);
+
+    final response = await http.get(Uri.parse(search + "&query=$encoded"));
+    var parsedList = json.decode(response.body)['results'];
+    return (parsedList as List).map((e) => Movie.fromMap(e)).toList();
   }
 }

@@ -60,7 +60,7 @@ class Movie {
       backdropPath: map['backdrop_path'] ?? '',
       overView: map['overview'] ?? '',
       releaseDate: map['release_date'] ?? '',
-      genreIds: List<int>.from(map['genres']),
+      genreIds: List<int>.from(map['genre_ids']),
     );
   }
 

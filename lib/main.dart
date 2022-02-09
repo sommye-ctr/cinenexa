@@ -26,6 +26,8 @@ class _MyAppState extends State<MyApp> {
       title: Strings.appName,
       debugShowCheckedModeBanner: false,
       theme: Style.themeData,
+      darkTheme: Style.darkThemeData,
+      themeMode: ThemeMode.dark,
       home: Scaffold(
         extendBody: true,
         body: SafeArea(

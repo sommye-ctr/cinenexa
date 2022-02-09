@@ -10,4 +10,6 @@ class Strings {
   static const String movies = "Movies";
   static const String tvShows = "TV Shows";
   static const String myList = "My List";
+
+  static const String searchHint = "Search for movies & TV shows...";
 }
