@@ -12,4 +12,5 @@ class Strings {
   static const String myList = "My List";
 
   static const String searchHint = "Search for movies & TV shows...";
+  static const String frequentSearch = "Frequent Searches";
 }

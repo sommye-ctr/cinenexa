@@ -1,33 +1,32 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:watrix/models/home.dart';
-import 'package:watrix/models/home_movie.dart';
 import 'package:watrix/services/constants.dart';
+import 'package:watrix/services/utils.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/widgets/rounded_image.dart';
 
-class ImageCarousel extends StatefulWidget {
-  final Future<List<HomeMovie>> future;
-  final Function(int page, Home data)? onPageChanged;
+class ImageCarousel<T> extends StatefulWidget {
+  final Future<List<T>> future;
+  final Function(int page, T data)? onPageChanged;
   const ImageCarousel(this.future, {Key? key, this.onPageChanged})
       : super(key: key);
 
   @override
-  _ImageCarouselState createState() => _ImageCarouselState();
+  _ImageCarouselState<T> createState() => _ImageCarouselState<T>();
 }
 
-class _ImageCarouselState extends State<ImageCarousel> {
+class _ImageCarouselState<T> extends State<ImageCarousel<T>> {
   int _currentIndex = 0, _length = 0;
   late Timer _timer;
   late PageController _pageController;
-  List<Home> _list = [];
+  List<T> _list = [];
 
   Widget handleListBuilder(
-      BuildContext context, AsyncSnapshot<List<HomeMovie>> snapshot) {
+      BuildContext context, AsyncSnapshot<List<T>> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
       _length = snapshot.data!.length;
       _list = snapshot.data!;
+
       return Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -37,29 +36,32 @@ class _ImageCarouselState extends State<ImageCarousel> {
                     Constants.backdropAspectRatio) +
                 ScreenSize.getPercentOfHeight(
                   context,
-                  0.03,
+                  0.025,
                 ),
             child: PageView.builder(
-              itemCount: snapshot.data!.length,
+              itemCount: _length,
               pageSnapping: true,
               physics: BouncingScrollPhysics(),
               controller: _pageController,
               onPageChanged: onChanged,
               itemBuilder: (context, index) {
+                String imageUrl = Utils.getItemBackdrop(snapshot.data![index]);
+                String name = Utils.getItemName(snapshot.data![index]);
+
                 return Container(
                   margin: EdgeInsets.all(4),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       RoundedImage(
-                        "${Constants.imageBaseUrl}${Constants.backdropSize}${snapshot.data![index].backdropPath}",
+                        "${Constants.imageBaseUrl}${Constants.backdropSize}${imageUrl}",
                         ScreenSize.getPercentOfWidth(
                           context,
                           1,
                         ),
                       ),
                       Text(
-                        snapshot.data![index].title,
+                        name,
                       ),
                     ],
                   ),
@@ -141,7 +143,7 @@ class _ImageCarouselState extends State<ImageCarousel> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<HomeMovie>>(
+    return FutureBuilder<List<T>>(
       future: widget.future,
       builder: handleListBuilder,
     );

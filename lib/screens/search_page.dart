@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:watrix/models/movie.dart';
 import 'package:watrix/resources/strings.dart';
+import 'package:watrix/resources/style.dart';
 import 'package:watrix/services/constants.dart';
 import 'package:watrix/services/requests.dart';
 import 'package:watrix/utils/screen_size.dart';
-import 'package:watrix/widgets/rounded_image.dart';
+import 'package:watrix/widgets/movie_tile.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
@@ -15,7 +16,8 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   String _searchTerm = "";
-  Future<List<Movie>>? future;
+  Future<List<Movie>> future = Requests.moviesFuture(Requests.popularMovies);
+  bool _isSearchDone = false;
 
   void onSearchTermChanged(String value) {
     setState(() {
@@ -25,6 +27,7 @@ class _SearchPageState extends State<SearchPage> {
 
   void onSearhClicked() {
     setState(() {
+      _isSearchDone = true;
       future = Requests.searchMovie(_searchTerm);
     });
   }
@@ -38,21 +41,25 @@ class _SearchPageState extends State<SearchPage> {
           itemCount: snapshot.data!.length,
           physics: BouncingScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
+            crossAxisCount: 3,
             childAspectRatio: Constants.posterAspectRatio,
           ),
           itemBuilder: (context, index) {
-            return RoundedImage(
-                "${Constants.imageBaseUrl}${Constants.posterSize}${snapshot.data![index].posterPath}",
-                ScreenSize.getPercentOfWidth(
-                  context,
-                  0.4,
-                ));
+            return MovieTile(
+              image:
+                  "${Constants.imageBaseUrl}${Constants.posterSize}${snapshot.data![index].posterPath}",
+              width: ScreenSize.getPercentOfWidth(
+                context,
+                0.29,
+              ),
+              showTitle: true,
+              text: snapshot.data![index].title,
+            );
           },
         ),
       );
     }
-    return Text("Loading...");
+    return Container();
   }
 
   @override
@@ -88,9 +95,25 @@ class _SearchPageState extends State<SearchPage> {
               textCapitalization: TextCapitalization.words,
             ),
           ),
+          SizedBox(
+            height: ScreenSize.getPercentOfHeight(context, 0.02),
+          ),
+          Visibility(
+            visible: !_isSearchDone,
+            child: Text(
+              Strings.frequentSearch,
+              style: Style.headingStyle,
+            ),
+          ),
+          SizedBox(
+            height: ScreenSize.getPercentOfHeight(context, 0.02),
+          ),
           FutureBuilder(
             builder: futureBuilder,
             future: future,
+          ),
+          SizedBox(
+            height: ScreenSize.getPercentOfHeight(context, 0.08),
           ),
         ],
       ),

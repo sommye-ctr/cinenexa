@@ -1,11 +1,10 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/widgets.dart';
-import 'package:watrix/models/home_movie.dart';
 import 'package:http/http.dart' as http;
-import 'package:watrix/models/home_people.dart';
-import 'package:watrix/models/home_tv.dart';
+import 'package:watrix/models/people.dart';
 import 'package:watrix/models/movie.dart';
+import 'package:watrix/models/tv.dart';
 import 'package:watrix/services/constants.dart';
 
 class Requests {
@@ -45,23 +44,24 @@ class Requests {
   static String search =
       "${Constants.baseUrl}${Constants.search}${Constants.movie}?api_key=${Constants.apiKey}&language=en-US";
 
-  static Future<List<HomeMovie>> homeMoviesFuture(
+  static Future<List<Movie>> moviesFuture(
     String request, {
     int? limit,
     bool? skip,
   }) async {
     final response = await http.get(Uri.parse(request));
     var parsedList = json.decode(response.body)['results'];
+
     return (parsedList as List)
         .sublist(
           skip == true ? Random().nextInt(Constants.skipLimit) : 0,
           limit ?? Constants.homeLimit,
         )
-        .map((e) => HomeMovie.fromMap(e))
+        .map((e) => Movie.fromMap(e))
         .toList();
   }
 
-  static Future<List<HomeTv>> homeTvFuture(
+  static Future<List<Tv>> tvFuture(
     String request, {
     int? limit,
     bool? skip,
@@ -73,11 +73,11 @@ class Requests {
           skip == true ? Random().nextInt(Constants.skipLimit) : 0,
           limit ?? Constants.homeLimit,
         )
-        .map((e) => HomeTv.fromMap(e))
+        .map((e) => Tv.fromMap(e))
         .toList();
   }
 
-  static Future<List<HomePeople>> homePeopleFuture(
+  static Future<List<People>> peopleFuture(
     String request, {
     int? limit,
     bool? skip,
@@ -89,7 +89,7 @@ class Requests {
           skip == true ? Random().nextInt(Constants.skipLimit) : 0,
           limit ?? Constants.homeLimit,
         )
-        .map((e) => HomePeople.fromMap(e))
+        .map((e) => People.fromMap(e))
         .toList();
   }
 

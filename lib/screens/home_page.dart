@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:watrix/models/movie.dart';
+import 'package:watrix/models/people.dart';
 import 'package:watrix/resources/strings.dart';
-import 'package:watrix/services/constants.dart';
 import 'package:watrix/services/requests.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/widgets/horizontal_list.dart';
 import 'package:watrix/widgets/image_carousel.dart';
+
+import '../models/tv.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -19,8 +22,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   late Widget featured = Column(
     children: [
-      ImageCarousel(
-        Requests.homeMoviesFuture(
+      ImageCarousel<Movie>(
+        Requests.moviesFuture(
           Requests.dailyTrendingMovies,
           limit: 5,
         ),
@@ -32,12 +35,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           0.02,
         ),
       ),
-      HorizontalList(
-        Requests.homeMoviesFuture(Requests.popularMovies),
-        "Popular Movies",
-        () {},
-        0.3,
-        Constants.movie,
+      HorizontalList<Movie>(
+        future: Requests.moviesFuture(Requests.popularMovies),
+        heading: "Popular Movies",
+        onClick: () {},
+        itemWidthPercent: 0.3,
+        showTitle: false,
       ),
       SizedBox(
         height: ScreenSize.getPercentOfHeight(
@@ -45,12 +48,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           0.02,
         ),
       ),
-      HorizontalList(
-        Requests.homeTvFuture(Requests.popularTv),
-        "Popular TV Shows",
-        () {},
-        0.3,
-        Constants.tv,
+      HorizontalList<Tv>(
+        future: Requests.tvFuture(Requests.popularTv),
+        heading: "Popular TV Shows",
+        onClick: () {},
+        itemWidthPercent: 0.3,
+        showTitle: false,
       ),
       SizedBox(
         height: ScreenSize.getPercentOfHeight(
@@ -58,12 +61,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           0.02,
         ),
       ),
-      HorizontalList(
-        Requests.homePeopleFuture(Requests.popularPerson),
-        "Popular Actors",
-        () {},
-        0.3,
-        Constants.person,
+      HorizontalList<People>(
+        future: Requests.peopleFuture(Requests.popularPerson),
+        heading: "Popular Actors",
+        onClick: () {},
+        itemWidthPercent: 0.3,
+        showTitle: false,
       ),
       SizedBox(
         height: ScreenSize.getPercentOfHeight(
@@ -71,15 +74,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           0.02,
         ),
       ),
-      HorizontalList(
-        Requests.homeMoviesFuture(
+      HorizontalList<Movie>(
+        future: Requests.moviesFuture(
           Requests.weeklyTrendingMovies,
           skip: true,
         ),
-        "Weekly Trending Movies",
-        () {},
-        0.3,
-        Constants.movie,
+        heading: "Weekly Trending Movies",
+        onClick: () {},
+        itemWidthPercent: 0.3,
+        showTitle: false,
       ),
       SizedBox(
         height: ScreenSize.getPercentOfHeight(
@@ -87,32 +90,32 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           0.02,
         ),
       ),
-      HorizontalList(
-        Requests.homeTvFuture(
+      HorizontalList<Tv>(
+        future: Requests.tvFuture(
           Requests.weeklyTrendingTv,
           skip: true,
         ),
-        "Weekly Trending TV Shows",
-        () {},
-        0.3,
-        Constants.tv,
+        heading: "Weekly Trending TV Shows",
+        onClick: () {},
+        itemWidthPercent: 0.3,
+        showTitle: false,
       ),
       SizedBox(
         height: ScreenSize.getPercentOfHeight(
           context,
-          0.1,
+          0.08,
         ),
       ),
     ],
   );
   late Widget movies = Column(
     children: [
-      HorizontalList(
-        Requests.homeMoviesFuture(Requests.dailyTrendingMovies),
-        "Trending Today",
-        () {},
-        0.3,
-        Constants.movie,
+      HorizontalList<Movie>(
+        future: Requests.moviesFuture(Requests.dailyTrendingMovies),
+        heading: "Trending Today",
+        onClick: () {},
+        itemWidthPercent: 0.3,
+        showTitle: true,
       ),
       SizedBox(
         height: ScreenSize.getPercentOfHeight(
@@ -120,12 +123,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           0.02,
         ),
       ),
-      HorizontalList(
-        Requests.homeMoviesFuture(Requests.topRatedMovies),
-        "Top Rated",
-        () {},
-        0.3,
-        Constants.movie,
+      HorizontalList<Movie>(
+        future: Requests.moviesFuture(Requests.topRatedMovies),
+        heading: "Top Rated",
+        onClick: () {},
+        itemWidthPercent: 0.3,
+        showTitle: true,
       ),
       SizedBox(
         height: ScreenSize.getPercentOfHeight(
@@ -133,12 +136,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           0.02,
         ),
       ),
-      HorizontalList(
-        Requests.homeMoviesFuture(Requests.popularMovies),
-        "Popular",
-        () {},
-        0.3,
-        Constants.movie,
+      HorizontalList<Movie>(
+        future: Requests.moviesFuture(Requests.popularMovies),
+        heading: "Popular",
+        onClick: () {},
+        itemWidthPercent: 0.3,
+        showTitle: true,
       ),
       SizedBox(
         height: ScreenSize.getPercentOfHeight(
@@ -146,15 +149,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           0.02,
         ),
       ),
-      HorizontalList(
-        Requests.homeMoviesFuture(
+      HorizontalList<Movie>(
+        future: Requests.moviesFuture(
           Requests.weeklyTrendingMovies,
           skip: true,
         ),
-        "Trending this Week",
-        () {},
-        0.3,
-        Constants.movie,
+        heading: "Trending this Week",
+        onClick: () {},
+        itemWidthPercent: 0.3,
+        showTitle: true,
       ),
       SizedBox(
         height: ScreenSize.getPercentOfHeight(
@@ -166,12 +169,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   );
   late Widget tv = Column(
     children: [
-      HorizontalList(
-        Requests.homeTvFuture(Requests.dailyTrendingTv),
-        "Trending Today",
-        () {},
-        0.3,
-        Constants.tv,
+      HorizontalList<Tv>(
+        future: Requests.tvFuture(Requests.dailyTrendingTv),
+        heading: "Trending Today",
+        onClick: () {},
+        itemWidthPercent: 0.3,
+        showTitle: true,
       ),
       SizedBox(
         height: ScreenSize.getPercentOfHeight(
@@ -179,12 +182,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           0.02,
         ),
       ),
-      HorizontalList(
-        Requests.homeTvFuture(Requests.topRatedTv),
-        "Top Rated",
-        () {},
-        0.3,
-        Constants.tv,
+      HorizontalList<Tv>(
+        future: Requests.tvFuture(Requests.topRatedTv),
+        heading: "Top Rated",
+        onClick: () {},
+        itemWidthPercent: 0.3,
+        showTitle: true,
       ),
       SizedBox(
         height: ScreenSize.getPercentOfHeight(
@@ -192,12 +195,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           0.02,
         ),
       ),
-      HorizontalList(
-        Requests.homeTvFuture(Requests.popularTv),
-        "Popular",
-        () {},
-        0.3,
-        Constants.tv,
+      HorizontalList<Tv>(
+        future: Requests.tvFuture(Requests.popularTv),
+        heading: "Popular",
+        onClick: () {},
+        itemWidthPercent: 0.3,
+        showTitle: true,
       ),
       SizedBox(
         height: ScreenSize.getPercentOfHeight(
@@ -205,12 +208,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           0.02,
         ),
       ),
-      HorizontalList(
-        Requests.homeTvFuture(Requests.weeklyTrendingTv),
-        "Trending this Week",
-        () {},
-        0.3,
-        Constants.tv,
+      HorizontalList<Tv>(
+        future: Requests.tvFuture(Requests.weeklyTrendingTv),
+        heading: "Trending this Week",
+        onClick: () {},
+        itemWidthPercent: 0.3,
+        showTitle: true,
       ),
       SizedBox(
         height: ScreenSize.getPercentOfHeight(
@@ -218,12 +221,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           0.02,
         ),
       ),
-      HorizontalList(
-        Requests.homeTvFuture(Requests.airingTodayTv),
-        "Airing Today",
-        () {},
-        0.3,
-        Constants.tv,
+      HorizontalList<Tv>(
+        future: Requests.tvFuture(Requests.airingTodayTv),
+        heading: "Airing Today",
+        onClick: () {},
+        itemWidthPercent: 0.3,
+        showTitle: true,
       ),
       SizedBox(
         height: ScreenSize.getPercentOfHeight(

@@ -1,57 +1,56 @@
 import 'package:flutter/material.dart';
-import 'package:watrix/models/home.dart';
-import 'package:watrix/models/home_movie.dart';
-import 'package:watrix/models/home_people.dart';
-import 'package:watrix/models/home_tv.dart';
+import 'package:watrix/resources/style.dart';
 import 'package:watrix/services/constants.dart';
+import 'package:watrix/services/utils.dart';
 import 'package:watrix/utils/screen_size.dart';
-import 'package:watrix/widgets/rounded_image.dart';
+import 'package:watrix/widgets/movie_tile.dart';
 
-class HorizontalList extends StatelessWidget {
-  final Future<List<Home>> future;
+class HorizontalList<T> extends StatelessWidget {
+  final Future<List<T>> future;
   final String heading;
   final Function() onClick;
-  final double widthPercent;
-  final String type;
+  final double itemWidthPercent;
+  final bool showTitle;
 
-  HorizontalList(
-    this.future,
-    this.heading,
-    this.onClick,
-    this.widthPercent,
-    this.type, {
+  HorizontalList({
     Key? key,
+    required this.future,
+    required this.heading,
+    required this.onClick,
+    required this.itemWidthPercent,
+    required this.showTitle,
   }) : super(key: key);
 
   Widget handleListBuilder(
-      BuildContext context, AsyncSnapshot<List<Home>> snapshot) {
+      BuildContext context, AsyncSnapshot<List<T>> snapshot) {
     if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
       return Container(
-        height: ScreenSize.getPercentOfWidth(context, widthPercent) /
-            Constants.posterAspectRatio,
+        height: ScreenSize.getPercentOfWidth(context, itemWidthPercent) /
+                Constants.posterAspectRatio +
+            ScreenSize.getPercentOfHeight(
+              context,
+              0.03,
+            ),
         child: ListView.separated(
             physics: BouncingScrollPhysics(),
             shrinkWrap: true,
             scrollDirection: Axis.horizontal,
             separatorBuilder: (context, index) {
               return SizedBox(
-                width: 4,
+                width: 5,
               );
             },
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
-              String url = "";
-              Home item = snapshot.data![index];
-              if (type == Constants.movie) {
-                url = (item as HomeMovie).posterPath;
-              } else if (type == Constants.tv) {
-                url = (item as HomeTv).posterPath;
-              } else {
-                url = (item as HomePeople).profilePath;
-              }
-              return RoundedImage(
-                "${Constants.imageBaseUrl}${Constants.posterSize}${url}",
-                ScreenSize.getPercentOfWidth(context, widthPercent),
+              T item = snapshot.data![index];
+              String url = Utils.getItemPoster(item);
+              String name = Utils.getItemName(item);
+
+              return MovieTile(
+                image: "${Constants.imageBaseUrl}${Constants.posterSize}${url}",
+                text: name,
+                width: ScreenSize.getPercentOfWidth(context, itemWidthPercent),
+                showTitle: showTitle,
               );
             }),
       );
@@ -66,14 +65,12 @@ class HorizontalList extends StatelessWidget {
       children: [
         Text(
           heading,
-          style: TextStyle(
-            fontSize: 16,
-          ),
+          style: Style.headingStyle,
         ),
         SizedBox(
           height: 4,
         ),
-        FutureBuilder<List<Home>>(
+        FutureBuilder<List<T>>(
           future: future,
           builder: handleListBuilder,
         ),

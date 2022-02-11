@@ -21,6 +21,6 @@ class Style {
   }
 
   static TextStyle headingStyle = TextStyle(
-    fontSize: 30,
+    fontSize: 18,
   );
 }

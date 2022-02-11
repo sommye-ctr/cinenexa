@@ -1,22 +1,21 @@
 import 'dart:convert';
 
-import 'package:watrix/models/home.dart';
-
-class HomePeople extends Home {
+class People {
+  int id;
   String name;
   String profilePath;
-  HomePeople({
+  People({
     required this.name,
     required this.profilePath,
-    required int id,
-  }) : super(id: id);
+    required this.id,
+  }) : super();
 
-  HomePeople copyWith({
+  People copyWith({
     int? id,
     String? name,
     String? profilePath,
   }) {
-    return HomePeople(
+    return People(
       name: name ?? this.name,
       profilePath: profilePath ?? this.profilePath,
       id: this.id,
@@ -30,8 +29,8 @@ class HomePeople extends Home {
     };
   }
 
-  factory HomePeople.fromMap(Map<String, dynamic> map) {
-    return HomePeople(
+  factory People.fromMap(Map<String, dynamic> map) {
+    return People(
       id: map['id'] ?? 0,
       name: map['name'] ?? '',
       profilePath: map['profile_path'] ?? '',
@@ -40,8 +39,7 @@ class HomePeople extends Home {
 
   String toJson() => json.encode(toMap());
 
-  factory HomePeople.fromJson(String source) =>
-      HomePeople.fromMap(json.decode(source));
+  factory People.fromJson(String source) => People.fromMap(json.decode(source));
 
   @override
   String toString() => 'HomePeople(name: $name, profilePath: $profilePath)';
@@ -50,7 +48,7 @@ class HomePeople extends Home {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is HomePeople &&
+    return other is People &&
         other.name == name &&
         other.profilePath == profilePath;
   }

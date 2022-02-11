@@ -12,7 +12,7 @@ class RoundedImage extends StatelessWidget {
       child: Image.network(
         image,
         width: width,
-        fit: BoxFit.fill,
+        fit: BoxFit.contain,
         errorBuilder: (context, error, stackTrace) {
           return Text("Something Wrong...");
         },
