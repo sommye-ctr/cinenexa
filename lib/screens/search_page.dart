@@ -32,7 +32,6 @@ class _SearchPageState extends State<SearchPage> {
   Widget futureBuilder(
       BuildContext context, AsyncSnapshot<List<Movie>> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
-      print("data \n${snapshot.data.toString()}");
       return Expanded(
         child: GridView.builder(
           shrinkWrap: true,

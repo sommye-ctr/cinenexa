@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Style {
   static ThemeData themeData = ThemeData(
@@ -6,10 +7,11 @@ class Style {
     brightness: Brightness.light,
   );
 
-  static ThemeData darkThemeData = ThemeData(
-    primarySwatch: Colors.orange,
-    brightness: Brightness.dark,
-  );
+  static ThemeData darkThemeData(BuildContext context) => ThemeData(
+        primarySwatch: Colors.orange,
+        brightness: Brightness.dark,
+        fontFamily: GoogleFonts.poppins().fontFamily,
+      );
 
   static BottomNavigationBarItem getbottomNavItem(String label, IconData icon) {
     return BottomNavigationBarItem(

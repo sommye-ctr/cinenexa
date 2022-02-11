@@ -29,12 +29,16 @@ class _ImageCarouselState extends State<ImageCarousel> {
       _length = snapshot.data!.length;
       _list = snapshot.data!;
       return Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
             height: (ScreenSize.getPercentOfWidth(context, 1) /
                     Constants.backdropAspectRatio) +
-                ScreenSize.getPercentOfHeight(context, 0.02),
+                ScreenSize.getPercentOfHeight(
+                  context,
+                  0.03,
+                ),
             child: PageView.builder(
               itemCount: snapshot.data!.length,
               pageSnapping: true,
@@ -54,7 +58,9 @@ class _ImageCarouselState extends State<ImageCarousel> {
                           1,
                         ),
                       ),
-                      Text(snapshot.data![index].title),
+                      Text(
+                        snapshot.data![index].title,
+                      ),
                     ],
                   ),
                 );
