@@ -10,6 +10,7 @@ class Movie {
   String overView;
   String releaseDate;
   List<int> genreIds;
+  double voteAverage;
   Movie({
     required this.title,
     required this.id,
@@ -18,6 +19,7 @@ class Movie {
     required this.overView,
     required this.releaseDate,
     required this.genreIds,
+    required this.voteAverage,
   });
 
   Movie copyWith({
@@ -28,6 +30,7 @@ class Movie {
     String? overView,
     String? releaseDate,
     List<int>? genreIds,
+    double? voteAverage,
   }) {
     return Movie(
       title: title ?? this.title,
@@ -37,6 +40,7 @@ class Movie {
       overView: overView ?? this.overView,
       releaseDate: releaseDate ?? this.releaseDate,
       genreIds: genreIds ?? this.genreIds,
+      voteAverage: voteAverage ?? this.voteAverage,
     );
   }
 
@@ -49,6 +53,7 @@ class Movie {
       'overView': overView,
       'releaseDate': releaseDate,
       'genreIds': genreIds,
+      'vote_average': voteAverage,
     };
   }
 
@@ -61,6 +66,7 @@ class Movie {
       overView: map['overview'] ?? '',
       releaseDate: map['release_date'] ?? '',
       genreIds: List<int>.from(map['genre_ids']),
+      voteAverage: map['vote_average']?.toDouble() ?? 0,
     );
   }
 
@@ -70,7 +76,7 @@ class Movie {
 
   @override
   String toString() {
-    return 'Movie(title: $title, id: $id, posterPath: $posterPath, backdropPath: $backdropPath, overView: $overView, releaseDate: $releaseDate, genreIds: $genreIds)';
+    return 'Movie(title: $title, id: $id, posterPath: $posterPath, backdropPath: $backdropPath, overView: $overView, releaseDate: $releaseDate, genreIds: $genreIds, voteAverage: $voteAverage)';
   }
 
   @override
@@ -84,7 +90,8 @@ class Movie {
         other.backdropPath == backdropPath &&
         other.overView == overView &&
         other.releaseDate == releaseDate &&
-        listEquals(other.genreIds, genreIds);
+        listEquals(other.genreIds, genreIds) &&
+        other.voteAverage == voteAverage;
   }
 
   @override
@@ -95,6 +102,7 @@ class Movie {
         backdropPath.hashCode ^
         overView.hashCode ^
         releaseDate.hashCode ^
-        genreIds.hashCode;
+        genreIds.hashCode ^
+        voteAverage.hashCode;
   }
 }

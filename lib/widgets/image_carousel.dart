@@ -54,7 +54,7 @@ class _ImageCarouselState<T> extends State<ImageCarousel<T>> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       RoundedImage(
-                        "${Constants.imageBaseUrl}${Constants.backdropSize}${imageUrl}",
+                        Utils.getBackdropUrl(imageUrl),
                         ScreenSize.getPercentOfWidth(
                           context,
                           1,

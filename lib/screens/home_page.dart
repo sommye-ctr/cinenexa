@@ -221,19 +221,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           0.02,
         ),
       ),
-      HorizontalList<Tv>(
-        future: Requests.tvFuture(Requests.airingTodayTv),
-        heading: "Airing Today",
-        onClick: () {},
-        itemWidthPercent: 0.3,
-        showTitle: true,
-      ),
-      SizedBox(
-        height: ScreenSize.getPercentOfHeight(
-          context,
-          0.1,
-        ),
-      ),
     ],
   );
   late Widget myList = Column();

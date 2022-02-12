@@ -47,7 +47,7 @@ class HorizontalList<T> extends StatelessWidget {
               String name = Utils.getItemName(item);
 
               return MovieTile(
-                image: "${Constants.imageBaseUrl}${Constants.posterSize}${url}",
+                image: Utils.getPosterUrl(url),
                 text: name,
                 width: ScreenSize.getPercentOfWidth(context, itemWidthPercent),
                 showTitle: showTitle,

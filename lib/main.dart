@@ -30,6 +30,7 @@ class _MyAppState extends State<MyApp> {
       themeMode: ThemeMode.dark,
       home: Scaffold(
         extendBody: true,
+        resizeToAvoidBottomInset: false,
         body: SafeArea(
           child: Stack(
             children: [

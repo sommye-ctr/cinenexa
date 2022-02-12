@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:watrix/services/constants.dart';
 
 import '../models/movie.dart';
 import '../models/people.dart';
@@ -43,5 +44,13 @@ class Utils {
       throw new FlutterError("The type is unidentified.");
     }
     return name;
+  }
+
+  static String getPosterUrl(String url) {
+    return "${Constants.imageBaseUrl}${Constants.posterSize}${url}";
+  }
+
+  static String getBackdropUrl(String url) {
+    return "${Constants.imageBaseUrl}${Constants.backdropSize}${url}";
   }
 }
