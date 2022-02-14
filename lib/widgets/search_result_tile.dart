@@ -63,23 +63,24 @@ class SearchResultTile extends StatelessWidget {
                           ],
                         ),
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                          top: ScreenSize.getPercentOfWidth(context, 0.01),
-                          right: ScreenSize.getPercentOfWidth(context, 0.01),
+                      if (vote != 0)
+                        Padding(
+                          padding: EdgeInsets.only(
+                            top: ScreenSize.getPercentOfWidth(context, 0.01),
+                            right: ScreenSize.getPercentOfWidth(context, 0.01),
+                          ),
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              CircularProgressIndicator(
+                                value: vote / 10,
+                                strokeWidth: 2,
+                                backgroundColor: Colors.grey,
+                              ),
+                              Text("${vote}")
+                            ],
+                          ),
                         ),
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            CircularProgressIndicator(
-                              value: vote / 10,
-                              strokeWidth: 2,
-                              backgroundColor: Colors.grey,
-                            ),
-                            Text("${vote}")
-                          ],
-                        ),
-                      ),
                     ],
                   ),
                   Text(

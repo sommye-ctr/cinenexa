@@ -118,6 +118,7 @@ class _SearchPageState extends State<SearchPage> {
       if (_isSearchDone) {
         return Flexible(
           child: ListView.builder(
+            physics: BouncingScrollPhysics(),
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
               Movie movie = snapshot.data![index];

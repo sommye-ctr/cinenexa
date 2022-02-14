@@ -14,7 +14,7 @@ class RoundedImage extends StatelessWidget {
         width: width,
         fit: BoxFit.contain,
         errorBuilder: (context, error, stackTrace) {
-          return Text("Something Wrong...");
+          return Icon(Icons.error_outline);
         },
       ),
     );
