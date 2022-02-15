@@ -5,6 +5,9 @@ import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 
 class BottomNavBar extends StatefulWidget {
+  static const double bottomNavHeight = 56;
+  static const double bottomNavPadding = 8;
+
   final Function(int index) onChanged;
   const BottomNavBar(this.onChanged, {Key? key}) : super(key: key);
 

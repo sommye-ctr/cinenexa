@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:watrix/models/movie.dart';
 import 'package:watrix/models/people.dart';
 import 'package:watrix/resources/strings.dart';
+import 'package:watrix/screens/filter_page.dart';
 import 'package:watrix/services/requests.dart';
 import 'package:watrix/utils/screen_size.dart';
+import 'package:watrix/widgets/bottom_nav_bar.dart';
 import 'package:watrix/widgets/horizontal_list.dart';
 import 'package:watrix/widgets/image_carousel.dart';
 
@@ -242,50 +244,78 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: ScreenSize.getPercentOfWidth(context, 0.02),
-        ),
-        child: ListView(
-          physics: BouncingScrollPhysics(),
-          children: [
-            DefaultTabController(
-              length: 4,
-              child: TabBar(
-                labelColor: Colors.black,
-                unselectedLabelColor: Colors.grey,
-                indicatorColor: Colors.transparent,
-                isScrollable: true,
-                controller: _tabController,
-                tabs: [
-                  Tab(
-                    text: Strings.featured,
-                  ),
-                  Tab(
-                    text: Strings.movies,
-                  ),
-                  Tab(
-                    text: Strings.tvShows,
-                  ),
-                  Tab(
-                    text: Strings.myList,
-                  ),
-                ],
-              ),
+    return Stack(
+      children: [
+        Container(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: ScreenSize.getPercentOfWidth(context, 0.02),
             ),
-            IndexedStack(
-              index: _selectedIndex,
+            child: ListView(
+              physics: BouncingScrollPhysics(),
               children: [
-                featured,
-                movies,
-                tv,
-                myList,
+                DefaultTabController(
+                  length: 4,
+                  child: TabBar(
+                    labelColor: Colors.black,
+                    unselectedLabelColor: Colors.grey,
+                    indicatorColor: Colors.transparent,
+                    isScrollable: true,
+                    controller: _tabController,
+                    tabs: [
+                      Tab(
+                        text: Strings.featured,
+                      ),
+                      Tab(
+                        text: Strings.movies,
+                      ),
+                      Tab(
+                        text: Strings.tvShows,
+                      ),
+                      Tab(
+                        text: Strings.myList,
+                      ),
+                    ],
+                  ),
+                ),
+                IndexedStack(
+                  index: _selectedIndex,
+                  children: [
+                    featured,
+                    movies,
+                    tv,
+                    myList,
+                  ],
+                ),
               ],
             ),
-          ],
+          ),
         ),
-      ),
+        if (_selectedIndex == 1 || _selectedIndex == 2)
+          Positioned(
+            bottom: BottomNavBar.bottomNavHeight +
+                BottomNavBar.bottomNavPadding +
+                4,
+            right: BottomNavBar.bottomNavPadding,
+            child: FloatingActionButton(
+              child: Icon(
+                Icons.filter_list,
+              ),
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  builder: (context) {
+                    return FractionallySizedBox(
+                      heightFactor: 0.8,
+                      child: FilterPage(),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+      ],
     );
   }
 }

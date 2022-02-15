@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:watrix/models/genre.dart';
 import 'package:watrix/models/people.dart';
 import 'package:watrix/models/movie.dart';
 import 'package:watrix/models/tv.dart';
@@ -43,6 +44,9 @@ class Requests {
 
   static String search =
       "${Constants.baseUrl}${Constants.search}${Constants.movie}?api_key=${Constants.apiKey}&language=en-US";
+
+  static String movieGenre =
+      "${Constants.baseUrl}${Constants.genre}${Constants.movie}/list?api_key=${Constants.apiKey}&language=en-US";
 
   static Future<List<Movie>> moviesFuture(
     String request, {
@@ -91,6 +95,12 @@ class Requests {
         )
         .map((e) => People.fromMap(e))
         .toList();
+  }
+
+  static Future<List<Genre>> genreFuture(String request) async {
+    final response = await http.get(Uri.parse(request));
+    var parsedList = json.decode(response.body)['genres'];
+    return (parsedList as List).map((e) => Genre.fromMap(e)).toList();
   }
 
   static Future<List<Movie>> searchMovie(String query) async {
