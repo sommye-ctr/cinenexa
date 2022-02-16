@@ -305,6 +305,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 showModalBottomSheet(
                   context: context,
                   isScrollControlled: true,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   builder: (context) {
                     return FractionallySizedBox(
                       heightFactor: 0.8,

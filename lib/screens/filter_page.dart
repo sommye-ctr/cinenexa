@@ -16,65 +16,133 @@ class FilterPage extends StatelessWidget {
       padding: EdgeInsets.symmetric(
         horizontal: ScreenSize.getPercentOfWidth(context, 0.02),
       ),
-      child: ListView(
-        physics: BouncingScrollPhysics(),
+      child: Stack(
         children: [
-          Text(
-            "Sort By",
-            style: Style.headingStyle,
-          ),
-          SizedBox(
-            height: ScreenSize.getPercentOfHeight(context, 0.01),
-          ),
-          CustomCheckBoxList(
-            type: CheckBoxListType.list,
+          ListView(
+            physics: BouncingScrollPhysics(),
             children: [
-              "Released",
-              "Popularity",
-              "Vote",
-              "Rating",
+              SizedBox(
+                height: ScreenSize.getPercentOfHeight(context, 0.02),
+              ),
+              Text(
+                "Sort By",
+                style: Style.headingStyle,
+              ),
+              SizedBox(
+                height: ScreenSize.getPercentOfHeight(context, 0.01),
+              ),
+              CustomCheckBoxList(
+                type: CheckBoxListType.list,
+                singleSelect: true,
+                children: [
+                  "Released",
+                  "Popularity",
+                  "Vote",
+                  "Rating",
+                ],
+              ),
+              Divider(),
+              Text(
+                "Certification",
+                style: Style.headingStyle,
+              ),
+              SizedBox(
+                height: ScreenSize.getPercentOfHeight(context, 0.01),
+              ),
+              FutureBuilder<List<String>>(
+                future: Requests.certificationsFuture(Requests.certifications),
+                builder: certificationBuild,
+              ),
+              Divider(),
+              Text(
+                "Vote Average",
+                style: Style.headingStyle,
+              ),
+              SizedBox(
+                height: ScreenSize.getPercentOfHeight(context, 0.01),
+              ),
+              CustomRangeSlider(
+                values: RangeValues(0, 10),
+              ),
+              Divider(),
+              Text(
+                "Year",
+                style: Style.headingStyle,
+              ),
+              SizedBox(
+                height: ScreenSize.getPercentOfHeight(context, 0.01),
+              ),
+              CustomRangeSlider(
+                values: RangeValues(
+                  DateTime.now().year - 100,
+                  DateTime.now().year.toDouble(),
+                ),
+              ),
+              Divider(),
+              Text(
+                "Genres",
+                style: Style.headingStyle,
+              ),
+              SizedBox(
+                height: ScreenSize.getPercentOfHeight(context, 0.01),
+              ),
+              FutureBuilder<List<Genre>>(
+                future: Requests.genreFuture(Requests.movieGenre),
+                builder: genreBuildGrid,
+              ),
+              SizedBox(
+                height: ScreenSize.getPercentOfHeight(context, 0.05),
+              ),
             ],
           ),
-          Divider(),
-          Text(
-            "Vote Average",
-            style: Style.headingStyle,
-          ),
-          SizedBox(
-            height: ScreenSize.getPercentOfHeight(context, 0.01),
-          ),
-          CustomRangeSlider(
-            values: RangeValues(0, 10),
-          ),
-          Divider(),
-          Text(
-            "Year",
-            style: Style.headingStyle,
-          ),
-          SizedBox(
-            height: ScreenSize.getPercentOfHeight(context, 0.01),
-          ),
-          CustomRangeSlider(
-            values: RangeValues(
-              DateTime.now().year - 100,
-              DateTime.now().year.toDouble(),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: ElevatedButton(
+                        onPressed: () {},
+                        child: Text("Reset"),
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.white.withOpacity(0.5),
+                        )),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      child: Text("Submit"),
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.white.withOpacity(0.5),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-          Divider(),
-          Text(
-            "Genres",
-            style: Style.headingStyle,
-          ),
-          SizedBox(
-            height: ScreenSize.getPercentOfHeight(context, 0.01),
-          ),
-          FutureBuilder<List<Genre>>(
-            future: Requests.genreFuture(Requests.movieGenre),
-            builder: genreBuildGrid,
           ),
         ],
       ),
     );
+  }
+
+  Widget certificationBuild(
+      BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+    if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+      return CustomCheckBoxList(
+        children: snapshot.data!.toList(),
+        type: CheckBoxListType.list,
+        singleSelect: true,
+      ); // TODO Add tooltip to explain the certitification
+    }
+    return Container();
   }
 
   Widget genreBuildGrid(
@@ -89,19 +157,6 @@ class FilterPage extends StatelessWidget {
           crossAxisSpacing: ScreenSize.getPercentOfWidth(context, 0.025),
           mainAxisSpacing: ScreenSize.getPercentOfWidth(context, 0.025),
         ),
-        /*itemBuilder: (context, index) {
-          return Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.background,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Center(
-              child: Text(
-                snapshot.data![index].name,
-              ),
-            ),
-          );
-        },*/
       );
     }
     return Container();

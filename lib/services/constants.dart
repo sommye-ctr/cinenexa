@@ -13,6 +13,7 @@ class Constants {
 
   static String search = "/search";
   static String genre = "/genre";
+  static String certification = "/certification";
 
   static String popular = "/popular";
   static String topRated = "/top_rated";

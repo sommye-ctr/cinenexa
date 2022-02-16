@@ -48,6 +48,9 @@ class Requests {
   static String movieGenre =
       "${Constants.baseUrl}${Constants.genre}${Constants.movie}/list?api_key=${Constants.apiKey}&language=en-US";
 
+  static String certifications =
+      "${Constants.baseUrl}${Constants.certification}${Constants.movie}/list?api_key=${Constants.apiKey}";
+
   static Future<List<Movie>> moviesFuture(
     String request, {
     int? limit,
@@ -114,5 +117,13 @@ class Requests {
     final response = await http.get(Uri.parse(search + "&query=$encoded"));
     var parsedList = json.decode(response.body)['results'];
     return (parsedList as List).map((e) => Movie.fromMap(e)).toList();
+  }
+
+  static Future<List<String>> certificationsFuture(String query) async {
+    final response = await http.get(Uri.parse(query));
+    var parsedList = json.decode(response.body)['certifications']['IN'];
+    return (parsedList as List)
+        .map((e) => e['certification'].toString())
+        .toList();
   }
 }

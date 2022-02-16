@@ -25,10 +25,16 @@ class CustomCheckBoxList extends StatefulWidget {
 }
 
 class _CustomCheckBoxListState extends State<CustomCheckBoxList> {
+  late List<ValueNotifier<bool>> notifiers;
+
+  @override
+  void initState() {
+    super.initState();
+    notifiers = createNotifiers();
+  }
+
   @override
   Widget build(BuildContext context) {
-    bool _isAnySelected = false;
-
     if (widget.type == CheckBoxListType.list) {
       return Container(
         height: 50,
@@ -47,11 +53,13 @@ class _CustomCheckBoxListState extends State<CustomCheckBoxList> {
           itemBuilder: (BuildContext context, int index) {
             return CustomCheckBox(
               text: widget.children[index],
-              selectable: !_isAnySelected,
+              controller: notifiers[index],
               onSelected: () {
-                setState(() {
-                  _isAnySelected = true;
-                });
+                print("selected is $index");
+                if (widget.singleSelect) {
+                  clearSelection(index);
+                }
+                print("is selected ${notifiers[index].value}");
               },
             );
           },
@@ -66,16 +74,32 @@ class _CustomCheckBoxListState extends State<CustomCheckBoxList> {
         itemBuilder: (context, index) {
           return CustomCheckBox(
             text: widget.children[index],
-            selectable: !_isAnySelected,
             onSelected: () {
-              setState(() {
-                _isAnySelected = true;
-              });
+              if (widget.singleSelect) {
+                clearSelection(index);
+              }
             },
           );
         },
       );
     }
     throw new FlutterError("Unidentified type!");
+  }
+
+  List<ValueNotifier<bool>> createNotifiers() {
+    List<ValueNotifier<bool>> valueNotifiers = [];
+    // ignore: unused_local_variable
+    for (var ignore in widget.children) {
+      valueNotifiers.add(ValueNotifier(false));
+    }
+    return valueNotifiers;
+  }
+
+  void clearSelection(int except) {
+    for (int i = 0; i < notifiers.length; i++) {
+      if (i != except) {
+        notifiers[i].value = false;
+      }
+    }
   }
 }
