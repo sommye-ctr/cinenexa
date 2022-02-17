@@ -146,7 +146,7 @@ class _SearchPageState extends State<SearchPage> {
         physics: BouncingScrollPhysics(),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
-          childAspectRatio: Constants.posterAspectRatio,
+          childAspectRatio: Style.movieTileWithTitleRatio,
         ),
         itemBuilder: (context, index) {
           return MovieTile(

@@ -5,7 +5,7 @@ class CustomRangeSlider extends StatefulWidget {
   final int? divisions;
   final RangeLabels? labels;
   final Color? activeColor, inactiveColor;
-  final Function()? onChanged;
+  final Function(RangeValues rangeValues)? onChanged;
 
   CustomRangeSlider({
     Key? key,
@@ -43,13 +43,13 @@ class _CustomRangeSliderState extends State<CustomRangeSlider> {
           inactiveColor: widget.inactiveColor,
           labels: widget.labels,
           divisions: widget.divisions,
-          onChanged: (values) {
+          onChanged: (changedValue) {
             setState(() {
-              _startValue = values.start;
-              _endValue = values.end;
+              _startValue = changedValue.start;
+              _endValue = changedValue.end;
             });
             if (widget.onChanged != null) {
-              widget.onChanged!();
+              widget.onChanged!(changedValue);
             }
           },
         ),

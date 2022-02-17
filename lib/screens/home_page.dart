@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:watrix/models/movie.dart';
 import 'package:watrix/models/people.dart';
 import 'package:watrix/resources/strings.dart';
+import 'package:watrix/resources/style.dart';
 import 'package:watrix/screens/filter_page.dart';
 import 'package:watrix/services/requests.dart';
 import 'package:watrix/utils/screen_size.dart';
@@ -10,6 +11,8 @@ import 'package:watrix/widgets/horizontal_list.dart';
 import 'package:watrix/widgets/image_carousel.dart';
 
 import '../models/tv.dart';
+import '../services/constants.dart';
+import '../widgets/movie_tile.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -21,6 +24,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   late TabController _tabController;
   int _selectedIndex = 0;
+
+  IconData _fabIcon = Icons.filter_alt_outlined;
 
   late Widget featured = Column(
     children: [
@@ -299,26 +304,65 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             right: BottomNavBar.bottomNavPadding,
             child: FloatingActionButton(
               child: Icon(
-                Icons.filter_list,
+                _fabIcon,
               ),
               onPressed: () {
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  builder: (context) {
-                    return FractionallySizedBox(
-                      heightFactor: 0.8,
-                      child: FilterPage(),
-                    );
-                  },
-                );
+                showBottomSheet(context, _selectedIndex);
               },
             ),
           ),
       ],
     );
+  }
+
+  void showBottomSheet(BuildContext context, int index) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      builder: (context) {
+        return FractionallySizedBox(
+          heightFactor: 0.8,
+          child: FilterPage(),
+        );
+      },
+    ).then(onBottomSheetFilterChanged);
+  }
+
+  void onBottomSheetFilterChanged(value) async {
+    setState(() {
+      _fabIcon = Icons.filter_alt;
+      movies = FutureBuilder<List<Movie>>(
+          future: Requests.discoverMovie(value),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done &&
+                snapshot.hasData) {
+              return GridView.builder(
+                shrinkWrap: true,
+                itemCount: snapshot.data!.length,
+                physics: BouncingScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  childAspectRatio: Style.movieTileWithTitleRatio,
+                ),
+                itemBuilder: (context, index) {
+                  return MovieTile(
+                    image:
+                        "${Constants.imageBaseUrl}${Constants.posterSize}${snapshot.data![index].posterPath}",
+                    width: ScreenSize.getPercentOfWidth(
+                      context,
+                      0.29,
+                    ),
+                    showTitle: true,
+                    text: snapshot.data![index].title,
+                  );
+                },
+              );
+            }
+            return Container();
+          });
+    });
   }
 }

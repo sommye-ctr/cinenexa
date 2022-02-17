@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:watrix/models/sort_movies.dart';
 import 'package:watrix/services/constants.dart';
 
 import '../models/movie.dart';
@@ -52,5 +53,31 @@ class Utils {
 
   static String getBackdropUrl(String url) {
     return "${Constants.imageBaseUrl}${Constants.backdropSize}${url}";
+  }
+
+  static String getSortMoviesBy(SortMoviesBy sortMoviesBy) {
+    switch (sortMoviesBy) {
+      case SortMoviesBy.popularity:
+        return "popularity.desc";
+      case SortMoviesBy.releaseDate:
+        return "release_date.desc";
+      case SortMoviesBy.voteAverage:
+        return "vote_average.desc";
+    }
+  }
+
+  static List<Movie> convertToListString(var parsedList) {
+    return (parsedList as List).map((e) => Movie.fromMap(e)).toList();
+  }
+
+  static List<Movie> convertToListStringWithSkipLimit(
+      var parsedList, int limit, int skip) {
+    return (parsedList as List)
+        .sublist(
+          skip,
+          limit,
+        )
+        .map((e) => Movie.fromMap(e))
+        .toList();
   }
 }

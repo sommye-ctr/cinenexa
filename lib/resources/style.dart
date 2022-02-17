@@ -23,4 +23,6 @@ class Style {
   static TextStyle headingStyle = TextStyle(
     fontSize: 18,
   );
+
+  static double movieTileWithTitleRatio = 1 / 1.6;
 }

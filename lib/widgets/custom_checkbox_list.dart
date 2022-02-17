@@ -12,10 +12,12 @@ class CustomCheckBoxList extends StatefulWidget {
   final CheckBoxListType type;
   final SliverGridDelegate? delegate;
   final bool singleSelect;
+  final Function(List<String> values)? onSelectionChanged;
   const CustomCheckBoxList({
     Key? key,
     required this.children,
     required this.type,
+    this.onSelectionChanged,
     this.singleSelect = false,
     this.delegate,
   }) : super(key: key);
@@ -26,6 +28,7 @@ class CustomCheckBoxList extends StatefulWidget {
 
 class _CustomCheckBoxListState extends State<CustomCheckBoxList> {
   late List<ValueNotifier<bool>> notifiers;
+  List<String> selectedItems = [];
 
   @override
   void initState() {
@@ -55,11 +58,13 @@ class _CustomCheckBoxListState extends State<CustomCheckBoxList> {
               text: widget.children[index],
               controller: notifiers[index],
               onSelected: () {
-                print("selected is $index");
                 if (widget.singleSelect) {
                   clearSelection(index);
                 }
-                print("is selected ${notifiers[index].value}");
+                selectedItems.add(widget.children[index]);
+                if (widget.onSelectionChanged != null) {
+                  widget.onSelectionChanged!(selectedItems);
+                }
               },
             );
           },
@@ -77,6 +82,10 @@ class _CustomCheckBoxListState extends State<CustomCheckBoxList> {
             onSelected: () {
               if (widget.singleSelect) {
                 clearSelection(index);
+              }
+              selectedItems.add(widget.children[index]);
+              if (widget.onSelectionChanged != null) {
+                widget.onSelectionChanged!(selectedItems);
               }
             },
           );
