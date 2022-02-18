@@ -9,11 +9,12 @@ class RoundedImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),
-      child: Image.network(
-        image,
+      child: FadeInImage(
+        image: NetworkImage(image),
         width: width,
         fit: BoxFit.contain,
-        errorBuilder: (context, error, stackTrace) {
+        placeholder: AssetImage('assets/icon/icon.png'),
+        imageErrorBuilder: (context, error, stackTrace) {
           return Icon(Icons.error_outline);
         },
       ),

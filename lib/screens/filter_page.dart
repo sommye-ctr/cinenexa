@@ -10,15 +10,10 @@ import 'package:watrix/widgets/custom_rangle_slider.dart';
 import '../models/genre.dart';
 
 class FilterPage extends StatelessWidget {
-  String certification = "";
+  String? certification;
   SortMoviesBy? sortMoviesBy;
-  DateTimeRange releaseDateRange = DateTimeRange(
-    start: DateTime(
-      DateTime.now().year - 100,
-    ),
-    end: DateTime.now(),
-  );
-  RangeValues voteAverage = RangeValues(0, 10);
+  DateTimeRange? releaseDateRange;
+  RangeValues? voteAverage;
   List<Genre> genres = [];
 
   FilterPage({Key? key}) : super(key: key);
@@ -61,13 +56,20 @@ class FilterPage extends StatelessWidget {
     return Container();
   }
 
-  Future generateDiscoverRequest() {
+  Future? generateDiscoverRequest() {
+    if (certification == null &&
+        sortMoviesBy == null &&
+        releaseDateRange == null &&
+        voteAverage == null &&
+        genres.isEmpty) {
+      return null;
+    }
     return Requests.getDiscoverQueries(
       certification: certification,
-      releaseDateLessThan: releaseDateRange.end,
-      releaseDateMoreThan: releaseDateRange.start,
-      voteAverageGreaterThan: voteAverage.start.toInt(),
-      voteAverageLessThan: voteAverage.end.toInt(),
+      releaseDateLessThan: releaseDateRange?.end,
+      releaseDateMoreThan: releaseDateRange?.start,
+      voteAverageGreaterThan: voteAverage?.start.toInt(),
+      voteAverageLessThan: voteAverage?.end.toInt(),
       withGenres: genres,
       sortMoviesBy: sortMoviesBy,
     );
@@ -75,6 +77,10 @@ class FilterPage extends StatelessWidget {
 
   void onSubmitClick(BuildContext context) {
     Navigator.pop(context, generateDiscoverRequest());
+  }
+
+  void onResetClick(BuildContext context) {
+    Navigator.pop(context);
   }
 
   @override
@@ -196,7 +202,7 @@ class FilterPage extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(8),
                     child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () => onResetClick(context),
                         child: Text(Strings.reset),
                         style: ElevatedButton.styleFrom(
                           primary: Colors.white.withOpacity(0.5),
