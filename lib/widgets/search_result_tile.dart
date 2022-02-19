@@ -31,8 +31,9 @@ class SearchResultTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             RoundedImage(
-              Utils.getPosterUrl(image),
-              ScreenSize.getPercentOfWidth(context, 0.25),
+              image: Utils.getPosterUrl(image),
+              width: ScreenSize.getPercentOfWidth(context, 0.25),
+              ratio: Constants.posterAspectRatio,
             ),
             Expanded(
               child: Column(

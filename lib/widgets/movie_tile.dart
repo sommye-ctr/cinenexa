@@ -25,7 +25,11 @@ class MovieTile extends StatelessWidget {
         children: [
           Container(
             height: width / Constants.posterAspectRatio,
-            child: RoundedImage(image, width),
+            child: RoundedImage(
+              image: image,
+              width: width,
+              ratio: Constants.posterAspectRatio,
+            ),
           ),
           if (showTitle == true)
             Text(

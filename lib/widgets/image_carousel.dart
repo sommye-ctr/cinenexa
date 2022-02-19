@@ -36,7 +36,7 @@ class _ImageCarouselState<T> extends State<ImageCarousel<T>> {
                     Constants.backdropAspectRatio) +
                 ScreenSize.getPercentOfHeight(
                   context,
-                  0.025,
+                  0.03,
                 ),
             child: PageView.builder(
               itemCount: _length,
@@ -54,11 +54,9 @@ class _ImageCarouselState<T> extends State<ImageCarousel<T>> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       RoundedImage(
-                        Utils.getBackdropUrl(imageUrl),
-                        ScreenSize.getPercentOfWidth(
-                          context,
-                          1,
-                        ),
+                        image: Utils.getBackdropUrl(imageUrl),
+                        width: ScreenSize.getPercentOfWidth(context, 1),
+                        ratio: Constants.backdropAspectRatio,
                       ),
                       Text(
                         name,
