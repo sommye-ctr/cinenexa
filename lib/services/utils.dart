@@ -1,52 +1,11 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:watrix/models/base_model.dart';
 import 'package:watrix/models/sort_movies.dart';
+import 'package:watrix/models/sort_tv.dart';
+import 'package:watrix/resources/strings.dart';
 import 'package:watrix/services/constants.dart';
 
-import '../models/movie.dart';
-import '../models/people.dart';
-import '../models/tv.dart';
-
 class Utils {
-  static String getItemPoster<T>(T item) {
-    String url;
-    if (item is Movie) {
-      url = (item).posterPath;
-    } else if (item is Tv) {
-      url = (item).posterPath;
-    } else if (item is People) {
-      url = (item).profilePath;
-    } else {
-      throw new FlutterError("The type is unidentified!");
-    }
-    return url;
-  }
-
-  static String getItemBackdrop<T>(T item) {
-    String url;
-    if (item is Movie) {
-      url = (item).backdropPath;
-    } else if (item is Tv) {
-      url = (item).backdropPath;
-    } else {
-      throw new FlutterError("The type is unidentified!");
-    }
-    return url;
-  }
-
-  static String getItemName<T>(T item) {
-    String name;
-    if (item is Movie) {
-      name = (item).title;
-    } else if (item is Tv) {
-      name = (item).name;
-    } else if (item is People) {
-      name = (item).name;
-    } else {
-      throw new FlutterError("The type is unidentified.");
-    }
-    return name;
-  }
-
   static String getPosterUrl(String url) {
     return "${Constants.imageBaseUrl}${Constants.posterSize}${url}";
   }
@@ -66,18 +25,51 @@ class Utils {
     }
   }
 
-  static List<Movie> convertToListString(var parsedList) {
-    return (parsedList as List).map((e) => Movie.fromMap(e)).toList();
+  static String getSortTvBy(SortTvBy sortTvBy) {
+    switch (sortTvBy) {
+      case SortTvBy.popularity:
+        return "popularity.desc";
+      case SortTvBy.firstAirDate:
+        return "first_air_date.desc";
+      case SortTvBy.voteAverage:
+        return "vote_average.desc";
+    }
   }
 
-  static List<Movie> convertToListStringWithSkipLimit(
+  static String getEntityTypeBy(BaseModelType baseModelType) {
+    switch (baseModelType) {
+      case BaseModelType.movie:
+        return Strings.movie;
+      case BaseModelType.people:
+        return Strings.actor;
+      case BaseModelType.tv:
+        return Strings.tvShow;
+    }
+  }
+
+  static Color getColorByEntity(BaseModelType baseModelType) {
+    switch (baseModelType) {
+      case BaseModelType.movie:
+        return Colors.green;
+      case BaseModelType.people:
+        return Colors.amber;
+      case BaseModelType.tv:
+        return Colors.cyan;
+    }
+  }
+
+  static List<BaseModel> convertToListString(var parsedList) {
+    return (parsedList as List).map((e) => BaseModel.fromMap(e)).toList();
+  }
+
+  static List<BaseModel> convertToListStringWithSkipLimit(
       var parsedList, int limit, int skip) {
     return (parsedList as List)
         .sublist(
           skip,
           limit,
         )
-        .map((e) => Movie.fromMap(e))
+        .map((e) => BaseModel.fromMap(e))
         .toList();
   }
 }

@@ -1,17 +1,17 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
-import 'package:watrix/models/movie.dart';
-import 'package:watrix/models/people.dart';
+import 'package:watrix/models/base_model.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/screens/filter_page.dart';
+import 'package:watrix/services/duration_type.dart';
+import 'package:watrix/services/entity_type.dart';
 import 'package:watrix/services/requests.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/widgets/bottom_nav_bar.dart';
 import 'package:watrix/widgets/horizontal_list.dart';
 import 'package:watrix/widgets/image_carousel.dart';
 
-import '../models/tv.dart';
 import '../services/constants.dart';
 import '../widgets/movie_tile.dart';
 
@@ -27,10 +27,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   int _selectedIndex = 0;
   bool _isFilterApplied = false;
 
+  List<BaseModel> filterMovies = List.empty();
+  List<BaseModel> filterTv = List.empty();
+  int movieFilterPage = 1, tvFilterPage = 1;
+
   late final Widget defaultMovies = Column(
     children: [
-      HorizontalList<Movie>(
-        future: Requests.moviesFuture(Requests.dailyTrendingMovies),
+      HorizontalList(
+        future: Requests.titlesFuture(
+            Requests.trending(EntityType.movie, DurationType.day)),
         heading: "Trending Today",
         onClick: () {},
         itemWidthPercent: 0.3,
@@ -42,8 +47,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           0.02,
         ),
       ),
-      HorizontalList<Movie>(
-        future: Requests.moviesFuture(Requests.topRatedMovies),
+      HorizontalList(
+        future: Requests.titlesFuture(Requests.topRated(EntityType.movie)),
         heading: "Top Rated",
         onClick: () {},
         itemWidthPercent: 0.3,
@@ -55,8 +60,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           0.02,
         ),
       ),
-      HorizontalList<Movie>(
-        future: Requests.moviesFuture(Requests.popularMovies),
+      HorizontalList(
+        future: Requests.titlesFuture(Requests.popular(EntityType.movie)),
         heading: "Popular",
         onClick: () {},
         itemWidthPercent: 0.3,
@@ -68,11 +73,69 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           0.02,
         ),
       ),
-      HorizontalList<Movie>(
-        future: Requests.moviesFuture(
-          Requests.weeklyTrendingMovies,
+      HorizontalList(
+        future: Requests.titlesFuture(
+          Requests.trending(EntityType.movie, DurationType.week),
           skip: true,
         ),
+        heading: "Trending this Week",
+        onClick: () {},
+        itemWidthPercent: 0.3,
+        showTitle: true,
+      ),
+      SizedBox(
+        height: ScreenSize.getPercentOfHeight(
+          context,
+          0.02,
+        ),
+      ),
+    ],
+  );
+  late Widget defaultTv = Column(
+    children: [
+      HorizontalList(
+        future: Requests.titlesFuture(
+            Requests.trending(EntityType.tv, DurationType.day)),
+        heading: "Trending Today",
+        onClick: () {},
+        itemWidthPercent: 0.3,
+        showTitle: true,
+      ),
+      SizedBox(
+        height: ScreenSize.getPercentOfHeight(
+          context,
+          0.02,
+        ),
+      ),
+      HorizontalList(
+        future: Requests.titlesFuture(Requests.topRated(EntityType.tv)),
+        heading: "Top Rated",
+        onClick: () {},
+        itemWidthPercent: 0.3,
+        showTitle: true,
+      ),
+      SizedBox(
+        height: ScreenSize.getPercentOfHeight(
+          context,
+          0.02,
+        ),
+      ),
+      HorizontalList(
+        future: Requests.titlesFuture(Requests.popular(EntityType.tv)),
+        heading: "Popular",
+        onClick: () {},
+        itemWidthPercent: 0.3,
+        showTitle: true,
+      ),
+      SizedBox(
+        height: ScreenSize.getPercentOfHeight(
+          context,
+          0.02,
+        ),
+      ),
+      HorizontalList(
+        future: Requests.titlesFuture(
+            Requests.trending(EntityType.tv, DurationType.week)),
         heading: "Trending this Week",
         onClick: () {},
         itemWidthPercent: 0.3,
@@ -89,9 +152,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   late Widget featured = Column(
     children: [
-      ImageCarousel<Movie>(
-        Requests.moviesFuture(
-          Requests.dailyTrendingMovies,
+      ImageCarousel(
+        Requests.titlesFuture(
+          Requests.trending(EntityType.all, DurationType.day),
           limit: 5,
         ),
         onPageChanged: (page, home) {},
@@ -102,8 +165,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           0.02,
         ),
       ),
-      HorizontalList<Movie>(
-        future: Requests.moviesFuture(Requests.popularMovies),
+      HorizontalList(
+        future: Requests.titlesFuture(Requests.popular(EntityType.movie)),
         heading: "Popular Movies",
         onClick: () {},
         itemWidthPercent: 0.3,
@@ -115,8 +178,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           0.02,
         ),
       ),
-      HorizontalList<Tv>(
-        future: Requests.tvFuture(Requests.popularTv),
+      HorizontalList(
+        future: Requests.titlesFuture(Requests.popular(EntityType.tv)),
         heading: "Popular TV Shows",
         onClick: () {},
         itemWidthPercent: 0.3,
@@ -128,8 +191,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           0.02,
         ),
       ),
-      HorizontalList<People>(
-        future: Requests.peopleFuture(Requests.popularPerson),
+      HorizontalList(
+        future: Requests.titlesFuture(Requests.popular(EntityType.people)),
         heading: "Popular Actors",
         onClick: () {},
         itemWidthPercent: 0.3,
@@ -141,9 +204,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           0.02,
         ),
       ),
-      HorizontalList<Movie>(
-        future: Requests.moviesFuture(
-          Requests.weeklyTrendingMovies,
+      HorizontalList(
+        future: Requests.titlesFuture(
+          Requests.trending(EntityType.movie, DurationType.week),
           skip: true,
         ),
         heading: "Weekly Trending Movies",
@@ -157,9 +220,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           0.02,
         ),
       ),
-      HorizontalList<Tv>(
-        future: Requests.tvFuture(
-          Requests.weeklyTrendingTv,
+      HorizontalList(
+        future: Requests.titlesFuture(
+          Requests.trending(EntityType.tv, DurationType.week),
           skip: true,
         ),
         heading: "Weekly Trending TV Shows",
@@ -176,62 +239,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     ],
   );
   late Widget movies = defaultMovies;
-  late Widget tv = Column(
-    children: [
-      HorizontalList<Tv>(
-        future: Requests.tvFuture(Requests.dailyTrendingTv),
-        heading: "Trending Today",
-        onClick: () {},
-        itemWidthPercent: 0.3,
-        showTitle: true,
-      ),
-      SizedBox(
-        height: ScreenSize.getPercentOfHeight(
-          context,
-          0.02,
-        ),
-      ),
-      HorizontalList<Tv>(
-        future: Requests.tvFuture(Requests.topRatedTv),
-        heading: "Top Rated",
-        onClick: () {},
-        itemWidthPercent: 0.3,
-        showTitle: true,
-      ),
-      SizedBox(
-        height: ScreenSize.getPercentOfHeight(
-          context,
-          0.02,
-        ),
-      ),
-      HorizontalList<Tv>(
-        future: Requests.tvFuture(Requests.popularTv),
-        heading: "Popular",
-        onClick: () {},
-        itemWidthPercent: 0.3,
-        showTitle: true,
-      ),
-      SizedBox(
-        height: ScreenSize.getPercentOfHeight(
-          context,
-          0.02,
-        ),
-      ),
-      HorizontalList<Tv>(
-        future: Requests.tvFuture(Requests.weeklyTrendingTv),
-        heading: "Trending this Week",
-        onClick: () {},
-        itemWidthPercent: 0.3,
-        showTitle: true,
-      ),
-      SizedBox(
-        height: ScreenSize.getPercentOfHeight(
-          context,
-          0.02,
-        ),
-      ),
-    ],
-  );
+  late Widget tv = defaultTv;
   late Widget myList = Column();
 
   @override
@@ -331,53 +339,114 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         borderRadius: BorderRadius.circular(16),
       ),
       builder: (context) {
+        EntityType type;
+        if (_selectedIndex == 1) {
+          type = EntityType.movie;
+        } else if (_selectedIndex == 2) {
+          type = EntityType.tv;
+        } else {
+          throw FlutterError(
+              "The bottom sheet index is not same as movies or tv shows");
+        }
         return FractionallySizedBox(
           heightFactor: 0.8,
-          child: FilterPage(),
+          child: FilterPage(
+            type: type,
+          ),
         );
       },
-    ).then(onBottomSheetFilterChanged);
+    ).then(onFilterChanged);
   }
 
-  void onBottomSheetFilterChanged(value) async {
+  void onFilterChanged(value) {
     if (value != null) {
+      fetch(value);
       setState(() {
         _isFilterApplied = true;
-        movies = FutureBuilder<List<Movie>>(
-            future: Requests.discoverMovie(value),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done &&
-                  snapshot.hasData) {
-                return GridView.builder(
-                  shrinkWrap: true,
-                  itemCount: snapshot.data!.length,
-                  physics: BouncingScrollPhysics(),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    childAspectRatio: Style.movieTileWithTitleRatio,
-                  ),
-                  itemBuilder: (context, index) {
-                    return MovieTile(
-                      image:
-                          "${Constants.imageBaseUrl}${Constants.posterSize}${snapshot.data![index].posterPath}",
-                      width: ScreenSize.getPercentOfWidth(
-                        context,
-                        0.29,
-                      ),
-                      showTitle: true,
-                      text: snapshot.data![index].title,
-                    );
-                  },
-                );
-              }
-              return Container();
-            });
+        setFilteredItems(value);
       });
+
       return;
     }
     setState(() {
-      movies = defaultMovies;
       _isFilterApplied = false;
+
+      if (_selectedIndex == 1) {
+        movies = defaultMovies;
+        movieFilterPage = 1;
+        filterMovies.clear();
+      } else if (_selectedIndex == 2) {
+        tv = defaultTv;
+        tvFilterPage = 1;
+        filterTv.clear();
+      }
     });
+  }
+
+  void fetch(value) async {
+    List<BaseModel> list = await Requests.discoverFuture(
+        type: _selectedIndex == 1 ? EntityType.movie : EntityType.tv,
+        query: value,
+        page: _selectedIndex == 1 ? movieFilterPage : tvFilterPage);
+    setState(() {
+      if (_selectedIndex == 1) {
+        filterMovies = [
+          ...filterMovies,
+        ];
+        filterMovies.addAll(list);
+      } else if (_selectedIndex == 2) {
+        filterTv = [...filterTv];
+        filterTv.addAll(list);
+      }
+      setFilteredItems(value);
+    });
+  }
+
+  void setFilteredItems(String value) {
+    if (_selectedIndex == 1) {
+      movies = GridView.builder(
+        shrinkWrap: true,
+        itemCount: filterMovies.length,
+        physics: BouncingScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          childAspectRatio: Style.movieTileWithTitleRatio,
+        ),
+        itemBuilder: (context, index) {
+          return MovieTile(
+            image:
+                "${Constants.imageBaseUrl}${Constants.posterSize}${filterMovies[index].posterPath}",
+            width: ScreenSize.getPercentOfWidth(
+              context,
+              0.29,
+            ),
+            showTitle: true,
+            text: filterMovies[index].title!,
+          );
+        },
+      );
+    } else if (_selectedIndex == 2) {
+      tv = GridView.builder(
+        shrinkWrap: true,
+        itemCount: filterTv.length,
+        physics: BouncingScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          childAspectRatio: Style.movieTileWithTitleRatio,
+        ),
+        itemBuilder: (context, index) {
+          return MovieTile(
+            image:
+                "${Constants.imageBaseUrl}${Constants.posterSize}${filterTv[index].posterPath}",
+            width: ScreenSize.getPercentOfWidth(
+              context,
+              0.29,
+            ),
+            showTitle: true,
+            text: filterTv[index].title!,
+          );
+        },
+      );
+    }
   }
 }

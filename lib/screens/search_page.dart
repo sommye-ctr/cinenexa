@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:watrix/models/movie.dart';
+import 'package:watrix/models/base_model.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/services/constants.dart';
+import 'package:watrix/services/entity_type.dart';
 import 'package:watrix/services/requests.dart';
 import 'package:watrix/services/utils.dart';
 import 'package:watrix/utils/screen_size.dart';
@@ -16,16 +17,20 @@ class SearchPage extends StatefulWidget {
   State<SearchPage> createState() => _SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> {
+class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   String _searchTerm = "";
-  Future<List<Movie>> future = Requests.moviesFuture(Requests.popularMovies);
+  Future<List<BaseModel>> future =
+      Requests.titlesFuture(Requests.popular(EntityType.movie));
   bool _isSearchDone = false;
   late TextEditingController _textEditingController;
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     _textEditingController = TextEditingController();
+    _tabController = TabController(length: 4, vsync: this);
+    _tabController.addListener(onSearchTypeChanged);
   }
 
   @override
@@ -34,7 +39,7 @@ class _SearchPageState extends State<SearchPage> {
       onWillPop: () {
         if (_isSearchDone) {
           setState(() {
-            future = Requests.moviesFuture(Requests.popularMovies);
+            future = Requests.titlesFuture(Requests.popular(EntityType.movie));
             _isSearchDone = false;
             _textEditingController.clear();
           });
@@ -74,18 +79,14 @@ class _SearchPageState extends State<SearchPage> {
                 textCapitalization: TextCapitalization.words,
               ),
             ),
-            SizedBox(
-              height: ScreenSize.getPercentOfHeight(context, 0.02),
-            ),
-            if (!_isSearchDone)
-              Text(
-                Strings.frequentSearch,
-                style: Style.headingStyle,
-              ),
             if (!_isSearchDone)
               SizedBox(
                 height: ScreenSize.getPercentOfHeight(context, 0.02),
               ),
+            getHeading(),
+            SizedBox(
+              height: ScreenSize.getPercentOfHeight(context, 0.02),
+            ),
             FutureBuilder(
               builder: futureBuilder,
               future: future,
@@ -99,6 +100,60 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
+  Widget getHeading() {
+    if (!_isSearchDone)
+      return Text(
+        Strings.frequentSearch,
+        style: Style.headingStyle,
+      );
+    return DefaultTabController(
+      length: 4,
+      child: TabBar(
+        labelColor: Colors.black,
+        unselectedLabelColor: Colors.grey,
+        indicatorColor: Colors.transparent,
+        isScrollable: true,
+        controller: _tabController,
+        tabs: [
+          Tab(
+            text: Strings.all,
+          ),
+          Tab(
+            text: Strings.movies,
+          ),
+          Tab(
+            text: Strings.tvShows,
+          ),
+          Tab(
+            text: Strings.actor,
+          ),
+        ],
+      ),
+    );
+  }
+
+  void onSearchTypeChanged() {
+    setState(() {
+      _isSearchDone = true;
+      String base = "";
+      switch (_tabController.index) {
+        case 0:
+          base = Requests.search(EntityType.all);
+          break;
+        case 1:
+          base = Requests.search(EntityType.movie);
+          break;
+        case 2:
+          base = Requests.search(EntityType.tv);
+          break;
+        case 3:
+          base = Requests.search(EntityType.people);
+          break;
+      }
+      future = Requests.searchFuture(_searchTerm, base);
+    });
+  }
+
   void onSearchTermChanged(String value) {
     setState(() {
       _searchTerm = value;
@@ -108,12 +163,13 @@ class _SearchPageState extends State<SearchPage> {
   void onSearhClicked() {
     setState(() {
       _isSearchDone = true;
-      future = Requests.searchMovie(_searchTerm);
+      future =
+          Requests.searchFuture(_searchTerm, Requests.search(EntityType.all));
     });
   }
 
   Widget futureBuilder(
-      BuildContext context, AsyncSnapshot<List<Movie>> snapshot) {
+      BuildContext context, AsyncSnapshot<List<BaseModel>> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
       if (_isSearchDone) {
         return Flexible(
@@ -121,13 +177,18 @@ class _SearchPageState extends State<SearchPage> {
             physics: BouncingScrollPhysics(),
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
-              Movie movie = snapshot.data![index];
+              BaseModel baseModel = snapshot.data![index];
+              if (baseModel.type == BaseModelType.people) {}
               return SearchResultTile(
-                image: Utils.getPosterUrl(movie.posterPath),
-                year: movie.releaseDate,
-                overview: movie.overView,
-                title: movie.title,
-                vote: movie.voteAverage,
+                image: Utils.getPosterUrl(baseModel.posterPath ?? ""),
+                year: baseModel.releaseDate ?? "",
+                overview: baseModel.overview ?? "",
+                title: baseModel.title ?? "",
+                type: Utils.getEntityTypeBy(baseModel.type!),
+                typeColor: Utils.getColorByEntity(baseModel.type!),
+                vote: baseModel.type == BaseModelType.people
+                    ? 0
+                    : baseModel.voteAverage!,
               );
             },
           ),
@@ -138,7 +199,7 @@ class _SearchPageState extends State<SearchPage> {
     return Container();
   }
 
-  Widget frequentSearch(AsyncSnapshot<List<Movie>> snapshot) {
+  Widget frequentSearch(AsyncSnapshot<List<BaseModel>> snapshot) {
     return Expanded(
       child: GridView.builder(
         shrinkWrap: true,
@@ -157,7 +218,7 @@ class _SearchPageState extends State<SearchPage> {
               0.29,
             ),
             showTitle: true,
-            text: snapshot.data![index].title,
+            text: snapshot.data![index].title!,
           );
         },
       ),

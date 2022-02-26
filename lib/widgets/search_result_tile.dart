@@ -5,8 +5,9 @@ import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/widgets/rounded_image.dart';
 
 class SearchResultTile extends StatelessWidget {
-  final String image, year, overview, title;
+  final String image, year, overview, title, type;
   final double vote;
+  final Color? typeColor;
   const SearchResultTile({
     Key? key,
     required this.image,
@@ -14,25 +15,27 @@ class SearchResultTile extends StatelessWidget {
     required this.overview,
     required this.title,
     required this.vote,
+    required this.type,
+    this.typeColor,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: ScreenSize.getPercentOfWidth(context, 0.8),
-      height: ScreenSize.getPercentOfWidth(context, 0.2) /
+      height: ScreenSize.getPercentOfWidth(context, 0.22) /
           Constants.posterAspectRatio,
       child: Card(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(8),
         ),
-        elevation: 16,
+        elevation: 0,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             RoundedImage(
               image: Utils.getPosterUrl(image),
-              width: ScreenSize.getPercentOfWidth(context, 0.25),
+              width: ScreenSize.getPercentOfWidth(context, 0.22),
               ratio: Constants.posterAspectRatio,
             ),
             Expanded(
@@ -47,6 +50,7 @@ class SearchResultTile extends StatelessWidget {
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             Text(
                               title,
@@ -59,6 +63,22 @@ class SearchResultTile extends StatelessWidget {
                               "($year)",
                               style: TextStyle(
                                 fontSize: 12,
+                              ),
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                color: typeColor,
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(2),
+                                child: Text(
+                                  "$type",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                  ),
+                                ),
                               ),
                             ),
                           ],
@@ -74,7 +94,8 @@ class SearchResultTile extends StatelessWidget {
                             alignment: Alignment.center,
                             children: [
                               CircularProgressIndicator(
-                                value: vote / 10,
+                                value: double.parse(
+                                    (vote / 10).toStringAsFixed(1)),
                                 strokeWidth: 2,
                                 backgroundColor: Colors.grey,
                               ),

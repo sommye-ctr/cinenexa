@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:watrix/models/sort_movies.dart';
+import 'package:watrix/models/sort_tv.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
+import 'package:watrix/services/entity_type.dart';
 import 'package:watrix/services/requests.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/widgets/custom_checkbox_list.dart';
@@ -12,11 +14,17 @@ import '../models/genre.dart';
 class FilterPage extends StatelessWidget {
   String? certification;
   SortMoviesBy? sortMoviesBy;
+  SortTvBy? sortTvBy;
   DateTimeRange? releaseDateRange;
   RangeValues? voteAverage;
   List<Genre> genres = [];
 
-  FilterPage({Key? key}) : super(key: key);
+  final EntityType type;
+
+  FilterPage({
+    Key? key,
+    required this.type,
+  }) : super(key: key);
 
   Widget certificationBuild(
       BuildContext context, AsyncSnapshot<List<String>> snapshot) {
@@ -58,13 +66,14 @@ class FilterPage extends StatelessWidget {
 
   Future? generateDiscoverRequest() {
     if (certification == null &&
-        sortMoviesBy == null &&
+        (sortMoviesBy == null && sortTvBy == null) &&
         releaseDateRange == null &&
         voteAverage == null &&
         genres.isEmpty) {
       return null;
     }
-    return Requests.getDiscoverQueries(
+    return Requests.discover(
+      type: type,
       certification: certification,
       releaseDateLessThan: releaseDateRange?.end,
       releaseDateMoreThan: releaseDateRange?.start,
@@ -108,36 +117,55 @@ class FilterPage extends StatelessWidget {
                 type: CheckBoxListType.list,
                 singleSelect: true,
                 onSelectionChanged: (values) {
-                  switch (values.first) {
-                    case Strings.popularity:
-                      sortMoviesBy = SortMoviesBy.popularity;
-                      break;
-                    case Strings.voteAverage:
-                      sortMoviesBy = SortMoviesBy.voteAverage;
-                      break;
-                    case Strings.releaseDate:
-                      sortMoviesBy = SortMoviesBy.releaseDate;
-                      break;
-                  } // as it is single select only 1 item will be there
+                  if (type == EntityType.movie) {
+                    switch (values.first) {
+                      case Strings.popularity:
+                        sortMoviesBy = SortMoviesBy.popularity;
+                        break;
+                      case Strings.voteAverage:
+                        sortMoviesBy = SortMoviesBy.voteAverage;
+                        break;
+                      case Strings.releaseDate:
+                        sortMoviesBy = SortMoviesBy.releaseDate;
+                        break;
+                    } // as it is single select only 1 item will be there
+                  } else if (type == EntityType.tv) {
+                    switch (values.first) {
+                      case Strings.popularity:
+                        sortTvBy = SortTvBy.popularity;
+                        break;
+                      case Strings.voteAverage:
+                        sortTvBy = SortTvBy.voteAverage;
+                        break;
+                      case Strings.airDate:
+                        sortTvBy = SortTvBy.firstAirDate;
+                        break;
+                    } // as it is single select only 1 item will be there
+                  }
                 },
                 children: [
                   Strings.popularity,
                   Strings.voteAverage,
-                  Strings.releaseDate,
+                  type == EntityType.movie
+                      ? Strings.releaseDate
+                      : Strings.airDate,
                 ],
               ),
               Divider(),
-              Text(
-                Strings.certification,
-                style: Style.headingStyle,
-              ),
-              SizedBox(
-                height: ScreenSize.getPercentOfHeight(context, 0.01),
-              ),
-              FutureBuilder<List<String>>(
-                future: Requests.certificationsFuture(Requests.certifications),
-                builder: certificationBuild,
-              ),
+              if (type == EntityType.movie) ...[
+                Text(
+                  Strings.certification,
+                  style: Style.headingStyle,
+                ),
+                SizedBox(
+                  height: ScreenSize.getPercentOfHeight(context, 0.01),
+                ),
+                FutureBuilder<List<String>>(
+                  future: Requests.certificationsFuture(
+                      Requests.certifications(type)),
+                  builder: certificationBuild,
+                ),
+              ],
               Divider(),
               Text(
                 Strings.voteAverage,
@@ -184,7 +212,7 @@ class FilterPage extends StatelessWidget {
                 height: ScreenSize.getPercentOfHeight(context, 0.01),
               ),
               FutureBuilder<List<Genre>>(
-                future: Requests.genreFuture(Requests.movieGenre),
+                future: Requests.genreFuture(Requests.genres(type)),
                 builder: genreBuildGrid,
               ),
               SizedBox(

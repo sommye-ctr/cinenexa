@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:watrix/models/base_model.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/services/constants.dart';
 import 'package:watrix/services/utils.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/widgets/movie_tile.dart';
 
-class HorizontalList<T> extends StatelessWidget {
-  final Future<List<T>> future;
+class HorizontalList extends StatelessWidget {
+  final Future<List<BaseModel>> future;
   final String heading;
   final Function() onClick;
   final double itemWidthPercent;
@@ -22,7 +23,7 @@ class HorizontalList<T> extends StatelessWidget {
   }) : super(key: key);
 
   Widget handleListBuilder(
-      BuildContext context, AsyncSnapshot<List<T>> snapshot) {
+      BuildContext context, AsyncSnapshot<List<BaseModel>> snapshot) {
     if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
       return Container(
         height: ScreenSize.getPercentOfWidth(context, itemWidthPercent) /
@@ -42,13 +43,11 @@ class HorizontalList<T> extends StatelessWidget {
             },
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
-              T item = snapshot.data![index];
-              String url = Utils.getItemPoster(item);
-              String name = Utils.getItemName(item);
+              BaseModel item = snapshot.data![index];
 
               return MovieTile(
-                image: Utils.getPosterUrl(url),
-                text: name,
+                image: Utils.getPosterUrl(item.posterPath!),
+                text: item.title!,
                 width: ScreenSize.getPercentOfWidth(context, itemWidthPercent),
                 showTitle: showTitle,
               );
@@ -70,7 +69,7 @@ class HorizontalList<T> extends StatelessWidget {
         SizedBox(
           height: 4,
         ),
-        FutureBuilder<List<T>>(
+        FutureBuilder<List<BaseModel>>(
           future: future,
           builder: handleListBuilder,
         ),

@@ -36,6 +36,7 @@ class MovieTile extends StatelessWidget {
               text,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
             ),
         ],
       ),

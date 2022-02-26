@@ -10,6 +10,8 @@ class Tv {
   String overview;
   String firstAirDate;
   List<int> genreIds;
+  double voteAverage;
+
   Tv({
     required this.name,
     required this.id,
@@ -18,6 +20,7 @@ class Tv {
     required this.overview,
     required this.firstAirDate,
     required this.genreIds,
+    required this.voteAverage,
   });
 
   Tv copyWith({
@@ -28,6 +31,7 @@ class Tv {
     String? overview,
     String? firstAirDate,
     List<int>? genreIds,
+    double? voteAverage,
   }) {
     return Tv(
       name: name ?? this.name,
@@ -37,6 +41,7 @@ class Tv {
       overview: overview ?? this.overview,
       firstAirDate: firstAirDate ?? this.firstAirDate,
       genreIds: genreIds ?? this.genreIds,
+      voteAverage: voteAverage ?? this.voteAverage,
     );
   }
 
@@ -44,11 +49,12 @@ class Tv {
     return {
       'name': name,
       'id': id,
-      'posterPath': posterPath,
-      'backdropPath': backdropPath,
+      'poster_path': posterPath,
+      'backdrop_path': backdropPath,
       'overview': overview,
-      'firstAirDate': firstAirDate,
-      'genreIds': genreIds,
+      'first_air_date': firstAirDate,
+      'genre_ids': genreIds,
+      'vote_average': voteAverage,
     };
   }
 
@@ -60,7 +66,8 @@ class Tv {
       backdropPath: map['backdrop_path'] ?? '',
       overview: map['overview'] ?? '',
       firstAirDate: map['first_air_date'] ?? '',
-      genreIds: List<int>.from(map['genre_ids']),
+      genreIds: List<int>.from(map['genreIds']),
+      voteAverage: map['vote_average']?.toDouble() ?? 0.0,
     );
   }
 
@@ -70,7 +77,7 @@ class Tv {
 
   @override
   String toString() {
-    return 'Tv(name: $name, id: $id, posterPath: $posterPath, backdropPath: $backdropPath, overview: $overview, firstAirDate: $firstAirDate, genreIds: $genreIds)';
+    return 'Tv(name: $name, id: $id, posterPath: $posterPath, backdropPath: $backdropPath, overview: $overview, firstAirDate: $firstAirDate, genreIds: $genreIds, voteAverage: $voteAverage)';
   }
 
   @override
@@ -84,7 +91,8 @@ class Tv {
         other.backdropPath == backdropPath &&
         other.overview == overview &&
         other.firstAirDate == firstAirDate &&
-        listEquals(other.genreIds, genreIds);
+        listEquals(other.genreIds, genreIds) &&
+        other.voteAverage == voteAverage;
   }
 
   @override
@@ -95,6 +103,7 @@ class Tv {
         backdropPath.hashCode ^
         overview.hashCode ^
         firstAirDate.hashCode ^
-        genreIds.hashCode;
+        genreIds.hashCode ^
+        voteAverage.hashCode;
   }
 }

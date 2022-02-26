@@ -6,6 +6,10 @@ class Strings {
   static const String search = "Search";
   static const String wishlist = "Wishlist";
   static const String profile = "Profile";
+  static const String movie = "Movie";
+  static const String tvShow = "TV Show";
+  static const String actor = "Actor";
+  static const String all = "All";
 
 //Home
   static const String featured = "Featured";
@@ -21,6 +25,7 @@ class Strings {
   static const String sortBy = "Sort By";
   static const String popularity = "Popularity";
   static const String releaseDate = "Release Date";
+  static const String airDate = "Air Date";
   static const String voteAverage = "Vote Average";
   static const String certification = "Certification";
   static const String year = "Year";

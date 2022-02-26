@@ -10,12 +10,16 @@ class Constants {
   static String movie = "/movie";
   static String tv = "/tv";
   static String person = "/person";
+  static String all = "/all";
+  static String multi = "/multi"; //alternative of all
+
+  static String day = "/day";
+  static String week = "/week";
 
   static String search = "/search";
   static String genre = "/genre";
   static String certification = "/certification";
   static String discover = "/discover";
-
   static String popular = "/popular";
   static String topRated = "/top_rated";
   static String nowPlaying = "/now_playing";

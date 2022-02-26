@@ -1,28 +1,29 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:watrix/models/base_model.dart';
 import 'package:watrix/services/constants.dart';
 import 'package:watrix/services/utils.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/widgets/rounded_image.dart';
 
-class ImageCarousel<T> extends StatefulWidget {
-  final Future<List<T>> future;
-  final Function(int page, T data)? onPageChanged;
+class ImageCarousel extends StatefulWidget {
+  final Future<List<BaseModel>> future;
+  final Function(int page, BaseModel data)? onPageChanged;
   const ImageCarousel(this.future, {Key? key, this.onPageChanged})
       : super(key: key);
 
   @override
-  _ImageCarouselState<T> createState() => _ImageCarouselState<T>();
+  _ImageCarouselState createState() => _ImageCarouselState();
 }
 
-class _ImageCarouselState<T> extends State<ImageCarousel<T>> {
+class _ImageCarouselState extends State<ImageCarousel> {
   int _currentIndex = 0, _length = 0;
   late Timer _timer;
   late PageController _pageController;
-  List<T> _list = [];
+  List<BaseModel> _list = [];
 
   Widget handleListBuilder(
-      BuildContext context, AsyncSnapshot<List<T>> snapshot) {
+      BuildContext context, AsyncSnapshot<List<BaseModel>> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
       _length = snapshot.data!.length;
       _list = snapshot.data!;
@@ -45,21 +46,19 @@ class _ImageCarouselState<T> extends State<ImageCarousel<T>> {
               controller: _pageController,
               onPageChanged: onChanged,
               itemBuilder: (context, index) {
-                String imageUrl = Utils.getItemBackdrop(snapshot.data![index]);
-                String name = Utils.getItemName(snapshot.data![index]);
-
                 return Container(
                   margin: EdgeInsets.all(4),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       RoundedImage(
-                        image: Utils.getBackdropUrl(imageUrl),
+                        image: Utils.getBackdropUrl(
+                            snapshot.data![index].backdropPath!),
                         width: ScreenSize.getPercentOfWidth(context, 1),
                         ratio: Constants.backdropAspectRatio,
                       ),
                       Text(
-                        name,
+                        snapshot.data![index].title!,
                       ),
                     ],
                   ),
@@ -141,7 +140,7 @@ class _ImageCarouselState<T> extends State<ImageCarousel<T>> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<T>>(
+    return FutureBuilder<List<BaseModel>>(
       future: widget.future,
       builder: handleListBuilder,
     );
