@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class CustomRangeSlider extends StatefulWidget {
   final RangeValues values;
+  final double min, max;
   final int? divisions;
   final RangeLabels? labels;
   final Color? activeColor, inactiveColor;
@@ -10,6 +11,8 @@ class CustomRangeSlider extends StatefulWidget {
   CustomRangeSlider({
     Key? key,
     required this.values,
+    required this.min,
+    required this.max,
     this.onChanged,
     this.divisions,
     this.labels,
@@ -37,8 +40,8 @@ class _CustomRangeSliderState extends State<CustomRangeSlider> {
       children: [
         RangeSlider(
           values: RangeValues(_startValue, _endValue),
-          min: widget.values.start,
-          max: widget.values.end,
+          min: widget.min,
+          max: widget.max,
           activeColor: widget.activeColor,
           inactiveColor: widget.inactiveColor,
           labels: widget.labels,

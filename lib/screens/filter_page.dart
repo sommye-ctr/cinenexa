@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:watrix/models/certification.dart';
+import 'package:watrix/models/discover.dart';
 import 'package:watrix/models/sort_movies.dart';
 import 'package:watrix/models/sort_tv.dart';
 import 'package:watrix/resources/strings.dart';
@@ -12,31 +14,46 @@ import 'package:watrix/widgets/custom_rangle_slider.dart';
 import '../models/genre.dart';
 
 class FilterPage extends StatelessWidget {
-  String? certification;
-  SortMoviesBy? sortMoviesBy;
-  SortTvBy? sortTvBy;
-  DateTimeRange? releaseDateRange;
-  RangeValues? voteAverage;
-  List<Genre> genres = [];
+  static const POPULARITY_INDEX = 0;
+  static const VOTE_AVERAGE_INDEX = 1;
+  static const DATE_INDEX = 2;
+  static final DEFAULT_VOTE_AVERAGE = RangeValues(0, 10);
+  static final DEFAULT_YEAR = RangeValues(
+    DateTime.now().year - 100,
+    DateTime.now().year.toDouble(),
+  );
 
+  final Discover discover;
   final EntityType type;
 
   FilterPage({
     Key? key,
     required this.type,
-  }) : super(key: key);
+    Discover? discover,
+  })  : this.discover = discover ?? Discover(),
+        super(key: key);
 
   Widget certificationBuild(
-      BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+      BuildContext context, AsyncSnapshot<List<Certification>> snapshot) {
     if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+      List<String> items = snapshot.data!.map((e) => e.certification).toList();
       return CustomCheckBoxList(
-        children: snapshot.data!.toList(),
+        children: items,
         type: CheckBoxListType.list,
         singleSelect: true,
-        onSelectionChanged: (values) {
-          certification = values.first;
+        selectedItems: getSelectedCertification(items) == null
+            ? null
+            : [
+                getSelectedCertification(items)!,
+              ],
+        tooltips: snapshot.data!.map((e) => e.meaning).toList(),
+        onSelectionAdded: (values) {
+          discover.certification = values.first; //as it is single select
         },
-      ); // TODO Add tooltip to explain the certitification
+        onSelectionRemoved: (values) {
+          discover.certification = null;
+        },
+      );
     }
     return Container();
   }
@@ -47,8 +64,9 @@ class FilterPage extends StatelessWidget {
       return CustomCheckBoxList(
         type: CheckBoxListType.grid,
         children: snapshot.data!.map((e) => e.name).toList(),
+        selectedItems: getSelectedGenres(snapshot.data!),
         onSelectionChanged: (values) {
-          genres
+          discover.genres
             ..clear()
             ..addAll(snapshot.data!
                 .where((element) => values.contains(element.name)));
@@ -64,32 +82,100 @@ class FilterPage extends StatelessWidget {
     return Container();
   }
 
-  Future? generateDiscoverRequest() {
-    if (certification == null &&
-        (sortMoviesBy == null && sortTvBy == null) &&
-        releaseDateRange == null &&
-        voteAverage == null &&
-        genres.isEmpty) {
-      return null;
-    }
-    return Requests.discover(
-      type: type,
-      certification: certification,
-      releaseDateLessThan: releaseDateRange?.end,
-      releaseDateMoreThan: releaseDateRange?.start,
-      voteAverageGreaterThan: voteAverage?.start.toInt(),
-      voteAverageLessThan: voteAverage?.end.toInt(),
-      withGenres: genres,
-      sortMoviesBy: sortMoviesBy,
-    );
-  }
-
   void onSubmitClick(BuildContext context) {
-    Navigator.pop(context, generateDiscoverRequest());
+    if (discover.certification == null &&
+        (discover.sortMoviesBy == null && discover.sortTvBy == null) &&
+        discover.releaseDateRange == null &&
+        discover.voteAverage == null &&
+        discover.genres.isEmpty) {
+      return;
+    }
+    Navigator.pop(context, discover);
   }
 
   void onResetClick(BuildContext context) {
-    Navigator.pop(context);
+    Navigator.pop(context, -1);
+  }
+
+  RangeValues getDefaultYearValues() {
+    if (discover.releaseDateRange != null) {
+      return RangeValues(
+        discover.releaseDateRange!.start.year.toDouble(),
+        discover.releaseDateRange!.end.year.toDouble(),
+      );
+    }
+    return RangeValues(
+      DateTime.now().year - 100,
+      DateTime.now().year.toDouble(),
+    );
+  }
+
+  RangeValues getDefaultVoteAverage() {
+    if (discover.voteAverage != null) {
+      return RangeValues(
+        discover.voteAverage!.start,
+        discover.voteAverage!.end,
+      );
+    }
+    return RangeValues(0, 10);
+  }
+
+  List<int> getSelectedGenres(List<Genre> list) {
+    List<int> indexes = [];
+    for (Genre genre in discover.genres) {
+      if (list.contains(genre)) {
+        indexes.add(list.indexOf(genre));
+      }
+    }
+    return indexes;
+  }
+
+  int? getSelectedCertification(List<String> list) {
+    if (discover.certification != null &&
+        list.contains(discover.certification)) {
+      return list.indexOf(discover.certification!);
+    }
+    return null;
+  }
+
+  int? getSelectedSortBy() {
+    if (type == EntityType.movie) {
+      switch (discover.sortMoviesBy) {
+        case SortMoviesBy.popularity:
+          return POPULARITY_INDEX;
+        case SortMoviesBy.voteAverage:
+          return VOTE_AVERAGE_INDEX;
+        case SortMoviesBy.releaseDate:
+          return DATE_INDEX;
+        default:
+          return null;
+      }
+    } else if (type == EntityType.tv) {
+      switch (discover.sortTvBy) {
+        case SortTvBy.popularity:
+          return POPULARITY_INDEX;
+        case SortTvBy.voteAverage:
+          return VOTE_AVERAGE_INDEX;
+        case SortTvBy.firstAirDate:
+          return DATE_INDEX;
+        default:
+          return null;
+      }
+    }
+    return null;
+  }
+
+  int? getIndexOfSelectedSort() {
+    switch (discover.sortMoviesBy) {
+      case SortMoviesBy.popularity:
+        return POPULARITY_INDEX;
+      case SortMoviesBy.voteAverage:
+        return VOTE_AVERAGE_INDEX;
+      case SortMoviesBy.releaseDate:
+        return DATE_INDEX;
+      default:
+        return null;
+    }
   }
 
   @override
@@ -116,33 +202,8 @@ class FilterPage extends StatelessWidget {
               CustomCheckBoxList(
                 type: CheckBoxListType.list,
                 singleSelect: true,
-                onSelectionChanged: (values) {
-                  if (type == EntityType.movie) {
-                    switch (values.first) {
-                      case Strings.popularity:
-                        sortMoviesBy = SortMoviesBy.popularity;
-                        break;
-                      case Strings.voteAverage:
-                        sortMoviesBy = SortMoviesBy.voteAverage;
-                        break;
-                      case Strings.releaseDate:
-                        sortMoviesBy = SortMoviesBy.releaseDate;
-                        break;
-                    } // as it is single select only 1 item will be there
-                  } else if (type == EntityType.tv) {
-                    switch (values.first) {
-                      case Strings.popularity:
-                        sortTvBy = SortTvBy.popularity;
-                        break;
-                      case Strings.voteAverage:
-                        sortTvBy = SortTvBy.voteAverage;
-                        break;
-                      case Strings.airDate:
-                        sortTvBy = SortTvBy.firstAirDate;
-                        break;
-                    } // as it is single select only 1 item will be there
-                  }
-                },
+                selectedItems:
+                    getSelectedSortBy() == null ? null : [getSelectedSortBy()!],
                 children: [
                   Strings.popularity,
                   Strings.voteAverage,
@@ -150,19 +211,69 @@ class FilterPage extends StatelessWidget {
                       ? Strings.releaseDate
                       : Strings.airDate,
                 ],
+                onSelectionAdded: (values) {
+                  if (type == EntityType.movie) {
+                    switch (values.first) {
+                      // as it is single select only 1 item will be there
+                      case Strings.popularity:
+                        discover.sortMoviesBy = SortMoviesBy.popularity;
+                        break;
+                      case Strings.voteAverage:
+                        discover.sortMoviesBy = SortMoviesBy.voteAverage;
+                        break;
+                      case Strings.releaseDate:
+                        discover.sortMoviesBy = SortMoviesBy.releaseDate;
+                        break;
+                    }
+                  } else if (type == EntityType.tv) {
+                    switch (values.first) {
+                      case Strings.popularity:
+                        discover.sortTvBy = SortTvBy.popularity;
+                        break;
+                      case Strings.voteAverage:
+                        discover.sortTvBy = SortTvBy.voteAverage;
+                        break;
+                      case Strings.airDate:
+                        discover.sortTvBy = SortTvBy.firstAirDate;
+                        break;
+                    } // as it is single select only 1 item will be there
+                  }
+                },
+                onSelectionRemoved: (values) {
+                  if (type == EntityType.movie) {
+                    discover.sortMoviesBy = null;
+                  } else if (type == EntityType.tv) {
+                    discover.sortTvBy = null;
+                  }
+                },
+                onSelectionChanged: (values) {},
               ),
               Divider(),
               if (type == EntityType.movie) ...[
-                Text(
-                  Strings.certification,
-                  style: Style.headingStyle,
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: Strings.certification,
+                        style: Style.headingStyle,
+                      ),
+                      TextSpan(
+                        text: " ${Strings.certificationSubtitle}",
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 10,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 SizedBox(
                   height: ScreenSize.getPercentOfHeight(context, 0.01),
                 ),
-                FutureBuilder<List<String>>(
+                FutureBuilder<List<Certification>>(
                   future: Requests.certificationsFuture(
-                      Requests.certifications(type)),
+                    Requests.certifications(type),
+                  ),
                   builder: certificationBuild,
                 ),
               ],
@@ -175,9 +286,11 @@ class FilterPage extends StatelessWidget {
                 height: ScreenSize.getPercentOfHeight(context, 0.01),
               ),
               CustomRangeSlider(
-                values: RangeValues(0, 10),
+                values: getDefaultVoteAverage(),
+                min: DEFAULT_VOTE_AVERAGE.start,
+                max: DEFAULT_VOTE_AVERAGE.end,
                 onChanged: (changedValue) {
-                  voteAverage = changedValue;
+                  discover.voteAverage = changedValue;
                 },
               ),
               Divider(),
@@ -189,12 +302,11 @@ class FilterPage extends StatelessWidget {
                 height: ScreenSize.getPercentOfHeight(context, 0.01),
               ),
               CustomRangeSlider(
-                  values: RangeValues(
-                    DateTime.now().year - 100,
-                    DateTime.now().year.toDouble(),
-                  ),
+                  values: getDefaultYearValues(),
+                  max: DEFAULT_YEAR.end,
+                  min: DEFAULT_YEAR.start,
                   onChanged: (changedValues) {
-                    releaseDateRange = DateTimeRange(
+                    discover.releaseDateRange = DateTimeRange(
                       start: DateTime(
                         changedValues.start.toInt(),
                       ),

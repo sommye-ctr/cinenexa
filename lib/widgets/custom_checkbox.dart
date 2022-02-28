@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class CustomCheckBox extends StatefulWidget {
   final String text;
   final Function()? onSelected;
-  ValueNotifier<bool> controller;
+  final ValueNotifier<bool> controller;
 
   CustomCheckBox({
     Key? key,
@@ -27,9 +27,7 @@ class _CustomCheckBoxState extends State<CustomCheckBox> {
       onTap: () {
         widget.controller.value = !widget.controller.value;
 
-        if (widget.onSelected != null) {
-          widget.onSelected!();
-        }
+        widget.onSelected?.call();
       },
       child: ValueListenableBuilder(
         valueListenable: widget.controller,

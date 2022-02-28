@@ -13,6 +13,12 @@ class CustomCheckBoxList extends StatefulWidget {
   final SliverGridDelegate? delegate;
   final bool singleSelect;
   final Function(List<String> values)? onSelectionChanged;
+  final Function(List<String> values)? onSelectionAdded;
+  final Function(List<String> values)? onSelectionRemoved;
+
+  final List<int>? selectedItems;
+  final List<String>? tooltips;
+
   const CustomCheckBoxList({
     Key? key,
     required this.children,
@@ -20,6 +26,10 @@ class CustomCheckBoxList extends StatefulWidget {
     this.onSelectionChanged,
     this.singleSelect = false,
     this.delegate,
+    this.selectedItems,
+    this.onSelectionAdded,
+    this.onSelectionRemoved,
+    this.tooltips,
   }) : super(key: key);
 
   @override
@@ -54,19 +64,12 @@ class _CustomCheckBoxListState extends State<CustomCheckBoxList> {
             );
           },
           itemBuilder: (BuildContext context, int index) {
-            return CustomCheckBox(
-              text: widget.children[index],
-              controller: notifiers[index],
-              onSelected: () {
-                if (widget.singleSelect) {
-                  clearSelection(index);
-                }
-                selectedItems.add(widget.children[index]);
-                if (widget.onSelectionChanged != null) {
-                  widget.onSelectionChanged!(selectedItems);
-                }
-              },
-            );
+            return widget.tooltips != null
+                ? Tooltip(
+                    message: widget.tooltips?[index],
+                    child: customCheckBox(index),
+                  )
+                : customCheckBox(index);
           },
         ),
       );
@@ -77,29 +80,37 @@ class _CustomCheckBoxListState extends State<CustomCheckBoxList> {
         physics: BouncingScrollPhysics(),
         gridDelegate: widget.delegate!,
         itemBuilder: (context, index) {
-          return CustomCheckBox(
-            text: widget.children[index],
-            onSelected: () {
-              if (widget.singleSelect) {
-                clearSelection(index);
-              }
-              selectedItems.add(widget.children[index]);
-              if (widget.onSelectionChanged != null) {
-                widget.onSelectionChanged!(selectedItems);
-              }
-            },
-          );
+          return widget.tooltips != null
+              ? Tooltip(
+                  message: widget.tooltips?[index],
+                  child: customCheckBox(index),
+                )
+              : customCheckBox(index);
         },
       );
     }
     throw new FlutterError("Unidentified type!");
   }
 
+  CustomCheckBox customCheckBox(int index) {
+    return CustomCheckBox(
+      text: widget.children[index],
+      controller: notifiers[index],
+      onSelected: () {
+        onSelectChanged(index);
+      },
+    );
+  }
+
   List<ValueNotifier<bool>> createNotifiers() {
     List<ValueNotifier<bool>> valueNotifiers = [];
-    // ignore: unused_local_variable
-    for (var ignore in widget.children) {
-      valueNotifiers.add(ValueNotifier(false));
+    for (int i = 0; i < widget.children.length; i++) {
+      bool value = false;
+      if (widget.selectedItems != null && widget.selectedItems!.contains(i)) {
+        value = true;
+        selectedItems.add(widget.children[i]);
+      }
+      valueNotifiers.add(ValueNotifier(value));
     }
     return valueNotifiers;
   }
@@ -110,5 +121,23 @@ class _CustomCheckBoxListState extends State<CustomCheckBoxList> {
         notifiers[i].value = false;
       }
     }
+  }
+
+  void onSelectChanged(int index) {
+    if (widget.singleSelect) {
+      clearSelection(index);
+    }
+    if (!selectedItems.contains(widget.children[index])) {
+      if (widget.singleSelect) {
+        selectedItems.clear();
+      }
+      selectedItems.add(widget.children[index]);
+      widget.onSelectionAdded?.call(selectedItems);
+    } else {
+      selectedItems.remove(widget.children[index]);
+      widget.onSelectionRemoved?.call(selectedItems);
+    }
+
+    widget.onSelectionChanged?.call(selectedItems);
   }
 }

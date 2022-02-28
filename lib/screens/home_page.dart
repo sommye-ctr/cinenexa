@@ -12,6 +12,7 @@ import 'package:watrix/widgets/bottom_nav_bar.dart';
 import 'package:watrix/widgets/horizontal_list.dart';
 import 'package:watrix/widgets/image_carousel.dart';
 
+import '../models/discover.dart';
 import '../services/constants.dart';
 import '../widgets/movie_tile.dart';
 
@@ -25,11 +26,12 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   late TabController _tabController;
   int _selectedIndex = 0;
-  bool _isFilterApplied = false;
 
   List<BaseModel> filterMovies = List.empty();
   List<BaseModel> filterTv = List.empty();
-  int movieFilterPage = 1, tvFilterPage = 1;
+  int _movieFilterPage = 1, _tvFilterPage = 1;
+  bool _isMovieFilterApplied = false, _isTvFilterApplied = false;
+  Discover? _movieDiscover, _tvDiscover;
 
   late final Widget defaultMovies = Column(
     children: [
@@ -315,9 +317,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             child: FloatingActionButton(
               child: Badge(
                 alignment: Alignment.topRight,
-                showBadge: _isFilterApplied,
+                showBadge: isFilterApplied(),
                 child: Icon(
-                  _isFilterApplied
+                  isFilterApplied()
                       ? Icons.filter_alt
                       : Icons.filter_alt_outlined,
                 ),
@@ -329,6 +331,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           ),
       ],
     );
+  }
+
+  bool isFilterApplied() {
+    return (_selectedIndex == 1 && _isMovieFilterApplied) ||
+        (_selectedIndex == 2 && _isTvFilterApplied);
   }
 
   void showBottomSheet(BuildContext context, int index) {
@@ -352,6 +359,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           heightFactor: 0.8,
           child: FilterPage(
             type: type,
+            discover: _selectedIndex == 1 ? _movieDiscover : _tvDiscover,
           ),
         );
       },
@@ -359,44 +367,68 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   void onFilterChanged(value) {
-    if (value != null) {
+    if (value != null && value != -1) {
+      Discover discover = value as Discover;
+      value = Requests.discover(
+        type: _selectedIndex == 1 ? EntityType.movie : EntityType.tv,
+        certification: discover.certification,
+        releaseDateLessThan: discover.releaseDateRange?.end,
+        releaseDateMoreThan: discover.releaseDateRange?.start,
+        voteAverageGreaterThan: discover.voteAverage?.start.toInt(),
+        voteAverageLessThan: discover.voteAverage?.end.toInt(),
+        withGenres: discover.genres,
+        sortMoviesBy: discover.sortMoviesBy,
+        sortTvBy: discover.sortTvBy,
+      );
+
       fetch(value);
-      setState(() {
-        _isFilterApplied = true;
-        setFilteredItems(value);
-      });
+      if (_selectedIndex == 1) {
+        _movieDiscover = discover;
+        movies = Container();
+      } else if (_selectedIndex == 2) {
+        _tvDiscover = discover;
+        tv = Container();
+      }
+      setState(() {});
 
       return;
+    } else if (value == -1) {
+      setState(() {
+        if (_selectedIndex == 1) {
+          movies = defaultMovies;
+          _movieFilterPage = 1;
+          _isMovieFilterApplied = false;
+          _movieDiscover = null;
+          filterMovies.clear();
+        } else if (_selectedIndex == 2) {
+          tv = defaultTv;
+          _tvFilterPage = 1;
+          _isTvFilterApplied = false;
+          _tvDiscover = null;
+          filterTv.clear();
+        }
+      });
     }
-    setState(() {
-      _isFilterApplied = false;
-
-      if (_selectedIndex == 1) {
-        movies = defaultMovies;
-        movieFilterPage = 1;
-        filterMovies.clear();
-      } else if (_selectedIndex == 2) {
-        tv = defaultTv;
-        tvFilterPage = 1;
-        filterTv.clear();
-      }
-    });
   }
 
   void fetch(value) async {
     List<BaseModel> list = await Requests.discoverFuture(
         type: _selectedIndex == 1 ? EntityType.movie : EntityType.tv,
         query: value,
-        page: _selectedIndex == 1 ? movieFilterPage : tvFilterPage);
+        page: _selectedIndex == 1 ? _movieFilterPage : _tvFilterPage);
     setState(() {
       if (_selectedIndex == 1) {
         filterMovies = [
           ...filterMovies,
         ];
+        filterMovies.clear();
         filterMovies.addAll(list);
+        _isMovieFilterApplied = true;
       } else if (_selectedIndex == 2) {
         filterTv = [...filterTv];
+        filterTv.clear();
         filterTv.addAll(list);
+        _isTvFilterApplied = true;
       }
       setFilteredItems(value);
     });

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:watrix/models/certification.dart';
 import 'package:watrix/models/genre.dart';
 import 'package:watrix/models/sort_movies.dart';
 import 'package:watrix/models/sort_tv.dart';
@@ -134,7 +135,7 @@ class Requests {
     return "${Constants.baseUrl}${Constants.search}${stringType}?api_key=${Constants.apiKey}&language=en-US";
   }
 
-  static Future<String> discover({
+  static String discover({
     required EntityType type,
     SortTvBy? sortTvBy,
     SortMoviesBy? sortMoviesBy,
@@ -145,7 +146,7 @@ class Requests {
     int? voteAverageGreaterThan,
     List<Genre>? withGenres,
     String? certification,
-  }) async {
+  }) {
     List<String> queries = ['language=en-US'];
 
     if (type == EntityType.movie && sortMoviesBy != null) {
@@ -224,12 +225,10 @@ class Requests {
     return Utils.convertToListString(parsedList);
   }
 
-  static Future<List<String>> certificationsFuture(String query) async {
+  static Future<List<Certification>> certificationsFuture(String query) async {
     final response = await http.get(Uri.parse(query));
-    var parsedList = json.decode(response.body)['certifications']['US'];
-    return (parsedList as List)
-        .map((e) => e['certification'].toString())
-        .toList();
+    var parsedList = json.decode(response.body)['certifications']['IN'];
+    return (parsedList as List).map((e) => Certification.fromMap(e)).toList();
   }
 
   static Future<List<BaseModel>> discoverFuture({
@@ -245,7 +244,6 @@ class Requests {
 
     final response = await http.get(Uri.parse(request));
     var parsedList = json.decode(response.body)['results'];
-    print(parsedList.toString());
     return Utils.convertToListString(parsedList);
   }
 }
