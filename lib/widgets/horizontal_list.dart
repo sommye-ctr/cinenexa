@@ -9,7 +9,7 @@ import 'package:watrix/widgets/movie_tile.dart';
 class HorizontalList extends StatelessWidget {
   final Future<List<BaseModel>> future;
   final String heading;
-  final Function() onClick;
+  final Function(BaseModel data) onClick;
   final double itemWidthPercent;
   final bool showTitle;
 
@@ -50,6 +50,9 @@ class HorizontalList extends StatelessWidget {
                 text: item.title!,
                 width: ScreenSize.getPercentOfWidth(context, itemWidthPercent),
                 showTitle: showTitle,
+                onClick: () {
+                  onClick(item);
+                },
               );
             }),
       );

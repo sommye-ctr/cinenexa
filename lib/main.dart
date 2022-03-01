@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:watrix/models/base_model.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
+import 'package:watrix/screens/details_page.dart';
 import 'package:watrix/screens/home_page.dart';
 import 'package:watrix/screens/profile_page.dart';
 import 'package:watrix/screens/search_page.dart';
@@ -28,6 +30,15 @@ class _MyAppState extends State<MyApp> {
       theme: Style.themeData,
       darkTheme: Style.darkThemeData(context),
       themeMode: ThemeMode.dark,
+      onGenerateRoute: (settings) {
+        if (settings.name == DetailsPage.routeName) {
+          final value = settings.arguments as BaseModel;
+          return MaterialPageRoute(
+            builder: (context) => DetailsPage(baseModel: value),
+          );
+        }
+        return null;
+      },
       home: Scaffold(
         extendBody: true,
         resizeToAvoidBottomInset: false,

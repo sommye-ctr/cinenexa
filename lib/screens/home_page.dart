@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:watrix/models/base_model.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
+import 'package:watrix/screens/details_page.dart';
 import 'package:watrix/screens/filter_page.dart';
 import 'package:watrix/services/duration_type.dart';
 import 'package:watrix/services/entity_type.dart';
@@ -39,7 +40,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         future: Requests.titlesFuture(
             Requests.trending(EntityType.movie, DurationType.day)),
         heading: "Trending Today",
-        onClick: () {},
+        onClick: (data) => onItemClicked(data),
         itemWidthPercent: 0.3,
         showTitle: true,
       ),
@@ -52,7 +53,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       HorizontalList(
         future: Requests.titlesFuture(Requests.topRated(EntityType.movie)),
         heading: "Top Rated",
-        onClick: () {},
+        onClick: (data) => onItemClicked(data),
         itemWidthPercent: 0.3,
         showTitle: true,
       ),
@@ -65,7 +66,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       HorizontalList(
         future: Requests.titlesFuture(Requests.popular(EntityType.movie)),
         heading: "Popular",
-        onClick: () {},
+        onClick: (data) => onItemClicked(data),
         itemWidthPercent: 0.3,
         showTitle: true,
       ),
@@ -81,7 +82,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           skip: true,
         ),
         heading: "Trending this Week",
-        onClick: () {},
+        onClick: (data) => onItemClicked(data),
         itemWidthPercent: 0.3,
         showTitle: true,
       ),
@@ -99,7 +100,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         future: Requests.titlesFuture(
             Requests.trending(EntityType.tv, DurationType.day)),
         heading: "Trending Today",
-        onClick: () {},
+        onClick: (data) => onItemClicked(data),
         itemWidthPercent: 0.3,
         showTitle: true,
       ),
@@ -112,7 +113,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       HorizontalList(
         future: Requests.titlesFuture(Requests.topRated(EntityType.tv)),
         heading: "Top Rated",
-        onClick: () {},
+        onClick: (data) => onItemClicked(data),
         itemWidthPercent: 0.3,
         showTitle: true,
       ),
@@ -125,7 +126,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       HorizontalList(
         future: Requests.titlesFuture(Requests.popular(EntityType.tv)),
         heading: "Popular",
-        onClick: () {},
+        onClick: (data) => onItemClicked(data),
         itemWidthPercent: 0.3,
         showTitle: true,
       ),
@@ -139,7 +140,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         future: Requests.titlesFuture(
             Requests.trending(EntityType.tv, DurationType.week)),
         heading: "Trending this Week",
-        onClick: () {},
+        onClick: (data) => onItemClicked(data),
         itemWidthPercent: 0.3,
         showTitle: true,
       ),
@@ -170,7 +171,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       HorizontalList(
         future: Requests.titlesFuture(Requests.popular(EntityType.movie)),
         heading: "Popular Movies",
-        onClick: () {},
+        onClick: (data) => onItemClicked(data),
         itemWidthPercent: 0.3,
         showTitle: false,
       ),
@@ -183,7 +184,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       HorizontalList(
         future: Requests.titlesFuture(Requests.popular(EntityType.tv)),
         heading: "Popular TV Shows",
-        onClick: () {},
+        onClick: (data) => onItemClicked(data),
         itemWidthPercent: 0.3,
         showTitle: false,
       ),
@@ -196,7 +197,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       HorizontalList(
         future: Requests.titlesFuture(Requests.popular(EntityType.people)),
         heading: "Popular Actors",
-        onClick: () {},
+        onClick: (data) => onItemClicked(data),
         itemWidthPercent: 0.3,
         showTitle: false,
       ),
@@ -212,7 +213,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           skip: true,
         ),
         heading: "Weekly Trending Movies",
-        onClick: () {},
+        onClick: (data) => onItemClicked(data),
         itemWidthPercent: 0.3,
         showTitle: false,
       ),
@@ -228,7 +229,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           skip: true,
         ),
         heading: "Weekly Trending TV Shows",
-        onClick: () {},
+        onClick: (data) => onItemClicked(data),
         itemWidthPercent: 0.3,
         showTitle: false,
       ),
@@ -330,6 +331,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ),
           ),
       ],
+    );
+  }
+
+  void onItemClicked(BaseModel baseModel) {
+    Navigator.pushNamed(
+      context,
+      DetailsPage.routeName,
+      arguments: baseModel,
     );
   }
 

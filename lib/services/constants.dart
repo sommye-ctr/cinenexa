@@ -7,6 +7,8 @@ class Constants {
   static String posterSize = "/w300";
   static String backdropSize = "/w780";
 
+  static String hdPosterSize = "/w500";
+
   static String movie = "/movie";
   static String tv = "/tv";
   static String person = "/person";

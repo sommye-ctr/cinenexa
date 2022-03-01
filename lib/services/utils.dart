@@ -6,8 +6,8 @@ import 'package:watrix/resources/strings.dart';
 import 'package:watrix/services/constants.dart';
 
 class Utils {
-  static String getPosterUrl(String url) {
-    return "${Constants.imageBaseUrl}${Constants.posterSize}${url}";
+  static String getPosterUrl(String url, {String? posterSize}) {
+    return "${Constants.imageBaseUrl}${posterSize ?? Constants.posterSize}${url}";
   }
 
   static String getBackdropUrl(String url) {

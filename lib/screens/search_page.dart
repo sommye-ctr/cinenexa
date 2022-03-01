@@ -10,6 +10,8 @@ import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/widgets/movie_tile.dart';
 import 'package:watrix/widgets/search_result_tile.dart';
 
+import 'details_page.dart';
+
 class SearchPage extends StatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
 
@@ -189,6 +191,13 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                 vote: baseModel.type == BaseModelType.people
                     ? 0
                     : baseModel.voteAverage!,
+                onClick: () {
+                  Navigator.pushNamed(
+                    context,
+                    DetailsPage.routeName,
+                    arguments: baseModel,
+                  );
+                },
               );
             },
           ),
@@ -219,6 +228,13 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
             ),
             showTitle: true,
             text: snapshot.data![index].title!,
+            onClick: () {
+              Navigator.pushNamed(
+                context,
+                DetailsPage.routeName,
+                arguments: snapshot.data![index],
+              );
+            },
           );
         },
       ),
