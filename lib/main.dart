@@ -6,7 +6,7 @@ import 'package:watrix/screens/details_page.dart';
 import 'package:watrix/screens/home_page.dart';
 import 'package:watrix/screens/profile_page.dart';
 import 'package:watrix/screens/search_page.dart';
-import 'package:watrix/widgets/bottom_nav_bar.dart';
+import 'package:watrix/components/bottom_nav_bar.dart';
 
 void main() {
   runApp(const MyApp());

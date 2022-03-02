@@ -7,8 +7,8 @@ import 'package:watrix/services/entity_type.dart';
 import 'package:watrix/services/requests.dart';
 import 'package:watrix/services/utils.dart';
 import 'package:watrix/utils/screen_size.dart';
-import 'package:watrix/widgets/movie_tile.dart';
-import 'package:watrix/widgets/search_result_tile.dart';
+import 'package:watrix/components/movie_tile.dart';
+import 'package:watrix/components/search_result_tile.dart';
 
 import 'details_page.dart';
 

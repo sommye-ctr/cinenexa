@@ -9,13 +9,13 @@ import 'package:watrix/services/duration_type.dart';
 import 'package:watrix/services/entity_type.dart';
 import 'package:watrix/services/requests.dart';
 import 'package:watrix/utils/screen_size.dart';
-import 'package:watrix/widgets/bottom_nav_bar.dart';
+import 'package:watrix/components/bottom_nav_bar.dart';
 import 'package:watrix/widgets/horizontal_list.dart';
 import 'package:watrix/widgets/image_carousel.dart';
 
 import '../models/discover.dart';
 import '../services/constants.dart';
-import '../widgets/movie_tile.dart';
+import '../components/movie_tile.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);

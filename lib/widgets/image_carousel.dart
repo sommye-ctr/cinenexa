@@ -4,6 +4,7 @@ import 'package:watrix/models/base_model.dart';
 import 'package:watrix/services/constants.dart';
 import 'package:watrix/services/utils.dart';
 import 'package:watrix/utils/screen_size.dart';
+import 'package:watrix/widgets/bubble_page_indicator.dart';
 import 'package:watrix/widgets/rounded_image.dart';
 
 class ImageCarousel extends StatefulWidget {
@@ -66,30 +67,10 @@ class _ImageCarouselState extends State<ImageCarousel> {
               },
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              for (int i = 0; i < snapshot.data!.length; i++)
-                Row(
-                  children: [
-                    AnimatedContainer(
-                      duration: Duration(
-                        seconds: 1,
-                      ),
-                      curve: Curves.decelerate,
-                      height: ScreenSize.getPercentOfWidth(context, 0.025),
-                      width: ScreenSize.getPercentOfWidth(context, 0.025),
-                      decoration: BoxDecoration(
-                        color: i == _currentIndex ? Colors.black : Colors.grey,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    SizedBox(
-                      width: ScreenSize.getPercentOfWidth(context, 0.008),
-                    ),
-                  ],
-                )
-            ],
+          BubblePageIndicator(
+            length: snapshot.data!.length,
+            pageController: _pageController,
+            currentPage: _currentIndex,
           ),
         ],
       );

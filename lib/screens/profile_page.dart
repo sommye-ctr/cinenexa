@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/utils/screen_size.dart';
-import 'package:watrix/widgets/user_profile.dart';
+import 'package:watrix/components/user_profile.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({Key? key}) : super(key: key);
