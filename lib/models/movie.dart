@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
+import 'package:watrix/models/genre.dart';
+
 class Movie {
   String title;
   int id;
@@ -11,6 +13,9 @@ class Movie {
   String releaseDate;
   List<int> genreIds;
   double voteAverage;
+  int? runtime;
+  List<Genre>? genres;
+
   Movie({
     required this.title,
     required this.id,
@@ -20,6 +25,8 @@ class Movie {
     required this.releaseDate,
     required this.genreIds,
     required this.voteAverage,
+    this.runtime,
+    this.genres,
   });
 
   Movie copyWith({
@@ -31,6 +38,8 @@ class Movie {
     String? releaseDate,
     List<int>? genreIds,
     double? voteAverage,
+    int? runtime,
+    List<Genre>? genres,
   }) {
     return Movie(
       title: title ?? this.title,
@@ -41,6 +50,8 @@ class Movie {
       releaseDate: releaseDate ?? this.releaseDate,
       genreIds: genreIds ?? this.genreIds,
       voteAverage: voteAverage ?? this.voteAverage,
+      runtime: runtime ?? this.runtime,
+      genres: genres ?? this.genres,
     );
   }
 
@@ -48,12 +59,14 @@ class Movie {
     return {
       'title': title,
       'id': id,
-      'posterPath': posterPath,
-      'backdropPath': backdropPath,
-      'overView': overView,
-      'releaseDate': releaseDate,
-      'genreIds': genreIds,
+      'poster_path': posterPath,
+      'backdrop_path': backdropPath,
+      'overview': overView,
+      'release_date': releaseDate,
+      'genre_ids': genreIds,
       'vote_average': voteAverage,
+      'runtime': runtime,
+      'genres': genres?.map((x) => x.toMap()).toList(),
     };
   }
 
@@ -65,8 +78,12 @@ class Movie {
       backdropPath: map['backdrop_path'] ?? '',
       overView: map['overview'] ?? '',
       releaseDate: map['release_date'] ?? '',
-      genreIds: List<int>.from(map['genre_ids']),
-      voteAverage: map['vote_average']?.toDouble() ?? 0,
+      genreIds: List<int>.from(map['genre_ids'] ?? []),
+      voteAverage: map['vote_average']?.toDouble() ?? 0.0,
+      runtime: map['runtime']?.toInt(),
+      genres: map['genres'] != null
+          ? List<Genre>.from(map['genres']?.map((x) => Genre.fromMap(x)))
+          : null,
     );
   }
 
@@ -76,7 +93,7 @@ class Movie {
 
   @override
   String toString() {
-    return 'Movie(title: $title, id: $id, posterPath: $posterPath, backdropPath: $backdropPath, overView: $overView, releaseDate: $releaseDate, genreIds: $genreIds, voteAverage: $voteAverage)';
+    return 'Movie(title: $title, id: $id, posterPath: $posterPath, backdropPath: $backdropPath, overView: $overView, releaseDate: $releaseDate, genreIds: $genreIds, voteAverage: $voteAverage, runtime: $runtime, genres: $genres)';
   }
 
   @override
@@ -91,7 +108,9 @@ class Movie {
         other.overView == overView &&
         other.releaseDate == releaseDate &&
         listEquals(other.genreIds, genreIds) &&
-        other.voteAverage == voteAverage;
+        other.voteAverage == voteAverage &&
+        other.runtime == runtime &&
+        listEquals(other.genres, genres);
   }
 
   @override
@@ -103,6 +122,8 @@ class Movie {
         overView.hashCode ^
         releaseDate.hashCode ^
         genreIds.hashCode ^
-        voteAverage.hashCode;
+        voteAverage.hashCode ^
+        runtime.hashCode ^
+        genres.hashCode;
   }
 }

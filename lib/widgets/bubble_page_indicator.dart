@@ -2,28 +2,25 @@ import 'package:flutter/material.dart';
 
 import '../utils/screen_size.dart';
 
-class BubblePageIndicator extends StatefulWidget {
+class BubblePageIndicator extends StatelessWidget {
   final int length;
-  final PageController pageController;
   int currentPage;
+
+  Color? selectedColor;
   BubblePageIndicator({
     Key? key,
     required this.length,
-    required this.pageController,
     required this.currentPage,
+    this.selectedColor = Colors.black,
   }) : super(key: key);
 
-  @override
-  State<BubblePageIndicator> createState() => _BubblePageIndicatorState();
-}
-
-class _BubblePageIndicatorState extends State<BubblePageIndicator> {
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        for (int i = 0; i < widget.length; i++)
+        for (int i = 0; i < length; i++)
           Row(
             children: [
               AnimatedContainer(
@@ -34,7 +31,7 @@ class _BubblePageIndicatorState extends State<BubblePageIndicator> {
                 height: ScreenSize.getPercentOfWidth(context, 0.025),
                 width: ScreenSize.getPercentOfWidth(context, 0.025),
                 decoration: BoxDecoration(
-                  color: i == widget.currentPage ? Colors.black : Colors.grey,
+                  color: i == currentPage ? selectedColor : Colors.grey,
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),

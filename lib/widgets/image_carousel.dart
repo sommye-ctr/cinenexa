@@ -69,7 +69,6 @@ class _ImageCarouselState extends State<ImageCarousel> {
           ),
           BubblePageIndicator(
             length: snapshot.data!.length,
-            pageController: _pageController,
             currentPage: _currentIndex,
           ),
         ],

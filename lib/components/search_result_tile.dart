@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:watrix/components/vote_indicator.dart';
 import 'package:watrix/services/constants.dart';
 import 'package:watrix/services/utils.dart';
 import 'package:watrix/utils/screen_size.dart';
@@ -95,17 +96,8 @@ class SearchResultTile extends StatelessWidget {
                               right:
                                   ScreenSize.getPercentOfWidth(context, 0.01),
                             ),
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                CircularProgressIndicator(
-                                  value: double.parse(
-                                      (vote / 10).toStringAsFixed(1)),
-                                  strokeWidth: 2,
-                                  backgroundColor: Colors.grey,
-                                ),
-                                Text("${vote}")
-                              ],
+                            child: VoteIndicator(
+                              vote: vote,
                             ),
                           ),
                       ],
