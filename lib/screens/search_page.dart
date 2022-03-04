@@ -1,176 +1,171 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:watrix/bloc/search_page_event.dart';
 import 'package:watrix/models/base_model.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/services/constants.dart';
-import 'package:watrix/services/entity_type.dart';
-import 'package:watrix/services/requests.dart';
 import 'package:watrix/services/utils.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/components/movie_tile.dart';
 import 'package:watrix/components/search_result_tile.dart';
 
+import '../bloc/search_page_bloc.dart';
+import '../bloc/search_page_state.dart';
 import 'details_page.dart';
 
-class SearchPage extends StatefulWidget {
+class SearchPage extends StatelessWidget {
   const SearchPage({Key? key}) : super(key: key);
 
   @override
-  State<SearchPage> createState() => _SearchPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => SearchPageBloc(),
+      child: SearchPageView(),
+    );
+  }
 }
 
-class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
-  String _searchTerm = "";
-  Future<List<BaseModel>> future =
-      Requests.titlesFuture(Requests.popular(EntityType.movie));
-  bool _isSearchDone = false;
+class SearchPageView extends StatefulWidget {
+  const SearchPageView({Key? key}) : super(key: key);
+
+  @override
+  State<SearchPageView> createState() => _SearchPageViewState();
+}
+
+class _SearchPageViewState extends State<SearchPageView> {
   late TextEditingController _textEditingController;
-  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     _textEditingController = TextEditingController();
-    _tabController = TabController(length: 3, vsync: this);
-    _tabController.addListener(onSearchTypeChanged);
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () {
-        if (_isSearchDone) {
-          setState(() {
-            future = Requests.titlesFuture(Requests.popular(EntityType.movie));
-            _isSearchDone = false;
-            _textEditingController.clear();
-          });
-          return Future(() => false);
-        }
-        return Future(() => true);
-      },
+      onWillPop: _onBackClicked,
       child: Container(
         width: ScreenSize.getPercentOfWidth(context, 1),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(
-              width: ScreenSize.getPercentOfWidth(context, 0.95),
-              child: TextField(
-                controller: _textEditingController,
-                onChanged: onSearchTermChanged,
-                onEditingComplete: onSearhClicked,
-                style: TextStyle(
-                  color: Colors.black,
-                ),
-                decoration: InputDecoration(
-                  fillColor: Colors.white,
-                  filled: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide.none,
-                  ),
-                  hintText: Strings.searchHint,
-                  hintStyle: TextStyle(color: Colors.black),
-                  suffixIcon: Icon(
-                    Icons.search,
-                    color: Colors.black,
-                  ),
-                ),
-                textInputAction: TextInputAction.search,
-                textCapitalization: TextCapitalization.words,
-              ),
-            ),
-            if (!_isSearchDone)
-              SizedBox(
-                height: ScreenSize.getPercentOfHeight(context, 0.02),
-              ),
-            getHeading(),
-            SizedBox(
-              height: ScreenSize.getPercentOfHeight(context, 0.02),
-            ),
-            FutureBuilder(
-              builder: futureBuilder,
-              future: future,
-            ),
-            SizedBox(
-              height: ScreenSize.getPercentOfHeight(context, 0.08),
-            ),
+            _buildSearchBar(),
+            _buildSpacing(),
+            _buildHeading(),
+            _buildSpacing(),
+            _buildFutureBuilder(),
+            _buildSpacing(percent: 0.08),
           ],
         ),
       ),
     );
   }
 
-  Widget getHeading() {
-    if (!_isSearchDone)
-      return Text(
-        Strings.frequentSearch,
-        style: Style.headingStyle,
-      );
-    return DefaultTabController(
-      length: 3,
-      child: TabBar(
-        labelColor: Colors.black,
-        unselectedLabelColor: Colors.grey,
-        indicatorColor: Colors.transparent,
-        isScrollable: true,
-        controller: _tabController,
-        tabs: [
-          Tab(
-            text: Strings.movies,
+  Widget _buildSearchBar() {
+    return Container(
+      width: ScreenSize.getPercentOfWidth(context, 0.95),
+      child: TextField(
+        controller: _textEditingController,
+        onChanged: (value) {
+          context.read<SearchPageBloc>().add(
+                SearchTermChanged(searchTerm: value),
+              );
+        },
+        onEditingComplete: () {
+          context.read<SearchPageBloc>().add(
+                SearchClicked(),
+              );
+        },
+        style: TextStyle(
+          color: Colors.black,
+        ),
+        decoration: InputDecoration(
+          fillColor: Colors.white,
+          filled: true,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide.none,
           ),
-          Tab(
-            text: Strings.tvShows,
+          hintText: Strings.searchHint,
+          hintStyle: TextStyle(color: Colors.black),
+          suffixIcon: Icon(
+            Icons.search,
+            color: Colors.black,
           ),
-          Tab(
-            text: Strings.actor,
-          ),
-        ],
+        ),
+        textInputAction: TextInputAction.search,
+        textCapitalization: TextCapitalization.words,
       ),
     );
   }
 
-  void onSearchTypeChanged() {
-    setState(() {
-      _isSearchDone = true;
-      String base = "";
-      switch (_tabController.index) {
-        case 0:
-          base = Requests.search(EntityType.movie);
-          break;
-        case 1:
-          base = Requests.search(EntityType.tv);
-          break;
-        case 2:
-          base = Requests.search(EntityType.people);
-          break;
-      }
-      future = Requests.searchFuture(_searchTerm, base);
-    });
+  Widget _buildHeading() {
+    return BlocBuilder<SearchPageBloc, SearchPageState>(
+      buildWhen: (previous, current) =>
+          previous.runtimeType != current.runtimeType,
+      builder: ((context, state) {
+        if (state is SearchNotDone) {
+          return Text(
+            Strings.frequentSearch,
+            style: Style.headingStyle,
+          );
+        } else if (state is SearchDone) {
+          return DefaultTabController(
+            length: 3,
+            child: TabBar(
+              labelColor: Colors.black,
+              unselectedLabelColor: Colors.grey,
+              indicatorColor: Colors.transparent,
+              isScrollable: true,
+              onTap: _onSearchTypeChanged,
+              tabs: [
+                Tab(
+                  text: Strings.movies,
+                ),
+                Tab(
+                  text: Strings.tvShows,
+                ),
+                Tab(
+                  text: Strings.actor,
+                ),
+              ],
+            ),
+          );
+        }
+        throw FlutterError("Unknown state");
+      }),
+    );
   }
 
-  void onSearchTermChanged(String value) {
-    setState(() {
-      _searchTerm = value;
-    });
+  Widget _buildSpacing({double percent = 0.02}) {
+    return SizedBox(
+      height: ScreenSize.getPercentOfHeight(context, percent),
+    );
   }
 
-  void onSearhClicked() {
-    if (_searchTerm.length > 3) {
-      setState(() {
-        _isSearchDone = true;
-        future = Requests.searchFuture(
-            _searchTerm, Requests.search(EntityType.movie));
-        _tabController.animateTo(0);
-      });
-    }
+  Widget _buildFutureBuilder() {
+    return BlocBuilder<SearchPageBloc, SearchPageState>(
+      builder: (context, state) {
+        return FutureBuilder(
+          builder: ((context, AsyncSnapshot<List<BaseModel>> snapshot) {
+            return _buildList(context, snapshot, state);
+          }),
+          future: state.future as Future<List<BaseModel>>,
+        );
+      },
+    );
   }
 
-  Widget futureBuilder(
-      BuildContext context, AsyncSnapshot<List<BaseModel>> snapshot) {
+  Widget _buildList(
+    BuildContext context,
+    AsyncSnapshot<List<BaseModel>> snapshot,
+    SearchPageState searchPageState,
+  ) {
     if (snapshot.connectionState == ConnectionState.done) {
-      if (_isSearchDone && _tabController.index != 2) {
+      if (searchPageState is SearchDone &&
+          context.read<SearchPageBloc>().searchType != SearchType.people) {
         return Flexible(
           child: ListView.builder(
             physics: BouncingScrollPhysics(),
@@ -200,13 +195,13 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
           ),
         );
       }
-      return gridView(snapshot);
+      return _buildGridView(snapshot);
     }
     return Container();
   }
 
 //for frequentSearch as well as actors list
-  Widget gridView(AsyncSnapshot<List<BaseModel>> snapshot) {
+  Widget _buildGridView(AsyncSnapshot<List<BaseModel>> snapshot) {
     return Expanded(
       child: GridView.builder(
         shrinkWrap: true,
@@ -238,4 +233,113 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       ),
     );
   }
+
+  Future<bool> _onBackClicked() {
+    if (context.read<SearchPageBloc>().state is SearchDone) {
+      context.read<SearchPageBloc>().add(
+            SearchBackClicked(),
+          );
+      setState(() {
+        _textEditingController.clear();
+      });
+      return Future(() => false);
+    }
+    return Future(() => true);
+  }
+
+  void _onSearchTypeChanged(int index) {
+    SearchPageBloc bloc = context.read<SearchPageBloc>();
+    switch (index) {
+      case 0:
+        bloc.add(
+          SearchTypeChanged(
+            index: index,
+            searchType: SearchType.movie,
+          ),
+        );
+        break;
+      case 1:
+        bloc.add(
+          SearchTypeChanged(
+            index: index,
+            searchType: SearchType.tv,
+          ),
+        );
+        break;
+      case 2:
+        bloc.add(
+          SearchTypeChanged(
+            index: index,
+            searchType: SearchType.people,
+          ),
+        );
+        break;
+    }
+  }
 }
+
+/* 
+  Widget getHeading() {
+    if (!_isSearchDone)
+      return Text(
+        Strings.frequentSearch,
+        style: Style.headingStyle,
+      );
+    return DefaultTabController(
+      length: 3,
+      child: TabBar(
+        labelColor: Colors.black,
+        unselectedLabelColor: Colors.grey,
+        indicatorColor: Colors.transparent,
+        isScrollable: true,
+        controller: _tabController,
+        tabs: [
+          Tab(
+            text: Strings.movies,
+          ),
+          Tab(
+            text: Strings.tvShows,
+          ),
+          Tab(
+            text: Strings.actor,
+          ),
+        ],
+      ),
+    );
+  }
+
+  void onSearchTermChanged(String value) {
+    setState(() {
+      _searchTerm = value;
+    });
+  }
+
+  void onSearhClicked() {
+    if (_searchTerm.length > 3) {
+      setState(() {
+        _isSearchDone = true;
+        future = Requests.searchFuture(
+            _searchTerm, Requests.search(EntityType.movie));
+        _tabController.animateTo(0);
+      });
+    }
+  } */
+
+  /*  void onSearchTypeChanged() {
+    setState(() {
+      _isSearchDone = true;
+      String base = "";
+      switch (_tabController.index) {
+        case 0:
+          base = Requests.search(EntityType.movie);
+          break;
+        case 1:
+          base = Requests.search(EntityType.tv);
+          break;
+        case 2:
+          base = Requests.search(EntityType.people);
+          break;
+      }
+      future = Requests.searchFuture(_searchTerm, base);
+    });
+  } */
