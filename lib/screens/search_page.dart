@@ -31,7 +31,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _textEditingController = TextEditingController();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(onSearchTypeChanged);
   }
 
@@ -109,7 +109,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         style: Style.headingStyle,
       );
     return DefaultTabController(
-      length: 4,
+      length: 3,
       child: TabBar(
         labelColor: Colors.black,
         unselectedLabelColor: Colors.grey,
@@ -117,9 +117,6 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         isScrollable: true,
         controller: _tabController,
         tabs: [
-          Tab(
-            text: Strings.all,
-          ),
           Tab(
             text: Strings.movies,
           ),
@@ -140,15 +137,12 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       String base = "";
       switch (_tabController.index) {
         case 0:
-          base = Requests.search(EntityType.all);
-          break;
-        case 1:
           base = Requests.search(EntityType.movie);
           break;
-        case 2:
+        case 1:
           base = Requests.search(EntityType.tv);
           break;
-        case 3:
+        case 2:
           base = Requests.search(EntityType.people);
           break;
       }
@@ -163,17 +157,20 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   }
 
   void onSearhClicked() {
-    setState(() {
-      _isSearchDone = true;
-      future =
-          Requests.searchFuture(_searchTerm, Requests.search(EntityType.all));
-    });
+    if (_searchTerm.length > 3) {
+      setState(() {
+        _isSearchDone = true;
+        future = Requests.searchFuture(
+            _searchTerm, Requests.search(EntityType.movie));
+        _tabController.animateTo(0);
+      });
+    }
   }
 
   Widget futureBuilder(
       BuildContext context, AsyncSnapshot<List<BaseModel>> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
-      if (_isSearchDone) {
+      if (_isSearchDone && _tabController.index != 2) {
         return Flexible(
           child: ListView.builder(
             physics: BouncingScrollPhysics(),
@@ -203,12 +200,13 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
           ),
         );
       }
-      return frequentSearch(snapshot);
+      return gridView(snapshot);
     }
     return Container();
   }
 
-  Widget frequentSearch(AsyncSnapshot<List<BaseModel>> snapshot) {
+//for frequentSearch as well as actors list
+  Widget gridView(AsyncSnapshot<List<BaseModel>> snapshot) {
     return Expanded(
       child: GridView.builder(
         shrinkWrap: true,

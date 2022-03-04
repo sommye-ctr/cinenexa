@@ -6,12 +6,14 @@ import 'package:watrix/models/certification.dart';
 import 'package:watrix/models/genre.dart';
 import 'package:watrix/models/sort_movies.dart';
 import 'package:watrix/models/sort_tv.dart';
+import 'package:watrix/models/tv.dart';
 import 'package:watrix/services/constants.dart';
 import 'package:watrix/services/duration_type.dart';
 import 'package:watrix/services/entity_type.dart';
 import 'package:watrix/services/utils.dart';
 
 import '../models/base_model.dart';
+import '../models/movie.dart';
 
 class Requests {
   static String popular(
@@ -245,5 +247,21 @@ class Requests {
     final response = await http.get(Uri.parse(request));
     var parsedList = json.decode(response.body)['results'];
     return Utils.convertToListString(parsedList);
+  }
+
+  static Future<Movie> findMovie({required int id}) async {
+    final response = await http.get(
+      Uri.parse(
+          "${Constants.baseUrl}${Constants.movie}/${id}?api_key=${Constants.apiKey}&language=en-US"),
+    );
+    return Movie.fromMap(json.decode(response.body));
+  }
+
+  static Future<Tv> findTv({required int id}) async {
+    final response = await http.get(
+      Uri.parse(
+          "${Constants.baseUrl}${Constants.tv}/${id}?api_key=${Constants.apiKey}&language=en-US"),
+    );
+    return Tv.fromMap(json.decode(response.body));
   }
 }

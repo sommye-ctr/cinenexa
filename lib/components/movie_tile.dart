@@ -29,13 +29,12 @@ class MovieTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              height: width / Constants.posterAspectRatio,
-              child: RoundedImage(
-                image: image,
-                width: width,
-                ratio: Constants.posterAspectRatio,
-              ),
-            ),
+                height: width / Constants.posterAspectRatio,
+                child: RoundedImage(
+                  image: image,
+                  width: width,
+                  ratio: Constants.posterAspectRatio,
+                )),
             if (showTitle == true)
               Text(
                 text,

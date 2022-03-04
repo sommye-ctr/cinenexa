@@ -5,7 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:watrix/components/vote_indicator.dart';
 import 'package:watrix/models/base_model.dart';
 import 'package:watrix/models/movie.dart';
+import 'package:watrix/models/tv.dart';
 import 'package:watrix/services/constants.dart';
+import 'package:watrix/services/entity_type.dart';
+import 'package:watrix/services/requests.dart';
 import 'package:watrix/services/utils.dart';
 import 'package:watrix/utils/date_time_formatter.dart';
 import 'package:watrix/widgets/bubble_page_indicator.dart';
@@ -32,6 +35,7 @@ class DetailsPage extends StatefulWidget {
 class _DetailsPageState extends State<DetailsPage> {
   int _currentIndex = 0;
   Movie? movie;
+  Tv? tv;
 
   @override
   void initState() {
@@ -40,11 +44,21 @@ class _DetailsPageState extends State<DetailsPage> {
   }
 
   void fetch() async {
-    final response = await http.get(Uri.parse(
-        "https://api.themoviedb.org/3/movie/${widget.baseModel.id}?api_key=${Constants.apiKey}&language=en-US"));
-
-    movie = Movie.fromMap(json.decode(response.body));
+    if (widget.baseModel.type == BaseModelType.movie) {
+      movie = await Requests.findMovie(id: widget.baseModel.id!);
+    } else if (widget.baseModel.type == BaseModelType.tv) {
+      tv = await Requests.findTv(id: widget.baseModel.id!);
+    }
     setState(() {});
+  }
+
+  List<String>? getGenres() {
+    if (widget.baseModel.type == BaseModelType.movie) {
+      return movie?.genres?.map((e) => e.name).toList();
+    } else if (widget.baseModel.type == BaseModelType.tv) {
+      return tv?.genres?.map((e) => e.name).toList();
+    }
+    return null;
   }
 
   @override
@@ -59,7 +73,8 @@ class _DetailsPageState extends State<DetailsPage> {
             children: [
               _Page1(
                 baseModel: widget.baseModel,
-                genres: movie?.genres?.map((e) => e.name).toList(),
+                genres: getGenres(),
+                tvShowEndTime: tv?.lastAirDate,
                 runtime: movie?.runtime != null
                     ? DateTimeFormatter.getTimeFromMin(movie!.runtime!)
                     : null,
@@ -96,11 +111,14 @@ class _Page1 extends StatelessWidget {
   final BaseModel baseModel;
   final List<String>? genres;
   final String? runtime;
+  final String? tvShowEndTime;
+
   const _Page1({
     Key? key,
     required this.baseModel,
     this.genres,
     this.runtime,
+    this.tvShowEndTime,
   }) : super(key: key);
 
   @override
@@ -130,6 +148,14 @@ class _Page1 extends StatelessWidget {
           ),
         ),
       );
+    }
+
+    String date =
+        " (${DateTimeFormatter.getYearFromString(baseModel.releaseDate!)})";
+    if (tvShowEndTime != null) {
+      date = date.substring(0, date.length - 1);
+      date =
+          date + " - ${DateTimeFormatter.getYearFromString(tvShowEndTime!)})";
     }
 
     return ScreenBackgroundImage(
@@ -179,8 +205,7 @@ class _Page1 extends StatelessWidget {
                         ),
                       ),
                       TextSpan(
-                        text:
-                            " (${DateTimeFormatter.getYearFromString(baseModel.releaseDate!)})",
+                        text: date,
                         style: TextStyle(
                           color: Colors.grey,
                         ),
@@ -199,18 +224,22 @@ class _Page1 extends StatelessWidget {
               SizedBox(
                 height: ScreenSize.getPercentOfHeight(context, 0.01),
               ),
-              Row(
-                children: [
-                  VoteIndicator(
-                    vote: baseModel.voteAverage!,
-                  ),
-                  SizedBox(
-                    width: ScreenSize.getPercentOfWidth(context, 0.01),
-                  ),
-                  Row(
-                    children: genreWidgets,
-                  ),
-                ],
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                physics: BouncingScrollPhysics(),
+                child: Row(
+                  children: [
+                    VoteIndicator(
+                      vote: baseModel.voteAverage!,
+                    ),
+                    SizedBox(
+                      width: ScreenSize.getPercentOfWidth(context, 0.01),
+                    ),
+                    Row(
+                      children: genreWidgets,
+                    ),
+                  ],
+                ),
               ),
               SizedBox(
                 height: ScreenSize.getPercentOfHeight(context, 0.01),

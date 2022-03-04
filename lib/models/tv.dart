@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
+import 'genre.dart';
+
 class Tv {
   String name;
   int id;
@@ -12,6 +14,10 @@ class Tv {
   List<int> genreIds;
   double voteAverage;
 
+  List<Genre>? genres;
+  String? lastAirDate;
+  int? noOfEpisodes;
+  int? noOfSeasons;
   Tv({
     required this.name,
     required this.id,
@@ -21,6 +27,10 @@ class Tv {
     required this.firstAirDate,
     required this.genreIds,
     required this.voteAverage,
+    this.genres,
+    this.lastAirDate,
+    this.noOfEpisodes,
+    this.noOfSeasons,
   });
 
   Tv copyWith({
@@ -32,6 +42,10 @@ class Tv {
     String? firstAirDate,
     List<int>? genreIds,
     double? voteAverage,
+    List<Genre>? genres,
+    String? lastAirDate,
+    int? noOfEpisodes,
+    int? noOfSeasons,
   }) {
     return Tv(
       name: name ?? this.name,
@@ -42,6 +56,10 @@ class Tv {
       firstAirDate: firstAirDate ?? this.firstAirDate,
       genreIds: genreIds ?? this.genreIds,
       voteAverage: voteAverage ?? this.voteAverage,
+      genres: genres ?? this.genres,
+      lastAirDate: lastAirDate ?? this.lastAirDate,
+      noOfEpisodes: noOfEpisodes ?? this.noOfEpisodes,
+      noOfSeasons: noOfSeasons ?? this.noOfSeasons,
     );
   }
 
@@ -55,6 +73,10 @@ class Tv {
       'first_air_date': firstAirDate,
       'genre_ids': genreIds,
       'vote_average': voteAverage,
+      'genres': genres?.map((x) => x.toMap()).toList(),
+      'last_air_date': lastAirDate,
+      'number_of_episodes': noOfEpisodes,
+      'number_of_seasons': noOfSeasons,
     };
   }
 
@@ -66,8 +88,14 @@ class Tv {
       backdropPath: map['backdrop_path'] ?? '',
       overview: map['overview'] ?? '',
       firstAirDate: map['first_air_date'] ?? '',
-      genreIds: List<int>.from(map['genreIds']),
+      genreIds: List<int>.from(map['genre_ids'] ?? []),
       voteAverage: map['vote_average']?.toDouble() ?? 0.0,
+      genres: map['genres'] != null
+          ? List<Genre>.from(map['genres']?.map((x) => Genre.fromMap(x)))
+          : null,
+      lastAirDate: map['last_air_date'],
+      noOfEpisodes: map['number_of_episodes']?.toInt(),
+      noOfSeasons: map['number_of_seasons']?.toInt(),
     );
   }
 
@@ -77,7 +105,7 @@ class Tv {
 
   @override
   String toString() {
-    return 'Tv(name: $name, id: $id, posterPath: $posterPath, backdropPath: $backdropPath, overview: $overview, firstAirDate: $firstAirDate, genreIds: $genreIds, voteAverage: $voteAverage)';
+    return 'Tv(name: $name, id: $id, posterPath: $posterPath, backdropPath: $backdropPath, overview: $overview, firstAirDate: $firstAirDate, genreIds: $genreIds, voteAverage: $voteAverage, genres: $genres, lastAirDate: $lastAirDate, noOfEpisodes: $noOfEpisodes, noOfSeasons: $noOfSeasons)';
   }
 
   @override
@@ -92,7 +120,11 @@ class Tv {
         other.overview == overview &&
         other.firstAirDate == firstAirDate &&
         listEquals(other.genreIds, genreIds) &&
-        other.voteAverage == voteAverage;
+        other.voteAverage == voteAverage &&
+        listEquals(other.genres, genres) &&
+        other.lastAirDate == lastAirDate &&
+        other.noOfEpisodes == noOfEpisodes &&
+        other.noOfSeasons == noOfSeasons;
   }
 
   @override
@@ -104,6 +136,10 @@ class Tv {
         overview.hashCode ^
         firstAirDate.hashCode ^
         genreIds.hashCode ^
-        voteAverage.hashCode;
+        voteAverage.hashCode ^
+        genres.hashCode ^
+        lastAirDate.hashCode ^
+        noOfEpisodes.hashCode ^
+        noOfSeasons.hashCode;
   }
 }
