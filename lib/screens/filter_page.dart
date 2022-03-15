@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:watrix/bloc/home/filters/filter_page_bloc.dart';
 import 'package:watrix/models/certification.dart';
 import 'package:watrix/models/discover.dart';
 import 'package:watrix/models/sort_movies.dart';
@@ -23,7 +25,7 @@ class FilterPage extends StatelessWidget {
     DateTime.now().year.toDouble(),
   );
 
-  final Discover discover;
+  //final Discover discover;
   final EntityType type;
 
   FilterPage({
@@ -180,192 +182,196 @@ class FilterPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: ScreenSize.getPercentOfWidth(context, 0.02),
-      ),
-      child: Stack(
-        children: [
-          ListView(
-            physics: BouncingScrollPhysics(),
-            children: [
-              SizedBox(
-                height: ScreenSize.getPercentOfHeight(context, 0.02),
-              ),
-              Text(
-                Strings.sortBy,
-                style: Style.headingStyle,
-              ),
-              SizedBox(
-                height: ScreenSize.getPercentOfHeight(context, 0.01),
-              ),
-              CustomCheckBoxList(
-                type: CheckBoxListType.list,
-                singleSelect: true,
-                selectedItems:
-                    getSelectedSortBy() == null ? null : [getSelectedSortBy()!],
-                children: [
-                  Strings.popularity,
-                  Strings.voteAverage,
-                  type == EntityType.movie
-                      ? Strings.releaseDate
-                      : Strings.airDate,
-                ],
-                onSelectionAdded: (values) {
-                  if (type == EntityType.movie) {
-                    switch (values.first) {
-                      // as it is single select only 1 item will be there
-                      case Strings.popularity:
-                        discover.sortMoviesBy = SortMoviesBy.popularity;
-                        break;
-                      case Strings.voteAverage:
-                        discover.sortMoviesBy = SortMoviesBy.voteAverage;
-                        break;
-                      case Strings.releaseDate:
-                        discover.sortMoviesBy = SortMoviesBy.releaseDate;
-                        break;
-                    }
-                  } else if (type == EntityType.tv) {
-                    switch (values.first) {
-                      case Strings.popularity:
-                        discover.sortTvBy = SortTvBy.popularity;
-                        break;
-                      case Strings.voteAverage:
-                        discover.sortTvBy = SortTvBy.voteAverage;
-                        break;
-                      case Strings.airDate:
-                        discover.sortTvBy = SortTvBy.firstAirDate;
-                        break;
-                    } // as it is single select only 1 item will be there
-                  }
-                },
-                onSelectionRemoved: (values) {
-                  if (type == EntityType.movie) {
-                    discover.sortMoviesBy = null;
-                  } else if (type == EntityType.tv) {
-                    discover.sortTvBy = null;
-                  }
-                },
-                onSelectionChanged: (values) {},
-              ),
-              Divider(),
-              if (type == EntityType.movie) ...[
-                Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: Strings.certification,
-                        style: Style.headingStyle,
-                      ),
-                      TextSpan(
-                        text: " ${Strings.certificationSubtitle}",
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 10,
-                        ),
-                      ),
-                    ],
-                  ),
+    return BlocProvider(
+      create: (_) => FiltersPageBloc(initialState),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: ScreenSize.getPercentOfWidth(context, 0.02),
+        ),
+        child: Stack(
+          children: [
+            ListView(
+              physics: BouncingScrollPhysics(),
+              children: [
+                SizedBox(
+                  height: ScreenSize.getPercentOfHeight(context, 0.02),
+                ),
+                Text(
+                  Strings.sortBy,
+                  style: Style.headingStyle,
                 ),
                 SizedBox(
                   height: ScreenSize.getPercentOfHeight(context, 0.01),
                 ),
-                FutureBuilder<List<Certification>>(
-                  future: Requests.certificationsFuture(
-                    Requests.certifications(type),
-                  ),
-                  builder: certificationBuild,
+                CustomCheckBoxList(
+                  type: CheckBoxListType.list,
+                  singleSelect: true,
+                  selectedItems: getSelectedSortBy() == null
+                      ? null
+                      : [getSelectedSortBy()!],
+                  children: [
+                    Strings.popularity,
+                    Strings.voteAverage,
+                    type == EntityType.movie
+                        ? Strings.releaseDate
+                        : Strings.airDate,
+                  ],
+                  onSelectionAdded: (values) {
+                    if (type == EntityType.movie) {
+                      switch (values.first) {
+                        // as it is single select only 1 item will be there
+                        case Strings.popularity:
+                          discover.sortMoviesBy = SortMoviesBy.popularity;
+                          break;
+                        case Strings.voteAverage:
+                          discover.sortMoviesBy = SortMoviesBy.voteAverage;
+                          break;
+                        case Strings.releaseDate:
+                          discover.sortMoviesBy = SortMoviesBy.releaseDate;
+                          break;
+                      }
+                    } else if (type == EntityType.tv) {
+                      switch (values.first) {
+                        case Strings.popularity:
+                          discover.sortTvBy = SortTvBy.popularity;
+                          break;
+                        case Strings.voteAverage:
+                          discover.sortTvBy = SortTvBy.voteAverage;
+                          break;
+                        case Strings.airDate:
+                          discover.sortTvBy = SortTvBy.firstAirDate;
+                          break;
+                      } // as it is single select only 1 item will be there
+                    }
+                  },
+                  onSelectionRemoved: (values) {
+                    if (type == EntityType.movie) {
+                      discover.sortMoviesBy = null;
+                    } else if (type == EntityType.tv) {
+                      discover.sortTvBy = null;
+                    }
+                  },
+                  onSelectionChanged: (values) {},
                 ),
-              ],
-              Divider(),
-              Text(
-                Strings.voteAverage,
-                style: Style.headingStyle,
-              ),
-              SizedBox(
-                height: ScreenSize.getPercentOfHeight(context, 0.01),
-              ),
-              CustomRangeSlider(
-                values: getDefaultVoteAverage(),
-                min: DEFAULT_VOTE_AVERAGE.start,
-                max: DEFAULT_VOTE_AVERAGE.end,
-                onChanged: (changedValue) {
-                  discover.voteAverage = changedValue;
-                },
-              ),
-              Divider(),
-              Text(
-                Strings.year,
-                style: Style.headingStyle,
-              ),
-              SizedBox(
-                height: ScreenSize.getPercentOfHeight(context, 0.01),
-              ),
-              CustomRangeSlider(
-                  values: getDefaultYearValues(),
-                  max: DEFAULT_YEAR.end,
-                  min: DEFAULT_YEAR.start,
-                  onChanged: (changedValues) {
-                    discover.releaseDateRange = DateTimeRange(
-                      start: DateTime(
-                        changedValues.start.toInt(),
-                      ),
-                      end: DateTime(
-                        changedValues.end.toInt(),
-                      ),
-                    );
-                  }),
-              Divider(),
-              Text(
-                Strings.genres,
-                style: Style.headingStyle,
-              ),
-              SizedBox(
-                height: ScreenSize.getPercentOfHeight(context, 0.01),
-              ),
-              FutureBuilder<List<Genre>>(
-                future: Requests.genreFuture(Requests.genres(type)),
-                builder: genreBuildGrid,
-              ),
-              SizedBox(
-                height: ScreenSize.getPercentOfHeight(context, 0.05),
-              ),
-            ],
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: ElevatedButton(
-                        onPressed: () => onResetClick(context),
-                        child: Text(Strings.reset),
-                        style: ElevatedButton.styleFrom(
-                          primary: Colors.white.withOpacity(0.5),
-                        )),
-                  ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(
-                      onPressed: () => onSubmitClick(context),
-                      child: Text(Strings.submit),
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.white.withOpacity(0.5),
-                      ),
+                Divider(),
+                if (type == EntityType.movie) ...[
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: Strings.certification,
+                          style: Style.headingStyle,
+                        ),
+                        TextSpan(
+                          text: " ${Strings.certificationSubtitle}",
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
+                  SizedBox(
+                    height: ScreenSize.getPercentOfHeight(context, 0.01),
+                  ),
+                  FutureBuilder<List<Certification>>(
+                    future: Requests.certificationsFuture(
+                      Requests.certifications(type),
+                    ),
+                    builder: certificationBuild,
+                  ),
+                ],
+                Divider(),
+                Text(
+                  Strings.voteAverage,
+                  style: Style.headingStyle,
+                ),
+                SizedBox(
+                  height: ScreenSize.getPercentOfHeight(context, 0.01),
+                ),
+                CustomRangeSlider(
+                  values: getDefaultVoteAverage(),
+                  min: DEFAULT_VOTE_AVERAGE.start,
+                  max: DEFAULT_VOTE_AVERAGE.end,
+                  onChanged: (changedValue) {
+                    discover.voteAverage = changedValue;
+                  },
+                ),
+                Divider(),
+                Text(
+                  Strings.year,
+                  style: Style.headingStyle,
+                ),
+                SizedBox(
+                  height: ScreenSize.getPercentOfHeight(context, 0.01),
+                ),
+                CustomRangeSlider(
+                    values: getDefaultYearValues(),
+                    max: DEFAULT_YEAR.end,
+                    min: DEFAULT_YEAR.start,
+                    onChanged: (changedValues) {
+                      discover.releaseDateRange = DateTimeRange(
+                        start: DateTime(
+                          changedValues.start.toInt(),
+                        ),
+                        end: DateTime(
+                          changedValues.end.toInt(),
+                        ),
+                      );
+                    }),
+                Divider(),
+                Text(
+                  Strings.genres,
+                  style: Style.headingStyle,
+                ),
+                SizedBox(
+                  height: ScreenSize.getPercentOfHeight(context, 0.01),
+                ),
+                FutureBuilder<List<Genre>>(
+                  future: Requests.genreFuture(Requests.genres(type)),
+                  builder: genreBuildGrid,
+                ),
+                SizedBox(
+                  height: ScreenSize.getPercentOfHeight(context, 0.05),
                 ),
               ],
             ),
-          ),
-        ],
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: ElevatedButton(
+                          onPressed: () => onResetClick(context),
+                          child: Text(Strings.reset),
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.white.withOpacity(0.5),
+                          )),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ElevatedButton(
+                        onPressed: () => onSubmitClick(context),
+                        child: Text(Strings.submit),
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.white.withOpacity(0.5),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -1,5 +1,9 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:watrix/bloc/home/home_page_bloc.dart';
+import 'package:watrix/bloc/home/home_page_event.dart';
+import 'package:watrix/bloc/home/home_page_state.dart';
 import 'package:watrix/models/base_model.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
@@ -25,13 +29,17 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
-  late TabController _tabController;
-  int _selectedIndex = 0;
+  static const FEATURED = 0;
+  static const MOVIES = 1;
+  static const TV = 2;
+  static const MY_LIST = 3;
+  //late TabController _tabController;
+  //int _selectedIndex = 0;
 
   List<BaseModel> filterMovies = List.empty();
   List<BaseModel> filterTv = List.empty();
   int _movieFilterPage = 1, _tvFilterPage = 1;
-  bool _isMovieFilterApplied = false, _isTvFilterApplied = false;
+  //bool _isMovieFilterApplied = false, _isTvFilterApplied = false;
   Discover? _movieDiscover, _tvDiscover;
 
   late final Widget defaultMovies = Column(
@@ -248,69 +256,117 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
-    _tabController.addListener(
+    //_tabController = TabController(length: 4, vsync: this);
+    /* _tabController.addListener(
       () => setState(() => _selectedIndex = _tabController.index),
-    );
+    ); */
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
+    //_tabController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: ScreenSize.getPercentOfWidth(context, 0.02),
-            ),
-            child: ListView(
-              physics: BouncingScrollPhysics(),
-              children: [
-                DefaultTabController(
-                  length: 4,
-                  child: TabBar(
-                    labelColor: Colors.black,
-                    unselectedLabelColor: Colors.grey,
-                    indicatorColor: Colors.transparent,
-                    isScrollable: true,
-                    controller: _tabController,
-                    tabs: [
-                      Tab(
-                        text: Strings.featured,
-                      ),
-                      Tab(
-                        text: Strings.movies,
-                      ),
-                      Tab(
-                        text: Strings.tvShows,
-                      ),
-                      Tab(
-                        text: Strings.myList,
-                      ),
-                    ],
-                  ),
-                ),
-                IndexedStack(
-                  index: _selectedIndex,
-                  children: [
-                    featured,
-                    movies,
-                    tv,
-                    myList,
-                  ],
-                ),
-              ],
+    return BlocProvider(
+      create: (_) => HomePageBloc(HomePageTabType.featured),
+      child: Stack(
+        children: [
+          Container(
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: ScreenSize.getPercentOfWidth(context, 0.02),
+              ),
+              child: ListView(
+                physics: BouncingScrollPhysics(),
+                children: [
+                  _buildTabs(),
+                  _buildMainBody(),
+                ],
+              ),
             ),
           ),
-        ),
-        if (_selectedIndex == 1 || _selectedIndex == 2)
-          Positioned(
+          _buildFilterFab(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMainBody() {
+    return BlocBuilder<HomePageBloc, HomePageState>(
+      buildWhen: (previous, current) => previous.index != current.index,
+      builder: (context, state) {
+        return IndexedStack(
+          index: state.index,
+          children: [
+            featured,
+            movies,
+            tv,
+            myList,
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildTabs() {
+    return DefaultTabController(
+      length: 4,
+      child: TabBar(
+        labelColor: Colors.black,
+        unselectedLabelColor: Colors.grey,
+        indicatorColor: Colors.transparent,
+        isScrollable: true,
+        onTap: _onTabClicked,
+        tabs: [
+          Tab(
+            text: Strings.featured,
+          ),
+          Tab(
+            text: Strings.movies,
+          ),
+          Tab(
+            text: Strings.tvShows,
+          ),
+          Tab(
+            text: Strings.myList,
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _onTabClicked(int index) {
+    BlocProvider.of<HomePageBloc>(context).add(
+      HomePageTabChanged(
+        index: index,
+        type: _getTabType(index),
+      ),
+    );
+  }
+
+  HomePageTabType _getTabType(int index) {
+    switch (index) {
+      case FEATURED:
+        return HomePageTabType.featured;
+      case MOVIES:
+        return HomePageTabType.movies;
+      case TV:
+        return HomePageTabType.tv;
+      case MY_LIST:
+        return HomePageTabType.list;
+    }
+    throw FlutterError("Unknown tab!");
+  }
+
+  Widget _buildFilterFab() {
+    return BlocBuilder<HomePageBloc, HomePageState>(
+      builder: (context, state) {
+        if (state.type == HomePageTabType.movies ||
+            state.type == HomePageTabType.tv) {
+          return Positioned(
             bottom: BottomNavBar.bottomNavHeight +
                 BottomNavBar.bottomNavPadding +
                 4,
@@ -326,11 +382,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 ),
               ),
               onPressed: () {
-                showBottomSheet(context, _selectedIndex);
+                _showBottomSheet(context, state.index);
               },
             ),
-          ),
-      ],
+          );
+        }
+        return Container();
+      },
     );
   }
 
@@ -347,7 +405,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         (_selectedIndex == 2 && _isTvFilterApplied);
   }
 
-  void showBottomSheet(BuildContext context, int index) {
+  void _showBottomSheet(BuildContext context, int index) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -356,9 +414,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       ),
       builder: (context) {
         EntityType type;
-        if (_selectedIndex == 1) {
+        if (index == MOVIES) {
           type = EntityType.movie;
-        } else if (_selectedIndex == 2) {
+        } else if (index == TV) {
           type = EntityType.tv;
         } else {
           throw FlutterError(
@@ -368,7 +426,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           heightFactor: 0.8,
           child: FilterPage(
             type: type,
-            discover: _selectedIndex == 1 ? _movieDiscover : _tvDiscover,
+            discover: index == MOVIES ? _movieDiscover : _tvDiscover,
           ),
         );
       },

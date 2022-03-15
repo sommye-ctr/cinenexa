@@ -1,40 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:watrix/bloc/search_page_event.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:watrix/models/base_model.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/services/constants.dart';
 import 'package:watrix/services/utils.dart';
+import 'package:watrix/store/search_store.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/components/movie_tile.dart';
 import 'package:watrix/components/search_result_tile.dart';
 
-import '../bloc/search_page_bloc.dart';
-import '../bloc/search_page_state.dart';
 import 'details_page.dart';
 
-class SearchPage extends StatelessWidget {
-  const SearchPage({Key? key}) : super(key: key);
+class SearchPage extends StatefulWidget {
+  SearchPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => SearchPageBloc(),
-      child: SearchPageView(),
-    );
-  }
+  State<SearchPage> createState() => _SearchPageState();
 }
 
-class SearchPageView extends StatefulWidget {
-  const SearchPageView({Key? key}) : super(key: key);
-
-  @override
-  State<SearchPageView> createState() => _SearchPageViewState();
-}
-
-class _SearchPageViewState extends State<SearchPageView> {
+class _SearchPageState extends State<SearchPage> {
   late TextEditingController _textEditingController;
+  final SearchStore searchStore = SearchStore();
 
   @override
   void initState() {
@@ -68,16 +55,8 @@ class _SearchPageViewState extends State<SearchPageView> {
       width: ScreenSize.getPercentOfWidth(context, 0.95),
       child: TextField(
         controller: _textEditingController,
-        onChanged: (value) {
-          context.read<SearchPageBloc>().add(
-                SearchTermChanged(searchTerm: value),
-              );
-        },
-        onEditingComplete: () {
-          context.read<SearchPageBloc>().add(
-                SearchClicked(),
-              );
-        },
+        onChanged: searchStore.searchTermChanged,
+        onEditingComplete: searchStore.searchClicked,
         style: TextStyle(
           color: Colors.black,
         ),
@@ -102,40 +81,36 @@ class _SearchPageViewState extends State<SearchPageView> {
   }
 
   Widget _buildHeading() {
-    return BlocBuilder<SearchPageBloc, SearchPageState>(
-      buildWhen: (previous, current) =>
-          previous.runtimeType != current.runtimeType,
-      builder: ((context, state) {
-        if (state is SearchNotDone) {
+    return Observer(
+      builder: (context) {
+        if (!searchStore.searchDone) {
           return Text(
             Strings.frequentSearch,
             style: Style.headingStyle,
           );
-        } else if (state is SearchDone) {
-          return DefaultTabController(
-            length: 3,
-            child: TabBar(
-              labelColor: Colors.black,
-              unselectedLabelColor: Colors.grey,
-              indicatorColor: Colors.transparent,
-              isScrollable: true,
-              onTap: _onSearchTypeChanged,
-              tabs: [
-                Tab(
-                  text: Strings.movies,
-                ),
-                Tab(
-                  text: Strings.tvShows,
-                ),
-                Tab(
-                  text: Strings.actor,
-                ),
-              ],
-            ),
-          );
         }
-        throw FlutterError("Unknown state");
-      }),
+        return DefaultTabController(
+          length: 3,
+          child: TabBar(
+            labelColor: Colors.black,
+            unselectedLabelColor: Colors.grey,
+            indicatorColor: Colors.transparent,
+            isScrollable: true,
+            onTap: _onSearchTypeChanged,
+            tabs: [
+              Tab(
+                text: Strings.movies,
+              ),
+              Tab(
+                text: Strings.tvShows,
+              ),
+              Tab(
+                text: Strings.actor,
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -146,13 +121,13 @@ class _SearchPageViewState extends State<SearchPageView> {
   }
 
   Widget _buildFutureBuilder() {
-    return BlocBuilder<SearchPageBloc, SearchPageState>(
-      builder: (context, state) {
+    return Observer(
+      builder: (context) {
         return FutureBuilder(
           builder: ((context, AsyncSnapshot<List<BaseModel>> snapshot) {
-            return _buildList(context, snapshot, state);
+            return _buildList(context, snapshot);
           }),
-          future: state.future as Future<List<BaseModel>>,
+          future: searchStore.future,
         );
       },
     );
@@ -161,11 +136,10 @@ class _SearchPageViewState extends State<SearchPageView> {
   Widget _buildList(
     BuildContext context,
     AsyncSnapshot<List<BaseModel>> snapshot,
-    SearchPageState searchPageState,
   ) {
     if (snapshot.connectionState == ConnectionState.done) {
-      if (searchPageState is SearchDone &&
-          context.read<SearchPageBloc>().searchType != SearchType.people) {
+      if (searchStore.searchDone &&
+          searchStore.searchType != SearchType.people) {
         return Flexible(
           child: ListView.builder(
             physics: BouncingScrollPhysics(),
@@ -235,10 +209,8 @@ class _SearchPageViewState extends State<SearchPageView> {
   }
 
   Future<bool> _onBackClicked() {
-    if (context.read<SearchPageBloc>().state is SearchDone) {
-      context.read<SearchPageBloc>().add(
-            SearchBackClicked(),
-          );
+    if (searchStore.searchDone) {
+      searchStore.backClicked();
       setState(() {
         _textEditingController.clear();
       });
@@ -248,31 +220,15 @@ class _SearchPageViewState extends State<SearchPageView> {
   }
 
   void _onSearchTypeChanged(int index) {
-    SearchPageBloc bloc = context.read<SearchPageBloc>();
     switch (index) {
       case 0:
-        bloc.add(
-          SearchTypeChanged(
-            index: index,
-            searchType: SearchType.movie,
-          ),
-        );
+        searchStore.searchTypeChanged(SearchType.movie);
         break;
       case 1:
-        bloc.add(
-          SearchTypeChanged(
-            index: index,
-            searchType: SearchType.tv,
-          ),
-        );
+        searchStore.searchTypeChanged(SearchType.tv);
         break;
       case 2:
-        bloc.add(
-          SearchTypeChanged(
-            index: index,
-            searchType: SearchType.people,
-          ),
-        );
+        searchStore.searchTypeChanged(SearchType.people);
         break;
     }
   }
