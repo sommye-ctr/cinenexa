@@ -79,5 +79,6 @@ abstract class _SearchStore with Store {
     );
     searchDone = false;
     searchType = SearchType.movie;
+    searchTerm = "";
   }
 }

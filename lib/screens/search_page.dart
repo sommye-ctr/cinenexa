@@ -41,7 +41,6 @@ class _SearchPageState extends State<SearchPage> {
             _buildSearchBar(),
             _buildSpacing(),
             _buildHeading(),
-            _buildSpacing(),
             _buildFutureBuilder(),
             _buildSpacing(percent: 0.08),
           ],
@@ -84,9 +83,14 @@ class _SearchPageState extends State<SearchPage> {
     return Observer(
       builder: (context) {
         if (!searchStore.searchDone) {
-          return Text(
-            Strings.frequentSearch,
-            style: Style.headingStyle,
+          return Column(
+            children: [
+              Text(
+                Strings.frequentSearch,
+                style: Style.headingStyle,
+              ),
+              _buildSpacing(),
+            ],
           );
         }
         return DefaultTabController(
