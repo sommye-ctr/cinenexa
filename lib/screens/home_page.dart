@@ -32,9 +32,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   );
   late final Widget myList = Column();
 
-  late final Widget featured = HomeFeatured(onItemClicked: onItemClicked);
-  late final Widget movies = HomeMovies(onItemClicked: onItemClicked);
-  late final Widget tv = HomeTv(onItemClicked: onItemClicked);
+  late final Widget featured = HomeFeatured(onItemClicked: _onItemClicked);
+  late final Widget movies = HomeMovies(onItemClicked: _onItemClicked);
+  late final Widget tv = HomeTv(onItemClicked: _onItemClicked);
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +112,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Widget _buildFilteredItems(List<BaseModel> list) {
     return GridView.builder(
-      key: PageStorageKey("filteredItems"),
       shrinkWrap: true,
       itemCount: list.length,
       physics: BouncingScrollPhysics(),
@@ -155,7 +154,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 ),
               ),
               onPressed: () {
-                showBottomSheet(context, homeStore.tabIndex);
+                _showBottomSheet(context, homeStore.tabIndex);
               },
             ),
           );
@@ -165,7 +164,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  void onItemClicked(BaseModel baseModel) {
+  void _onItemClicked(BaseModel baseModel) {
     Navigator.pushNamed(
       context,
       DetailsPage.routeName,
@@ -173,7 +172,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  void showBottomSheet(BuildContext context, int index) {
+  void _showBottomSheet(BuildContext context, int index) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,

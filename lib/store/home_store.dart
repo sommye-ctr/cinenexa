@@ -42,20 +42,20 @@ abstract class _HomeStore with Store {
       (tabIndex == defaultMovieIndex && isMovieFilterApplied) ||
       (tabIndex == defaultTvIndex && isTvFilterApplied);
 
+  @computed
+  EntityType? get currentType {
+    if (tabIndex == defaultMovieIndex) {
+      return EntityType.movie;
+    } else if (tabIndex == defaultTvIndex) {
+      return EntityType.tv;
+    }
+    return null;
+  }
+
   @action
   void tabChanged(int index) {
     tabIndex = index;
   }
-
-  /* @action
-  void movieDiscoverChanged(Discover discover) {
-    moviesDiscover = discover;
-  }
-
-  @action
-  void tvDiscoverChanged(Discover discover) {
-    tvDiscover = discover;
-  } */
 
   @action
   void onFilterApplied(Discover discover) {

@@ -33,7 +33,227 @@ class FilterPage extends StatelessWidget {
   })  : this.discover = discover ?? Discover(),
         super(key: key);
 
-  Widget certificationBuild(
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: ScreenSize.getPercentOfWidth(context, 0.02),
+      ),
+      child: Stack(
+        children: [
+          ListView(
+            physics: BouncingScrollPhysics(),
+            children: [
+              ..._buildSortBy(context),
+              Divider(),
+              ..._buildCertification(context),
+              Divider(),
+              ..._buildVoteAverage(context),
+              Divider(),
+              ..._buildReleaseYear(context),
+              Divider(),
+              ..._buildGenres(context),
+              SizedBox(
+                height: ScreenSize.getPercentOfHeight(context, 0.05),
+              ),
+            ],
+          ),
+          _buildButtons(context),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _buildSortBy(context) {
+    return [
+      _buildSpacing(context),
+      Text(
+        Strings.sortBy,
+        style: Style.headingStyle,
+      ),
+      _buildSpacing(context),
+      CustomCheckBoxList(
+        type: CheckBoxListType.list,
+        singleSelect: true,
+        selectedItems:
+            getSelectedSortBy() == null ? null : [getSelectedSortBy()!],
+        children: [
+          Strings.popularity,
+          Strings.voteAverage,
+          type == EntityType.movie ? Strings.releaseDate : Strings.airDate,
+        ],
+        onSelectionAdded: (values) {
+          if (type == EntityType.movie) {
+            switch (values.first) {
+              // as it is single select only 1 item will be there
+              case Strings.popularity:
+                discover.sortMoviesBy = SortMoviesBy.popularity;
+                break;
+              case Strings.voteAverage:
+                discover.sortMoviesBy = SortMoviesBy.voteAverage;
+                break;
+              case Strings.releaseDate:
+                discover.sortMoviesBy = SortMoviesBy.releaseDate;
+                break;
+            }
+          } else if (type == EntityType.tv) {
+            switch (values.first) {
+              case Strings.popularity:
+                discover.sortTvBy = SortTvBy.popularity;
+                break;
+              case Strings.voteAverage:
+                discover.sortTvBy = SortTvBy.voteAverage;
+                break;
+              case Strings.airDate:
+                discover.sortTvBy = SortTvBy.firstAirDate;
+                break;
+            } // as it is single select only 1 item will be there
+          }
+        },
+        onSelectionRemoved: (values) {
+          if (type == EntityType.movie) {
+            discover.sortMoviesBy = null;
+          } else if (type == EntityType.tv) {
+            discover.sortTvBy = null;
+          }
+        },
+        onSelectionChanged: (values) {},
+      ),
+    ];
+  }
+
+  List<Widget> _buildCertification(context) {
+    if (type == EntityType.movie) {
+      return [
+        Text.rich(
+          TextSpan(
+            children: [
+              TextSpan(
+                text: Strings.certification,
+                style: Style.headingStyle,
+              ),
+              TextSpan(
+                text: " ${Strings.certificationSubtitle}",
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 10,
+                ),
+              ),
+            ],
+          ),
+        ),
+        _buildSpacing(context),
+        FutureBuilder<List<Certification>>(
+          future: Requests.certificationsFuture(
+            Requests.certifications(type),
+          ),
+          builder: _buildCertificationList,
+        ),
+      ];
+    }
+    return [];
+  }
+
+  List<Widget> _buildVoteAverage(context) {
+    return [
+      Text(
+        Strings.voteAverage,
+        style: Style.headingStyle,
+      ),
+      _buildSpacing(context),
+      CustomRangeSlider(
+        values: getDefaultVoteAverage(),
+        min: DEFAULT_VOTE_AVERAGE.start,
+        max: DEFAULT_VOTE_AVERAGE.end,
+        onChanged: (changedValue) {
+          discover.voteAverage = changedValue;
+        },
+      ),
+    ];
+  }
+
+  List<Widget> _buildReleaseYear(context) {
+    return [
+      Text(
+        Strings.year,
+        style: Style.headingStyle,
+      ),
+      _buildSpacing(context),
+      CustomRangeSlider(
+        values: getDefaultYearValues(),
+        max: DEFAULT_YEAR.end,
+        min: DEFAULT_YEAR.start,
+        onChanged: (changedValues) {
+          discover.releaseDateRange = DateTimeRange(
+            start: DateTime(
+              changedValues.start.toInt(),
+            ),
+            end: DateTime(
+              changedValues.end.toInt(),
+            ),
+          );
+        },
+      ),
+    ];
+  }
+
+  List<Widget> _buildGenres(context) {
+    return [
+      Text(
+        Strings.genres,
+        style: Style.headingStyle,
+      ),
+      SizedBox(
+        height: ScreenSize.getPercentOfHeight(context, 0.01),
+      ),
+      FutureBuilder<List<Genre>>(
+        future: Requests.genreFuture(Requests.genres(type)),
+        builder: _buildGenresGrid,
+      ),
+    ];
+  }
+
+  Widget _buildButtons(context) {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Expanded(
+            flex: 1,
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: ElevatedButton(
+                  onPressed: () => onResetClick(context),
+                  child: Text(Strings.reset),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.white.withOpacity(0.5),
+                  )),
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                onPressed: () => onSubmitClick(context),
+                child: Text(Strings.submit),
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.white.withOpacity(0.5),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSpacing(context) {
+    return SizedBox(height: ScreenSize.getPercentOfHeight(context, 0.01));
+  }
+
+  Widget _buildCertificationList(
       BuildContext context, AsyncSnapshot<List<Certification>> snapshot) {
     if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
       List<String> items = snapshot.data!.map((e) => e.certification).toList();
@@ -58,7 +278,7 @@ class FilterPage extends StatelessWidget {
     return Container();
   }
 
-  Widget genreBuildGrid(
+  Widget _buildGenresGrid(
       BuildContext context, AsyncSnapshot<List<Genre>> snapshot) {
     if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
       return CustomCheckBoxList(
@@ -176,197 +396,5 @@ class FilterPage extends StatelessWidget {
       default:
         return null;
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: ScreenSize.getPercentOfWidth(context, 0.02),
-      ),
-      child: Stack(
-        children: [
-          ListView(
-            physics: BouncingScrollPhysics(),
-            children: [
-              SizedBox(
-                height: ScreenSize.getPercentOfHeight(context, 0.02),
-              ),
-              Text(
-                Strings.sortBy,
-                style: Style.headingStyle,
-              ),
-              SizedBox(
-                height: ScreenSize.getPercentOfHeight(context, 0.01),
-              ),
-              CustomCheckBoxList(
-                type: CheckBoxListType.list,
-                singleSelect: true,
-                selectedItems:
-                    getSelectedSortBy() == null ? null : [getSelectedSortBy()!],
-                children: [
-                  Strings.popularity,
-                  Strings.voteAverage,
-                  type == EntityType.movie
-                      ? Strings.releaseDate
-                      : Strings.airDate,
-                ],
-                onSelectionAdded: (values) {
-                  if (type == EntityType.movie) {
-                    switch (values.first) {
-                      // as it is single select only 1 item will be there
-                      case Strings.popularity:
-                        discover.sortMoviesBy = SortMoviesBy.popularity;
-                        break;
-                      case Strings.voteAverage:
-                        discover.sortMoviesBy = SortMoviesBy.voteAverage;
-                        break;
-                      case Strings.releaseDate:
-                        discover.sortMoviesBy = SortMoviesBy.releaseDate;
-                        break;
-                    }
-                  } else if (type == EntityType.tv) {
-                    switch (values.first) {
-                      case Strings.popularity:
-                        discover.sortTvBy = SortTvBy.popularity;
-                        break;
-                      case Strings.voteAverage:
-                        discover.sortTvBy = SortTvBy.voteAverage;
-                        break;
-                      case Strings.airDate:
-                        discover.sortTvBy = SortTvBy.firstAirDate;
-                        break;
-                    } // as it is single select only 1 item will be there
-                  }
-                },
-                onSelectionRemoved: (values) {
-                  if (type == EntityType.movie) {
-                    discover.sortMoviesBy = null;
-                  } else if (type == EntityType.tv) {
-                    discover.sortTvBy = null;
-                  }
-                },
-                onSelectionChanged: (values) {},
-              ),
-              Divider(),
-              if (type == EntityType.movie) ...[
-                Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: Strings.certification,
-                        style: Style.headingStyle,
-                      ),
-                      TextSpan(
-                        text: " ${Strings.certificationSubtitle}",
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 10,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: ScreenSize.getPercentOfHeight(context, 0.01),
-                ),
-                FutureBuilder<List<Certification>>(
-                  future: Requests.certificationsFuture(
-                    Requests.certifications(type),
-                  ),
-                  builder: certificationBuild,
-                ),
-              ],
-              Divider(),
-              Text(
-                Strings.voteAverage,
-                style: Style.headingStyle,
-              ),
-              SizedBox(
-                height: ScreenSize.getPercentOfHeight(context, 0.01),
-              ),
-              CustomRangeSlider(
-                values: getDefaultVoteAverage(),
-                min: DEFAULT_VOTE_AVERAGE.start,
-                max: DEFAULT_VOTE_AVERAGE.end,
-                onChanged: (changedValue) {
-                  discover.voteAverage = changedValue;
-                },
-              ),
-              Divider(),
-              Text(
-                Strings.year,
-                style: Style.headingStyle,
-              ),
-              SizedBox(
-                height: ScreenSize.getPercentOfHeight(context, 0.01),
-              ),
-              CustomRangeSlider(
-                  values: getDefaultYearValues(),
-                  max: DEFAULT_YEAR.end,
-                  min: DEFAULT_YEAR.start,
-                  onChanged: (changedValues) {
-                    discover.releaseDateRange = DateTimeRange(
-                      start: DateTime(
-                        changedValues.start.toInt(),
-                      ),
-                      end: DateTime(
-                        changedValues.end.toInt(),
-                      ),
-                    );
-                  }),
-              Divider(),
-              Text(
-                Strings.genres,
-                style: Style.headingStyle,
-              ),
-              SizedBox(
-                height: ScreenSize.getPercentOfHeight(context, 0.01),
-              ),
-              FutureBuilder<List<Genre>>(
-                future: Requests.genreFuture(Requests.genres(type)),
-                builder: genreBuildGrid,
-              ),
-              SizedBox(
-                height: ScreenSize.getPercentOfHeight(context, 0.05),
-              ),
-            ],
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: ElevatedButton(
-                        onPressed: () => onResetClick(context),
-                        child: Text(Strings.reset),
-                        style: ElevatedButton.styleFrom(
-                          primary: Colors.white.withOpacity(0.5),
-                        )),
-                  ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(
-                      onPressed: () => onSubmitClick(context),
-                      child: Text(Strings.submit),
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.white.withOpacity(0.5),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }
