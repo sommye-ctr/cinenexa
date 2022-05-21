@@ -1,9 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:mobx/mobx.dart';
 import 'package:watrix/models/discover.dart';
 
-import '../models/base_model.dart';
-import '../services/entity_type.dart';
-import '../services/requests.dart';
+import '../../models/base_model.dart';
+import '../../screens/details_page.dart';
+import '../../services/entity_type.dart';
+import '../../services/requests.dart';
 
 part 'home_store.g.dart';
 
@@ -116,5 +118,14 @@ abstract class _HomeStore with Store {
       filterTv.clear();
       filterTv.addAll(list);
     }
+  }
+
+  @action
+  void onItemClicked(BuildContext context, BaseModel baseModel) {
+    Navigator.pushNamed(
+      context,
+      DetailsPage.routeName,
+      arguments: baseModel,
+    );
   }
 }

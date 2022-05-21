@@ -1,21 +1,17 @@
-import 'dart:convert';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+
 import 'package:watrix/components/vote_indicator.dart';
 import 'package:watrix/models/base_model.dart';
-import 'package:watrix/models/movie.dart';
-import 'package:watrix/models/tv.dart';
-import 'package:watrix/services/constants.dart';
-import 'package:watrix/services/entity_type.dart';
-import 'package:watrix/services/requests.dart';
+import 'package:watrix/resources/strings.dart';
 import 'package:watrix/services/utils.dart';
+import 'package:watrix/store/details/details_page1_store.dart';
+import 'package:watrix/store/details/details_store.dart';
 import 'package:watrix/utils/date_time_formatter.dart';
 import 'package:watrix/widgets/bubble_page_indicator.dart';
 import 'package:watrix/widgets/rounded_button.dart';
 import 'package:watrix/widgets/screen_background_image.dart';
-
-import 'package:http/http.dart' as http;
 
 import '../utils/screen_size.dart';
 
@@ -23,7 +19,8 @@ class DetailsPage extends StatefulWidget {
   static const routeName = "/details";
 
   final BaseModel baseModel;
-  const DetailsPage({
+
+  DetailsPage({
     Key? key,
     required this.baseModel,
   }) : super(key: key);
@@ -33,32 +30,12 @@ class DetailsPage extends StatefulWidget {
 }
 
 class _DetailsPageState extends State<DetailsPage> {
-  int _currentIndex = 0;
-  Movie? movie;
-  Tv? tv;
+  late final DetailsStore detailsStore;
 
   @override
   void initState() {
-    fetch();
+    detailsStore = DetailsStore(baseModel: widget.baseModel);
     super.initState();
-  }
-
-  void fetch() async {
-    if (widget.baseModel.type == BaseModelType.movie) {
-      movie = await Requests.findMovie(id: widget.baseModel.id!);
-    } else if (widget.baseModel.type == BaseModelType.tv) {
-      tv = await Requests.findTv(id: widget.baseModel.id!);
-    }
-    setState(() {});
-  }
-
-  List<String>? getGenres() {
-    if (widget.baseModel.type == BaseModelType.movie) {
-      return movie?.genres?.map((e) => e.name).toList();
-    } else if (widget.baseModel.type == BaseModelType.tv) {
-      return tv?.genres?.map((e) => e.name).toList();
-    }
-    return null;
   }
 
   @override
@@ -69,15 +46,15 @@ class _DetailsPageState extends State<DetailsPage> {
           PageView(
             pageSnapping: true,
             physics: BouncingScrollPhysics(),
-            onPageChanged: onPageChanged,
+            onPageChanged: detailsStore.onPageChanged,
             children: [
               _Page1(
-                baseModel: widget.baseModel,
-                genres: getGenres(),
-                tvShowEndTime: tv?.lastAirDate,
-                runtime: movie?.runtime != null
-                    ? DateTimeFormatter.getTimeFromMin(movie!.runtime!)
-                    : null,
+                page1store: detailsStore.page1,
+                overview: detailsStore.baseModel.overview ?? "",
+                voteAverage: detailsStore.baseModel.voteAverage ?? 0,
+                type: detailsStore.baseModel.type!,
+                title: detailsStore.baseModel.title ?? "",
+                poster: detailsStore.baseModel.posterPath ?? "",
               ),
               Center(child: Text("Hello!")),
             ],
@@ -89,10 +66,14 @@ class _DetailsPageState extends State<DetailsPage> {
             ),
             child: Align(
               alignment: Alignment.bottomLeft,
-              child: BubblePageIndicator(
-                length: 5,
-                currentPage: _currentIndex,
-                selectedColor: Colors.white,
+              child: Observer(
+                builder: (context) {
+                  return BubblePageIndicator(
+                    length: 5,
+                    currentPage: detailsStore.pageIndex,
+                    selectedColor: Colors.white,
+                  );
+                },
               ),
             ),
           ),
@@ -100,68 +81,33 @@ class _DetailsPageState extends State<DetailsPage> {
       ),
     );
   }
-
-  void onPageChanged(int index) {
-    _currentIndex = index;
-    setState(() {});
-  }
 }
 
 class _Page1 extends StatelessWidget {
-  final BaseModel baseModel;
-  final List<String>? genres;
-  final String? runtime;
-  final String? tvShowEndTime;
+  //final BaseModel baseModel;
+  final DetailsPage1Store page1store;
+  final String title, poster, overview;
+  final double voteAverage;
+  final BaseModelType type;
+  //final String? runtime;
+  //final String? tvShowEndTime;
 
-  const _Page1({
+  _Page1({
     Key? key,
-    required this.baseModel,
-    this.genres,
-    this.runtime,
-    this.tvShowEndTime,
+    required this.page1store,
+    required this.overview,
+    required this.voteAverage,
+    required this.type,
+    required this.title,
+    required this.poster,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> genreWidgets = [];
-    for (String str in genres ?? []) {
-      genreWidgets.add(
-        Padding(
-          padding: EdgeInsets.only(
-            right: ScreenSize.getPercentOfWidth(context, 0.01),
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              color: Colors.grey.withOpacity(0.4),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(2),
-              child: Text(
-                "$str",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 12,
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
-    String date =
-        " (${DateTimeFormatter.getYearFromString(baseModel.releaseDate!)})";
-    if (tvShowEndTime != null) {
-      date = date.substring(0, date.length - 1);
-      date =
-          date + " - ${DateTimeFormatter.getYearFromString(tvShowEndTime!)})";
-    }
-
     return ScreenBackgroundImage(
       image: CachedNetworkImageProvider(
         Utils.getPosterUrl(
-          baseModel.posterPath!,
+          poster,
         ),
       ),
       child: Align(
@@ -177,93 +123,35 @@ class _Page1 extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: Utils.getColorByEntity(baseModel.type!),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(2),
-                  child: Text(
-                    "${Utils.getEntityTypeBy(baseModel.type!)}",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 12,
-                    ),
+              _buildEntityType(),
+              _buildMainDetails(),
+              _buildSpacing(context),
+              Row(
+                children: [
+                  VoteIndicator(
+                    vote: voteAverage,
                   ),
-                ),
+                  _buildSpacing(context),
+                  _buildGenres(),
+                ],
               ),
-              Flexible(
-                child: Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: baseModel.title!,
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      TextSpan(
-                        text: date,
-                        style: TextStyle(
-                          color: Colors.grey,
-                        ),
-                      ),
-                      if (runtime != null)
-                        TextSpan(
-                          text: " - ${runtime}",
-                          style: TextStyle(
-                            color: Colors.grey,
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: ScreenSize.getPercentOfHeight(context, 0.01),
-              ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                physics: BouncingScrollPhysics(),
-                child: Row(
-                  children: [
-                    VoteIndicator(
-                      vote: baseModel.voteAverage!,
-                    ),
-                    SizedBox(
-                      width: ScreenSize.getPercentOfWidth(context, 0.01),
-                    ),
-                    Row(
-                      children: genreWidgets,
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: ScreenSize.getPercentOfHeight(context, 0.01),
-              ),
+              _buildSpacing(context),
               Text(
-                baseModel.overview!,
+                overview,
                 maxLines: 15,
               ),
-              SizedBox(
-                height: ScreenSize.getPercentOfHeight(context, 0.01),
-              ),
+              _buildSpacing(context),
               Row(
                 children: [
                   RoundedButton(
                     onPressed: () {},
-                    child: Text("Add to List"),
+                    child: Text(Strings.addToList),
                     type: RoundedButtonType.filled,
                   ),
-                  SizedBox(
-                    width: ScreenSize.getPercentOfWidth(context, 0.01),
-                  ),
+                  _buildSpacing(context),
                   RoundedButton(
                     onPressed: () {},
-                    child: Text("View Info"),
+                    child: Text(Strings.viewInfo),
                     type: RoundedButtonType.outlined,
                   ),
                 ],
@@ -273,5 +161,123 @@ class _Page1 extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildSpacing(context) {
+    return SizedBox(
+      height: ScreenSize.getPercentOfHeight(context, 0.01),
+      width: ScreenSize.getPercentOfHeight(context, 0.01),
+    );
+  }
+
+  Widget _buildEntityType() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        color: Utils.getColorByEntity(type),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(2),
+        child: Text(
+          "${Utils.getEntityTypeBy(type)}",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 12,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMainDetails() {
+    return Observer(
+      builder: (_) {
+        return Flexible(
+          child: Text.rich(
+            TextSpan(
+              children: [
+                _buildTitle(),
+                _buildReleaseInfo(),
+                if (page1store.runtime != null) _buildRuntime(),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  TextSpan _buildTitle() {
+    return TextSpan(
+      text: title,
+      style: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  TextSpan _buildReleaseInfo() {
+    return TextSpan(
+      text: _getReleaseInfo(),
+      style: TextStyle(
+        color: Colors.grey,
+      ),
+    );
+  }
+
+  TextSpan _buildRuntime() {
+    return TextSpan(
+      text: " - ${DateTimeFormatter.getTimeFromMin(page1store.runtime!)}",
+      style: TextStyle(
+        color: Colors.grey,
+      ),
+    );
+  }
+
+  Widget _buildGenres() {
+    return Observer(
+      builder: (context) {
+        List<Widget> widgets = [];
+        for (var item in page1store.genres) {
+          widgets.add(Padding(
+            padding: EdgeInsets.only(
+              right: ScreenSize.getPercentOfWidth(context, 0.01),
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: Colors.grey.withOpacity(0.4),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(2),
+                child: Text(
+                  "${item.name}",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            ),
+          ));
+        }
+
+        return Row(
+          children: widgets,
+        );
+      },
+    );
+  }
+
+  String _getReleaseInfo() {
+    String date =
+        " (${DateTimeFormatter.getYearFromString(page1store.releaseDate!)})";
+    if (page1store.tvShowEndTime != null) {
+      date = date.substring(0, date.length - 1);
+      date = date +
+          " - ${DateTimeFormatter.getYearFromString(page1store.tvShowEndTime!)})";
+    }
+    return date;
   }
 }

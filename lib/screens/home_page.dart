@@ -4,10 +4,8 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:watrix/models/base_model.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
-import 'package:watrix/screens/details_page.dart';
 import 'package:watrix/screens/filter_page.dart';
 import 'package:watrix/services/entity_type.dart';
-import 'package:watrix/store/home_store.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/components/bottom_nav_bar.dart';
 import 'package:watrix/widgets/home_featured.dart';
@@ -17,6 +15,7 @@ import 'package:watrix/widgets/home_tv.dart';
 import '../models/discover.dart';
 import '../services/constants.dart';
 import '../components/movie_tile.dart';
+import '../store/home/home_store.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -25,7 +24,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
+class _HomePageState extends State<HomePage> {
   final HomeStore homeStore = HomeStore(
     defaultMovieIndex: 1,
     defaultTvIndex: 2,
@@ -45,7 +44,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             padding: EdgeInsets.symmetric(
               horizontal: ScreenSize.getPercentOfWidth(context, 0.02),
             ),
-            child: _buildTabBar(),
+            child: _buildBody(),
           ),
         ),
         _buildFilterFab(),
@@ -53,7 +52,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildTabBar() {
+  Widget _buildBody() {
     return DefaultTabController(
       length: 4,
       child: Column(
@@ -165,11 +164,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   void _onItemClicked(BaseModel baseModel) {
-    Navigator.pushNamed(
-      context,
-      DetailsPage.routeName,
-      arguments: baseModel,
-    );
+    homeStore.onItemClicked(context, baseModel);
   }
 
   void _showBottomSheet(BuildContext context, int index) {

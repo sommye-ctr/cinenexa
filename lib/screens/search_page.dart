@@ -5,7 +5,7 @@ import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/services/constants.dart';
 import 'package:watrix/services/utils.dart';
-import 'package:watrix/store/search_store.dart';
+import 'package:watrix/store/search/search_store.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/components/movie_tile.dart';
 import 'package:watrix/components/search_result_tile.dart';

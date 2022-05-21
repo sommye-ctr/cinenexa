@@ -16,6 +16,13 @@ mixin _$HomeStore on _HomeStore, Store {
       (_$isFilterAppliedComputed ??= Computed<bool>(() => super.isFilterApplied,
               name: '_HomeStore.isFilterApplied'))
           .value;
+  Computed<EntityType?>? _$currentTypeComputed;
+
+  @override
+  EntityType? get currentType =>
+      (_$currentTypeComputed ??= Computed<EntityType?>(() => super.currentType,
+              name: '_HomeStore.currentType'))
+          .value;
 
   final _$isMovieFilterAppliedAtom =
       Atom(name: '_HomeStore.isMovieFilterApplied');
@@ -160,6 +167,17 @@ mixin _$HomeStore on _HomeStore, Store {
   }
 
   @override
+  void onItemClicked(BuildContext context, BaseModel baseModel) {
+    final _$actionInfo = _$_HomeStoreActionController.startAction(
+        name: '_HomeStore.onItemClicked');
+    try {
+      return super.onItemClicked(context, baseModel);
+    } finally {
+      _$_HomeStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 isMovieFilterApplied: ${isMovieFilterApplied},
@@ -169,7 +187,8 @@ moviesDiscover: ${moviesDiscover},
 tvDiscover: ${tvDiscover},
 filterMovies: ${filterMovies},
 filterTv: ${filterTv},
-isFilterApplied: ${isFilterApplied}
+isFilterApplied: ${isFilterApplied},
+currentType: ${currentType}
     ''';
   }
 }

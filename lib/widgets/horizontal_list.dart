@@ -46,7 +46,7 @@ class HorizontalList extends StatelessWidget {
               BaseModel item = snapshot.data![index];
 
               return MovieTile(
-                image: Utils.getPosterUrl(item.posterPath!),
+                image: Utils.getPosterUrl(item.posterPath ?? ""),
                 text: item.title!,
                 width: ScreenSize.getPercentOfWidth(context, itemWidthPercent),
                 showTitle: showTitle,

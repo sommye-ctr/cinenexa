@@ -32,4 +32,8 @@ class Strings {
   static const String submit = "Submit";
   static const String reset = "Reset";
   static const String certificationSubtitle = "Long Press for description";
+
+//Details
+  static const String addToList = "Add to list";
+  static const String viewInfo = "View Info";
 }

@@ -1,8 +1,8 @@
 import 'package:mobx/mobx.dart';
 import 'package:watrix/models/base_model.dart';
 
-import '../services/entity_type.dart';
-import '../services/requests.dart';
+import '../../services/entity_type.dart';
+import '../../services/requests.dart';
 
 part 'search_store.g.dart';
 
