@@ -98,6 +98,7 @@ abstract class _HomeStore with Store {
     }
   }
 
+  @action
   void _fetchFilteredItems(String value) async {
     List<BaseModel> list = await Requests.discoverFuture(
       type: tabIndex == defaultMovieIndex ? EntityType.movie : EntityType.tv,

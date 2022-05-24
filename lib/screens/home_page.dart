@@ -24,7 +24,8 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
   final HomeStore homeStore = HomeStore(
     defaultMovieIndex: 1,
     defaultTvIndex: 2,
@@ -47,7 +48,7 @@ class _HomePageState extends State<HomePage> {
             child: _buildBody(),
           ),
         ),
-        _buildFilterFab(),
+        Observer(builder: (context) => _buildFilterFab()),
       ],
     );
   }
@@ -63,7 +64,6 @@ class _HomePageState extends State<HomePage> {
             indicatorColor: Colors.transparent,
             isScrollable: true,
             onTap: homeStore.tabChanged,
-            physics: BouncingScrollPhysics(),
             tabs: [
               Tab(
                 text: Strings.featured,
@@ -79,16 +79,20 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-          Expanded(
-            child: TabBarView(
-              physics: BouncingScrollPhysics(),
-              children: [
-                featured,
-                _buildMovieBody(),
-                _buildTvBody(),
-                myList,
-              ],
-            ),
+          Observer(
+            builder: (_) {
+              return Expanded(
+                child: TabBarView(
+                  physics: NeverScrollableScrollPhysics(),
+                  children: [
+                    featured,
+                    _buildMovieBody(),
+                    _buildTvBody(),
+                    myList,
+                  ],
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -107,30 +111,6 @@ class _HomePageState extends State<HomePage> {
       return _buildFilteredItems(homeStore.filterTv);
     }
     return tv;
-  }
-
-  Widget _buildFilteredItems(List<BaseModel> list) {
-    return GridView.builder(
-      shrinkWrap: true,
-      itemCount: list.length,
-      physics: BouncingScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        childAspectRatio: Style.movieTileWithTitleRatio,
-      ),
-      itemBuilder: (context, index) {
-        return MovieTile(
-          image:
-              "${Constants.imageBaseUrl}${Constants.posterSize}${list[index].posterPath}",
-          width: ScreenSize.getPercentOfWidth(
-            context,
-            0.29,
-          ),
-          showTitle: true,
-          text: list[index].title!,
-        );
-      },
-    );
   }
 
   Widget _buildFilterFab() {
@@ -159,6 +139,31 @@ class _HomePageState extends State<HomePage> {
           );
         }
         return Container();
+      },
+    );
+  }
+
+  Widget _buildFilteredItems(List<BaseModel> list) {
+    return GridView.builder(
+      shrinkWrap: true,
+      itemCount: list.length,
+      physics: BouncingScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        childAspectRatio: Style.movieTileWithTitleRatio,
+      ),
+      itemBuilder: (context, index) {
+        return MovieTile(
+          image:
+              "${Constants.imageBaseUrl}${Constants.posterSize}${list[index].posterPath}",
+          width: ScreenSize.getPercentOfWidth(
+            context,
+            0.29,
+          ),
+          showTitle: true,
+          text: list[index].title!,
+          onClick: () => _onItemClicked(list[index]),
+        );
       },
     );
   }
