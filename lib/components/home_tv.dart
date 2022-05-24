@@ -5,7 +5,7 @@ import '../services/duration_type.dart';
 import '../services/entity_type.dart';
 import '../services/requests.dart';
 import '../utils/screen_size.dart';
-import 'horizontal_list.dart';
+import '../widgets/horizontal_list.dart';
 
 class HomeTv extends StatefulWidget {
   final Function(BaseModel data) onItemClicked;

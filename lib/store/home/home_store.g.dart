@@ -71,6 +71,36 @@ mixin _$HomeStore on _HomeStore, Store {
     });
   }
 
+  final _$filterMoviePageAtom = Atom(name: '_HomeStore.filterMoviePage');
+
+  @override
+  int get filterMoviePage {
+    _$filterMoviePageAtom.reportRead();
+    return super.filterMoviePage;
+  }
+
+  @override
+  set filterMoviePage(int value) {
+    _$filterMoviePageAtom.reportWrite(value, super.filterMoviePage, () {
+      super.filterMoviePage = value;
+    });
+  }
+
+  final _$filterTvPageAtom = Atom(name: '_HomeStore.filterTvPage');
+
+  @override
+  int get filterTvPage {
+    _$filterTvPageAtom.reportRead();
+    return super.filterTvPage;
+  }
+
+  @override
+  set filterTvPage(int value) {
+    _$filterTvPageAtom.reportWrite(value, super.filterTvPage, () {
+      super.filterTvPage = value;
+    });
+  }
+
   final _$moviesDiscoverAtom = Atom(name: '_HomeStore.moviesDiscover');
 
   @override
@@ -104,13 +134,13 @@ mixin _$HomeStore on _HomeStore, Store {
   final _$filterMoviesAtom = Atom(name: '_HomeStore.filterMovies');
 
   @override
-  List<BaseModel> get filterMovies {
+  ObservableList<BaseModel> get filterMovies {
     _$filterMoviesAtom.reportRead();
     return super.filterMovies;
   }
 
   @override
-  set filterMovies(List<BaseModel> value) {
+  set filterMovies(ObservableList<BaseModel> value) {
     _$filterMoviesAtom.reportWrite(value, super.filterMovies, () {
       super.filterMovies = value;
     });
@@ -119,16 +149,25 @@ mixin _$HomeStore on _HomeStore, Store {
   final _$filterTvAtom = Atom(name: '_HomeStore.filterTv');
 
   @override
-  List<BaseModel> get filterTv {
+  ObservableList<BaseModel> get filterTv {
     _$filterTvAtom.reportRead();
     return super.filterTv;
   }
 
   @override
-  set filterTv(List<BaseModel> value) {
+  set filterTv(ObservableList<BaseModel> value) {
     _$filterTvAtom.reportWrite(value, super.filterTv, () {
       super.filterTv = value;
     });
+  }
+
+  final _$_fetchFilteredItemsAsyncAction =
+      AsyncAction('_HomeStore._fetchFilteredItems');
+
+  @override
+  Future _fetchFilteredItems(String value, {bool pageEndReached = false}) {
+    return _$_fetchFilteredItemsAsyncAction.run(
+        () => super._fetchFilteredItems(value, pageEndReached: pageEndReached));
   }
 
   final _$_HomeStoreActionController = ActionController(name: '_HomeStore');
@@ -183,6 +222,8 @@ mixin _$HomeStore on _HomeStore, Store {
 isMovieFilterApplied: ${isMovieFilterApplied},
 isTvFilterApplied: ${isTvFilterApplied},
 tabIndex: ${tabIndex},
+filterMoviePage: ${filterMoviePage},
+filterTvPage: ${filterTvPage},
 moviesDiscover: ${moviesDiscover},
 tvDiscover: ${tvDiscover},
 filterMovies: ${filterMovies},

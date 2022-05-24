@@ -28,6 +28,10 @@ abstract class _HomeStore with Store {
 
   @observable
   int tabIndex = 0;
+  @observable
+  int filterMoviePage = 1;
+  @observable
+  int filterTvPage = 1;
 
   @observable
   Discover? moviesDiscover;
@@ -35,9 +39,9 @@ abstract class _HomeStore with Store {
   Discover? tvDiscover;
 
   @observable
-  List<BaseModel> filterMovies = [];
+  ObservableList<BaseModel> filterMovies = <BaseModel>[].asObservable();
   @observable
-  List<BaseModel> filterTv = [];
+  ObservableList<BaseModel> filterTv = <BaseModel>[].asObservable();
 
   @computed
   bool get isFilterApplied =>
@@ -86,12 +90,12 @@ abstract class _HomeStore with Store {
   @action
   void onFilterReset() {
     if (tabIndex == defaultMovieIndex) {
-      //_movieFilterPage = 1;
+      filterMoviePage = 1;
       isMovieFilterApplied = false;
       moviesDiscover = null;
       filterMovies.clear();
     } else if (tabIndex == 2) {
-//      _tvFilterPage = 1;
+      filterTvPage = 1;
       isTvFilterApplied = false;
       tvDiscover = null;
       filterTv.clear();
@@ -99,24 +103,52 @@ abstract class _HomeStore with Store {
   }
 
   @action
-  void _fetchFilteredItems(String value) async {
+  void onFilterPageEndReached() {
+    late Discover discover;
+    if (tabIndex == defaultMovieIndex) {
+      discover = moviesDiscover!;
+      filterMoviePage++;
+    } else {
+      discover = tvDiscover!;
+      filterTvPage++;
+    }
+    _fetchFilteredItems(
+      Requests.discover(
+        type: tabIndex == defaultMovieIndex ? EntityType.movie : EntityType.tv,
+        certification: discover.certification,
+        releaseDateLessThan: discover.releaseDateRange?.end,
+        releaseDateMoreThan: discover.releaseDateRange?.start,
+        voteAverageGreaterThan: discover.voteAverage?.start.toInt(),
+        voteAverageLessThan: discover.voteAverage?.end.toInt(),
+        withGenres: discover.genres,
+        sortMoviesBy: discover.sortMoviesBy,
+        sortTvBy: discover.sortTvBy,
+      ),
+      pageEndReached: true,
+    );
+  }
+
+  @action
+  Future _fetchFilteredItems(String value,
+      {bool pageEndReached = false}) async {
     List<BaseModel> list = await Requests.discoverFuture(
       type: tabIndex == defaultMovieIndex ? EntityType.movie : EntityType.tv,
       query: value,
-      //page: tabIndex == 1 ? _movieFilterPage : _tvFilterPage, //TODO FIX this
-      page: 1,
+      page: tabIndex == defaultMovieIndex
+          ? filterMoviePage
+          : filterTvPage, //TODO FIX this
     );
     if (tabIndex == defaultMovieIndex) {
-      filterMovies = [
+      /* filterMovies = [
         ...filterMovies,
-      ];
-      filterMovies.clear();
+      ]; */
+      if (!pageEndReached) filterMovies.clear();
       filterMovies.addAll(list);
     } else if (tabIndex == defaultTvIndex) {
-      filterTv = [
+      /* filterTv = [
         ...filterTv,
-      ];
-      filterTv.clear();
+      ]; */
+      if (!pageEndReached) filterTv.clear();
       filterTv.addAll(list);
     }
   }

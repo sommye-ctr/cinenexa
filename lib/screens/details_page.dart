@@ -45,7 +45,6 @@ class _DetailsPageState extends State<DetailsPage> {
         children: [
           PageView(
             pageSnapping: true,
-            physics: BouncingScrollPhysics(),
             onPageChanged: detailsStore.onPageChanged,
             children: [
               _Page1(
@@ -263,8 +262,11 @@ class _Page1 extends StatelessWidget {
           ));
         }
 
-        return Row(
-          children: widgets,
+        return Flexible(
+          child: Wrap(
+            runSpacing: ScreenSize.getPercentOfWidth(context, 0.01),
+            children: widgets,
+          ),
         );
       },
     );

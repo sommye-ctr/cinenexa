@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:watrix/models/base_model.dart';
 
-import '../models/base_model.dart';
 import '../services/duration_type.dart';
 import '../services/entity_type.dart';
 import '../services/requests.dart';
 import '../utils/screen_size.dart';
-import 'horizontal_list.dart';
-import 'image_carousel.dart';
+import '../widgets/horizontal_list.dart';
 
-class HomeFeatured extends StatefulWidget {
+class HomeMovies extends StatefulWidget {
   final Function(BaseModel data) onItemClicked;
-
-  const HomeFeatured({Key? key, required this.onItemClicked}) : super(key: key);
+  const HomeMovies({Key? key, required this.onItemClicked}) : super(key: key);
 
   @override
-  State<HomeFeatured> createState() => _HomeFeaturedState();
+  State<HomeMovies> createState() => _HomeMoviesState();
 }
 
-class _HomeFeaturedState extends State<HomeFeatured>
+class _HomeMoviesState extends State<HomeMovies>
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
@@ -28,12 +26,26 @@ class _HomeFeaturedState extends State<HomeFeatured>
     return ListView(
       physics: BouncingScrollPhysics(),
       children: [
-        ImageCarousel(
-          Requests.titlesFuture(
-            Requests.trending(EntityType.all, DurationType.day),
-            limit: 5,
+        HorizontalList(
+          future: Requests.titlesFuture(
+              Requests.trending(EntityType.movie, DurationType.day)),
+          heading: "Trending Today",
+          onClick: (data) => widget.onItemClicked(data),
+          itemWidthPercent: 0.3,
+          showTitle: true,
+        ),
+        SizedBox(
+          height: ScreenSize.getPercentOfHeight(
+            context,
+            0.02,
           ),
-          onPageChanged: (page, home) {},
+        ),
+        HorizontalList(
+          future: Requests.titlesFuture(Requests.topRated(EntityType.movie)),
+          heading: "Top Rated",
+          onClick: (data) => widget.onItemClicked(data),
+          itemWidthPercent: 0.3,
+          showTitle: true,
         ),
         SizedBox(
           height: ScreenSize.getPercentOfHeight(
@@ -43,36 +55,10 @@ class _HomeFeaturedState extends State<HomeFeatured>
         ),
         HorizontalList(
           future: Requests.titlesFuture(Requests.popular(EntityType.movie)),
-          heading: "Popular Movies",
+          heading: "Popular",
           onClick: (data) => widget.onItemClicked(data),
           itemWidthPercent: 0.3,
-          showTitle: false,
-        ),
-        SizedBox(
-          height: ScreenSize.getPercentOfHeight(
-            context,
-            0.02,
-          ),
-        ),
-        HorizontalList(
-          future: Requests.titlesFuture(Requests.popular(EntityType.tv)),
-          heading: "Popular TV Shows",
-          onClick: (data) => widget.onItemClicked(data),
-          itemWidthPercent: 0.3,
-          showTitle: false,
-        ),
-        SizedBox(
-          height: ScreenSize.getPercentOfHeight(
-            context,
-            0.02,
-          ),
-        ),
-        HorizontalList(
-          future: Requests.titlesFuture(Requests.popular(EntityType.people)),
-          heading: "Popular Actors",
-          onClick: (data) => widget.onItemClicked(data),
-          itemWidthPercent: 0.3,
-          showTitle: false,
+          showTitle: true,
         ),
         SizedBox(
           height: ScreenSize.getPercentOfHeight(
@@ -85,31 +71,15 @@ class _HomeFeaturedState extends State<HomeFeatured>
             Requests.trending(EntityType.movie, DurationType.week),
             skip: true,
           ),
-          heading: "Weekly Trending Movies",
+          heading: "Trending this Week",
           onClick: (data) => widget.onItemClicked(data),
           itemWidthPercent: 0.3,
-          showTitle: false,
+          showTitle: true,
         ),
         SizedBox(
           height: ScreenSize.getPercentOfHeight(
             context,
             0.02,
-          ),
-        ),
-        HorizontalList(
-          future: Requests.titlesFuture(
-            Requests.trending(EntityType.tv, DurationType.week),
-            skip: true,
-          ),
-          heading: "Weekly Trending TV Shows",
-          onClick: (data) => widget.onItemClicked(data),
-          itemWidthPercent: 0.3,
-          showTitle: false,
-        ),
-        SizedBox(
-          height: ScreenSize.getPercentOfHeight(
-            context,
-            0.08,
           ),
         ),
       ],

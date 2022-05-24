@@ -1,6 +1,7 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:watrix/models/base_model.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
@@ -8,9 +9,9 @@ import 'package:watrix/screens/filter_page.dart';
 import 'package:watrix/services/entity_type.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/components/bottom_nav_bar.dart';
-import 'package:watrix/widgets/home_featured.dart';
-import 'package:watrix/widgets/home_movies.dart';
-import 'package:watrix/widgets/home_tv.dart';
+import 'package:watrix/components/home_featured.dart';
+import 'package:watrix/components/home_movies.dart';
+import 'package:watrix/components/home_tv.dart';
 
 import '../models/discover.dart';
 import '../services/constants.dart';
@@ -144,27 +145,32 @@ class _HomePageState extends State<HomePage>
   }
 
   Widget _buildFilteredItems(List<BaseModel> list) {
-    return GridView.builder(
-      shrinkWrap: true,
-      itemCount: list.length,
-      physics: BouncingScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        childAspectRatio: Style.movieTileWithTitleRatio,
-      ),
-      itemBuilder: (context, index) {
-        return MovieTile(
-          image:
-              "${Constants.imageBaseUrl}${Constants.posterSize}${list[index].posterPath}",
-          width: ScreenSize.getPercentOfWidth(
-            context,
-            0.29,
-          ),
-          showTitle: true,
-          text: list[index].title!,
-          onClick: () => _onItemClicked(list[index]),
-        );
+    return LazyLoadScrollView(
+      onEndOfPage: () {
+        homeStore.onFilterPageEndReached();
       },
+      child: GridView.builder(
+        shrinkWrap: true,
+        itemCount: list.length,
+        physics: BouncingScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          childAspectRatio: Style.movieTileWithTitleRatio,
+        ),
+        itemBuilder: (context, index) {
+          return MovieTile(
+            image:
+                "${Constants.imageBaseUrl}${Constants.posterSize}${list[index].posterPath}",
+            width: ScreenSize.getPercentOfWidth(
+              context,
+              0.29,
+            ),
+            showTitle: true,
+            text: list[index].title!,
+            onClick: () => _onItemClicked(list[index]),
+          );
+        },
+      ),
     );
   }
 
