@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:mobx/mobx.dart';
 import 'package:watrix/models/base_model.dart';
+import 'package:watrix/screens/search_result_page.dart';
 
 import '../../services/entity_type.dart';
 import '../../services/requests.dart';
@@ -15,70 +17,55 @@ enum SearchType {
 }
 
 abstract class _SearchStore with Store {
+  _SearchStore() {
+    _fetchItems(
+      Requests.titlesFuture(
+        Requests.popular(
+          EntityType.movie,
+          page: 1,
+        ),
+      ),
+    );
+  }
+
   @observable
-  Future<List<BaseModel>> future =
-      Requests.titlesFuture(Requests.popular(EntityType.movie));
+  ObservableList<BaseModel> items = <BaseModel>[].asObservable();
+
+  @observable
+  int page = 1;
 
   @observable
   String searchTerm = "";
 
-  @observable
-  bool searchDone = false;
-
-  @observable
-  SearchType searchType = SearchType.movie;
-
   @action
-  void searchTermChanged(String term) {
-    searchTerm = term;
+  Future _fetchItems(Future future, {bool pageEndReached = false}) async {
+    if (!pageEndReached) items.clear();
+    List<BaseModel> list = await future;
+    items.addAll(list);
   }
 
   @action
-  void searchTypeChanged(SearchType type) {
-    searchType = type;
-    String base = "";
-    switch (type) {
-      case SearchType.movie:
-        base = Requests.search(EntityType.movie);
-        break;
-      case SearchType.tv:
-        base = Requests.search(EntityType.tv);
-        break;
-      case SearchType.people:
-        base = Requests.search(EntityType.people);
-        break;
-    }
-    future = Requests.searchFuture(searchTerm, base);
+  void searchTermChanged(String value) {
+    searchTerm = value;
   }
 
   @action
-  void searchClicked() {
-    EntityType entityType;
-    switch (searchType) {
-      case SearchType.movie:
-        entityType = EntityType.movie;
-        break;
-      case SearchType.tv:
-        entityType = EntityType.tv;
-        break;
-      case SearchType.people:
-        entityType = EntityType.people;
-        break;
-    }
-    future = Requests.searchFuture(
-      searchTerm,
-      Requests.search(entityType),
+  void searchClicked(context) {
+    Navigator.pushNamed(
+      context,
+      SearchResultPage.routeName,
+      arguments: searchTerm,
     );
-    searchDone = true;
   }
 
   @action
-  void backClicked() {
-    future = Requests.titlesFuture(
-      Requests.popular(EntityType.movie),
+  void onEndOfPageReached() {
+    page++;
+    _fetchItems(
+      Requests.titlesFuture(
+        Requests.popular(EntityType.movie, page: page),
+      ),
+      pageEndReached: true,
     );
-    searchDone = false;
-    searchType = SearchType.movie;
-    searchTerm = "";
   }
 }

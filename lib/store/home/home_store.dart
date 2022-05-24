@@ -134,9 +134,7 @@ abstract class _HomeStore with Store {
     List<BaseModel> list = await Requests.discoverFuture(
       type: tabIndex == defaultMovieIndex ? EntityType.movie : EntityType.tv,
       query: value,
-      page: tabIndex == defaultMovieIndex
-          ? filterMoviePage
-          : filterTvPage, //TODO FIX this
+      page: tabIndex == defaultMovieIndex ? filterMoviePage : filterTvPage,
     );
     if (tabIndex == defaultMovieIndex) {
       /* filterMovies = [

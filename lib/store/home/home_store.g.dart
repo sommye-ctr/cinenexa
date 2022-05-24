@@ -165,7 +165,8 @@ mixin _$HomeStore on _HomeStore, Store {
       AsyncAction('_HomeStore._fetchFilteredItems');
 
   @override
-  Future _fetchFilteredItems(String value, {bool pageEndReached = false}) {
+  Future<dynamic> _fetchFilteredItems(String value,
+      {bool pageEndReached = false}) {
     return _$_fetchFilteredItemsAsyncAction.run(
         () => super._fetchFilteredItems(value, pageEndReached: pageEndReached));
   }
@@ -200,6 +201,17 @@ mixin _$HomeStore on _HomeStore, Store {
         name: '_HomeStore.onFilterReset');
     try {
       return super.onFilterReset();
+    } finally {
+      _$_HomeStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void onFilterPageEndReached() {
+    final _$actionInfo = _$_HomeStoreActionController.startAction(
+        name: '_HomeStore.onFilterPageEndReached');
+    try {
+      return super.onFilterPageEndReached();
     } finally {
       _$_HomeStoreActionController.endAction(_$actionInfo);
     }

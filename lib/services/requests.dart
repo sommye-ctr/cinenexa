@@ -214,7 +214,8 @@ class Requests {
     return (parsedList as List).map((e) => Genre.fromMap(e)).toList();
   }
 
-  static Future<List<BaseModel>> searchFuture(String query, String base) async {
+  static Future<List<BaseModel>> searchFuture(String query, String base,
+      {int page = 1}) async {
     if (query.length < 1) {
       throw ErrorHint(
           "The length of query term cannot be less than 1 characters");
@@ -222,7 +223,8 @@ class Requests {
 
     String encoded = Uri.encodeFull(query);
 
-    final response = await http.get(Uri.parse(base + "&query=$encoded"));
+    final response =
+        await http.get(Uri.parse(base + "&query=$encoded&page=$page"));
     var parsedList = json.decode(response.body)['results'];
     return Utils.convertToListString(parsedList);
   }

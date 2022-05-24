@@ -9,18 +9,33 @@ part of 'search_store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
 mixin _$SearchStore on _SearchStore, Store {
-  final _$futureAtom = Atom(name: '_SearchStore.future');
+  final _$itemsAtom = Atom(name: '_SearchStore.items');
 
   @override
-  Future<List<BaseModel>> get future {
-    _$futureAtom.reportRead();
-    return super.future;
+  ObservableList<BaseModel> get items {
+    _$itemsAtom.reportRead();
+    return super.items;
   }
 
   @override
-  set future(Future<List<BaseModel>> value) {
-    _$futureAtom.reportWrite(value, super.future, () {
-      super.future = value;
+  set items(ObservableList<BaseModel> value) {
+    _$itemsAtom.reportWrite(value, super.items, () {
+      super.items = value;
+    });
+  }
+
+  final _$pageAtom = Atom(name: '_SearchStore.page');
+
+  @override
+  int get page {
+    _$pageAtom.reportRead();
+    return super.page;
+  }
+
+  @override
+  set page(int value) {
+    _$pageAtom.reportWrite(value, super.page, () {
+      super.page = value;
     });
   }
 
@@ -39,77 +54,34 @@ mixin _$SearchStore on _SearchStore, Store {
     });
   }
 
-  final _$searchDoneAtom = Atom(name: '_SearchStore.searchDone');
+  final _$_fetchItemsAsyncAction = AsyncAction('_SearchStore._fetchItems');
 
   @override
-  bool get searchDone {
-    _$searchDoneAtom.reportRead();
-    return super.searchDone;
-  }
-
-  @override
-  set searchDone(bool value) {
-    _$searchDoneAtom.reportWrite(value, super.searchDone, () {
-      super.searchDone = value;
-    });
-  }
-
-  final _$searchTypeAtom = Atom(name: '_SearchStore.searchType');
-
-  @override
-  SearchType get searchType {
-    _$searchTypeAtom.reportRead();
-    return super.searchType;
-  }
-
-  @override
-  set searchType(SearchType value) {
-    _$searchTypeAtom.reportWrite(value, super.searchType, () {
-      super.searchType = value;
-    });
+  Future<dynamic> _fetchItems(Future<dynamic> future,
+      {bool pageEndReached = false}) {
+    return _$_fetchItemsAsyncAction
+        .run(() => super._fetchItems(future, pageEndReached: pageEndReached));
   }
 
   final _$_SearchStoreActionController = ActionController(name: '_SearchStore');
 
   @override
-  void searchTermChanged(String term) {
-    final _$actionInfo = _$_SearchStoreActionController.startAction(
-        name: '_SearchStore.searchTermChanged');
-    try {
-      return super.searchTermChanged(term);
-    } finally {
-      _$_SearchStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void searchTypeChanged(SearchType type) {
-    final _$actionInfo = _$_SearchStoreActionController.startAction(
-        name: '_SearchStore.searchTypeChanged');
-    try {
-      return super.searchTypeChanged(type);
-    } finally {
-      _$_SearchStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void searchClicked() {
+  void searchClicked(dynamic context) {
     final _$actionInfo = _$_SearchStoreActionController.startAction(
         name: '_SearchStore.searchClicked');
     try {
-      return super.searchClicked();
+      return super.searchClicked(context);
     } finally {
       _$_SearchStoreActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  void backClicked() {
+  void onEndOfPageReached() {
     final _$actionInfo = _$_SearchStoreActionController.startAction(
-        name: '_SearchStore.backClicked');
+        name: '_SearchStore.onEndOfPageReached');
     try {
-      return super.backClicked();
+      return super.onEndOfPageReached();
     } finally {
       _$_SearchStoreActionController.endAction(_$actionInfo);
     }
@@ -118,10 +90,9 @@ mixin _$SearchStore on _SearchStore, Store {
   @override
   String toString() {
     return '''
-future: ${future},
-searchTerm: ${searchTerm},
-searchDone: ${searchDone},
-searchType: ${searchType}
+items: ${items},
+page: ${page},
+searchTerm: ${searchTerm}
     ''';
   }
 }
