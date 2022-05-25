@@ -10,8 +10,13 @@ import 'package:watrix/widgets/rounded_image.dart';
 class ImageCarousel extends StatefulWidget {
   final Future<List<BaseModel>> future;
   final Function(int page, BaseModel data)? onPageChanged;
-  const ImageCarousel(this.future, {Key? key, this.onPageChanged})
-      : super(key: key);
+  final Function(BaseModel data)? onClick;
+  const ImageCarousel(
+    this.future, {
+    Key? key,
+    this.onPageChanged,
+    this.onClick,
+  }) : super(key: key);
 
   @override
   _ImageCarouselState createState() => _ImageCarouselState();
@@ -47,21 +52,27 @@ class _ImageCarouselState extends State<ImageCarousel> {
               controller: _pageController,
               onPageChanged: onChanged,
               itemBuilder: (context, index) {
-                return Container(
-                  margin: EdgeInsets.all(4),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      RoundedImage(
-                        image: Utils.getBackdropUrl(
-                            snapshot.data![index].backdropPath!),
-                        width: ScreenSize.getPercentOfWidth(context, 1),
-                        ratio: Constants.backdropAspectRatio,
-                      ),
-                      Text(
-                        snapshot.data![index].title!,
-                      ),
-                    ],
+                return GestureDetector(
+                  onTap: () {
+                    if (widget.onClick != null)
+                      widget.onClick!(snapshot.data![index]);
+                  },
+                  child: Container(
+                    margin: EdgeInsets.all(4),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        RoundedImage(
+                          image: Utils.getBackdropUrl(
+                              snapshot.data![index].backdropPath!),
+                          width: ScreenSize.getPercentOfWidth(context, 1),
+                          ratio: Constants.backdropAspectRatio,
+                        ),
+                        Text(
+                          snapshot.data![index].title!,
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },

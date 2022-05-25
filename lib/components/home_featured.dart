@@ -33,7 +33,7 @@ class _HomeFeaturedState extends State<HomeFeatured>
             Requests.trending(EntityType.all, DurationType.day),
             limit: 5,
           ),
-          onPageChanged: (page, home) {},
+          onClick: widget.onItemClicked,
         ),
         SizedBox(
           height: ScreenSize.getPercentOfHeight(
