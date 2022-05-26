@@ -28,9 +28,10 @@ class Strings {
   static const String weeklyTrendingTv = "Weekly Trending Tv Shows";
 
 //Search
-  static const String searchHint = "Search for movies & TV shows...";
-  static const String frequentSearch = "Frequent Searches";
-
+  static const String searchHint = "You can search for";
+  static const String moviesTvShows = "Movies, Tv Shows...";
+  static const String actorsDirectors = "Actors, Directors...";
+  static const String noResultsFound = "No results found!";
 //Filter
   static const String sortBy = "Sort By";
   static const String popularity = "Popularity";

@@ -7,7 +7,6 @@ import 'package:watrix/screens/home_page.dart';
 import 'package:watrix/screens/profile_page.dart';
 import 'package:watrix/screens/search_page.dart';
 import 'package:watrix/components/bottom_nav_bar.dart';
-import 'package:watrix/screens/search_result_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -37,11 +36,6 @@ class _MyAppState extends State<MyApp> {
             final value = settings.arguments as BaseModel;
             return MaterialPageRoute(
               builder: (context) => DetailsPage(baseModel: value),
-            );
-          case SearchResultPage.routeName:
-            return MaterialPageRoute(
-              builder: (context) =>
-                  SearchResultPage(searchTerm: settings.arguments as String),
             );
           default:
         }

@@ -7,13 +7,14 @@ class SearchInput extends StatelessWidget {
   final TextEditingController? controller;
   final Function(String)? onChanged;
   final Function() onEditingComplete;
-  final String? value;
+  final String? value, hint;
   SearchInput({
     Key? key,
     this.onChanged,
     required this.onEditingComplete,
     this.controller,
     this.value,
+    this.hint,
   }) : super(key: key);
 
   @override
@@ -35,7 +36,7 @@ class SearchInput extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide.none,
           ),
-          hintText: Strings.searchHint,
+          hintText: hint ?? Strings.search,
           hintStyle: TextStyle(color: Colors.black),
           suffixIcon: Icon(
             Icons.search,

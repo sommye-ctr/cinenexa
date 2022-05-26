@@ -1,8 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:mobx/mobx.dart';
-import 'package:watrix/models/base_model.dart';
-import 'package:watrix/screens/search_result_page.dart';
 
+import '../../models/base_model.dart';
 import '../../services/entity_type.dart';
 import '../../services/requests.dart';
 
@@ -17,16 +15,8 @@ enum SearchType {
 }
 
 abstract class _SearchStore with Store {
-  _SearchStore() {
-    _fetchItems(
-      Requests.titlesFuture(
-        Requests.popular(
-          EntityType.movie,
-        ),
-        page: 1,
-      ),
-    );
-  }
+  @observable
+  String searchTerm = "";
 
   @observable
   ObservableList<BaseModel> items = <BaseModel>[].asObservable();
@@ -35,14 +25,16 @@ abstract class _SearchStore with Store {
   int page = 1;
 
   @observable
-  String searchTerm = "";
+  SearchType searchType = SearchType.movie;
 
-  @action
-  Future _fetchItems(Future future, {bool pageEndReached = false}) async {
-    if (!pageEndReached) items.clear();
-    List<BaseModel> list = await future;
-    items.addAll(list);
-  }
+  @observable
+  bool searchDone = false;
+
+  @observable
+  bool resultsEmpty = false;
+
+  @observable
+  bool isLoading = false;
 
   @action
   void searchTermChanged(String value) {
@@ -50,11 +42,55 @@ abstract class _SearchStore with Store {
   }
 
   @action
-  void searchClicked(context) {
-    Navigator.pushNamed(
-      context,
-      SearchResultPage.routeName,
-      arguments: searchTerm,
+  void searchTypeChanged(SearchType type) {
+    searchType = type;
+    String base = _getSearchBase();
+    resultsEmpty = false;
+    _fetchItems(Requests.searchFuture(searchTerm, base));
+  }
+
+  @action
+  Future _fetchItems(Future future, {bool pageEndReached = false}) async {
+    if (!pageEndReached) {
+      items.clear();
+      isLoading = true;
+    }
+    List<BaseModel> list = await future;
+    items.addAll(list);
+    isLoading = false;
+    if (items.isEmpty) resultsEmpty = true;
+  }
+
+  @action
+  void backClicked() {
+    searchDone = false;
+    searchType = SearchType.movie;
+    searchTerm = "";
+    resultsEmpty = false;
+  }
+
+  @action
+  void searchClicked() {
+    EntityType entityType;
+    switch (searchType) {
+      case SearchType.movie:
+        entityType = EntityType.movie;
+        break;
+      case SearchType.tv:
+        entityType = EntityType.tv;
+        break;
+      case SearchType.people:
+        entityType = EntityType.people;
+        break;
+    }
+    page = 1;
+    searchDone = true;
+    resultsEmpty = false;
+    _fetchItems(
+      Requests.searchFuture(
+        searchTerm,
+        Requests.search(entityType),
+      ),
     );
   }
 
@@ -62,8 +98,23 @@ abstract class _SearchStore with Store {
   void onEndOfPageReached() {
     page++;
     _fetchItems(
-      Requests.titlesFuture(Requests.popular(EntityType.movie), page: page),
+      Requests.searchFuture(
+        searchTerm,
+        _getSearchBase(),
+        page: page,
+      ),
       pageEndReached: true,
     );
+  }
+
+  String _getSearchBase() {
+    switch (searchType) {
+      case SearchType.movie:
+        return Requests.search(EntityType.movie);
+      case SearchType.tv:
+        return Requests.search(EntityType.tv);
+      case SearchType.people:
+        return Requests.search(EntityType.people);
+    }
   }
 }
