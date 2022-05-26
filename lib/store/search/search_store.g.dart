@@ -66,6 +66,17 @@ mixin _$SearchStore on _SearchStore, Store {
   final _$_SearchStoreActionController = ActionController(name: '_SearchStore');
 
   @override
+  void searchTermChanged(String value) {
+    final _$actionInfo = _$_SearchStoreActionController.startAction(
+        name: '_SearchStore.searchTermChanged');
+    try {
+      return super.searchTermChanged(value);
+    } finally {
+      _$_SearchStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void searchClicked(dynamic context) {
     final _$actionInfo = _$_SearchStoreActionController.startAction(
         name: '_SearchStore.searchClicked');

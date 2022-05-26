@@ -6,6 +6,7 @@ import 'package:watrix/models/base_model.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/screens/filter_page.dart';
+import 'package:watrix/screens/see_more_page.dart';
 import 'package:watrix/services/entity_type.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/components/bottom_nav_bar.dart';
@@ -33,9 +34,12 @@ class _HomePageState extends State<HomePage>
   );
   late final Widget myList = Column();
 
-  late final Widget featured = HomeFeatured(onItemClicked: _onItemClicked);
-  late final Widget movies = HomeMovies(onItemClicked: _onItemClicked);
-  late final Widget tv = HomeTv(onItemClicked: _onItemClicked);
+  late final Widget featured = HomeFeatured(
+      onItemClicked: _onItemClicked, onSeeMoreClicked: _onSeeMoreClicked);
+  late final Widget movies = HomeMovies(
+      onItemClicked: _onItemClicked, onSeeMoreClicked: _onSeeMoreClicked);
+  late final Widget tv = HomeTv(
+      onItemClicked: _onItemClicked, onSeeMoreClicked: _onSeeMoreClicked);
 
   @override
   Widget build(BuildContext context) {
@@ -134,7 +138,7 @@ class _HomePageState extends State<HomePage>
                 ),
               ),
               onPressed: () {
-                _showBottomSheet(context, homeStore.tabIndex);
+                _showFiltersSheet(context, homeStore.tabIndex);
               },
             ),
           );
@@ -178,7 +182,32 @@ class _HomePageState extends State<HomePage>
     homeStore.onItemClicked(context, baseModel);
   }
 
-  void _showBottomSheet(BuildContext context, int index) {
+  void _onSeeMoreClicked(String future, List<BaseModel> items, String heading) {
+    _showSeeMoreSheet(context, future, items, heading);
+  }
+
+  void _showSeeMoreSheet(BuildContext context, String future,
+      List<BaseModel> items, String heading) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      builder: (context) {
+        return FractionallySizedBox(
+          heightFactor: 0.75,
+          child: SeeMorePage(
+            future: future,
+            initialItems: items,
+            heading: heading,
+          ),
+        );
+      },
+    );
+  }
+
+  void _showFiltersSheet(BuildContext context, int index) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -205,21 +234,12 @@ class _HomePageState extends State<HomePage>
           ),
         );
       },
-    ).then(onFilterChanged);
+    ).then(_onFilterChanged);
   }
 
-  void onFilterChanged(value) {
+  void _onFilterChanged(value) {
     if (value != null && value != -1) {
       homeStore.onFilterApplied(value as Discover);
-      /* if (homeStore.tabIndex == 1) {
-        _movieDiscover = discover;
-        movies = Container();
-      } else if (homeStore.tabIndex == 2) {
-        _tvDiscover = discover;
-        tv = Container();
-      } */
-      //setState(() {});
-
       return;
     } else if (value == -1) {
       homeStore.onFilterReset();

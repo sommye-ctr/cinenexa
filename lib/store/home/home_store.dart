@@ -137,15 +137,9 @@ abstract class _HomeStore with Store {
       page: tabIndex == defaultMovieIndex ? filterMoviePage : filterTvPage,
     );
     if (tabIndex == defaultMovieIndex) {
-      /* filterMovies = [
-        ...filterMovies,
-      ]; */
       if (!pageEndReached) filterMovies.clear();
       filterMovies.addAll(list);
     } else if (tabIndex == defaultTvIndex) {
-      /* filterTv = [
-        ...filterTv,
-      ]; */
       if (!pageEndReached) filterTv.clear();
       filterTv.addAll(list);
     }

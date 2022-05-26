@@ -16,6 +16,17 @@ class Strings {
   static const String tvShows = "TV Shows";
   static const String myList = "My List";
 
+  static const String trendingToday = "Trending Today";
+  static const String topRated = "Top Rated";
+  static const String popular = "Popular";
+  static const String trendingThisWeek = "Trending this Week";
+
+  static const String popularMovies = "Popular Movies";
+  static const String popularTv = "Popular Tv Shows";
+  static const String popularActors = "Popular Actors";
+  static const String weeklyTrendingMovies = "Weekly Trending Movies";
+  static const String weeklyTrendingTv = "Weekly Trending Tv Shows";
+
 //Search
   static const String searchHint = "Search for movies & TV shows...";
   static const String frequentSearch = "Frequent Searches";

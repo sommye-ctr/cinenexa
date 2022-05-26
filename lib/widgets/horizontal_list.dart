@@ -6,10 +6,11 @@ import 'package:watrix/services/utils.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/components/movie_tile.dart';
 
-class HorizontalList extends StatelessWidget {
+class HorizontalList extends StatefulWidget {
   final Future<List<BaseModel>> future;
   final String heading;
   final Function(BaseModel data) onClick;
+  final Function(List<BaseModel> items)? onRightTrailClicked;
   final double itemWidthPercent;
   final bool showTitle;
 
@@ -20,13 +21,62 @@ class HorizontalList extends StatelessWidget {
     required this.onClick,
     required this.itemWidthPercent,
     required this.showTitle,
+    this.onRightTrailClicked,
   }) : super(key: key);
 
-  Widget handleListBuilder(
-      BuildContext context, AsyncSnapshot<List<BaseModel>> snapshot) {
-    if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+  @override
+  State<HorizontalList> createState() => _HorizontalListState();
+}
+
+class _HorizontalListState extends State<HorizontalList> {
+  List<BaseModel> items = [];
+
+  @override
+  void initState() {
+    _fetchItems();
+    super.initState();
+  }
+
+  void _fetchItems() async {
+    items.addAll(await widget.future);
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              widget.heading,
+              style: Style.headingStyle,
+            ),
+            IconButton(
+              onPressed: () {
+                if (widget.onRightTrailClicked != null)
+                  widget.onRightTrailClicked!(items);
+              },
+              icon: Icon(
+                Icons.keyboard_arrow_right_rounded,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(
+          height: 4,
+        ),
+        _buildContent(),
+      ],
+    );
+  }
+
+  Widget _buildContent() {
+    if (items.isNotEmpty) {
       return Container(
-        height: ScreenSize.getPercentOfWidth(context, itemWidthPercent) /
+        height: ScreenSize.getPercentOfWidth(context, widget.itemWidthPercent) /
                 Constants.posterAspectRatio +
             ScreenSize.getPercentOfHeight(
               context,
@@ -41,42 +91,23 @@ class HorizontalList extends StatelessWidget {
                 width: 5,
               );
             },
-            itemCount: snapshot.data!.length,
+            itemCount: items.length,
             itemBuilder: (context, index) {
-              BaseModel item = snapshot.data![index];
+              BaseModel item = items[index];
 
               return MovieTile(
                 image: Utils.getPosterUrl(item.posterPath ?? ""),
                 text: item.title!,
-                width: ScreenSize.getPercentOfWidth(context, itemWidthPercent),
-                showTitle: showTitle,
+                width: ScreenSize.getPercentOfWidth(
+                    context, widget.itemWidthPercent),
+                showTitle: widget.showTitle,
                 onClick: () {
-                  onClick(item);
+                  widget.onClick(item);
                 },
               );
             }),
       );
     }
     return CircularProgressIndicator();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          heading,
-          style: Style.headingStyle,
-        ),
-        SizedBox(
-          height: 4,
-        ),
-        FutureBuilder<List<BaseModel>>(
-          future: future,
-          builder: handleListBuilder,
-        ),
-      ],
-    );
   }
 }

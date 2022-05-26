@@ -16,10 +16,7 @@ import '../models/base_model.dart';
 import '../models/movie.dart';
 
 class Requests {
-  static String popular(
-    EntityType type, {
-    int page = 1,
-  }) {
+  static String popular(EntityType type) {
     String stringType;
     if (type == EntityType.movie) {
       stringType = Constants.movie;
@@ -30,13 +27,10 @@ class Requests {
     } else {
       throw FlutterError("Invalid media type");
     }
-    return "${Constants.baseUrl}${stringType}${Constants.popular}?api_key=${Constants.apiKey}&language=en-US&page=$page";
+    return "${Constants.baseUrl}${stringType}${Constants.popular}?api_key=${Constants.apiKey}&language=en-US";
   }
 
-  static String topRated(
-    EntityType type, {
-    int page = 1,
-  }) {
+  static String topRated(EntityType type) {
     String stringType;
     if (type == EntityType.movie) {
       stringType = Constants.movie;
@@ -45,7 +39,7 @@ class Requests {
     } else {
       throw FlutterError("Invalid media type");
     }
-    return "${Constants.baseUrl}${stringType}${Constants.topRated}?api_key=${Constants.apiKey}&language=en-US&page=$page";
+    return "${Constants.baseUrl}${stringType}${Constants.topRated}?api_key=${Constants.apiKey}&language=en-US";
   }
 
   static String trending(EntityType type, DurationType durationType) {
@@ -197,8 +191,10 @@ class Requests {
     String request, {
     int? limit,
     bool? skip,
+    int page = 1,
   }) async {
-    final response = await http.get(Uri.parse(request));
+    String req = "$request&page=$page";
+    final response = await http.get(Uri.parse(req));
     var parsedList = json.decode(response.body)['results'];
 
     return Utils.convertToListStringWithSkipLimit(

@@ -22,8 +22,8 @@ abstract class _SearchStore with Store {
       Requests.titlesFuture(
         Requests.popular(
           EntityType.movie,
-          page: 1,
         ),
+        page: 1,
       ),
     );
   }
@@ -62,9 +62,7 @@ abstract class _SearchStore with Store {
   void onEndOfPageReached() {
     page++;
     _fetchItems(
-      Requests.titlesFuture(
-        Requests.popular(EntityType.movie, page: page),
-      ),
+      Requests.titlesFuture(Requests.popular(EntityType.movie), page: page),
       pageEndReached: true,
     );
   }

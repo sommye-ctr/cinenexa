@@ -273,12 +273,17 @@ class _Page1 extends StatelessWidget {
   }
 
   String _getReleaseInfo() {
-    String date =
-        " (${DateTimeFormatter.getYearFromString(page1store.releaseDate!)})";
+    int startYear =
+        DateTimeFormatter.getYearFromString(page1store.releaseDate!);
+    String date = " ($startYear)";
     if (page1store.tvShowEndTime != null) {
-      date = date.substring(0, date.length - 1);
-      date = date +
-          " - ${DateTimeFormatter.getYearFromString(page1store.tvShowEndTime!)})";
+      int endYear =
+          DateTimeFormatter.getYearFromString(page1store.tvShowEndTime!);
+      if (startYear != endYear) {
+        date = date.substring(0, date.length - 1);
+        date = date +
+            " - ${DateTimeFormatter.getYearFromString(page1store.tvShowEndTime!)})";
+      }
     }
     return date;
   }
