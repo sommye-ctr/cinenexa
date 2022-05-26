@@ -53,7 +53,7 @@ class _HomeFeaturedState extends State<HomeFeatured>
           heading: Strings.popularMovies,
           onClick: (data) => widget.onItemClicked(data),
           itemWidthPercent: 0.3,
-          showTitle: false,
+          showTitle: true,
           onRightTrailClicked: (items) {
             if (widget.onSeeMoreClicked != null) {
               widget.onSeeMoreClicked!(
@@ -75,7 +75,7 @@ class _HomeFeaturedState extends State<HomeFeatured>
           heading: Strings.popularTv,
           onClick: (data) => widget.onItemClicked(data),
           itemWidthPercent: 0.3,
-          showTitle: false,
+          showTitle: true,
           onRightTrailClicked: (items) {
             if (widget.onSeeMoreClicked != null) {
               widget.onSeeMoreClicked!(
@@ -97,7 +97,7 @@ class _HomeFeaturedState extends State<HomeFeatured>
           heading: Strings.popularActors,
           onClick: (data) => widget.onItemClicked(data),
           itemWidthPercent: 0.3,
-          showTitle: false,
+          showTitle: true,
           onRightTrailClicked: (items) {
             if (widget.onSeeMoreClicked != null) {
               widget.onSeeMoreClicked!(
@@ -122,7 +122,7 @@ class _HomeFeaturedState extends State<HomeFeatured>
           heading: Strings.weeklyTrendingMovies,
           onClick: (data) => widget.onItemClicked(data),
           itemWidthPercent: 0.3,
-          showTitle: false,
+          showTitle: true,
           onRightTrailClicked: (items) {
             if (widget.onSeeMoreClicked != null) {
               widget.onSeeMoreClicked!(
@@ -147,7 +147,7 @@ class _HomeFeaturedState extends State<HomeFeatured>
           heading: Strings.weeklyTrendingTv,
           onClick: (data) => widget.onItemClicked(data),
           itemWidthPercent: 0.3,
-          showTitle: false,
+          showTitle: true,
           onRightTrailClicked: (items) {
             if (widget.onSeeMoreClicked != null) {
               widget.onSeeMoreClicked!(

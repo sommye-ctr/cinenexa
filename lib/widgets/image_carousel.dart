@@ -6,6 +6,7 @@ import 'package:watrix/services/utils.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/widgets/bubble_page_indicator.dart';
 import 'package:watrix/widgets/rounded_image.dart';
+import 'package:watrix/widgets/rounded_image_placeholder.dart';
 
 class ImageCarousel extends StatefulWidget {
   final Future<List<BaseModel>> future;
@@ -85,7 +86,13 @@ class _ImageCarouselState extends State<ImageCarousel> {
         ],
       );
     }
-    return CircularProgressIndicator();
+    return Padding(
+      padding: EdgeInsets.all(4),
+      child: RoundedImagePlaceholder(
+        width: ScreenSize.getPercentOfWidth(context, 1),
+        ratio: Constants.backdropAspectRatio,
+      ),
+    );
   }
 
   void onChanged(int page) {

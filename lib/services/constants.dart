@@ -33,4 +33,5 @@ class Constants {
 
   static const int homeLimit = 10;
   static const int skipLimit = 5;
+  static const int placeHolderListLimit = 5;
 }

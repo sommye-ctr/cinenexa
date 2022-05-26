@@ -275,7 +275,10 @@ class FilterPage extends StatelessWidget {
         },
       );
     }
-    return Container();
+    return SizedBox(
+      width: ScreenSize.getPercentOfWidth(context, 0.1),
+      child: Center(child: CircularProgressIndicator()),
+    );
   }
 
   Widget _buildGenresGrid(
@@ -299,7 +302,10 @@ class FilterPage extends StatelessWidget {
         ),
       );
     }
-    return Container();
+    return SizedBox(
+      width: ScreenSize.getPercentOfWidth(context, 0.1),
+      child: Center(child: CircularProgressIndicator()),
+    );
   }
 
   void onSubmitClick(BuildContext context) {

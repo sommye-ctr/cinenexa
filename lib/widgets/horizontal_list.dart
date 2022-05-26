@@ -5,6 +5,7 @@ import 'package:watrix/services/constants.dart';
 import 'package:watrix/services/utils.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/components/movie_tile.dart';
+import 'package:watrix/widgets/rounded_image_placeholder.dart';
 
 class HorizontalList extends StatefulWidget {
   final Future<List<BaseModel>> future;
@@ -75,39 +76,57 @@ class _HorizontalListState extends State<HorizontalList> {
 
   Widget _buildContent() {
     if (items.isNotEmpty) {
-      return Container(
-        height: ScreenSize.getPercentOfWidth(context, widget.itemWidthPercent) /
-                Constants.posterAspectRatio +
-            ScreenSize.getPercentOfHeight(
-              context,
-              0.03,
-            ),
-        child: ListView.separated(
-            physics: BouncingScrollPhysics(),
-            shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
-            separatorBuilder: (context, index) {
-              return SizedBox(
-                width: 5,
-              );
+      return _buildWidgetList(
+        (context, index) {
+          BaseModel item = items[index];
+          return MovieTile(
+            image: Utils.getPosterUrl(item.posterPath ?? ""),
+            text: item.title!,
+            width:
+                ScreenSize.getPercentOfWidth(context, widget.itemWidthPercent),
+            showTitle: widget.showTitle,
+            onClick: () {
+              widget.onClick(item);
             },
-            itemCount: items.length,
-            itemBuilder: (context, index) {
-              BaseModel item = items[index];
-
-              return MovieTile(
-                image: Utils.getPosterUrl(item.posterPath ?? ""),
-                text: item.title!,
-                width: ScreenSize.getPercentOfWidth(
-                    context, widget.itemWidthPercent),
-                showTitle: widget.showTitle,
-                onClick: () {
-                  widget.onClick(item);
-                },
-              );
-            }),
+          );
+        },
+        items.length,
       );
     }
-    return CircularProgressIndicator();
+    return _buildWidgetList(
+      (context, index) {
+        return RoundedImagePlaceholder(
+          width: ScreenSize.getPercentOfWidth(context, widget.itemWidthPercent),
+          ratio: Constants.posterAspectRatio,
+        );
+      },
+      Constants.placeHolderListLimit,
+    );
+  }
+
+  Widget _buildWidgetList(
+    Widget Function(BuildContext context, int index) builder,
+    int count,
+  ) {
+    return Container(
+      height: ScreenSize.getPercentOfWidth(context, widget.itemWidthPercent) /
+              Constants.posterAspectRatio +
+          ScreenSize.getPercentOfHeight(
+            context,
+            0.03,
+          ),
+      child: ListView.separated(
+        physics: BouncingScrollPhysics(),
+        shrinkWrap: true,
+        scrollDirection: Axis.horizontal,
+        separatorBuilder: (context, index) {
+          return SizedBox(
+            width: 5,
+          );
+        },
+        itemCount: count,
+        itemBuilder: builder,
+      ),
+    );
   }
 }
