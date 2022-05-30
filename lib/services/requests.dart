@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:watrix/models/certification.dart';
 import 'package:watrix/models/genre.dart';
+import 'package:watrix/models/people.dart';
 import 'package:watrix/models/sort_movies.dart';
 import 'package:watrix/models/sort_tv.dart';
 import 'package:watrix/models/tv.dart';
@@ -27,7 +28,7 @@ class Requests {
     } else {
       throw FlutterError("Invalid media type");
     }
-    return "${Constants.baseUrl}${stringType}${Constants.popular}?api_key=${Constants.apiKey}&language=en-US";
+    return "${Constants.baseUrl}${stringType}${Constants.popular}?api_key=${Constants.apiKey}&language=en-US&with_original_language=hi|kn|ml|ta|te";
   }
 
   static String topRated(EntityType type) {
@@ -39,7 +40,7 @@ class Requests {
     } else {
       throw FlutterError("Invalid media type");
     }
-    return "${Constants.baseUrl}${stringType}${Constants.topRated}?api_key=${Constants.apiKey}&language=en-US";
+    return "${Constants.baseUrl}${stringType}${Constants.topRated}?api_key=${Constants.apiKey}&language=en-US&with_original_language=hi|kn|ml|ta|te";
   }
 
   static String trending(EntityType type, DurationType durationType) {
@@ -261,5 +262,26 @@ class Requests {
           "${Constants.baseUrl}${Constants.tv}/${id}?api_key=${Constants.apiKey}&language=en-US"),
     );
     return Tv.fromMap(json.decode(response.body));
+  }
+
+  static Future<People> findPeople({required int id}) async {
+    final response = await http.get(
+      Uri.parse(
+          "${Constants.baseUrl}${Constants.person}/${id}?api_key=${Constants.apiKey}&language=en-US"),
+    );
+    return People.fromMap(json.decode(response.body));
+  }
+
+  static Future<Map> getPeopleDetails({required int id}) async {
+    final response = await http.get(
+      Uri.parse(
+          "${Constants.baseUrl}${Constants.person}/${id}?api_key=${Constants.apiKey}&language=en-US&append_to_response=combined_credits"),
+    );
+
+    var map = json.decode(response.body);
+    return {
+      "person": People.fromMap(map),
+      "credits": Utils.convertToListString(map['combined_credits']['cast'])
+    };
   }
 }

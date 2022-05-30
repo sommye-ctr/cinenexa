@@ -6,12 +6,16 @@ import '../../models/base_model.dart';
 part 'see_more_store.g.dart';
 
 class SeeMoreStore extends _SeeMoreStore with _$SeeMoreStore {
-  SeeMoreStore({required String future, required List<BaseModel> list})
-      : super(future: future, list: list);
+  SeeMoreStore(
+      {required String? future,
+      required List<BaseModel> list,
+      required bool isLazyLoad})
+      : super(future: future, list: list, isLazyLoad: isLazyLoad);
 }
 
 abstract class _SeeMoreStore with Store {
-  final String future;
+  final String? future;
+  final bool isLazyLoad;
 
   @observable
   ObservableList<BaseModel> items;
@@ -22,12 +26,13 @@ abstract class _SeeMoreStore with Store {
   _SeeMoreStore({
     required this.future,
     required List<BaseModel> list,
+    required this.isLazyLoad,
   }) : items = list.asObservable();
 
   @action
   Future _fetchItems() async {
     List<BaseModel> list = await Requests.titlesFuture(
-      future,
+      future!,
       page: page,
     );
     items.addAll(list);
@@ -35,7 +40,9 @@ abstract class _SeeMoreStore with Store {
 
   @action
   void pageEndReached() {
-    page++;
-    _fetchItems();
+    if (isLazyLoad) {
+      page++;
+      _fetchItems();
+    }
   }
 }

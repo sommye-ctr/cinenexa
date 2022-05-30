@@ -3,6 +3,7 @@ import 'package:mobx/mobx.dart';
 import 'package:watrix/models/discover.dart';
 
 import '../../models/base_model.dart';
+import '../../screens/actor_details_page.dart';
 import '../../screens/details_page.dart';
 import '../../services/entity_type.dart';
 import '../../services/requests.dart';
@@ -147,9 +148,15 @@ abstract class _HomeStore with Store {
 
   @action
   void onItemClicked(BuildContext context, BaseModel baseModel) {
+    String name;
+    if (baseModel.type == BaseModelType.people) {
+      name = ActorDetailsPage.routeName;
+    } else {
+      name = DetailsPage.routeName;
+    }
     Navigator.pushNamed(
       context,
-      DetailsPage.routeName,
+      name,
       arguments: baseModel,
     );
   }

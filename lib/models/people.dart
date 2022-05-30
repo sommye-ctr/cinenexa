@@ -5,11 +5,19 @@ class People {
   String name;
   String profilePath;
   double popularity;
+
+  String? birthday;
+  String? biography;
+  String? placeOfBirth;
+
   People({
     required this.id,
     required this.name,
     required this.profilePath,
     required this.popularity,
+    this.birthday,
+    this.biography,
+    this.placeOfBirth,
   }) : super();
 
   People copyWith({
@@ -17,12 +25,18 @@ class People {
     String? name,
     String? profilePath,
     double? popularity,
+    String? birthday,
+    String? biography,
+    String? placeOfBirth,
   }) {
     return People(
       id: id ?? this.id,
       name: name ?? this.name,
       profilePath: profilePath ?? this.profilePath,
       popularity: popularity ?? this.popularity,
+      birthday: birthday ?? this.birthday,
+      biography: biography ?? this.biography,
+      placeOfBirth: placeOfBirth ?? this.placeOfBirth,
     );
   }
 
@@ -30,8 +44,11 @@ class People {
     return {
       'id': id,
       'name': name,
-      'profilePath': profilePath,
+      'profile_path': profilePath,
       'popularity': popularity,
+      'birthday': birthday,
+      'biography': biography,
+      'place_of_birth': placeOfBirth,
     };
   }
 
@@ -41,6 +58,9 @@ class People {
       name: map['name'] ?? '',
       profilePath: map['profile_path'] ?? '',
       popularity: map['popularity']?.toDouble() ?? 0.0,
+      birthday: map['birthday'],
+      biography: map['biography'],
+      placeOfBirth: map['place_of_birth'],
     );
   }
 
@@ -50,7 +70,7 @@ class People {
 
   @override
   String toString() {
-    return 'People(id: $id, name: $name, profilePath: $profilePath, popularity: $popularity)';
+    return 'People(id: $id, name: $name, profilePath: $profilePath, popularity: $popularity, birthday: $birthday, biography: $biography, placeOfBirth: $placeOfBirth)';
   }
 
   @override
@@ -61,7 +81,10 @@ class People {
         other.id == id &&
         other.name == name &&
         other.profilePath == profilePath &&
-        other.popularity == popularity;
+        other.popularity == popularity &&
+        other.birthday == birthday &&
+        other.biography == biography &&
+        other.placeOfBirth == placeOfBirth;
   }
 
   @override
@@ -69,6 +92,9 @@ class People {
     return id.hashCode ^
         name.hashCode ^
         profilePath.hashCode ^
-        popularity.hashCode;
+        popularity.hashCode ^
+        birthday.hashCode ^
+        biography.hashCode ^
+        placeOfBirth.hashCode;
   }
 }

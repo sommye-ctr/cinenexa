@@ -10,6 +10,7 @@ import 'package:watrix/store/details/details_page1_store.dart';
 import 'package:watrix/store/details/details_store.dart';
 import 'package:watrix/utils/date_time_formatter.dart';
 import 'package:watrix/widgets/bubble_page_indicator.dart';
+import 'package:watrix/widgets/custom_back_button.dart';
 import 'package:watrix/widgets/rounded_button.dart';
 import 'package:watrix/widgets/screen_background_image.dart';
 
@@ -41,42 +42,48 @@ class _DetailsPageState extends State<DetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          PageView(
-            pageSnapping: true,
-            onPageChanged: detailsStore.onPageChanged,
-            children: [
-              _Page1(
-                page1store: detailsStore.page1,
-                overview: detailsStore.baseModel.overview ?? "",
-                voteAverage: detailsStore.baseModel.voteAverage ?? 0,
-                type: detailsStore.baseModel.type!,
-                title: detailsStore.baseModel.title ?? "",
-                poster: detailsStore.baseModel.posterPath ?? "",
-              ),
-              Center(child: Text("Hello!")),
-            ],
-          ),
-          Padding(
-            padding: EdgeInsets.only(
-              left: ScreenSize.getPercentOfWidth(context, 0.03),
-              bottom: ScreenSize.getPercentOfHeight(context, 0.05),
+      body: SafeArea(
+        child: Stack(
+          children: [
+            PageView(
+              pageSnapping: true,
+              onPageChanged: detailsStore.onPageChanged,
+              children: [
+                _Page1(
+                  page1store: detailsStore.page1,
+                  overview: detailsStore.baseModel.overview ?? "",
+                  voteAverage: detailsStore.baseModel.voteAverage ?? 0,
+                  type: detailsStore.baseModel.type!,
+                  title: detailsStore.baseModel.title ?? "",
+                  poster: detailsStore.baseModel.posterPath ?? "",
+                ),
+                Center(child: Text("Hello!")),
+              ],
             ),
-            child: Align(
-              alignment: Alignment.bottomLeft,
-              child: Observer(
-                builder: (context) {
-                  return BubblePageIndicator(
-                    length: 5,
-                    currentPage: detailsStore.pageIndex,
-                    selectedColor: Colors.white,
-                  );
-                },
+            Padding(
+              padding: EdgeInsets.only(
+                left: ScreenSize.getPercentOfWidth(context, 0.03),
+                bottom: ScreenSize.getPercentOfHeight(context, 0.05),
+              ),
+              child: Align(
+                alignment: Alignment.bottomLeft,
+                child: Observer(
+                  builder: (context) {
+                    return BubblePageIndicator(
+                      length: 5,
+                      currentPage: detailsStore.pageIndex,
+                      selectedColor: Colors.white,
+                    );
+                  },
+                ),
               ),
             ),
-          ),
-        ],
+            Align(
+              alignment: Alignment.topLeft,
+              child: BackButton(),
+            )
+          ],
+        ),
       ),
     );
   }

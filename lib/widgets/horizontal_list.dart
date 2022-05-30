@@ -8,7 +8,10 @@ import 'package:watrix/components/movie_tile.dart';
 import 'package:watrix/widgets/rounded_image_placeholder.dart';
 
 class HorizontalList extends StatefulWidget {
-  final Future<List<BaseModel>> future;
+  Future<List<BaseModel>>? future;
+  int? limitItems;
+
+  List<BaseModel> items = [];
   final String heading;
   final Function(BaseModel data) onClick;
   final Function(List<BaseModel> items)? onRightTrailClicked;
@@ -25,21 +28,31 @@ class HorizontalList extends StatefulWidget {
     this.onRightTrailClicked,
   }) : super(key: key);
 
+  HorizontalList.fromInititalValues({
+    required this.items,
+    required this.heading,
+    required this.onClick,
+    required this.itemWidthPercent,
+    required this.showTitle,
+    this.onRightTrailClicked,
+    this.limitItems,
+  }) : super();
+
   @override
   State<HorizontalList> createState() => _HorizontalListState();
 }
 
 class _HorizontalListState extends State<HorizontalList> {
-  List<BaseModel> items = [];
-
   @override
   void initState() {
-    _fetchItems();
+    if (widget.future != null) {
+      _fetchItems();
+    }
     super.initState();
   }
 
   void _fetchItems() async {
-    items.addAll(await widget.future);
+    widget.items.addAll(await widget.future!);
     setState(() {});
   }
 
@@ -47,6 +60,7 @@ class _HorizontalListState extends State<HorizontalList> {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -58,7 +72,7 @@ class _HorizontalListState extends State<HorizontalList> {
             IconButton(
               onPressed: () {
                 if (widget.onRightTrailClicked != null)
-                  widget.onRightTrailClicked!(items);
+                  widget.onRightTrailClicked!(widget.items);
               },
               icon: Icon(
                 Icons.keyboard_arrow_right_rounded,
@@ -75,10 +89,10 @@ class _HorizontalListState extends State<HorizontalList> {
   }
 
   Widget _buildContent() {
-    if (items.isNotEmpty) {
+    if (widget.items.isNotEmpty) {
       return _buildWidgetList(
         (context, index) {
-          BaseModel item = items[index];
+          BaseModel item = widget.items[index];
           return MovieTile(
             image: Utils.getPosterUrl(item.posterPath ?? ""),
             text: item.title!,
@@ -90,7 +104,7 @@ class _HorizontalListState extends State<HorizontalList> {
             },
           );
         },
-        items.length,
+        _getLength(),
       );
     }
     return _buildWidgetList(
@@ -102,6 +116,14 @@ class _HorizontalListState extends State<HorizontalList> {
       },
       Constants.placeHolderListLimit,
     );
+  }
+
+  int _getLength() {
+    if (widget.limitItems == null) return widget.items.length;
+    if (widget.limitItems! <= widget.items.length) {
+      return widget.limitItems!;
+    }
+    return widget.items.length;
   }
 
   Widget _buildWidgetList(

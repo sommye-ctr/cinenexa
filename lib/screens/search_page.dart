@@ -3,6 +3,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
+import 'package:watrix/screens/actor_details_page.dart';
 import 'package:watrix/store/search/search_store.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/widgets/search_input.dart';
@@ -212,7 +213,7 @@ class _SearchPageState extends State<SearchPage> {
               onClick: () {
                 Navigator.pushNamed(
                   context,
-                  DetailsPage.routeName,
+                  ActorDetailsPage.routeName,
                   arguments: searchStore.items[index],
                 );
               },

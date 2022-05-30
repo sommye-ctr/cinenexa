@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:watrix/models/base_model.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
+import 'package:watrix/screens/actor_details_page.dart';
 import 'package:watrix/screens/details_page.dart';
 import 'package:watrix/screens/home_page.dart';
 import 'package:watrix/screens/profile_page.dart';
@@ -36,6 +37,11 @@ class _MyAppState extends State<MyApp> {
             final value = settings.arguments as BaseModel;
             return MaterialPageRoute(
               builder: (context) => DetailsPage(baseModel: value),
+            );
+          case ActorDetailsPage.routeName:
+            final value = settings.arguments as BaseModel;
+            return MaterialPageRoute(
+              builder: (context) => ActorDetailsPage(baseModel: value),
             );
           default:
         }

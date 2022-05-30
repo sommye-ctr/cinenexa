@@ -8,17 +8,22 @@ import '../components/movie_tile.dart';
 import '../resources/style.dart';
 import '../services/constants.dart';
 import '../utils/screen_size.dart';
+import 'actor_details_page.dart';
 import 'details_page.dart';
 
 class SeeMorePage extends StatefulWidget {
-  final String future;
+  final String? future;
   final List<BaseModel> initialItems;
   final String heading;
+
+  final bool isLazyLoad;
+
   const SeeMorePage({
     Key? key,
-    required this.future,
     required this.initialItems,
     required this.heading,
+    this.future,
+    this.isLazyLoad = true,
   }) : super(key: key);
 
   @override
@@ -30,8 +35,11 @@ class _SeeMorePageState extends State<SeeMorePage> {
 
   @override
   void initState() {
-    seeMoreStore =
-        SeeMoreStore(future: widget.future, list: widget.initialItems);
+    seeMoreStore = SeeMoreStore(
+      future: widget.future,
+      list: widget.initialItems,
+      isLazyLoad: widget.isLazyLoad,
+    );
     super.initState();
   }
 
@@ -70,9 +78,16 @@ class _SeeMorePageState extends State<SeeMorePage> {
                       showTitle: true,
                       text: seeMoreStore.items[index].title!,
                       onClick: () {
+                        String name;
+                        if (seeMoreStore.items[index].type ==
+                            BaseModelType.people) {
+                          name = ActorDetailsPage.routeName;
+                        } else {
+                          name = DetailsPage.routeName;
+                        }
                         Navigator.pushNamed(
                           context,
-                          DetailsPage.routeName,
+                          name,
                           arguments: seeMoreStore.items[index],
                         );
                       },
