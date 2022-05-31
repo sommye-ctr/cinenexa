@@ -28,7 +28,7 @@ class Requests {
     } else {
       throw FlutterError("Invalid media type");
     }
-    return "${Constants.baseUrl}${stringType}${Constants.popular}?api_key=${Constants.apiKey}&language=en-US&with_original_language=hi|kn|ml|ta|te";
+    return "${Constants.baseUrl}${stringType}${Constants.popular}?api_key=${Constants.apiKey}&language=en-US";
   }
 
   static String topRated(EntityType type) {
@@ -40,7 +40,7 @@ class Requests {
     } else {
       throw FlutterError("Invalid media type");
     }
-    return "${Constants.baseUrl}${stringType}${Constants.topRated}?api_key=${Constants.apiKey}&language=en-US&with_original_language=hi|kn|ml|ta|te";
+    return "${Constants.baseUrl}${stringType}${Constants.topRated}?api_key=${Constants.apiKey}&language=en-US";
   }
 
   static String trending(EntityType type, DurationType durationType) {
@@ -248,12 +248,18 @@ class Requests {
     return Utils.convertToListString(parsedList);
   }
 
-  static Future<Movie> findMovie({required int id}) async {
+  static Future<Map> getMovieDetails({required int id}) async {
     final response = await http.get(
       Uri.parse(
-          "${Constants.baseUrl}${Constants.movie}/${id}?api_key=${Constants.apiKey}&language=en-US"),
+          "${Constants.baseUrl}${Constants.movie}/${id}?api_key=${Constants.apiKey}&language=en-US&append_to_response=credits,recommendations"),
     );
-    return Movie.fromMap(json.decode(response.body));
+    var map = json.decode(response.body);
+    return {
+      "movie": Movie.fromMap(map),
+      "credits": Utils.convertToListString(map['credits']['cast']),
+      "recommended":
+          Utils.convertToListString(map['recommendations']['results']),
+    };
   }
 
   static Future<Tv> findTv({required int id}) async {
@@ -262,14 +268,6 @@ class Requests {
           "${Constants.baseUrl}${Constants.tv}/${id}?api_key=${Constants.apiKey}&language=en-US"),
     );
     return Tv.fromMap(json.decode(response.body));
-  }
-
-  static Future<People> findPeople({required int id}) async {
-    final response = await http.get(
-      Uri.parse(
-          "${Constants.baseUrl}${Constants.person}/${id}?api_key=${Constants.apiKey}&language=en-US"),
-    );
-    return People.fromMap(json.decode(response.body));
   }
 
   static Future<Map> getPeopleDetails({required int id}) async {

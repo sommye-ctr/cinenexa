@@ -48,4 +48,7 @@ class Strings {
 //Details
   static const String addToList = "Add to list";
   static const String viewInfo = "View Info";
+
+//Actor Details
+  static const String knownFor = "Known For";
 }

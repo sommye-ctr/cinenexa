@@ -3,11 +3,14 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:watrix/resources/strings.dart';
 import 'package:watrix/screens/see_more_page.dart';
+import 'package:watrix/services/constants.dart';
 import 'package:watrix/store/actor_details/actor_details_store.dart';
 import 'package:watrix/utils/date_time_formatter.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/widgets/horizontal_list.dart';
+import 'package:watrix/widgets/rounded_image.dart';
 import 'package:watrix/widgets/screen_background_image.dart';
 
 import '../models/base_model.dart';
@@ -169,7 +172,7 @@ class _ActorDetailsPageState extends State<ActorDetailsPage> {
             ),
             child: HorizontalList.fromInititalValues(
               items: actorDetailsStore.credits,
-              heading: "Known For",
+              heading: Strings.knownFor,
               itemWidthPercent: 0.3,
               showTitle: true,
               limitItems: 10,
@@ -187,7 +190,7 @@ class _ActorDetailsPageState extends State<ActorDetailsPage> {
                       heightFactor: 0.75,
                       child: SeeMorePage(
                         initialItems: list,
-                        heading: "Known For",
+                        heading: Strings.knownFor,
                         isLazyLoad: false,
                       ),
                     );

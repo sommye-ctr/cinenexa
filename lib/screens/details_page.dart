@@ -5,12 +5,12 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:watrix/components/vote_indicator.dart';
 import 'package:watrix/models/base_model.dart';
 import 'package:watrix/resources/strings.dart';
+import 'package:watrix/screens/see_more_page.dart';
 import 'package:watrix/services/utils.dart';
 import 'package:watrix/store/details/details_page1_store.dart';
 import 'package:watrix/store/details/details_store.dart';
 import 'package:watrix/utils/date_time_formatter.dart';
-import 'package:watrix/widgets/bubble_page_indicator.dart';
-import 'package:watrix/widgets/custom_back_button.dart';
+import 'package:watrix/widgets/horizontal_list.dart';
 import 'package:watrix/widgets/rounded_button.dart';
 import 'package:watrix/widgets/screen_background_image.dart';
 
@@ -48,6 +48,7 @@ class _DetailsPageState extends State<DetailsPage> {
             PageView(
               pageSnapping: true,
               onPageChanged: detailsStore.onPageChanged,
+              scrollDirection: Axis.vertical,
               children: [
                 _Page1(
                   page1store: detailsStore.page1,
@@ -57,31 +58,18 @@ class _DetailsPageState extends State<DetailsPage> {
                   title: detailsStore.baseModel.title ?? "",
                   poster: detailsStore.baseModel.posterPath ?? "",
                 ),
-                Center(child: Text("Hello!")),
+                Observer(builder: (_) {
+                  return _Page2(
+                    cast: detailsStore.credits,
+                    recommended: detailsStore.recommendedMovies,
+                  );
+                }),
               ],
             ),
-            Padding(
-              padding: EdgeInsets.only(
-                left: ScreenSize.getPercentOfWidth(context, 0.03),
-                bottom: ScreenSize.getPercentOfHeight(context, 0.05),
-              ),
-              child: Align(
-                alignment: Alignment.bottomLeft,
-                child: Observer(
-                  builder: (context) {
-                    return BubblePageIndicator(
-                      length: 5,
-                      currentPage: detailsStore.pageIndex,
-                      selectedColor: Colors.white,
-                    );
-                  },
-                ),
-              ),
-            ),
-            Align(
+            /* Align(
               alignment: Alignment.topLeft,
               child: BackButton(),
-            )
+            ) */ //TODO Add back button
           ],
         ),
       ),
@@ -117,13 +105,10 @@ class _Page1 extends StatelessWidget {
         ),
       ),
       child: Align(
-        alignment: Alignment.bottomCenter,
+        alignment: Alignment(0, 0.7),
         child: Padding(
-          padding: EdgeInsets.only(
-            left: ScreenSize.getPercentOfWidth(context, 0.025),
-            right: ScreenSize.getPercentOfWidth(context, 0.025),
-            bottom: ScreenSize.getPercentOfHeight(context, 0.1),
-          ),
+          padding: EdgeInsets.symmetric(
+              horizontal: ScreenSize.getPercentOfWidth(context, 0.025)),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -147,21 +132,7 @@ class _Page1 extends StatelessWidget {
                 maxLines: 15,
               ),
               _buildSpacing(context),
-              Row(
-                children: [
-                  RoundedButton(
-                    onPressed: () {},
-                    child: Text(Strings.addToList),
-                    type: RoundedButtonType.filled,
-                  ),
-                  _buildSpacing(context),
-                  RoundedButton(
-                    onPressed: () {},
-                    child: Text(Strings.viewInfo),
-                    type: RoundedButtonType.outlined,
-                  ),
-                ],
-              ),
+              _buildButtons(context),
             ],
           ),
         ),
@@ -227,7 +198,7 @@ class _Page1 extends StatelessWidget {
     return TextSpan(
       text: _getReleaseInfo(),
       style: TextStyle(
-        color: Colors.grey,
+        color: Colors.grey.shade300,
       ),
     );
   }
@@ -236,7 +207,7 @@ class _Page1 extends StatelessWidget {
     return TextSpan(
       text: " - ${DateTimeFormatter.getTimeFromMin(page1store.runtime!)}",
       style: TextStyle(
-        color: Colors.grey,
+        color: Colors.grey.shade300,
       ),
     );
   }
@@ -279,6 +250,24 @@ class _Page1 extends StatelessWidget {
     );
   }
 
+  Widget _buildButtons(context) {
+    return Row(
+      children: [
+        RoundedButton(
+          onPressed: () {},
+          child: Text(Strings.addToList),
+          type: RoundedButtonType.filled,
+        ),
+        _buildSpacing(context),
+        RoundedButton(
+          onPressed: () {},
+          child: Text(Strings.viewInfo),
+          type: RoundedButtonType.outlined,
+        ),
+      ],
+    );
+  }
+
   String _getReleaseInfo() {
     int startYear =
         DateTimeFormatter.getYearFromString(page1store.releaseDate!);
@@ -293,5 +282,65 @@ class _Page1 extends StatelessWidget {
       }
     }
     return date;
+  }
+}
+
+class _Page2 extends StatelessWidget {
+  final List<BaseModel> cast;
+  final List<BaseModel> recommended;
+  const _Page2({
+    Key? key,
+    required this.cast,
+    required this.recommended,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: Container(
+        color: Theme.of(context).backgroundColor,
+        width: double.infinity,
+        height: ScreenSize.getPercentOfHeight(context, 0.85),
+        child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                _buildList("Cast", context, cast),
+                _buildList("Recommended Movies", context, recommended)
+              ],
+            )),
+      ),
+    );
+  }
+
+  Widget _buildList(String heading, context, List<BaseModel> items) {
+    return HorizontalList.fromInititalValues(
+      items: items,
+      heading: heading,
+      onClick: (item) {},
+      itemWidthPercent: 0.3,
+      showTitle: true,
+      limitItems: 10,
+      onRightTrailClicked: (list) {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          builder: (context) {
+            return FractionallySizedBox(
+              heightFactor: 0.75,
+              child: SeeMorePage(
+                initialItems: list,
+                heading: Strings.knownFor,
+                isLazyLoad: false,
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 }

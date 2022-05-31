@@ -30,6 +30,12 @@ abstract class _DetailsStore with Store {
   @observable
   Tv? tv;
 
+  @observable
+  ObservableList<BaseModel> credits = <BaseModel>[].asObservable();
+
+  @observable
+  ObservableList<BaseModel> recommendedMovies = <BaseModel>[].asObservable();
+
   @action
   void onPageChanged(int index) {
     pageIndex = index;
@@ -37,7 +43,10 @@ abstract class _DetailsStore with Store {
 
   void _fetchDetails() async {
     if (baseModel.type == BaseModelType.movie) {
-      movie = await Requests.findMovie(id: baseModel.id!);
+      Map map = await Requests.getMovieDetails(id: baseModel.id!);
+      movie = map['movie'];
+      credits.addAll(map['credits']);
+      recommendedMovies.addAll(map['recommended']);
       page1.setGenres(movie?.genres ?? []);
       page1.setRuntime(movie?.runtime);
     } else if (baseModel.type == BaseModelType.tv) {

@@ -23,9 +23,10 @@ class ScreenBackgroundImage extends StatelessWidget {
             shaderCallback: (bounds) {
               return LinearGradient(
                 colors: [
-                  Colors.black12,
+                  Colors.transparent,
                   Colors.black54,
                   Colors.black87,
+                  Colors.black,
                 ],
                 begin: Alignment.center,
                 end: Alignment.bottomCenter,
@@ -36,10 +37,6 @@ class ScreenBackgroundImage extends StatelessWidget {
                 image: DecorationImage(
                   image: image,
                   fit: BoxFit.cover,
-                  colorFilter: ColorFilter.mode(
-                    Colors.black.withOpacity(0.4),
-                    BlendMode.darken,
-                  ),
                 ),
               ),
             ),

@@ -54,6 +54,36 @@ mixin _$DetailsStore on _DetailsStore, Store {
     });
   }
 
+  final _$creditsAtom = Atom(name: '_DetailsStore.credits');
+
+  @override
+  ObservableList<BaseModel> get credits {
+    _$creditsAtom.reportRead();
+    return super.credits;
+  }
+
+  @override
+  set credits(ObservableList<BaseModel> value) {
+    _$creditsAtom.reportWrite(value, super.credits, () {
+      super.credits = value;
+    });
+  }
+
+  final _$recommendedMoviesAtom = Atom(name: '_DetailsStore.recommendedMovies');
+
+  @override
+  ObservableList<BaseModel> get recommendedMovies {
+    _$recommendedMoviesAtom.reportRead();
+    return super.recommendedMovies;
+  }
+
+  @override
+  set recommendedMovies(ObservableList<BaseModel> value) {
+    _$recommendedMoviesAtom.reportWrite(value, super.recommendedMovies, () {
+      super.recommendedMovies = value;
+    });
+  }
+
   final _$_DetailsStoreActionController =
       ActionController(name: '_DetailsStore');
 
@@ -73,7 +103,9 @@ mixin _$DetailsStore on _DetailsStore, Store {
     return '''
 pageIndex: ${pageIndex},
 movie: ${movie},
-tv: ${tv}
+tv: ${tv},
+credits: ${credits},
+recommendedMovies: ${recommendedMovies}
     ''';
   }
 }
