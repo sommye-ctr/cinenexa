@@ -1,10 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:watrix/components/details_page_header.dart';
 
 import 'package:watrix/components/vote_indicator.dart';
 import 'package:watrix/models/base_model.dart';
+import 'package:watrix/models/genre.dart';
 import 'package:watrix/resources/strings.dart';
+import 'package:watrix/resources/style.dart';
 import 'package:watrix/screens/see_more_page.dart';
 import 'package:watrix/services/utils.dart';
 import 'package:watrix/store/details/details_page1_store.dart';
@@ -43,33 +46,34 @@ class _DetailsPageState extends State<DetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Stack(
-          children: [
-            PageView(
-              pageSnapping: true,
-              onPageChanged: detailsStore.onPageChanged,
-              scrollDirection: Axis.vertical,
-              children: [
-                _Page1(
-                  page1store: detailsStore.page1,
-                  overview: detailsStore.baseModel.overview ?? "",
-                  voteAverage: detailsStore.baseModel.voteAverage ?? 0,
-                  type: detailsStore.baseModel.type!,
-                  title: detailsStore.baseModel.title ?? "",
-                  poster: detailsStore.baseModel.posterPath ?? "",
-                ),
-                Observer(builder: (_) {
-                  return _Page2(
+        child: CustomScrollView(
+          slivers: [
+            SliverPersistentHeader(
+              pinned: true,
+              floating: true,
+              delegate: DetailsPageHeader(
+                maxHeight: ScreenSize.getPercentOfHeight(context, 1),
+                minHeight: MediaQuery.of(context).padding.top + kToolbarHeight,
+                page1store: detailsStore.page1,
+                overview: detailsStore.baseModel.overview ?? "",
+                voteAverage: detailsStore.baseModel.voteAverage ?? 0,
+                title: detailsStore.baseModel.title ?? "",
+                poster: detailsStore.baseModel.posterPath ?? "",
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Observer(builder: (_) {
+                if (detailsStore.credits.isNotEmpty ||
+                    detailsStore.recommendedMovies.isNotEmpty) {
+                  return _AdditionalDetails(
                     cast: detailsStore.credits,
                     recommended: detailsStore.recommendedMovies,
+                    genres: detailsStore.page1.genres,
                   );
-                }),
-              ],
-            ),
-            /* Align(
-              alignment: Alignment.topLeft,
-              child: BackButton(),
-            ) */ //TODO Add back button
+                }
+                return Container();
+              }),
+            )
           ],
         ),
       ),
@@ -77,137 +81,35 @@ class _DetailsPageState extends State<DetailsPage> {
   }
 }
 
-class _Page1 extends StatelessWidget {
-  //final BaseModel baseModel;
-  final DetailsPage1Store page1store;
-  final String title, poster, overview;
-  final double voteAverage;
-  final BaseModelType type;
-  //final String? runtime;
-  //final String? tvShowEndTime;
-
-  _Page1({
+class _AdditionalDetails extends StatelessWidget {
+  final List<BaseModel> cast;
+  final List<BaseModel> recommended;
+  final List<Genre> genres;
+  const _AdditionalDetails({
     Key? key,
-    required this.page1store,
-    required this.overview,
-    required this.voteAverage,
-    required this.type,
-    required this.title,
-    required this.poster,
+    required this.cast,
+    required this.recommended,
+    required this.genres,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return ScreenBackgroundImage(
-      image: CachedNetworkImageProvider(
-        Utils.getPosterUrl(
-          poster,
-        ),
-      ),
-      child: Align(
-        alignment: Alignment(0, 0.7),
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-              horizontal: ScreenSize.getPercentOfWidth(context, 0.025)),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              _buildEntityType(),
-              _buildMainDetails(),
-              _buildSpacing(context),
-              Row(
-                children: [
-                  VoteIndicator(
-                    vote: voteAverage,
-                  ),
-                  _buildSpacing(context),
-                  _buildGenres(),
-                ],
-              ),
-              _buildSpacing(context),
-              Text(
-                overview,
-                maxLines: 15,
-              ),
-              _buildSpacing(context),
-              _buildButtons(context),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSpacing(context) {
-    return SizedBox(
-      height: ScreenSize.getPercentOfHeight(context, 0.01),
-      width: ScreenSize.getPercentOfHeight(context, 0.01),
-    );
-  }
-
-  Widget _buildEntityType() {
     return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        color: Utils.getColorByEntity(type),
-      ),
+      color: Colors.black,
       child: Padding(
-        padding: const EdgeInsets.all(2),
-        child: Text(
-          "${Utils.getEntityTypeBy(type)}",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 12,
-          ),
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          height: ScreenSize.getPercentOfHeight(context, 1),
+          child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Column(
+                children: [
+                  _buildGenres(),
+                  _buildList("Cast", context, cast),
+                  _buildList("Recommended Movies", context, recommended)
+                ],
+              )),
         ),
-      ),
-    );
-  }
-
-  Widget _buildMainDetails() {
-    return Observer(
-      builder: (_) {
-        return Flexible(
-          child: Text.rich(
-            TextSpan(
-              children: [
-                _buildTitle(),
-                _buildReleaseInfo(),
-                if (page1store.runtime != null) _buildRuntime(),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  TextSpan _buildTitle() {
-    return TextSpan(
-      text: title,
-      style: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-      ),
-    );
-  }
-
-  TextSpan _buildReleaseInfo() {
-    return TextSpan(
-      text: _getReleaseInfo(),
-      style: TextStyle(
-        color: Colors.grey.shade300,
-      ),
-    );
-  }
-
-  TextSpan _buildRuntime() {
-    return TextSpan(
-      text: " - ${DateTimeFormatter.getTimeFromMin(page1store.runtime!)}",
-      style: TextStyle(
-        color: Colors.grey.shade300,
       ),
     );
   }
@@ -216,7 +118,7 @@ class _Page1 extends StatelessWidget {
     return Observer(
       builder: (context) {
         List<Widget> widgets = [];
-        for (var item in page1store.genres) {
+        for (var item in genres) {
           widgets.add(Padding(
             padding: EdgeInsets.only(
               right: ScreenSize.getPercentOfWidth(context, 0.01),
@@ -242,75 +144,12 @@ class _Page1 extends StatelessWidget {
 
         return Flexible(
           child: Wrap(
+            alignment: WrapAlignment.center,
             runSpacing: ScreenSize.getPercentOfWidth(context, 0.01),
             children: widgets,
           ),
         );
       },
-    );
-  }
-
-  Widget _buildButtons(context) {
-    return Row(
-      children: [
-        RoundedButton(
-          onPressed: () {},
-          child: Text(Strings.addToList),
-          type: RoundedButtonType.filled,
-        ),
-        _buildSpacing(context),
-        RoundedButton(
-          onPressed: () {},
-          child: Text(Strings.viewInfo),
-          type: RoundedButtonType.outlined,
-        ),
-      ],
-    );
-  }
-
-  String _getReleaseInfo() {
-    int startYear =
-        DateTimeFormatter.getYearFromString(page1store.releaseDate!);
-    String date = " ($startYear)";
-    if (page1store.tvShowEndTime != null) {
-      int endYear =
-          DateTimeFormatter.getYearFromString(page1store.tvShowEndTime!);
-      if (startYear != endYear) {
-        date = date.substring(0, date.length - 1);
-        date = date +
-            " - ${DateTimeFormatter.getYearFromString(page1store.tvShowEndTime!)})";
-      }
-    }
-    return date;
-  }
-}
-
-class _Page2 extends StatelessWidget {
-  final List<BaseModel> cast;
-  final List<BaseModel> recommended;
-  const _Page2({
-    Key? key,
-    required this.cast,
-    required this.recommended,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
-      child: Container(
-        color: Theme.of(context).backgroundColor,
-        width: double.infinity,
-        height: ScreenSize.getPercentOfHeight(context, 0.85),
-        child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                _buildList("Cast", context, cast),
-                _buildList("Recommended Movies", context, recommended)
-              ],
-            )),
-      ),
     );
   }
 
