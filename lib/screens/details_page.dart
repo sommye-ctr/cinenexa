@@ -35,6 +35,11 @@ class DetailsPage extends StatefulWidget {
 
 class _DetailsPageState extends State<DetailsPage> {
   late final DetailsStore detailsStore;
+  final _controller = ScrollController();
+
+  double get maxHeight => ScreenSize.getPercentOfHeight(context, 1);
+
+  double get minHeight => MediaQuery.of(context).padding.top + kToolbarHeight;
 
   @override
   void initState() {
@@ -46,38 +51,57 @@ class _DetailsPageState extends State<DetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverPersistentHeader(
-              pinned: true,
-              floating: true,
-              delegate: DetailsPageHeader(
-                maxHeight: ScreenSize.getPercentOfHeight(context, 1),
-                minHeight: MediaQuery.of(context).padding.top + kToolbarHeight,
-                page1store: detailsStore.page1,
-                overview: detailsStore.baseModel.overview ?? "",
-                voteAverage: detailsStore.baseModel.voteAverage ?? 0,
-                title: detailsStore.baseModel.title ?? "",
-                poster: detailsStore.baseModel.posterPath ?? "",
+        child: NotificationListener<ScrollEndNotification>(
+          onNotification: (_) {
+            _snapBehaviour();
+            return false;
+          },
+          child: CustomScrollView(
+            controller: _controller,
+            physics: BouncingScrollPhysics(),
+            slivers: [
+              SliverPersistentHeader(
+                pinned: true,
+                floating: true,
+                delegate: DetailsPageHeader(
+                  maxHeight: maxHeight,
+                  minHeight: minHeight,
+                  page1store: detailsStore.page1,
+                  overview: detailsStore.baseModel.overview ?? "",
+                  voteAverage: detailsStore.baseModel.voteAverage ?? 0,
+                  title: detailsStore.baseModel.title ?? "",
+                  poster: detailsStore.baseModel.posterPath ?? "",
+                ),
               ),
-            ),
-            SliverToBoxAdapter(
-              child: Observer(builder: (_) {
-                if (detailsStore.credits.isNotEmpty ||
-                    detailsStore.recommendedMovies.isNotEmpty) {
-                  return _AdditionalDetails(
-                    cast: detailsStore.credits,
-                    recommended: detailsStore.recommendedMovies,
-                    genres: detailsStore.page1.genres,
-                  );
-                }
-                return Container();
-              }),
-            )
-          ],
+              SliverToBoxAdapter(
+                child: Observer(builder: (_) {
+                  if (detailsStore.credits.isNotEmpty ||
+                      detailsStore.recommendedMovies.isNotEmpty) {
+                    return _AdditionalDetails(
+                      cast: detailsStore.credits,
+                      recommended: detailsStore.recommendedMovies,
+                      genres: detailsStore.page1.genres,
+                    );
+                  }
+                  return Container();
+                }),
+              )
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  void _snapBehaviour() {
+    final double distance = maxHeight - minHeight;
+    if (_controller.offset > 0 && _controller.offset < distance) {
+      final double snapOffset =
+          _controller.offset / distance > 0.4 ? distance : 0;
+
+      Future.microtask(() => _controller.animateTo(snapOffset,
+          duration: Duration(milliseconds: 200), curve: Curves.easeIn));
+    }
   }
 }
 
@@ -104,9 +128,11 @@ class _AdditionalDetails extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Column(
                 children: [
-                  _buildGenres(),
-                  _buildList("Cast", context, cast),
-                  _buildList("Recommended Movies", context, recommended)
+                  _buildGenres(context),
+                  _buildSpacing(context),
+                  _buildList(Strings.cast, context, cast),
+                  _buildSpacing(context),
+                  _buildList(Strings.recommendedMovies, context, recommended)
                 ],
               )),
         ),
@@ -114,42 +140,45 @@ class _AdditionalDetails extends StatelessWidget {
     );
   }
 
-  Widget _buildGenres() {
-    return Observer(
-      builder: (context) {
-        List<Widget> widgets = [];
-        for (var item in genres) {
-          widgets.add(Padding(
-            padding: EdgeInsets.only(
-              right: ScreenSize.getPercentOfWidth(context, 0.01),
-            ),
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: Colors.grey.withOpacity(0.4),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(2),
-                child: Text(
-                  "${item.name}",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-            ),
-          ));
-        }
+  Widget _buildSpacing(context) {
+    return SizedBox(
+      height: ScreenSize.getPercentOfHeight(context, 0.01),
+      width: ScreenSize.getPercentOfHeight(context, 0.01),
+    );
+  }
 
-        return Flexible(
-          child: Wrap(
-            alignment: WrapAlignment.center,
-            runSpacing: ScreenSize.getPercentOfWidth(context, 0.01),
-            children: widgets,
+  Widget _buildGenres(context) {
+    List<Widget> widgets = [];
+    for (var item in genres) {
+      widgets.add(Padding(
+        padding: EdgeInsets.only(
+          right: ScreenSize.getPercentOfWidth(context, 0.01),
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            color: Colors.grey.withOpacity(0.4),
           ),
-        );
-      },
+          child: Padding(
+            padding: const EdgeInsets.all(2),
+            child: Text(
+              "${item.name}",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 12,
+              ),
+            ),
+          ),
+        ),
+      ));
+    }
+
+    return Flexible(
+      child: Wrap(
+        alignment: WrapAlignment.center,
+        runSpacing: ScreenSize.getPercentOfWidth(context, 0.01),
+        children: widgets,
+      ),
     );
   }
 
@@ -173,7 +202,7 @@ class _AdditionalDetails extends StatelessWidget {
               heightFactor: 0.75,
               child: SeeMorePage(
                 initialItems: list,
-                heading: Strings.knownFor,
+                heading: heading,
                 isLazyLoad: false,
               ),
             );

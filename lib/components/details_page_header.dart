@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:watrix/components/vote_indicator.dart';
@@ -89,7 +90,7 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           _buildSpacing(context),
-          _buildOverView(),
+          _buildOverView(context),
           _buildSpacing(context),
           _buildButtons(context),
         ],
@@ -124,7 +125,7 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
                 VoteIndicator(
                   vote: voteAverage,
                 ),
-                if (page1store.runtime != null) _buildRuntime(),
+                _buildRuntime(),
               ],
             )
           ],
@@ -154,20 +155,43 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
   }
 
   Widget _buildRuntime() {
-    return Text(
-      " - ${DateTimeFormatter.getTimeFromMin(page1store.runtime!)}",
-      style: TextStyle(
-        color: Colors.grey.shade300,
-      ),
+    return AnimatedSwitcher(
+      duration: Duration(milliseconds: 500),
+      child: page1store.runtime != null
+          ? Text(
+              " - ${DateTimeFormatter.getTimeFromMin(page1store.runtime!)}",
+              key: Key("normal"),
+              style: TextStyle(
+                color: Colors.grey.shade300,
+              ),
+            )
+          : Visibility(
+              visible: false,
+              child: Text("abcdefghi"),
+              maintainSize: true,
+              maintainState: true,
+              maintainAnimation: true,
+            ),
     );
   }
 
-  Widget _buildOverView() {
-    return Text(
-      overview,
-      maxLines: 10,
-      textAlign: TextAlign.center,
-      overflow: TextOverflow.ellipsis,
+  Widget _buildOverView(context) {
+    return GestureDetector(
+      onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return CupertinoAlertDialog(
+                content: Text(overview),
+              );
+            });
+      },
+      child: Text(
+        overview,
+        maxLines: 10,
+        textAlign: TextAlign.center,
+        overflow: TextOverflow.ellipsis,
+      ),
     );
   }
 

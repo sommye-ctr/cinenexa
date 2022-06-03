@@ -48,6 +48,8 @@ class Strings {
 //Details
   static const String addToList = "Add to list";
   static const String viewInfo = "View Info";
+  static const String cast = "Cast";
+  static const String recommendedMovies = "Recommended Movies";
 
 //Actor Details
   static const String knownFor = "Known For";
