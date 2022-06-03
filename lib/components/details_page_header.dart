@@ -3,32 +3,27 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:watrix/components/vote_indicator.dart';
+import 'package:watrix/models/base_model.dart';
+import 'package:watrix/store/details/details_store.dart';
 import 'package:watrix/utils/screen_size.dart';
 
 import '../resources/strings.dart';
 import '../services/utils.dart';
-import '../store/details/details_page1_store.dart';
 import '../utils/date_time_formatter.dart';
 import '../widgets/rounded_button.dart';
 import '../widgets/screen_background_image.dart';
 
 class DetailsPageHeader extends SliverPersistentHeaderDelegate {
-  final DetailsPage1Store page1store;
-  final String title, poster, overview;
-  final double voteAverage;
   final double maxHeight, minHeight;
+  final DetailsStore detailsStore;
 
   late double progress;
   late Duration duration;
 
   DetailsPageHeader({
-    required this.page1store,
-    required this.overview,
-    required this.voteAverage,
-    required this.title,
-    required this.poster,
     required this.maxHeight,
     required this.minHeight,
+    required this.detailsStore,
   });
 
   @override
@@ -42,7 +37,7 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
     return ScreenBackgroundImage(
       image: CachedNetworkImageProvider(
         Utils.getPosterUrl(
-          poster,
+          detailsStore.baseModel.posterPath!,
         ),
       ),
       child: Stack(
@@ -123,7 +118,7 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
               children: [
                 _buildReleaseInfo(),
                 VoteIndicator(
-                  vote: voteAverage,
+                  vote: detailsStore.baseModel.voteAverage!,
                 ),
                 _buildRuntime(),
               ],
@@ -136,7 +131,7 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
 
   Widget _buildTitle() {
     return Text(
-      title,
+      detailsStore.baseModel.title!,
       textAlign: TextAlign.center,
       style: TextStyle(
         fontSize: 22,
@@ -155,16 +150,29 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
   }
 
   Widget _buildRuntime() {
+    if (detailsStore.baseModel.type == BaseModelType.movie) {
+      return AnimatedSwitcher(
+        duration: Duration(milliseconds: 500),
+        child: detailsStore.movie?.runtime != null
+            ? Text(
+                " - ${DateTimeFormatter.getTimeFromMin(detailsStore.movie!.runtime!)}",
+                style: TextStyle(
+                  color: Colors.grey.shade300,
+                ),
+              )
+            : Visibility(
+                visible: false,
+                child: Text("abcdefghi"),
+                maintainSize: true,
+                maintainState: true,
+                maintainAnimation: true,
+              ),
+      );
+    }
     return AnimatedSwitcher(
       duration: Duration(milliseconds: 500),
-      child: page1store.runtime != null
-          ? Text(
-              " - ${DateTimeFormatter.getTimeFromMin(page1store.runtime!)}",
-              key: Key("normal"),
-              style: TextStyle(
-                color: Colors.grey.shade300,
-              ),
-            )
+      child: detailsStore.tv?.noOfSeasons != null
+          ? Text(" - ${detailsStore.tv!.noOfSeasons!} ${Strings.seasons}")
           : Visibility(
               visible: false,
               child: Text("abcdefghi"),
@@ -182,12 +190,12 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
             context: context,
             builder: (context) {
               return CupertinoAlertDialog(
-                content: Text(overview),
+                content: Text(detailsStore.baseModel.overview!),
               );
             });
       },
       child: Text(
-        overview,
+        detailsStore.baseModel.overview!,
         maxLines: 10,
         textAlign: TextAlign.center,
         overflow: TextOverflow.ellipsis,
@@ -222,16 +230,15 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
   }
 
   String _getReleaseInfo() {
-    int startYear =
-        DateTimeFormatter.getYearFromString(page1store.releaseDate!);
+    int startYear = DateTimeFormatter.getYearFromString(
+        detailsStore.baseModel.releaseDate!);
     String date = " ($startYear)";
-    if (page1store.tvShowEndTime != null) {
+    if (detailsStore.tv?.lastAirDate != null) {
       int endYear =
-          DateTimeFormatter.getYearFromString(page1store.tvShowEndTime!);
+          DateTimeFormatter.getYearFromString(detailsStore.tv!.lastAirDate!);
       if (startYear != endYear) {
         date = date.substring(0, date.length - 1);
-        date = date +
-            " - ${DateTimeFormatter.getYearFromString(page1store.tvShowEndTime!)})";
+        date = date + " - $endYear)";
       }
     }
     return date;

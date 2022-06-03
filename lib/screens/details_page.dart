@@ -1,21 +1,13 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:watrix/components/details_page_header.dart';
 
-import 'package:watrix/components/vote_indicator.dart';
 import 'package:watrix/models/base_model.dart';
 import 'package:watrix/models/genre.dart';
 import 'package:watrix/resources/strings.dart';
-import 'package:watrix/resources/style.dart';
 import 'package:watrix/screens/see_more_page.dart';
-import 'package:watrix/services/utils.dart';
-import 'package:watrix/store/details/details_page1_store.dart';
 import 'package:watrix/store/details/details_store.dart';
-import 'package:watrix/utils/date_time_formatter.dart';
 import 'package:watrix/widgets/horizontal_list.dart';
-import 'package:watrix/widgets/rounded_button.dart';
-import 'package:watrix/widgets/screen_background_image.dart';
 
 import '../utils/screen_size.dart';
 
@@ -66,11 +58,7 @@ class _DetailsPageState extends State<DetailsPage> {
                 delegate: DetailsPageHeader(
                   maxHeight: maxHeight,
                   minHeight: minHeight,
-                  page1store: detailsStore.page1,
-                  overview: detailsStore.baseModel.overview ?? "",
-                  voteAverage: detailsStore.baseModel.voteAverage ?? 0,
-                  title: detailsStore.baseModel.title ?? "",
-                  poster: detailsStore.baseModel.posterPath ?? "",
+                  detailsStore: detailsStore,
                 ),
               ),
               SliverToBoxAdapter(
@@ -80,7 +68,7 @@ class _DetailsPageState extends State<DetailsPage> {
                     return _AdditionalDetails(
                       cast: detailsStore.credits,
                       recommended: detailsStore.recommendedMovies,
-                      genres: detailsStore.page1.genres,
+                      genres: detailsStore.genres!,
                     );
                   }
                   return Container();

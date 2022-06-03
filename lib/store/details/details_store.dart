@@ -1,8 +1,8 @@
 import 'package:mobx/mobx.dart';
 import 'package:watrix/models/base_model.dart';
+import 'package:watrix/models/genre.dart';
 import 'package:watrix/models/movie.dart';
 import 'package:watrix/models/tv.dart';
-import 'package:watrix/store/details/details_page1_store.dart';
 
 import '../../services/requests.dart';
 
@@ -14,10 +14,8 @@ class DetailsStore extends _DetailsStore with _$DetailsStore {
 
 abstract class _DetailsStore with Store {
   final BaseModel baseModel;
-  final DetailsPage1Store page1 = DetailsPage1Store();
 
   _DetailsStore({required this.baseModel}) {
-    page1.setReleaseDate(baseModel.releaseDate);
     _fetchDetails();
   }
 
@@ -36,6 +34,14 @@ abstract class _DetailsStore with Store {
   @observable
   ObservableList<BaseModel> recommendedMovies = <BaseModel>[].asObservable();
 
+  @computed
+  List<Genre>? get genres {
+    if (baseModel.type == BaseModelType.movie) {
+      return movie?.genres;
+    }
+    return tv?.genres;
+  }
+
   @action
   void onPageChanged(int index) {
     pageIndex = index;
@@ -47,12 +53,8 @@ abstract class _DetailsStore with Store {
       movie = map['movie'];
       credits.addAll(map['credits']);
       recommendedMovies.addAll(map['recommended']);
-      page1.setGenres(movie?.genres ?? []);
-      page1.setRuntime(movie?.runtime);
     } else if (baseModel.type == BaseModelType.tv) {
       tv = await Requests.findTv(id: baseModel.id!);
-      page1.setGenres(tv?.genres ?? []);
-      page1.setTvShowEndTime(tv?.lastAirDate);
     }
   }
 }

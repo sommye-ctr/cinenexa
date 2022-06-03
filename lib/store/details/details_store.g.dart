@@ -9,6 +9,14 @@ part of 'details_store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
 mixin _$DetailsStore on _DetailsStore, Store {
+  Computed<List<Genre>?>? _$genresComputed;
+
+  @override
+  List<Genre>? get genres =>
+      (_$genresComputed ??= Computed<List<Genre>?>(() => super.genres,
+              name: '_DetailsStore.genres'))
+          .value;
+
   final _$pageIndexAtom = Atom(name: '_DetailsStore.pageIndex');
 
   @override
@@ -105,7 +113,8 @@ pageIndex: ${pageIndex},
 movie: ${movie},
 tv: ${tv},
 credits: ${credits},
-recommendedMovies: ${recommendedMovies}
+recommendedMovies: ${recommendedMovies},
+genres: ${genres}
     ''';
   }
 }
