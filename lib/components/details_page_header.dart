@@ -16,6 +16,7 @@ import '../widgets/screen_background_image.dart';
 class DetailsPageHeader extends SliverPersistentHeaderDelegate {
   final double maxHeight, minHeight;
   final DetailsStore detailsStore;
+  final ScrollController scrollController;
 
   late double progress;
   late Duration duration;
@@ -24,6 +25,7 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
     required this.maxHeight,
     required this.minHeight,
     required this.detailsStore,
+    required this.scrollController,
   });
 
   @override
@@ -214,7 +216,7 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
         ),
         _buildSpacing(context),
         RoundedButton(
-          onPressed: () {},
+          onPressed: _onViewInfoPressed,
           child: Text(Strings.viewInfo),
           type: RoundedButtonType.outlined,
         ),
@@ -226,6 +228,14 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
     return SizedBox(
       height: ScreenSize.getPercentOfHeight(context, 0.01),
       width: ScreenSize.getPercentOfHeight(context, 0.01),
+    );
+  }
+
+  void _onViewInfoPressed() {
+    scrollController.animateTo(
+      maxExtent - minExtent,
+      duration: duration,
+      curve: Curves.easeIn,
     );
   }
 

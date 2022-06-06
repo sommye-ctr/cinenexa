@@ -63,8 +63,10 @@ class _DetailsPageState extends State<DetailsPage> {
                     maxHeight: maxHeight,
                     minHeight: minHeight,
                     detailsStore: detailsStore,
+                    scrollController: _controller,
                   ),
                 ),
+                _buildSpacing(),
                 SliverToBoxAdapter(
                   child: Observer(builder: (_) => _buildGenres(context)),
                 ),
