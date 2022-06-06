@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../resources/style.dart';
 import '../utils/screen_size.dart';
 
 class BubblePageIndicator extends StatelessWidget {
@@ -32,7 +33,8 @@ class BubblePageIndicator extends StatelessWidget {
                 width: ScreenSize.getPercentOfWidth(context, 0.025),
                 decoration: BoxDecoration(
                   color: i == currentPage ? selectedColor : Colors.grey,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius:
+                      BorderRadius.circular(Style.smallRoundEdgeRadius),
                 ),
               ),
               SizedBox(

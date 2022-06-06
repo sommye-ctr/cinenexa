@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../resources/strings.dart';
+import '../resources/style.dart';
 import '../utils/screen_size.dart';
 
 class SearchInput extends StatelessWidget {
@@ -33,7 +34,7 @@ class SearchInput extends StatelessWidget {
           fillColor: Colors.white,
           filled: true,
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
             borderSide: BorderSide.none,
           ),
           hintText: hint ?? Strings.search,

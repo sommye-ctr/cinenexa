@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../resources/style.dart';
 import '../utils/screen_size.dart';
 
 class RoundedImagePlaceholder extends StatelessWidget {
   final double width, ratio;
+  final double? radius;
+
   const RoundedImagePlaceholder({
     Key? key,
     required this.width,
     required this.ratio,
+    this.radius,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(radius ?? Style.largeRoundEdgeRadius),
       child: Shimmer.fromColors(
         baseColor: Colors.grey,
         highlightColor: Colors.white,

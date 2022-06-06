@@ -25,4 +25,6 @@ class Style {
   );
 
   static double movieTileWithTitleRatio = 1 / 1.6;
+  static double largeRoundEdgeRadius = 16;
+  static double smallRoundEdgeRadius = 8;
 }

@@ -77,18 +77,48 @@ mixin _$DetailsStore on _DetailsStore, Store {
     });
   }
 
-  final _$recommendedMoviesAtom = Atom(name: '_DetailsStore.recommendedMovies');
+  final _$recommendedAtom = Atom(name: '_DetailsStore.recommended');
 
   @override
-  ObservableList<BaseModel> get recommendedMovies {
-    _$recommendedMoviesAtom.reportRead();
-    return super.recommendedMovies;
+  ObservableList<BaseModel> get recommended {
+    _$recommendedAtom.reportRead();
+    return super.recommended;
   }
 
   @override
-  set recommendedMovies(ObservableList<BaseModel> value) {
-    _$recommendedMoviesAtom.reportWrite(value, super.recommendedMovies, () {
-      super.recommendedMovies = value;
+  set recommended(ObservableList<BaseModel> value) {
+    _$recommendedAtom.reportWrite(value, super.recommended, () {
+      super.recommended = value;
+    });
+  }
+
+  final _$episodesAtom = Atom(name: '_DetailsStore.episodes');
+
+  @override
+  ObservableList<TvEpisode> get episodes {
+    _$episodesAtom.reportRead();
+    return super.episodes;
+  }
+
+  @override
+  set episodes(ObservableList<TvEpisode> value) {
+    _$episodesAtom.reportWrite(value, super.episodes, () {
+      super.episodes = value;
+    });
+  }
+
+  final _$chosenSeasonAtom = Atom(name: '_DetailsStore.chosenSeason');
+
+  @override
+  TvSeason? get chosenSeason {
+    _$chosenSeasonAtom.reportRead();
+    return super.chosenSeason;
+  }
+
+  @override
+  set chosenSeason(TvSeason? value) {
+    _$chosenSeasonAtom.reportWrite(value, super.chosenSeason, () {
+      super.chosenSeason = value;
     });
   }
 
@@ -107,13 +137,26 @@ mixin _$DetailsStore on _DetailsStore, Store {
   }
 
   @override
+  void onSeasonChanged(TvSeason tvSeason) {
+    final _$actionInfo = _$_DetailsStoreActionController.startAction(
+        name: '_DetailsStore.onSeasonChanged');
+    try {
+      return super.onSeasonChanged(tvSeason);
+    } finally {
+      _$_DetailsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 pageIndex: ${pageIndex},
 movie: ${movie},
 tv: ${tv},
 credits: ${credits},
-recommendedMovies: ${recommendedMovies},
+recommended: ${recommended},
+episodes: ${episodes},
+chosenSeason: ${chosenSeason},
 genres: ${genres}
     ''';
   }

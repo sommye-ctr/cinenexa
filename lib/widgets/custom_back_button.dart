@@ -2,13 +2,16 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
+import '../resources/style.dart';
+
 class CustomBackButton extends StatelessWidget {
   const CustomBackButton({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.all(Radius.circular(8)),
+      borderRadius:
+          BorderRadius.all(Radius.circular(Style.smallRoundEdgeRadius)),
       child: BackdropFilter(
         filter: ImageFilter.blur(
           sigmaX: 10,

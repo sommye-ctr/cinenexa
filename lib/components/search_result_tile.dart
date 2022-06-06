@@ -5,6 +5,8 @@ import 'package:watrix/services/utils.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/widgets/rounded_image.dart';
 
+import '../resources/style.dart';
+
 class SearchResultTile extends StatelessWidget {
   final String image, year, overview, title, type;
   final double vote;
@@ -32,7 +34,7 @@ class SearchResultTile extends StatelessWidget {
             Constants.posterAspectRatio,
         child: Card(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
           ),
           elevation: 0,
           child: Row(
@@ -72,7 +74,8 @@ class SearchResultTile extends StatelessWidget {
                               ),
                               Container(
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: BorderRadius.circular(
+                                      Style.smallRoundEdgeRadius),
                                   color: typeColor,
                                 ),
                                 child: Padding(

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../resources/style.dart';
+
 class RoundedButton extends StatelessWidget {
   final void Function()? onPressed;
   final Widget child;
@@ -21,7 +23,7 @@ class RoundedButton extends StatelessWidget {
         style: ButtonStyle(
           shape: MaterialStateProperty.all(
             RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
             ),
           ),
         ),
@@ -33,7 +35,7 @@ class RoundedButton extends StatelessWidget {
         style: ButtonStyle(
           shape: MaterialStateProperty.all(
             RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
             ),
           ),
         ),

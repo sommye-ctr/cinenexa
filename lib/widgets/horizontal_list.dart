@@ -29,6 +29,7 @@ class HorizontalList extends StatefulWidget {
   }) : super(key: key);
 
   HorizontalList.fromInititalValues({
+    Key? key,
     required this.items,
     required this.heading,
     required this.onClick,
@@ -36,7 +37,7 @@ class HorizontalList extends StatefulWidget {
     required this.showTitle,
     this.onRightTrailClicked,
     this.limitItems,
-  }) : super();
+  }) : super(key: key);
 
   @override
   State<HorizontalList> createState() => _HorizontalListState();

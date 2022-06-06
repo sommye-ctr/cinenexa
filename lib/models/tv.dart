@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
+import 'package:watrix/models/tv_season.dart';
+
 import 'genre.dart';
 
 class Tv {
@@ -18,6 +20,7 @@ class Tv {
   String? lastAirDate;
   int? noOfEpisodes;
   int? noOfSeasons;
+  List<TvSeason>? seasons;
   Tv({
     required this.name,
     required this.id,
@@ -31,6 +34,7 @@ class Tv {
     this.lastAirDate,
     this.noOfEpisodes,
     this.noOfSeasons,
+    this.seasons,
   });
 
   Tv copyWith({
@@ -46,6 +50,7 @@ class Tv {
     String? lastAirDate,
     int? noOfEpisodes,
     int? noOfSeasons,
+    List<TvSeason>? seasons,
   }) {
     return Tv(
       name: name ?? this.name,
@@ -60,6 +65,7 @@ class Tv {
       lastAirDate: lastAirDate ?? this.lastAirDate,
       noOfEpisodes: noOfEpisodes ?? this.noOfEpisodes,
       noOfSeasons: noOfSeasons ?? this.noOfSeasons,
+      seasons: seasons ?? this.seasons,
     );
   }
 
@@ -77,6 +83,7 @@ class Tv {
       'last_air_date': lastAirDate,
       'number_of_episodes': noOfEpisodes,
       'number_of_seasons': noOfSeasons,
+      'seasons': seasons?.map((x) => x.toMap()).toList(),
     };
   }
 
@@ -96,6 +103,9 @@ class Tv {
       lastAirDate: map['last_air_date'],
       noOfEpisodes: map['number_of_episodes']?.toInt(),
       noOfSeasons: map['number_of_seasons']?.toInt(),
+      seasons: map['seasons'] != null
+          ? List<TvSeason>.from(map['seasons']?.map((x) => TvSeason.fromMap(x)))
+          : null,
     );
   }
 
@@ -105,7 +115,7 @@ class Tv {
 
   @override
   String toString() {
-    return 'Tv(name: $name, id: $id, posterPath: $posterPath, backdropPath: $backdropPath, overview: $overview, firstAirDate: $firstAirDate, genreIds: $genreIds, voteAverage: $voteAverage, genres: $genres, lastAirDate: $lastAirDate, noOfEpisodes: $noOfEpisodes, noOfSeasons: $noOfSeasons)';
+    return 'Tv(name: $name, id: $id, posterPath: $posterPath, backdropPath: $backdropPath, overview: $overview, firstAirDate: $firstAirDate, genreIds: $genreIds, voteAverage: $voteAverage, genres: $genres, lastAirDate: $lastAirDate, noOfEpisodes: $noOfEpisodes, noOfSeasons: $noOfSeasons, seasons: $seasons)';
   }
 
   @override
@@ -124,7 +134,8 @@ class Tv {
         listEquals(other.genres, genres) &&
         other.lastAirDate == lastAirDate &&
         other.noOfEpisodes == noOfEpisodes &&
-        other.noOfSeasons == noOfSeasons;
+        other.noOfSeasons == noOfSeasons &&
+        listEquals(other.seasons, seasons);
   }
 
   @override
@@ -140,6 +151,7 @@ class Tv {
         genres.hashCode ^
         lastAirDate.hashCode ^
         noOfEpisodes.hashCode ^
-        noOfSeasons.hashCode;
+        noOfSeasons.hashCode ^
+        seasons.hashCode;
   }
 }

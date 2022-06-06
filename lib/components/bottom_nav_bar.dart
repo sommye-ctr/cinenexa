@@ -29,10 +29,10 @@ class _BottomNavBarState extends State<BottomNavBar> {
       padding: const EdgeInsets.all(8.0),
       child: ClipRRect(
         borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(8),
-            topRight: Radius.circular(8),
-            bottomLeft: Radius.circular(16),
-            bottomRight: Radius.circular(16)),
+            topLeft: Radius.circular(Style.largeRoundEdgeRadius),
+            topRight: Radius.circular(Style.largeRoundEdgeRadius),
+            bottomLeft: Radius.circular(Style.largeRoundEdgeRadius),
+            bottomRight: Radius.circular(Style.largeRoundEdgeRadius)),
         child: BackdropFilter(
           filter: ImageFilter.blur(
             sigmaX: 10,

@@ -18,6 +18,11 @@ class DateTimeFormatter {
     return DateFormat("dd MMM").format(date);
   }
 
+  static String getDateMonthYearFromString(String string) {
+    DateTime date = DateFormat("yyyy-MM-dd").parse(string);
+    return DateFormat("dd MMM yyyy").format(date);
+  }
+
   static int getAge(String string) {
     DateTime date = DateFormat("yyyy-MM-dd").parse(string);
     DateTime current = DateTime.now();

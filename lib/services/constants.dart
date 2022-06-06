@@ -6,6 +6,7 @@ class Constants {
 
   static String posterSize = "/w300";
   static String backdropSize = "/w780";
+  static String stillSize = "/w300";
 
   static String hdPosterSize = "/w500";
 
@@ -30,6 +31,7 @@ class Constants {
 
   static const double posterAspectRatio = 2 / 3;
   static const double backdropAspectRatio = 16 / 9;
+  static const double stillAspectRatio = 16 / 9;
 
   static const int homeLimit = 10;
   static const int skipLimit = 5;

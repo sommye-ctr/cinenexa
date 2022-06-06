@@ -14,6 +14,7 @@ import 'package:watrix/widgets/rounded_image.dart';
 import 'package:watrix/widgets/screen_background_image.dart';
 
 import '../models/base_model.dart';
+import '../resources/style.dart';
 import '../services/utils.dart';
 
 class ActorDetailsPage extends StatefulWidget {
@@ -92,7 +93,8 @@ class _ActorDetailsPageState extends State<ActorDetailsPage> {
         return Align(
           alignment: Alignment(0, 0.28),
           child: ClipRRect(
-            borderRadius: BorderRadius.all(Radius.circular(8)),
+            borderRadius:
+                BorderRadius.all(Radius.circular(Style.largeRoundEdgeRadius)),
             child: BackdropFilter(
               filter: ImageFilter.blur(
                 sigmaX: 10,
@@ -183,7 +185,8 @@ class _ActorDetailsPageState extends State<ActorDetailsPage> {
                   context: context,
                   isScrollControlled: true,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius:
+                        BorderRadius.circular(Style.largeRoundEdgeRadius),
                   ),
                   builder: (context) {
                     return FractionallySizedBox(

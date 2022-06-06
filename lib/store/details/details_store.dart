@@ -3,6 +3,8 @@ import 'package:watrix/models/base_model.dart';
 import 'package:watrix/models/genre.dart';
 import 'package:watrix/models/movie.dart';
 import 'package:watrix/models/tv.dart';
+import 'package:watrix/models/tv_episode.dart';
+import 'package:watrix/models/tv_season.dart';
 
 import '../../services/requests.dart';
 
@@ -32,7 +34,13 @@ abstract class _DetailsStore with Store {
   ObservableList<BaseModel> credits = <BaseModel>[].asObservable();
 
   @observable
-  ObservableList<BaseModel> recommendedMovies = <BaseModel>[].asObservable();
+  ObservableList<BaseModel> recommended = <BaseModel>[].asObservable();
+
+  @observable
+  ObservableList<TvEpisode> episodes = <TvEpisode>[].asObservable();
+
+  @observable
+  TvSeason? chosenSeason;
 
   @computed
   List<Genre>? get genres {
@@ -47,14 +55,34 @@ abstract class _DetailsStore with Store {
     pageIndex = index;
   }
 
+  @action
+  void onSeasonChanged(TvSeason tvSeason) {
+    chosenSeason = tvSeason;
+    _fetchEpisodes();
+  }
+
+  void _fetchEpisodes() async {
+    List<TvEpisode> latest = await Requests.getSeasonEpisodes(
+      tvId: baseModel.id!,
+      seasonNo: chosenSeason!.seasonNumber,
+    );
+    episodes.clear();
+    episodes.addAll(latest);
+  }
+
   void _fetchDetails() async {
     if (baseModel.type == BaseModelType.movie) {
       Map map = await Requests.getMovieDetails(id: baseModel.id!);
       movie = map['movie'];
       credits.addAll(map['credits']);
-      recommendedMovies.addAll(map['recommended']);
+      recommended.addAll(map['recommended']);
     } else if (baseModel.type == BaseModelType.tv) {
-      tv = await Requests.findTv(id: baseModel.id!);
+      Map map = await Requests.getTvDetails(id: baseModel.id!);
+      tv = map['tv'];
+      credits.addAll(map['credits']);
+      recommended.addAll(map['recommended']);
+      chosenSeason = tv!.seasons![0];
+      _fetchEpisodes();
     }
   }
 }

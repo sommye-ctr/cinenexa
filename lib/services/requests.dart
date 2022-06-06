@@ -8,6 +8,7 @@ import 'package:watrix/models/people.dart';
 import 'package:watrix/models/sort_movies.dart';
 import 'package:watrix/models/sort_tv.dart';
 import 'package:watrix/models/tv.dart';
+import 'package:watrix/models/tv_episode.dart';
 import 'package:watrix/services/constants.dart';
 import 'package:watrix/services/duration_type.dart';
 import 'package:watrix/services/entity_type.dart';
@@ -262,12 +263,18 @@ class Requests {
     };
   }
 
-  static Future<Tv> findTv({required int id}) async {
+  static Future<Map> getTvDetails({required int id}) async {
     final response = await http.get(
       Uri.parse(
-          "${Constants.baseUrl}${Constants.tv}/${id}?api_key=${Constants.apiKey}&language=en-US"),
+          "${Constants.baseUrl}${Constants.tv}/${id}?api_key=${Constants.apiKey}&language=en-US&append_to_response=credits,recommendations"),
     );
-    return Tv.fromMap(json.decode(response.body));
+    var map = json.decode(response.body);
+    return {
+      "tv": Tv.fromMap(map),
+      "credits": Utils.convertToListString(map['credits']['cast']),
+      "recommended":
+          Utils.convertToListString(map['recommendations']['results']),
+    };
   }
 
   static Future<Map> getPeopleDetails({required int id}) async {
@@ -281,5 +288,15 @@ class Requests {
       "person": People.fromMap(map),
       "credits": Utils.convertToListString(map['combined_credits']['cast'])
     };
+  }
+
+  static Future<List<TvEpisode>> getSeasonEpisodes(
+      {required int tvId, required int seasonNo}) async {
+    final response = await http.get(
+      Uri.parse(
+          "${Constants.baseUrl}${Constants.tv}/${tvId}/season/${seasonNo}?api_key=${Constants.apiKey}&language=en-US"),
+    );
+    var parsedList = json.decode(response.body)['episodes'];
+    return (parsedList as List).map((e) => TvEpisode.fromMap(e)).toList();
   }
 }

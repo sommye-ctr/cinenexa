@@ -192,7 +192,7 @@ class _HomePageState extends State<HomePage>
       context: context,
       isScrollControlled: true,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
       ),
       builder: (context) {
         return FractionallySizedBox(
@@ -212,7 +212,7 @@ class _HomePageState extends State<HomePage>
       context: context,
       isScrollControlled: true,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
       ),
       builder: (context) {
         EntityType type;

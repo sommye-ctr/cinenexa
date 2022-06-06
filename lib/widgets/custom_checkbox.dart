@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../resources/style.dart';
+
 class CustomCheckBox extends StatefulWidget {
   final String text;
   final Function()? onSelected;
@@ -21,7 +23,7 @@ class _CustomCheckBoxState extends State<CustomCheckBox> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
       splashColor: Theme.of(context).colorScheme.inverseSurface,
       focusColor: Theme.of(context).colorScheme.inverseSurface,
       onTap: () {
@@ -37,7 +39,7 @@ class _CustomCheckBoxState extends State<CustomCheckBox> {
               color: value
                   ? Theme.of(context).colorScheme.primary
                   : Theme.of(context).colorScheme.background,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
             ),
             child: Padding(
               padding: const EdgeInsets.all(4),
