@@ -88,6 +88,9 @@ class Tv {
   }
 
   factory Tv.fromMap(Map<String, dynamic> map) {
+    List<TvSeason> list =
+        List<TvSeason>.from(map['seasons']?.map((x) => TvSeason.fromMap(x)))
+          ..removeWhere((element) => element.seasonNumber == 0);
     return Tv(
       name: map['name'] ?? '',
       id: map['id']?.toInt() ?? 0,
@@ -103,9 +106,7 @@ class Tv {
       lastAirDate: map['last_air_date'],
       noOfEpisodes: map['number_of_episodes']?.toInt(),
       noOfSeasons: map['number_of_seasons']?.toInt(),
-      seasons: map['seasons'] != null
-          ? List<TvSeason>.from(map['seasons']?.map((x) => TvSeason.fromMap(x)))
-          : null,
+      seasons: map['seasons'] != null ? list : null,
     );
   }
 

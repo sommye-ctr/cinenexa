@@ -42,7 +42,7 @@ class _SearchPageState extends State<SearchPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _buildSearchBar(),
-            _buildSpacing(),
+            Style.getVerticalSpacing(context: context),
             _buildSearchTypeTabs(),
             _buildMainBody(),
           ],
@@ -85,7 +85,7 @@ class _SearchPageState extends State<SearchPage> {
           Strings.searchHint,
           style: Style.headingStyle,
         ),
-        _buildSpacing(),
+        Style.getVerticalSpacing(context: context),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -250,11 +250,5 @@ class _SearchPageState extends State<SearchPage> {
         searchStore.searchTypeChanged(SearchType.people);
         break;
     }
-  }
-
-  Widget _buildSpacing({double percent = 0.02}) {
-    return SizedBox(
-      height: ScreenSize.getPercentOfHeight(context, percent),
-    );
   }
 }

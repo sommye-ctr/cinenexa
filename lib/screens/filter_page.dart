@@ -66,12 +66,12 @@ class FilterPage extends StatelessWidget {
 
   List<Widget> _buildSortBy(context) {
     return [
-      _buildSpacing(context),
+      Style.getVerticalSpacing(context: context),
       Text(
         Strings.sortBy,
         style: Style.headingStyle,
       ),
-      _buildSpacing(context),
+      Style.getVerticalSpacing(context: context),
       CustomCheckBoxList(
         type: CheckBoxListType.list,
         singleSelect: true,
@@ -142,7 +142,7 @@ class FilterPage extends StatelessWidget {
             ],
           ),
         ),
-        _buildSpacing(context),
+        Style.getVerticalSpacing(context: context),
         FutureBuilder<List<Certification>>(
           future: Requests.certificationsFuture(
             Requests.certifications(type),
@@ -160,7 +160,7 @@ class FilterPage extends StatelessWidget {
         Strings.voteAverage,
         style: Style.headingStyle,
       ),
-      _buildSpacing(context),
+      Style.getVerticalSpacing(context: context),
       CustomRangeSlider(
         values: getDefaultVoteAverage(),
         min: DEFAULT_VOTE_AVERAGE.start,
@@ -178,7 +178,7 @@ class FilterPage extends StatelessWidget {
         Strings.year,
         style: Style.headingStyle,
       ),
-      _buildSpacing(context),
+      Style.getVerticalSpacing(context: context),
       CustomRangeSlider(
         values: getDefaultYearValues(),
         max: DEFAULT_YEAR.end,
@@ -247,10 +247,6 @@ class FilterPage extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  Widget _buildSpacing(context) {
-    return SizedBox(height: ScreenSize.getPercentOfHeight(context, 0.01));
   }
 
   Widget _buildCertificationList(

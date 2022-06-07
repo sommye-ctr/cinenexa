@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:watrix/utils/screen_size.dart';
 
 class Style {
+  static double movieTileWithTitleRatio = 1 / 1.6;
+  static double largeRoundEdgeRadius = 16;
+  static double smallRoundEdgeRadius = 8;
+
   static ThemeData themeData = ThemeData(
     primarySwatch: Colors.brown,
     brightness: Brightness.light,
+  );
+
+  static TextStyle headingStyle = TextStyle(
+    fontSize: 18,
   );
 
   static ThemeData darkThemeData(BuildContext context) => ThemeData(
@@ -20,11 +29,18 @@ class Style {
     );
   }
 
-  static TextStyle headingStyle = TextStyle(
-    fontSize: 18,
-  );
+  static Widget getVerticalSpacing(
+      {required BuildContext context, double? percent}) {
+    return SizedBox(
+      height: ScreenSize.getPercentOfHeight(context, percent ?? 0.02),
+    );
+  }
 
-  static double movieTileWithTitleRatio = 1 / 1.6;
-  static double largeRoundEdgeRadius = 16;
-  static double smallRoundEdgeRadius = 8;
+  static Widget getVerticalHorizontalSpacing(
+      {required BuildContext context, double? percent}) {
+    return SizedBox(
+      height: ScreenSize.getPercentOfHeight(context, percent ?? 0.02),
+      width: ScreenSize.getPercentOfWidth(context, percent ?? 0.02),
+    );
+  }
 }

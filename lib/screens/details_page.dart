@@ -66,11 +66,11 @@ class _DetailsPageState extends State<DetailsPage> {
                     scrollController: _controller,
                   ),
                 ),
-                _buildSpacing(),
+                Style.getVerticalSpacing(context: context),
                 SliverToBoxAdapter(
                   child: Observer(builder: (_) => _buildGenres(context)),
                 ),
-                _buildSpacing(),
+                Style.getVerticalSpacing(context: context),
                 SliverToBoxAdapter(
                   child: Observer(
                     builder: (_) => _buildList(
@@ -81,22 +81,24 @@ class _DetailsPageState extends State<DetailsPage> {
                     ),
                   ),
                 ),
-                _buildSpacing(),
+                Style.getVerticalSpacing(context: context),
                 SliverToBoxAdapter(
                   child: Observer(
                     builder: (_) => _buildList(
-                      Strings.recommendedMovies,
+                      detailsStore.baseModel.type == BaseModelType.movie
+                          ? Strings.recommendedMovies
+                          : Strings.recommendedTv,
                       context,
                       detailsStore.recommended,
                       DetailsPage.routeName,
                     ),
                   ),
                 ),
-                _buildSpacing(),
+                Style.getVerticalSpacing(context: context),
                 SliverToBoxAdapter(
                   child: Observer(builder: (_) => _buildSeasonsHeading()),
                 ),
-                _buildSpacing(),
+                Style.getVerticalSpacing(context: context),
                 Observer(
                   builder: (_) => SliverList(
                     delegate: SliverChildBuilderDelegate(
@@ -115,14 +117,6 @@ class _DetailsPageState extends State<DetailsPage> {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildSpacing() {
-    return SliverToBoxAdapter(
-      child: Container(
-        height: ScreenSize.getPercentOfHeight(context, 0.02),
       ),
     );
   }

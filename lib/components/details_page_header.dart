@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:watrix/components/vote_indicator.dart';
 import 'package:watrix/models/base_model.dart';
+import 'package:watrix/resources/style.dart';
 import 'package:watrix/store/details/details_store.dart';
 import 'package:watrix/utils/screen_size.dart';
 
@@ -86,9 +87,9 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
       Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _buildSpacing(context),
+          Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
           _buildOverView(context),
-          _buildSpacing(context),
+          Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
           _buildButtons(context),
         ],
       ),
@@ -214,20 +215,13 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
           child: Text(Strings.addToList),
           type: RoundedButtonType.filled,
         ),
-        _buildSpacing(context),
+        Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
         RoundedButton(
           onPressed: _onViewInfoPressed,
           child: Text(Strings.viewInfo),
           type: RoundedButtonType.outlined,
         ),
       ],
-    );
-  }
-
-  Widget _buildSpacing(context) {
-    return SizedBox(
-      height: ScreenSize.getPercentOfHeight(context, 0.01),
-      width: ScreenSize.getPercentOfHeight(context, 0.01),
     );
   }
 

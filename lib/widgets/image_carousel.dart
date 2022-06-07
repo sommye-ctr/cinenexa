@@ -29,6 +29,46 @@ class _ImageCarouselState extends State<ImageCarousel> {
   late PageController _pageController;
   List<BaseModel> _list = [];
 
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(
+      initialPage: 0,
+    );
+    _timer = Timer.periodic(
+      Duration(seconds: 5),
+      (timer) {
+        if (_currentIndex < _length - 1) {
+          _currentIndex++;
+        } else {
+          _currentIndex = 0;
+        }
+
+        _pageController.animateToPage(
+          _currentIndex,
+          duration: Duration(
+            milliseconds: 500,
+          ),
+          curve: Curves.easeIn,
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _timer.cancel();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<BaseModel>>(
+      future: widget.future,
+      builder: handleListBuilder,
+    );
+  }
+
   Widget handleListBuilder(
       BuildContext context, AsyncSnapshot<List<BaseModel>> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
@@ -102,45 +142,5 @@ class _ImageCarouselState extends State<ImageCarousel> {
         widget.onPageChanged!(page, _list[page]);
       }
     });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController(
-      initialPage: 0,
-    );
-    _timer = Timer.periodic(
-      Duration(seconds: 5),
-      (timer) {
-        if (_currentIndex < _length - 1) {
-          _currentIndex++;
-        } else {
-          _currentIndex = 0;
-        }
-
-        _pageController.animateToPage(
-          _currentIndex,
-          duration: Duration(
-            milliseconds: 500,
-          ),
-          curve: Curves.easeIn,
-        );
-      },
-    );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _timer.cancel();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<List<BaseModel>>(
-      future: widget.future,
-      builder: handleListBuilder,
-    );
   }
 }

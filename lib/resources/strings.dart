@@ -50,6 +50,7 @@ class Strings {
   static const String viewInfo = "View Info";
   static const String cast = "Cast";
   static const String recommendedMovies = "Recommended Movies";
+  static const String recommendedTv = "Recommended Tv Shows";
   static const String seasons = "Seasons";
 
 //Actor Details
