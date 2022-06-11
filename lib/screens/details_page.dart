@@ -66,11 +66,13 @@ class _DetailsPageState extends State<DetailsPage> {
                     scrollController: _controller,
                   ),
                 ),
-                Style.getVerticalSpacing(context: context),
+                SliverToBoxAdapter(
+                    child: Style.getVerticalSpacing(context: context)),
                 SliverToBoxAdapter(
                   child: Observer(builder: (_) => _buildGenres(context)),
                 ),
-                Style.getVerticalSpacing(context: context),
+                SliverToBoxAdapter(
+                    child: Style.getVerticalSpacing(context: context)),
                 SliverToBoxAdapter(
                   child: Observer(
                     builder: (_) => _buildList(
@@ -81,7 +83,8 @@ class _DetailsPageState extends State<DetailsPage> {
                     ),
                   ),
                 ),
-                Style.getVerticalSpacing(context: context),
+                SliverToBoxAdapter(
+                    child: Style.getVerticalSpacing(context: context)),
                 SliverToBoxAdapter(
                   child: Observer(
                     builder: (_) => _buildList(
@@ -94,11 +97,13 @@ class _DetailsPageState extends State<DetailsPage> {
                     ),
                   ),
                 ),
-                Style.getVerticalSpacing(context: context),
+                SliverToBoxAdapter(
+                    child: Style.getVerticalSpacing(context: context)),
                 SliverToBoxAdapter(
                   child: Observer(builder: (_) => _buildSeasonsHeading()),
                 ),
-                Style.getVerticalSpacing(context: context),
+                SliverToBoxAdapter(
+                    child: Style.getVerticalSpacing(context: context)),
                 Observer(
                   builder: (_) => SliverList(
                     delegate: SliverChildBuilderDelegate(

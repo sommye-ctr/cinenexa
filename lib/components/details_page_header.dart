@@ -5,8 +5,10 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:watrix/components/vote_indicator.dart';
 import 'package:watrix/models/base_model.dart';
 import 'package:watrix/resources/style.dart';
+import 'package:watrix/screens/add_to_list_page.dart';
 import 'package:watrix/store/details/details_store.dart';
 import 'package:watrix/utils/screen_size.dart';
+import 'package:watrix/widgets/custom_back_button.dart';
 
 import '../resources/strings.dart';
 import '../services/utils.dart';
@@ -45,6 +47,10 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
       ),
       child: Stack(
         children: [
+          Align(
+            alignment: Alignment.topLeft,
+            child: CustomBackButton(),
+          ),
           Padding(
             padding: EdgeInsets.symmetric(
               horizontal: ScreenSize.getPercentOfWidth(context, 0.025),
@@ -211,7 +217,7 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         RoundedButton(
-          onPressed: () {},
+          onPressed: () => _onAddToListPressed(context),
           child: Text(Strings.addToList),
           type: RoundedButtonType.filled,
         ),
@@ -230,6 +236,21 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
       maxExtent - minExtent,
       duration: duration,
       curve: Curves.easeIn,
+    );
+  }
+
+  void _onAddToListPressed(context) {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
+      ),
+      builder: (context) {
+        return Container(
+          height: ScreenSize.getPercentOfHeight(context, 0.7),
+          child: AddToListPage(),
+        );
+      },
     );
   }
 

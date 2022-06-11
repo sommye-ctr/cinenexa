@@ -2,6 +2,7 @@ import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
+import 'package:watrix/components/home_mylist.dart';
 import 'package:watrix/models/base_model.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
@@ -32,7 +33,7 @@ class _HomePageState extends State<HomePage>
     defaultMovieIndex: 1,
     defaultTvIndex: 2,
   );
-  late final Widget myList = Column();
+  late final Widget myList = HomeMyList();
 
   late final Widget featured = HomeFeatured(
       onItemClicked: _onItemClicked, onSeeMoreClicked: _onSeeMoreClicked);

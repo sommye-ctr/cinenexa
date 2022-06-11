@@ -14,7 +14,7 @@ class Strings {
   static const String featured = "Featured";
   static const String movies = "Movies";
   static const String tvShows = "TV Shows";
-  static const String myList = "My List";
+  static const String myList = "My Lists";
 
   static const String trendingToday = "Trending Today";
   static const String topRated = "Top Rated";
@@ -26,6 +26,9 @@ class Strings {
   static const String popularActors = "Popular Actors";
   static const String weeklyTrendingMovies = "Weekly Trending Movies";
   static const String weeklyTrendingTv = "Weekly Trending Tv Shows";
+
+  static const String favorites = "Favorites";
+  static const String createList = "Create List";
 
 //Search
   static const String searchHint = "You can search for";

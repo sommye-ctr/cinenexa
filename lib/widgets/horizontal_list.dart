@@ -70,15 +70,16 @@ class _HorizontalListState extends State<HorizontalList> {
               widget.heading,
               style: Style.headingStyle,
             ),
-            IconButton(
-              onPressed: () {
-                if (widget.onRightTrailClicked != null)
-                  widget.onRightTrailClicked!(widget.items);
-              },
-              icon: Icon(
-                Icons.keyboard_arrow_right_rounded,
+            if (widget.onRightTrailClicked != null)
+              IconButton(
+                onPressed: () {
+                  if (widget.onRightTrailClicked != null)
+                    widget.onRightTrailClicked!(widget.items);
+                },
+                icon: Icon(
+                  Icons.keyboard_arrow_right_rounded,
+                ),
               ),
-            ),
           ],
         ),
         SizedBox(

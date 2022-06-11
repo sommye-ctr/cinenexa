@@ -9,6 +9,7 @@ import 'package:watrix/services/constants.dart';
 import 'package:watrix/store/actor_details/actor_details_store.dart';
 import 'package:watrix/utils/date_time_formatter.dart';
 import 'package:watrix/utils/screen_size.dart';
+import 'package:watrix/widgets/custom_back_button.dart';
 import 'package:watrix/widgets/horizontal_list.dart';
 import 'package:watrix/widgets/rounded_image.dart';
 import 'package:watrix/widgets/screen_background_image.dart';
@@ -58,7 +59,7 @@ class _ActorDetailsPageState extends State<ActorDetailsPage> {
             ),
             Align(
               alignment: Alignment.topLeft,
-              child: BackButton(),
+              child: CustomBackButton(),
             ),
             _buildTitle(),
             _buildMainDetailsRow(),

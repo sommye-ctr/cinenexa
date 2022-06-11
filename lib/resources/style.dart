@@ -13,7 +13,7 @@ class Style {
   );
 
   static TextStyle headingStyle = TextStyle(
-    fontSize: 18,
+    fontSize: 22,
   );
 
   static ThemeData darkThemeData(BuildContext context) => ThemeData(
