@@ -20,11 +20,9 @@ class RoundedButton extends StatelessWidget {
       return ElevatedButton(
         onPressed: onPressed,
         child: child,
-        style: ButtonStyle(
-          shape: MaterialStateProperty.all(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
-            ),
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
           ),
         ),
       );
@@ -32,11 +30,9 @@ class RoundedButton extends StatelessWidget {
       return OutlinedButton(
         onPressed: onPressed,
         child: child,
-        style: ButtonStyle(
-          shape: MaterialStateProperty.all(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
-            ),
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
           ),
         ),
       );
