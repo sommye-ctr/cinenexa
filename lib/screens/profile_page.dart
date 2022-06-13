@@ -9,73 +9,76 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: ScreenSize.getPercentOfWidth(
-          context,
-          0.02,
+    return Container(
+      color: Theme.of(context).canvasColor,
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: ScreenSize.getPercentOfWidth(
+            context,
+            0.02,
+          ),
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            Strings.profile,
-            style: Style.headingStyle,
-          ),
-          SizedBox(
-            height: ScreenSize.getPercentOfHeight(
-              context,
-              0.02,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              Strings.profile,
+              style: Style.headingStyle,
             ),
-          ),
-          UserProfileView(
-            "Somye",
-            "anyone.mahajan@gmail.com",
-            0.12,
-          ),
-          SizedBox(
-            height: ScreenSize.getPercentOfHeight(
-              context,
-              0.05,
+            SizedBox(
+              height: ScreenSize.getPercentOfHeight(
+                context,
+                0.02,
+              ),
             ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: () {},
-                  icon: Icon(
-                    Icons.timelapse,
-                    color: Colors.blue,
-                  ),
-                  label: Text(
-                    "History",
+            UserProfileView(
+              "Somye",
+              "anyone.mahajan@gmail.com",
+              0.12,
+            ),
+            SizedBox(
+              height: ScreenSize.getPercentOfHeight(
+                context,
+                0.05,
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.timelapse,
+                      color: Colors.blue,
+                    ),
+                    label: Text(
+                      "History",
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(
-                width: ScreenSize.getPercentOfWidth(
-                  context,
-                  0.02,
-                ),
-              ),
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: () {},
-                  icon: Icon(
-                    Icons.favorite,
-                    color: Colors.red,
-                  ),
-                  label: Text(
-                    "Favorite",
+                SizedBox(
+                  width: ScreenSize.getPercentOfWidth(
+                    context,
+                    0.02,
                   ),
                 ),
-              ),
-            ],
-          ),
-        ],
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.favorite,
+                      color: Colors.red,
+                    ),
+                    label: Text(
+                      "Favorite",
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

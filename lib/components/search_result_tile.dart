@@ -75,7 +75,8 @@ class SearchResultTile extends StatelessWidget {
                               Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(
-                                      Style.smallRoundEdgeRadius),
+                                    Style.smallRoundEdgeRadius,
+                                  ),
                                   color: typeColor,
                                 ),
                                 child: Padding(

@@ -114,6 +114,21 @@ mixin _$SearchStore on _SearchStore, Store {
     });
   }
 
+  final _$searchFocusedAtom = Atom(name: '_SearchStore.searchFocused');
+
+  @override
+  bool get searchFocused {
+    _$searchFocusedAtom.reportRead();
+    return super.searchFocused;
+  }
+
+  @override
+  set searchFocused(bool value) {
+    _$searchFocusedAtom.reportWrite(value, super.searchFocused, () {
+      super.searchFocused = value;
+    });
+  }
+
   final _$_fetchItemsAsyncAction = AsyncAction('_SearchStore._fetchItems');
 
   @override
@@ -181,6 +196,39 @@ mixin _$SearchStore on _SearchStore, Store {
   }
 
   @override
+  void searchCancelled() {
+    final _$actionInfo = _$_SearchStoreActionController.startAction(
+        name: '_SearchStore.searchCancelled');
+    try {
+      return super.searchCancelled();
+    } finally {
+      _$_SearchStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void searchHistoryTermClicked(String term) {
+    final _$actionInfo = _$_SearchStoreActionController.startAction(
+        name: '_SearchStore.searchHistoryTermClicked');
+    try {
+      return super.searchHistoryTermClicked(term);
+    } finally {
+      _$_SearchStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void searchBoxFocused() {
+    final _$actionInfo = _$_SearchStoreActionController.startAction(
+        name: '_SearchStore.searchBoxFocused');
+    try {
+      return super.searchBoxFocused();
+    } finally {
+      _$_SearchStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 searchTerm: ${searchTerm},
@@ -189,7 +237,8 @@ page: ${page},
 searchType: ${searchType},
 searchDone: ${searchDone},
 resultsEmpty: ${resultsEmpty},
-isLoading: ${isLoading}
+isLoading: ${isLoading},
+searchFocused: ${searchFocused}
     ''';
   }
 }

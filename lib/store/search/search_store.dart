@@ -36,6 +36,9 @@ abstract class _SearchStore with Store {
   @observable
   bool isLoading = false;
 
+  @observable
+  bool searchFocused = false;
+
   @action
   void searchTermChanged(String value) {
     searchTerm = value;
@@ -67,6 +70,7 @@ abstract class _SearchStore with Store {
     searchType = SearchType.movie;
     searchTerm = "";
     resultsEmpty = false;
+    searchFocused = false;
   }
 
   @action
@@ -105,6 +109,25 @@ abstract class _SearchStore with Store {
       ),
       pageEndReached: true,
     );
+  }
+
+  @action
+  void searchCancelled() {
+    backClicked();
+  }
+
+  @action
+  void searchHistoryTermClicked(String term) {
+    searchDone = true;
+    page = 1;
+    resultsEmpty = false;
+    searchTerm = term;
+    searchClicked();
+  }
+
+  @action
+  void searchBoxFocused() {
+    searchFocused = true;
   }
 
   String _getSearchBase() {

@@ -8,7 +8,10 @@ class SearchInput extends StatefulWidget {
   final TextEditingController? controller;
   final Function(String)? onChanged;
   final Function() onEditingComplete;
+  final Function()? onCancelSearch;
+  final Function()? onSearchFocused;
   final String? value, hint;
+  late final FocusNode focusNode;
 
   SearchInput({
     Key? key,
@@ -17,47 +20,48 @@ class SearchInput extends StatefulWidget {
     this.controller,
     this.value,
     this.hint,
-  }) : super(key: key);
+    this.onCancelSearch,
+    this.onSearchFocused,
+    FocusNode? focus,
+  }) {
+    if (focus == null) {
+      focusNode = FocusNode();
+      return;
+    }
+    focusNode = focus;
+  }
 
   @override
   State<SearchInput> createState() => _SearchInputState();
 }
 
 class _SearchInputState extends State<SearchInput> {
-  final FocusNode focusNode = FocusNode();
-
-  Widget suffixWidget = IconButton(
-    icon: Icon(Icons.search),
-    onPressed: () {},
-    color: Colors.black,
-  );
+  Widget suffixWidget = Icon(Icons.search, color: Colors.black);
 
   @override
   void initState() {
     super.initState();
-    focusNode.addListener(() {
-      if (focusNode.hasFocus) {
+    widget.focusNode.addListener(() {
+      if (widget.focusNode.hasFocus) {
+        widget.onSearchFocused?.call();
         setState(() {
           suffixWidget = IconButton(
             onPressed: () {
-              focusNode.unfocus();
+              widget.focusNode.unfocus();
               widget.controller?.clear();
+              widget.onCancelSearch?.call();
             },
             icon: Icon(
-              Icons.cancel,
+              Icons.clear_rounded,
               color: Colors.black,
             ),
           );
         });
         return;
       }
-      suffixWidget = IconButton(
-        icon: Icon(
-          Icons.search_rounded,
-          color: Colors.black,
-        ),
-        onPressed: () {},
-      );
+      setState(() {
+        suffixWidget = Icon(Icons.search, color: Colors.black);
+      });
     });
   }
 
@@ -66,7 +70,7 @@ class _SearchInputState extends State<SearchInput> {
     return Container(
       width: ScreenSize.getPercentOfWidth(context, 0.95),
       child: TextFormField(
-        focusNode: focusNode,
+        focusNode: widget.focusNode,
         initialValue: widget.value,
         controller: widget.controller,
         onChanged: widget.onChanged,

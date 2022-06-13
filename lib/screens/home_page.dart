@@ -47,6 +47,7 @@ class _HomePageState extends State<HomePage>
     return Stack(
       children: [
         Container(
+          color: Theme.of(context).canvasColor,
           child: Padding(
             padding: EdgeInsets.symmetric(
               horizontal: ScreenSize.getPercentOfWidth(context, 0.02),

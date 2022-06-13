@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
+import 'package:watrix/components/search_history_tile.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/screens/actor_details_page.dart';
@@ -25,10 +26,28 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   final SearchStore searchStore = SearchStore();
   late TextEditingController textEditingController;
+  late FocusNode focusNode;
+  final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
+
+  List items = [
+    "Spider",
+    "Hey Baby",
+    "Fight club",
+    "Chris evans",
+    "Shahrukh",
+    "Encanto",
+    "Spider",
+    "Hey Baby",
+    "Fight club",
+    "Chris evans",
+    "Shahrukh",
+    "Encanto"
+  ];
 
   @override
   void initState() {
     textEditingController = TextEditingController();
+    focusNode = FocusNode();
     super.initState();
   }
 
@@ -45,6 +64,9 @@ class _SearchPageState extends State<SearchPage> {
             Style.getVerticalSpacing(context: context),
             _buildSearchTypeTabs(),
             _buildMainBody(),
+            SizedBox(
+              height: kBottomNavigationBarHeight,
+            )
           ],
         ),
       ),
@@ -65,6 +87,9 @@ class _SearchPageState extends State<SearchPage> {
       onChanged: searchStore.searchTermChanged,
       onEditingComplete: () => searchStore.searchClicked(),
       controller: textEditingController,
+      onCancelSearch: searchStore.searchCancelled,
+      focus: focusNode,
+      onSearchFocused: searchStore.searchBoxFocused,
     );
   }
 
@@ -73,8 +98,64 @@ class _SearchPageState extends State<SearchPage> {
       if (searchStore.searchDone) {
         return _buildSearchResults();
       }
+      if (searchStore.searchFocused) {
+        return _buildSearchHistory();
+      }
       return _buildSearchHint();
     });
+  }
+
+  Widget _buildSearchHistory() {
+    int count = 10;
+
+    return Expanded(
+      child: AnimatedList(
+        key: listKey,
+        initialItemCount: count,
+        physics: BouncingScrollPhysics(),
+        itemBuilder: (context, index, animation) {
+          return _buildSearchHistorySingleTerm(context, index, animation);
+        },
+      ),
+    );
+  }
+
+  Widget _buildSearchHistorySingleTerm(
+      BuildContext context, int index, animation) {
+    return SlideTransition(
+      position: Tween<Offset>(
+        begin: Offset(1, 0),
+        end: Offset(0, 0),
+      ).animate(animation),
+      child: Column(
+        children: [
+          Container(
+            width: ScreenSize.getPercentOfWidth(context, 0.95),
+            child: SearchHistoryTile(
+              text: items[index],
+              onClick: _onSearchHistoryClicked,
+              onClearClick: () {
+                _onSearchHistoryCleared(index);
+              },
+            ),
+          ),
+          Style.getVerticalSpacing(context: context, percent: 0.01),
+        ],
+      ),
+    );
+  }
+
+  void _onSearchHistoryCleared(index) {
+    listKey.currentState?.removeItem(
+      index,
+      (context, animation) =>
+          _buildSearchHistorySingleTerm(context, index, animation),
+      duration: kThemeAnimationDuration,
+    );
+    Future.delayed(
+      kThemeAnimationDuration,
+      () => items.removeAt(index),
+    );
   }
 
   Widget _buildSearchHint() {
@@ -236,6 +317,12 @@ class _SearchPageState extends State<SearchPage> {
         Text(text),
       ],
     );
+  }
+
+  void _onSearchHistoryClicked(String term) {
+    focusNode.requestFocus();
+    textEditingController.value = TextEditingValue(text: term);
+    searchStore.searchHistoryTermClicked(term);
   }
 
   void _onSearchTypeChanged(int index) {
