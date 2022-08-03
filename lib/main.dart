@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:watrix/models/base_model.dart';
+import 'package:isar/isar.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:watrix/models/local/favorites.dart';
+import 'package:watrix/models/local/search_history.dart';
+import 'package:watrix/resources/my_theme.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/screens/actor_details_page.dart';
@@ -8,9 +13,22 @@ import 'package:watrix/screens/home_page.dart';
 import 'package:watrix/screens/profile_page.dart';
 import 'package:watrix/screens/search_page.dart';
 import 'package:watrix/components/bottom_nav_bar.dart';
+import 'package:watrix/store/favorites/favorites_store.dart';
 
-void main() {
-  runApp(const MyApp());
+import 'models/network/base_model.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  Isar.open(
+    schemas: [FavoritesSchema, SearchHistorySchema],
+    directory: (await getApplicationSupportDirectory()).path,
+  );
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => MyTheme(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -25,51 +43,56 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: Strings.appName,
-      debugShowCheckedModeBanner: false,
-      theme: Style.themeData,
-      darkTheme: Style.darkThemeData(context),
-      themeMode: ThemeMode.dark,
-      onGenerateRoute: (settings) {
-        switch (settings.name) {
-          case DetailsPage.routeName:
-            final value = settings.arguments as BaseModel;
-            return MaterialPageRoute(
-              builder: (context) => DetailsPage(baseModel: value),
-            );
-          case ActorDetailsPage.routeName:
-            final value = settings.arguments as BaseModel;
-            return MaterialPageRoute(
-              builder: (context) => ActorDetailsPage(baseModel: value),
-            );
-          default:
-        }
-        return null;
-      },
-      home: Scaffold(
-        extendBody: true,
-        resizeToAvoidBottomInset: false,
-        body: SafeArea(
-          child: Stack(
-            children: [
-              IndexedStack(
-                index: _pageIndex,
-                children: [
-                  HomePage(),
-                  SearchPage(),
-                  ProfilePage(),
-                ],
-              ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: BottomNavBar((index) {
-                  setState(() {
-                    _pageIndex = index;
-                  });
-                }),
-              ),
-            ],
+    return Provider(
+      create: (_) => FavoritesStore()..fetchFavorites(),
+      child: MaterialApp(
+        title: Strings.appName,
+        debugShowCheckedModeBanner: false,
+        theme: Style.themeData,
+        darkTheme: Style.darkThemeData(context),
+        themeMode: Provider.of<MyTheme>(context).darkMode
+            ? ThemeMode.dark
+            : ThemeMode.light,
+        onGenerateRoute: (settings) {
+          switch (settings.name) {
+            case DetailsPage.routeName:
+              final value = settings.arguments as BaseModel;
+              return MaterialPageRoute(
+                builder: (context) => DetailsPage(baseModel: value),
+              );
+            case ActorDetailsPage.routeName:
+              final value = settings.arguments as BaseModel;
+              return MaterialPageRoute(
+                builder: (context) => ActorDetailsPage(baseModel: value),
+              );
+            default:
+          }
+          return null;
+        },
+        home: Scaffold(
+          extendBody: true,
+          resizeToAvoidBottomInset: false,
+          body: SafeArea(
+            child: Stack(
+              children: [
+                IndexedStack(
+                  index: _pageIndex,
+                  children: [
+                    HomePage(),
+                    SearchPage(),
+                    ProfilePage(),
+                  ],
+                ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: BottomNavBar((index) {
+                    setState(() {
+                      _pageIndex = index;
+                    });
+                  }),
+                ),
+              ],
+            ),
           ),
         ),
       ),

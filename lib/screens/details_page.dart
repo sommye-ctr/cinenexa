@@ -3,15 +3,16 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:watrix/components/details_page_header.dart';
 import 'package:watrix/components/episode_tile.dart';
 
-import 'package:watrix/models/base_model.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/screens/actor_details_page.dart';
 import 'package:watrix/screens/see_more_page.dart';
 import 'package:watrix/store/details/details_store.dart';
 import 'package:watrix/widgets/horizontal_list.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-import '../models/tv_season.dart';
+import '../models/network/base_model.dart';
+import '../models/network/tv_season.dart';
 import '../utils/screen_size.dart';
 
 class DetailsPage extends StatefulWidget {
@@ -31,7 +32,6 @@ class DetailsPage extends StatefulWidget {
 class _DetailsPageState extends State<DetailsPage> {
   late final DetailsStore detailsStore;
   final _controller = ScrollController();
-
   double get maxHeight => ScreenSize.getPercentOfHeight(context, 1);
 
   double get minHeight => MediaQuery.of(context).padding.top + kToolbarHeight;
@@ -45,85 +45,119 @@ class _DetailsPageState extends State<DetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: NotificationListener<ScrollEndNotification>(
-          onNotification: (_) {
-            _snapBehaviour();
-            return false;
-          },
-          child: Container(
-            color: Colors.black,
-            child: CustomScrollView(
-              controller: _controller,
-              slivers: [
-                SliverPersistentHeader(
-                  pinned: true,
-                  floating: true,
-                  delegate: DetailsPageHeader(
-                    maxHeight: maxHeight,
-                    minHeight: minHeight,
-                    detailsStore: detailsStore,
-                    scrollController: _controller,
-                  ),
-                ),
-                SliverToBoxAdapter(
-                    child: Style.getVerticalSpacing(context: context)),
-                SliverToBoxAdapter(
-                  child: Observer(builder: (_) => _buildGenres(context)),
-                ),
-                SliverToBoxAdapter(
-                    child: Style.getVerticalSpacing(context: context)),
-                SliverToBoxAdapter(
-                  child: Observer(
-                    builder: (_) => _buildList(
-                      Strings.cast,
-                      context,
-                      detailsStore.credits,
-                      ActorDetailsPage.routeName,
-                    ),
-                  ),
-                ),
-                SliverToBoxAdapter(
-                    child: Style.getVerticalSpacing(context: context)),
-                SliverToBoxAdapter(
-                  child: Observer(
-                    builder: (_) => _buildList(
-                      detailsStore.baseModel.type == BaseModelType.movie
-                          ? Strings.recommendedMovies
-                          : Strings.recommendedTv,
-                      context,
-                      detailsStore.recommended,
-                      DetailsPage.routeName,
-                    ),
-                  ),
-                ),
-                SliverToBoxAdapter(
-                    child: Style.getVerticalSpacing(context: context)),
-                SliverToBoxAdapter(
-                  child: Observer(builder: (_) => _buildSeasonsHeading()),
-                ),
-                SliverToBoxAdapter(
-                    child: Style.getVerticalSpacing(context: context)),
-                Observer(
-                  builder: (_) => SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        return EpisodeTile(
-                          episode: detailsStore.episodes[index],
-                        );
-                      },
-                      childCount: detailsStore.episodes.length,
-                    ),
-                  ),
-                ),
-                if (detailsStore.baseModel.type == BaseModelType.movie)
-                  SliverFillRemaining(),
-              ],
+      body: NotificationListener<ScrollEndNotification>(
+        onNotification: (_) {
+          _snapBehaviour();
+          return false;
+        },
+        child: CustomScrollView(
+          controller: _controller,
+          physics: BouncingScrollPhysics(),
+          slivers: [
+            SliverPersistentHeader(
+              pinned: true,
+              floating: true,
+              delegate: DetailsPageHeader(
+                maxHeight: maxHeight,
+                minHeight: minHeight,
+                detailsStore: detailsStore,
+                scrollController: _controller,
+              ),
             ),
-          ),
+            SliverToBoxAdapter(
+                child: Style.getVerticalSpacing(context: context)),
+            SliverToBoxAdapter(
+              child: Observer(builder: (_) => _buildGenres(context)),
+            ),
+            SliverToBoxAdapter(
+                child: Style.getVerticalSpacing(context: context)),
+            SliverToBoxAdapter(
+              child: Observer(
+                builder: (_) => _buildList(
+                  Strings.cast,
+                  context,
+                  detailsStore.credits,
+                  ActorDetailsPage.routeName,
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
+                child: Style.getVerticalSpacing(context: context)),
+            SliverToBoxAdapter(
+              child: Observer(
+                builder: (_) => _buildList(
+                  detailsStore.baseModel.type == BaseModelType.movie
+                      ? Strings.recommendedMovies
+                      : Strings.recommendedTv,
+                  context,
+                  detailsStore.recommended,
+                  DetailsPage.routeName,
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
+                child: Style.getVerticalSpacing(context: context)),
+            SliverToBoxAdapter(
+              child: _buildTrailer(),
+            ),
+            SliverToBoxAdapter(
+                child: Style.getVerticalSpacing(context: context)),
+            SliverToBoxAdapter(
+              child: Observer(builder: (_) => _buildSeasonsHeading()),
+            ),
+            SliverToBoxAdapter(
+                child: Style.getVerticalSpacing(context: context)),
+            Observer(
+              builder: (_) => SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    return EpisodeTile(
+                      episode: detailsStore.episodes[index],
+                    );
+                  },
+                  childCount: detailsStore.episodes.length,
+                ),
+              ),
+            ),
+            if (detailsStore.baseModel.type == BaseModelType.movie)
+              SliverFillRemaining(),
+          ],
         ),
       ),
     );
+  }
+
+  Widget _buildTrailer() {
+    return Observer(builder: (_) {
+      if (detailsStore.video != null) {
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Trailer",
+                style: Style.headingStyle,
+              ),
+              Container(
+                height: 4,
+              ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
+                child: YoutubePlayer(
+                    controller: YoutubePlayerController(
+                  initialVideoId: detailsStore.video!.key,
+                  flags: YoutubePlayerFlags(
+                    autoPlay: false,
+                  ),
+                )),
+              ),
+            ],
+          ),
+        );
+      }
+      return Container();
+    });
   }
 
   Widget _buildGenres(context) {
@@ -154,12 +188,10 @@ class _DetailsPageState extends State<DetailsPage> {
       }
 
       return Center(
-        child: Flexible(
-          child: Wrap(
-            alignment: WrapAlignment.center,
-            runSpacing: ScreenSize.getPercentOfWidth(context, 0.01),
-            children: widgets,
-          ),
+        child: Wrap(
+          alignment: WrapAlignment.center,
+          runSpacing: ScreenSize.getPercentOfWidth(context, 0.01),
+          children: widgets,
         ),
       );
     }
@@ -233,11 +265,9 @@ class _DetailsPageState extends State<DetailsPage> {
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<TvSeason>(
                   alignment: Alignment.centerLeft,
-                  focusColor: Colors.white,
                   borderRadius:
                       BorderRadius.circular(Style.largeRoundEdgeRadius),
                   value: detailsStore.chosenSeason,
-                  dropdownColor: Colors.black,
                   menuMaxHeight: ScreenSize.getPercentOfHeight(context, 0.25),
                   items: detailsStore.tv!.seasons!.map((e) {
                     return DropdownMenuItem(

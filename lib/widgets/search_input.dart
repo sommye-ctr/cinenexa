@@ -36,7 +36,7 @@ class SearchInput extends StatefulWidget {
 }
 
 class _SearchInputState extends State<SearchInput> {
-  Widget suffixWidget = Icon(Icons.search, color: Colors.black);
+  Widget? suffixWidget;
 
   @override
   void initState() {
@@ -47,21 +47,22 @@ class _SearchInputState extends State<SearchInput> {
         setState(() {
           suffixWidget = IconButton(
             onPressed: () {
+              setState(() {
+                suffixWidget = null;
+              });
               widget.focusNode.unfocus();
               widget.controller?.clear();
               widget.onCancelSearch?.call();
             },
             icon: Icon(
               Icons.clear_rounded,
-              color: Colors.black,
+              color: Theme.of(context).focusColor,
             ),
           );
         });
         return;
       }
-      setState(() {
-        suffixWidget = Icon(Icons.search, color: Colors.black);
-      });
+      suffixWidget = null;
     });
   }
 
@@ -75,18 +76,20 @@ class _SearchInputState extends State<SearchInput> {
         controller: widget.controller,
         onChanged: widget.onChanged,
         onEditingComplete: widget.onEditingComplete,
-        style: TextStyle(
-          color: Colors.black,
-        ),
+        style: TextStyle(color: Theme.of(context).focusColor),
         decoration: InputDecoration(
-          fillColor: Colors.white,
+          fillColor: Theme.of(context).cardColor,
           filled: true,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
             borderSide: BorderSide.none,
           ),
           hintText: widget.hint ?? Strings.search,
-          hintStyle: TextStyle(color: Colors.black),
+          hintStyle: TextStyle(color: Theme.of(context).focusColor),
+          prefixIcon: Icon(
+            Icons.search_rounded,
+            color: Theme.of(context).focusColor,
+          ),
           suffixIcon: suffixWidget,
         ),
         textInputAction: TextInputAction.search,

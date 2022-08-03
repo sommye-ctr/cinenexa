@@ -1,12 +1,16 @@
 import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:watrix/models/base_model.dart';
+import 'package:watrix/resources/style.dart';
 import 'package:watrix/services/constants.dart';
-import 'package:watrix/services/utils.dart';
+import 'package:watrix/services/network/utils.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/widgets/bubble_page_indicator.dart';
 import 'package:watrix/widgets/rounded_image.dart';
-import 'package:watrix/widgets/rounded_image_placeholder.dart';
+import 'package:watrix/widgets/screen_background_image.dart';
+
+import '../models/network/base_model.dart';
 
 class ImageCarousel extends StatefulWidget {
   final Future<List<BaseModel>> future;
@@ -24,70 +28,88 @@ class ImageCarousel extends StatefulWidget {
 }
 
 class _ImageCarouselState extends State<ImageCarousel> {
-  int _currentIndex = 0, _length = 0;
-  late Timer _timer;
-  late PageController _pageController;
+  int _currentIndex = 0;
   List<BaseModel> _list = [];
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(
-      initialPage: 0,
-    );
-    _timer = Timer.periodic(
-      Duration(seconds: 5),
-      (timer) {
-        if (_currentIndex < _length - 1) {
-          _currentIndex++;
-        } else {
-          _currentIndex = 0;
-        }
-
-        _pageController.animateToPage(
-          _currentIndex,
-          duration: Duration(
-            milliseconds: 500,
-          ),
-          curve: Curves.easeIn,
-        );
-      },
-    );
+    _fetch();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    _timer.cancel();
+  Future _fetch() async {
+    _list.addAll(await widget.future);
+    setState(() {});
+  }
+
+  void onPageChanged(int index, CarouselPageChangedReason reason) {
+    _currentIndex = index;
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<BaseModel>>(
-      future: widget.future,
-      builder: handleListBuilder,
+    return Container(
+      height: (ScreenSize.getPercentOfWidth(context, 0.6) /
+              Constants.posterAspectRatio) +
+          BubblePageIndicator.height +
+          ScreenSize.getPercentOfHeight(context, 0.08),
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          CarouselSlider(
+            options: CarouselOptions(
+              height: ScreenSize.getPercentOfWidth(context, 0.6) /
+                  Constants.posterAspectRatio,
+              autoPlay: true,
+              autoPlayInterval: Duration(seconds: 5),
+              initialPage: 0,
+              scrollPhysics: BouncingScrollPhysics(),
+              onPageChanged: onPageChanged,
+              enlargeCenterPage: true,
+              viewportFraction: 0.6,
+            ),
+            items: _list.map((e) {
+              return GestureDetector(
+                onTap: () {
+                  if (widget.onClick != null) widget.onClick!(e);
+                },
+                child: ClipRRect(
+                    borderRadius:
+                        BorderRadius.circular(Style.largeRoundEdgeRadius),
+                    child: RoundedImage(
+                      image: Utils.getPosterUrl(
+                        e.posterPath!,
+                      ),
+                      ratio: Constants.posterAspectRatio,
+                      width: ScreenSize.getPercentOfWidth(context, 0.6),
+                    )),
+              );
+            }).toList(),
+          ),
+          Text(
+            _list.isEmpty ? "" : _list[_currentIndex].title!,
+          ),
+          BubblePageIndicator(
+            length: _list.length,
+            currentPage: _currentIndex,
+          ),
+        ],
+      ),
     );
   }
 
-  Widget handleListBuilder(
-      BuildContext context, AsyncSnapshot<List<BaseModel>> snapshot) {
-    if (snapshot.connectionState == ConnectionState.done) {
-      _length = snapshot.data!.length;
-      _list = snapshot.data!;
-
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            height: (ScreenSize.getPercentOfWidth(context, 1) /
-                    Constants.backdropAspectRatio) +
-                ScreenSize.getPercentOfHeight(
-                  context,
-                  0.03,
-                ),
+  /* Widget _buildPageView() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (_list.isNotEmpty) {
+          return Container(
+            height: ScreenSize.getPercentOfWidth(context, 1) /
+                Constants.backdropAspectRatio,
             child: PageView.builder(
-              itemCount: _length,
+              itemCount: _list.length,
               pageSnapping: true,
               physics: BouncingScrollPhysics(),
               controller: _pageController,
@@ -95,52 +117,29 @@ class _ImageCarouselState extends State<ImageCarousel> {
               itemBuilder: (context, index) {
                 return GestureDetector(
                   onTap: () {
-                    if (widget.onClick != null)
-                      widget.onClick!(snapshot.data![index]);
+                    if (widget.onClick != null) widget.onClick!(_list[index]);
                   },
                   child: Container(
                     margin: EdgeInsets.all(4),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        RoundedImage(
-                          image: Utils.getBackdropUrl(
-                              snapshot.data![index].backdropPath!),
-                          width: ScreenSize.getPercentOfWidth(context, 1),
-                          ratio: Constants.backdropAspectRatio,
-                        ),
-                        Text(
-                          snapshot.data![index].title!,
-                        ),
-                      ],
+                    child: RoundedImage(
+                      image: Utils.getBackdropUrl(_list[index].backdropPath!),
+                      width: ScreenSize.getPercentOfWidth(context, 1),
+                      ratio: Constants.backdropAspectRatio,
                     ),
                   ),
                 );
               },
             ),
+          );
+        }
+        return Padding(
+          padding: EdgeInsets.all(4),
+          child: RoundedImagePlaceholder(
+            width: ScreenSize.getPercentOfWidth(context, 1),
+            ratio: Constants.backdropAspectRatio,
           ),
-          BubblePageIndicator(
-            length: snapshot.data!.length,
-            currentPage: _currentIndex,
-          ),
-        ],
-      );
-    }
-    return Padding(
-      padding: EdgeInsets.all(4),
-      child: RoundedImagePlaceholder(
-        width: ScreenSize.getPercentOfWidth(context, 1),
-        ratio: Constants.backdropAspectRatio,
-      ),
+        );
+      },
     );
-  }
-
-  void onChanged(int page) {
-    setState(() {
-      _currentIndex = page;
-      if (widget.onPageChanged != null) {
-        widget.onPageChanged!(page, _list[page]);
-      }
-    });
-  }
+  } */
 }

@@ -9,12 +9,13 @@ class Strings {
   static const String movie = "Movie";
   static const String tvShow = "TV Show";
   static const String actor = "Actor";
+  static const String all = "All";
 
 //Home
   static const String featured = "Featured";
   static const String movies = "Movies";
   static const String tvShows = "TV Shows";
-  static const String myList = "My Lists";
+  static const String favorites = "Favorites";
 
   static const String trendingToday = "Trending Today";
   static const String topRated = "Top Rated";
@@ -26,9 +27,6 @@ class Strings {
   static const String popularActors = "Popular Actors";
   static const String weeklyTrendingMovies = "Weekly Trending Movies";
   static const String weeklyTrendingTv = "Weekly Trending Tv Shows";
-
-  static const String favorites = "Favorites";
-  static const String createList = "Create List";
 
 //Search
   static const String searchHint = "You can search for";
@@ -49,7 +47,8 @@ class Strings {
   static const String certificationSubtitle = "Long Press for description";
 
 //Details
-  static const String addToList = "Add to list";
+  static const String addToFav = "Add to";
+  static const String removeFromFav = "Remove from";
   static const String viewInfo = "View Info";
   static const String cast = "Cast";
   static const String recommendedMovies = "Recommended Movies";
@@ -58,4 +57,7 @@ class Strings {
 
 //Actor Details
   static const String knownFor = "Known For";
+
+//Profile
+  static const String darkMode = "Dark Mode";
 }

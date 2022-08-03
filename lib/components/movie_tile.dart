@@ -35,12 +35,12 @@ class MovieTile extends StatelessWidget {
                   width: width,
                   ratio: Constants.posterAspectRatio,
                 )),
-            if (showTitle == true)
+            if (showTitle)
               Text(
                 text,
                 maxLines: 1,
-                overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
               ),
           ],
         ),

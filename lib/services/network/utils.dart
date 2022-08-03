@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:watrix/models/base_model.dart';
-import 'package:watrix/models/sort_movies.dart';
-import 'package:watrix/models/sort_tv.dart';
+import 'package:watrix/models/network/video.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/services/constants.dart';
+
+import '../../models/local/enums/sort_movies.dart';
+import '../../models/local/enums/sort_tv.dart';
+import '../../models/network/base_model.dart';
+import '../../models/network/enums/entity_type.dart';
 
 class Utils {
   static String getPosterUrl(String url, {String? posterSize}) {
@@ -40,7 +43,7 @@ class Utils {
     }
   }
 
-  static String getEntityTypeBy(BaseModelType baseModelType) {
+  static String getStringByBasemodelType(BaseModelType baseModelType) {
     switch (baseModelType) {
       case BaseModelType.movie:
         return Strings.movie;
@@ -48,6 +51,19 @@ class Utils {
         return Strings.actor;
       case BaseModelType.tv:
         return Strings.tvShow;
+    }
+  }
+
+  static EntityType getEntityByString(String str) {
+    switch (str) {
+      case Strings.all:
+        return EntityType.all;
+      case Strings.movies:
+        return EntityType.movie;
+      case Strings.tvShows:
+        return EntityType.tv;
+      default:
+        throw UnimplementedError();
     }
   }
 
@@ -66,14 +82,29 @@ class Utils {
     return (parsedList as List).map((e) => BaseModel.fromMap(e)).toList();
   }
 
+  static Video? convertToVideo(var parsedList) {
+    if (parsedList.isEmpty) return null;
+    return parsedList
+        .map((e) {
+          if (e['type'] == "Trailer") return Video.fromMap(e);
+        })
+        .toList()
+        .first;
+  }
+
   static List<BaseModel> convertToListStringWithSkipLimit(
-      var parsedList, int limit, int skip) {
-    return (parsedList as List)
+      var parsedList, int limit, bool shuffle) {
+    List<BaseModel> list = (parsedList as List)
         .sublist(
-          skip,
+          0,
           limit,
         )
         .map((e) => BaseModel.fromMap(e))
         .toList();
+
+    if (shuffle) {
+      list.shuffle();
+    }
+    return list;
   }
 }

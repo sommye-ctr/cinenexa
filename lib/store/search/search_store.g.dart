@@ -6,10 +6,11 @@ part of 'search_store.dart';
 // StoreGenerator
 // **************************************************************************
 
-// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
+// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$SearchStore on _SearchStore, Store {
-  final _$searchTermAtom = Atom(name: '_SearchStore.searchTerm');
+  late final _$searchTermAtom =
+      Atom(name: '_SearchStore.searchTerm', context: context);
 
   @override
   String get searchTerm {
@@ -24,7 +25,7 @@ mixin _$SearchStore on _SearchStore, Store {
     });
   }
 
-  final _$itemsAtom = Atom(name: '_SearchStore.items');
+  late final _$itemsAtom = Atom(name: '_SearchStore.items', context: context);
 
   @override
   ObservableList<BaseModel> get items {
@@ -39,7 +40,23 @@ mixin _$SearchStore on _SearchStore, Store {
     });
   }
 
-  final _$pageAtom = Atom(name: '_SearchStore.page');
+  late final _$historyAtom =
+      Atom(name: '_SearchStore.history', context: context);
+
+  @override
+  ObservableList<SearchHistory> get history {
+    _$historyAtom.reportRead();
+    return super.history;
+  }
+
+  @override
+  set history(ObservableList<SearchHistory> value) {
+    _$historyAtom.reportWrite(value, super.history, () {
+      super.history = value;
+    });
+  }
+
+  late final _$pageAtom = Atom(name: '_SearchStore.page', context: context);
 
   @override
   int get page {
@@ -54,7 +71,8 @@ mixin _$SearchStore on _SearchStore, Store {
     });
   }
 
-  final _$searchTypeAtom = Atom(name: '_SearchStore.searchType');
+  late final _$searchTypeAtom =
+      Atom(name: '_SearchStore.searchType', context: context);
 
   @override
   SearchType get searchType {
@@ -69,7 +87,8 @@ mixin _$SearchStore on _SearchStore, Store {
     });
   }
 
-  final _$searchDoneAtom = Atom(name: '_SearchStore.searchDone');
+  late final _$searchDoneAtom =
+      Atom(name: '_SearchStore.searchDone', context: context);
 
   @override
   bool get searchDone {
@@ -84,7 +103,8 @@ mixin _$SearchStore on _SearchStore, Store {
     });
   }
 
-  final _$resultsEmptyAtom = Atom(name: '_SearchStore.resultsEmpty');
+  late final _$resultsEmptyAtom =
+      Atom(name: '_SearchStore.resultsEmpty', context: context);
 
   @override
   bool get resultsEmpty {
@@ -99,7 +119,8 @@ mixin _$SearchStore on _SearchStore, Store {
     });
   }
 
-  final _$isLoadingAtom = Atom(name: '_SearchStore.isLoading');
+  late final _$isLoadingAtom =
+      Atom(name: '_SearchStore.isLoading', context: context);
 
   @override
   bool get isLoading {
@@ -114,7 +135,8 @@ mixin _$SearchStore on _SearchStore, Store {
     });
   }
 
-  final _$searchFocusedAtom = Atom(name: '_SearchStore.searchFocused');
+  late final _$searchFocusedAtom =
+      Atom(name: '_SearchStore.searchFocused', context: context);
 
   @override
   bool get searchFocused {
@@ -129,7 +151,16 @@ mixin _$SearchStore on _SearchStore, Store {
     });
   }
 
-  final _$_fetchItemsAsyncAction = AsyncAction('_SearchStore._fetchItems');
+  late final _$_fetchHistoryAsyncAction =
+      AsyncAction('_SearchStore._fetchHistory', context: context);
+
+  @override
+  Future<dynamic> _fetchHistory() {
+    return _$_fetchHistoryAsyncAction.run(() => super._fetchHistory());
+  }
+
+  late final _$_fetchItemsAsyncAction =
+      AsyncAction('_SearchStore._fetchItems', context: context);
 
   @override
   Future<dynamic> _fetchItems(Future<dynamic> future,
@@ -138,7 +169,27 @@ mixin _$SearchStore on _SearchStore, Store {
         .run(() => super._fetchItems(future, pageEndReached: pageEndReached));
   }
 
-  final _$_SearchStoreActionController = ActionController(name: '_SearchStore');
+  late final _$searchClickedAsyncAction =
+      AsyncAction('_SearchStore.searchClicked', context: context);
+
+  @override
+  Future<dynamic> searchClicked() {
+    return _$searchClickedAsyncAction.run(() => super.searchClicked());
+  }
+
+  late final _$_SearchStoreActionController =
+      ActionController(name: '_SearchStore', context: context);
+
+  @override
+  void historyDeleted(SearchHistory history) {
+    final _$actionInfo = _$_SearchStoreActionController.startAction(
+        name: '_SearchStore.historyDeleted');
+    try {
+      return super.historyDeleted(history);
+    } finally {
+      _$_SearchStoreActionController.endAction(_$actionInfo);
+    }
+  }
 
   @override
   void searchTermChanged(String value) {
@@ -168,17 +219,6 @@ mixin _$SearchStore on _SearchStore, Store {
         name: '_SearchStore.backClicked');
     try {
       return super.backClicked();
-    } finally {
-      _$_SearchStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void searchClicked() {
-    final _$actionInfo = _$_SearchStoreActionController.startAction(
-        name: '_SearchStore.searchClicked');
-    try {
-      return super.searchClicked();
     } finally {
       _$_SearchStoreActionController.endAction(_$actionInfo);
     }
@@ -233,6 +273,7 @@ mixin _$SearchStore on _SearchStore, Store {
     return '''
 searchTerm: ${searchTerm},
 items: ${items},
+history: ${history},
 page: ${page},
 searchType: ${searchType},
 searchDone: ${searchDone},

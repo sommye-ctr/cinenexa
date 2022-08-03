@@ -2,20 +2,21 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
-import 'package:watrix/models/certification.dart';
-import 'package:watrix/models/genre.dart';
-import 'package:watrix/models/people.dart';
-import 'package:watrix/models/sort_movies.dart';
-import 'package:watrix/models/sort_tv.dart';
-import 'package:watrix/models/tv.dart';
-import 'package:watrix/models/tv_episode.dart';
+import 'package:watrix/models/network/video.dart';
 import 'package:watrix/services/constants.dart';
-import 'package:watrix/services/duration_type.dart';
-import 'package:watrix/services/entity_type.dart';
-import 'package:watrix/services/utils.dart';
+import 'package:watrix/models/network/enums/duration_type.dart';
+import 'package:watrix/models/network/enums/entity_type.dart';
+import 'package:watrix/services/network/utils.dart';
 
-import '../models/base_model.dart';
-import '../models/movie.dart';
+import '../../models/local/enums/sort_movies.dart';
+import '../../models/local/enums/sort_tv.dart';
+import '../../models/network/base_model.dart';
+import '../../models/network/certification.dart';
+import '../../models/network/genre.dart';
+import '../../models/network/movie.dart';
+import '../../models/network/people.dart';
+import '../../models/network/tv.dart';
+import '../../models/network/tv_episode.dart';
 
 class Requests {
   static String popular(EntityType type) {
@@ -192,7 +193,7 @@ class Requests {
   static Future<List<BaseModel>> titlesFuture(
     String request, {
     int? limit,
-    bool? skip,
+    bool? shuffle,
     int page = 1,
   }) async {
     String req = "$request&page=$page";
@@ -202,7 +203,7 @@ class Requests {
     return Utils.convertToListStringWithSkipLimit(
       parsedList,
       limit ?? Constants.homeLimit,
-      skip == true ? Random().nextInt(Constants.skipLimit) : 0,
+      shuffle ?? false,
     );
   }
 
@@ -252,28 +253,32 @@ class Requests {
   static Future<Map> getMovieDetails({required int id}) async {
     final response = await http.get(
       Uri.parse(
-          "${Constants.baseUrl}${Constants.movie}/${id}?api_key=${Constants.apiKey}&language=en-US&append_to_response=credits,recommendations"),
+          "${Constants.baseUrl}${Constants.movie}/${id}?api_key=${Constants.apiKey}&language=en-US&append_to_response=credits,recommendations,videos"),
     );
     var map = json.decode(response.body);
+    Video? vid = Utils.convertToVideo(map['videos']['results'] as List);
     return {
       "movie": Movie.fromMap(map),
       "credits": Utils.convertToListString(map['credits']['cast']),
       "recommended":
           Utils.convertToListString(map['recommendations']['results']),
+      "video": vid,
     };
   }
 
   static Future<Map> getTvDetails({required int id}) async {
     final response = await http.get(
       Uri.parse(
-          "${Constants.baseUrl}${Constants.tv}/${id}?api_key=${Constants.apiKey}&language=en-US&append_to_response=credits,recommendations"),
+          "${Constants.baseUrl}${Constants.tv}/${id}?api_key=${Constants.apiKey}&language=en-US&append_to_response=credits,recommendations,videos"),
     );
     var map = json.decode(response.body);
+    Video? vid = Utils.convertToVideo(map['videos']['results'] as List);
     return {
       "tv": Tv.fromMap(map),
       "credits": Utils.convertToListString(map['credits']['cast']),
       "recommended":
           Utils.convertToListString(map['recommendations']['results']),
+      "video": vid,
     };
   }
 

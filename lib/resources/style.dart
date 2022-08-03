@@ -8,18 +8,24 @@ class Style {
   static double smallRoundEdgeRadius = 8;
 
   static ThemeData themeData = ThemeData(
-    primarySwatch: Colors.brown,
+    primarySwatch: Colors.orange,
     brightness: Brightness.light,
+    fontFamily: GoogleFonts.poppins().fontFamily,
+    focusColor: Colors.black,
+    scaffoldBackgroundColor: Color.fromARGB(255, 249, 246, 246),
   );
 
   static TextStyle headingStyle = TextStyle(
-    fontSize: 22,
+    fontSize: 20,
   );
 
   static ThemeData darkThemeData(BuildContext context) => ThemeData(
         primarySwatch: Colors.orange,
         brightness: Brightness.dark,
         fontFamily: GoogleFonts.poppins().fontFamily,
+        focusColor: Colors.white,
+        scaffoldBackgroundColor: Color.fromARGB(255, 27, 27, 27),
+        backgroundColor: Color.fromARGB(255, 27, 27, 27),
       );
 
   static BottomNavigationBarItem getbottomNavItem(String label, IconData icon) {

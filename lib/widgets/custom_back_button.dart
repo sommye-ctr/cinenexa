@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:isar/isar.dart';
 import 'package:watrix/utils/screen_size.dart';
 
 class CustomBackButton extends StatelessWidget {
@@ -16,8 +17,8 @@ class CustomBackButton extends StatelessWidget {
           onTap: () => Navigator.maybePop(context),
           child: BackdropFilter(
             filter: ImageFilter.blur(
-              sigmaX: 50,
-              sigmaY: 50,
+              sigmaX: 60,
+              sigmaY: 60,
             ),
             child: Container(
               height: ScreenSize.getPercentOfHeight(context, 0.06),

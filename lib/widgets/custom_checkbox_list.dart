@@ -11,7 +11,7 @@ class CustomCheckBoxList extends StatefulWidget {
   final List<String> children;
   final CheckBoxListType type;
   final SliverGridDelegate? delegate;
-  final bool singleSelect;
+  final bool singleSelect, alwaysEnabled;
   final Function(List<String> values)? onSelectionChanged;
   final Function(List<String> values)? onSelectionAdded;
   final Function(List<String> values)? onSelectionRemoved;
@@ -25,6 +25,7 @@ class CustomCheckBoxList extends StatefulWidget {
     required this.type,
     this.onSelectionChanged,
     this.singleSelect = false,
+    this.alwaysEnabled = false,
     this.delegate,
     this.selectedItems,
     this.onSelectionAdded,
@@ -52,6 +53,7 @@ class _CustomCheckBoxListState extends State<CustomCheckBoxList> {
       return Container(
         height: 50,
         child: ListView.separated(
+          shrinkWrap: true,
           scrollDirection: Axis.horizontal,
           itemCount: widget.children.length,
           physics: BouncingScrollPhysics(),
@@ -89,7 +91,7 @@ class _CustomCheckBoxListState extends State<CustomCheckBoxList> {
         },
       );
     }
-    throw new FlutterError("Unidentified type!");
+    throw UnimplementedError();
   }
 
   CustomCheckBox customCheckBox(int index) {
@@ -134,10 +136,13 @@ class _CustomCheckBoxListState extends State<CustomCheckBoxList> {
       selectedItems.add(widget.children[index]);
       widget.onSelectionAdded?.call(selectedItems);
     } else {
-      selectedItems.remove(widget.children[index]);
-      widget.onSelectionRemoved?.call(selectedItems);
+      if (!widget.alwaysEnabled) {
+        selectedItems.remove(widget.children[index]);
+        widget.onSelectionRemoved?.call(selectedItems);
+      } else {
+        notifiers[index].value = true;
+      }
     }
-
     widget.onSelectionChanged?.call(selectedItems);
   }
 }

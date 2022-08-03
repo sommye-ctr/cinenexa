@@ -28,7 +28,6 @@ class _CustomCheckBoxState extends State<CustomCheckBox> {
       focusColor: Theme.of(context).colorScheme.inverseSurface,
       onTap: () {
         widget.controller.value = !widget.controller.value;
-
         widget.onSelected?.call();
       },
       child: ValueListenableBuilder(
@@ -38,7 +37,7 @@ class _CustomCheckBoxState extends State<CustomCheckBox> {
             decoration: BoxDecoration(
               color: value
                   ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.background,
+                  : Theme.of(context).colorScheme.surfaceVariant,
               borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
             ),
             child: Padding(

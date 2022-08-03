@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
-import 'package:watrix/models/genre.dart';
+import 'genre.dart';
 
 class Movie {
   String title;

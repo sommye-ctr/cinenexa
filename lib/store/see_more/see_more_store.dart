@@ -1,7 +1,7 @@
 import 'package:mobx/mobx.dart';
-import 'package:watrix/services/requests.dart';
+import 'package:watrix/services/network/requests.dart';
 
-import '../../models/base_model.dart';
+import '../../models/network/base_model.dart';
 
 part 'see_more_store.g.dart';
 

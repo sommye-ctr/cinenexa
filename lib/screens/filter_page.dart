@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:watrix/models/certification.dart';
-import 'package:watrix/models/discover.dart';
-import 'package:watrix/models/sort_movies.dart';
-import 'package:watrix/models/sort_tv.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
-import 'package:watrix/services/entity_type.dart';
-import 'package:watrix/services/requests.dart';
+import 'package:watrix/models/network/enums/entity_type.dart';
+import 'package:watrix/services/network/requests.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/widgets/custom_checkbox_list.dart';
 import 'package:watrix/widgets/custom_rangle_slider.dart';
 
-import '../models/genre.dart';
+import '../models/local/enums/sort_movies.dart';
+import '../models/local/enums/sort_tv.dart';
+import '../models/network/certification.dart';
+import '../models/network/discover.dart';
+import '../models/network/genre.dart';
 
 class FilterPage extends StatelessWidget {
   static const POPULARITY_INDEX = 0;
@@ -135,7 +135,7 @@ class FilterPage extends StatelessWidget {
               TextSpan(
                 text: " ${Strings.certificationSubtitle}",
                 style: TextStyle(
-                  color: Colors.grey,
+                  color: Theme.of(context).hintColor,
                   fontSize: 10,
                 ),
               ),
@@ -224,11 +224,9 @@ class FilterPage extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(8),
               child: ElevatedButton(
-                  onPressed: () => onResetClick(context),
-                  child: Text(Strings.reset),
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.white.withOpacity(0.5),
-                  )),
+                onPressed: () => onResetClick(context),
+                child: Text(Strings.reset),
+              ),
             ),
           ),
           Expanded(
@@ -238,9 +236,6 @@ class FilterPage extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () => onSubmitClick(context),
                 child: Text(Strings.submit),
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.white.withOpacity(0.5),
-                ),
               ),
             ),
           ),

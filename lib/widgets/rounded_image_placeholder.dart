@@ -27,8 +27,7 @@ class RoundedImagePlaceholder extends StatelessWidget {
         ),
         child: Container(
           width: width,
-          height:
-              (width / ratio) - ScreenSize.getPercentOfHeight(context, 0.02),
+          height: (width / ratio),
           color: Colors.grey,
         ),
       ),

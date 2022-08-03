@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:watrix/components/vote_indicator.dart';
 import 'package:watrix/services/constants.dart';
-import 'package:watrix/services/utils.dart';
+import 'package:watrix/services/network/utils.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/widgets/rounded_image.dart';
 

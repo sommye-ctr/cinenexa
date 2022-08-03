@@ -1,12 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:mobx/mobx.dart';
-import 'package:watrix/models/discover.dart';
-
-import '../../models/base_model.dart';
+import '../../models/network/base_model.dart';
+import '../../models/network/discover.dart';
 import '../../screens/actor_details_page.dart';
 import '../../screens/details_page.dart';
-import '../../services/entity_type.dart';
-import '../../services/requests.dart';
+import '../../models/network/enums/entity_type.dart';
+import '../../services/network/requests.dart';
 
 part 'home_store.g.dart';
 

@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:watrix/models/base_model.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/services/constants.dart';
-import 'package:watrix/services/utils.dart';
+import 'package:watrix/services/network/utils.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/components/movie_tile.dart';
 import 'package:watrix/widgets/rounded_image_placeholder.dart';
+
+import '../models/network/base_model.dart';
 
 class HorizontalList extends StatefulWidget {
   Future<List<BaseModel>>? future;
   int? limitItems;
 
-  List<BaseModel> items = [];
+  List<BaseModel>? items;
   final String heading;
   final Function(BaseModel data) onClick;
   final Function(List<BaseModel> items)? onRightTrailClicked;
@@ -44,6 +45,8 @@ class HorizontalList extends StatefulWidget {
 }
 
 class _HorizontalListState extends State<HorizontalList> {
+  late List<BaseModel> items = widget.items ?? [];
+
   @override
   void initState() {
     if (widget.future != null) {
@@ -53,7 +56,7 @@ class _HorizontalListState extends State<HorizontalList> {
   }
 
   void _fetchItems() async {
-    widget.items.addAll(await widget.future!);
+    items.addAll(await widget.future!);
     setState(() {});
   }
 
@@ -70,11 +73,11 @@ class _HorizontalListState extends State<HorizontalList> {
               widget.heading,
               style: Style.headingStyle,
             ),
-            if (widget.onRightTrailClicked != null)
+            if (_showRightTrail())
               IconButton(
                 onPressed: () {
                   if (widget.onRightTrailClicked != null)
-                    widget.onRightTrailClicked!(widget.items);
+                    widget.onRightTrailClicked!(items);
                 },
                 icon: Icon(
                   Icons.keyboard_arrow_right_rounded,
@@ -91,10 +94,10 @@ class _HorizontalListState extends State<HorizontalList> {
   }
 
   Widget _buildContent() {
-    if (widget.items.isNotEmpty) {
+    if (items.isNotEmpty) {
       return _buildWidgetList(
         (context, index) {
-          BaseModel item = widget.items[index];
+          BaseModel item = items[index];
           return MovieTile(
             image: Utils.getPosterUrl(item.posterPath ?? ""),
             text: item.title!,
@@ -121,24 +124,32 @@ class _HorizontalListState extends State<HorizontalList> {
   }
 
   int _getLength() {
-    if (widget.limitItems == null) return widget.items.length;
-    if (widget.limitItems! <= widget.items.length) {
+    if (widget.limitItems == null) return items.length;
+    if (widget.limitItems! <= items.length) {
       return widget.limitItems!;
     }
-    return widget.items.length;
+    return items.length;
+  }
+
+  bool _showRightTrail() {
+    if (widget.onRightTrailClicked == null) return false;
+    if (widget.limitItems == null) return true;
+    if (items.length >= widget.limitItems!) return true;
+    return false;
   }
 
   Widget _buildWidgetList(
     Widget Function(BuildContext context, int index) builder,
     int count,
   ) {
+    double height =
+        ScreenSize.getPercentOfWidth(context, widget.itemWidthPercent) /
+            Constants.posterAspectRatio;
+    if (widget.showTitle) {
+      height += ScreenSize.getPercentOfHeight(context, 0.04);
+    }
     return Container(
-      height: ScreenSize.getPercentOfWidth(context, widget.itemWidthPercent) /
-              Constants.posterAspectRatio +
-          ScreenSize.getPercentOfHeight(
-            context,
-            0.03,
-          ),
+      height: height,
       child: ListView.separated(
         physics: BouncingScrollPhysics(),
         shrinkWrap: true,

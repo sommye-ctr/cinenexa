@@ -46,12 +46,12 @@ class _BottomNavBarState extends State<BottomNavBar> {
               currentIndex: _pageIndex,
               showUnselectedLabels: false,
               type: BottomNavigationBarType.shifting,
-              selectedItemColor: Colors.orange.shade700,
+              selectedItemColor: Theme.of(context).colorScheme.primary,
               selectedIconTheme: IconThemeData(
-                color: Colors.orange.shade700,
+                color: Theme.of(context).colorScheme.primary,
               ),
               unselectedIconTheme: IconThemeData(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
               onTap: onBottomNavChanged,
               items: [

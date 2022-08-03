@@ -1,8 +1,10 @@
 import 'package:mobx/mobx.dart';
+import 'package:watrix/models/local/search_history.dart';
+import 'package:watrix/services/local/database.dart';
 
-import '../../models/base_model.dart';
-import '../../services/entity_type.dart';
-import '../../services/requests.dart';
+import '../../models/network/base_model.dart';
+import '../../models/network/enums/entity_type.dart';
+import '../../services/network/requests.dart';
 
 part 'search_store.g.dart';
 
@@ -22,6 +24,9 @@ abstract class _SearchStore with Store {
   ObservableList<BaseModel> items = <BaseModel>[].asObservable();
 
   @observable
+  ObservableList<SearchHistory> history = <SearchHistory>[].asObservable();
+
+  @observable
   int page = 1;
 
   @observable
@@ -38,6 +43,24 @@ abstract class _SearchStore with Store {
 
   @observable
   bool searchFocused = false;
+
+  Database database = Database();
+
+  _SearchStore() {
+    _fetchHistory();
+  }
+
+  @action
+  Future _fetchHistory() async {
+    List<SearchHistory> list = await database.getSearchHistory();
+    history.addAll(list);
+  }
+
+  @action
+  void historyDeleted(SearchHistory history) {
+    this.history.remove(history);
+    database.deleteSearchHistory(history.id);
+  }
 
   @action
   void searchTermChanged(String value) {
@@ -74,7 +97,7 @@ abstract class _SearchStore with Store {
   }
 
   @action
-  void searchClicked() {
+  Future searchClicked() async {
     EntityType entityType;
     switch (searchType) {
       case SearchType.movie:
@@ -96,6 +119,8 @@ abstract class _SearchStore with Store {
         Requests.search(entityType),
       ),
     );
+    bool isAdded = await database.addSearchHistory(searchTerm);
+    if (isAdded) history.add(SearchHistory()..term = searchTerm);
   }
 
   @action

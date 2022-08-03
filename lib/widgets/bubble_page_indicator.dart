@@ -4,8 +4,11 @@ import '../resources/style.dart';
 import '../utils/screen_size.dart';
 
 class BubblePageIndicator extends StatelessWidget {
+  static const double width = 0.025;
+  static const double height = 0.025;
+
   final int length;
-  int currentPage;
+  final int currentPage;
 
   Color? selectedColor;
   BubblePageIndicator({
@@ -29,8 +32,8 @@ class BubblePageIndicator extends StatelessWidget {
                   seconds: 1,
                 ),
                 curve: Curves.decelerate,
-                height: ScreenSize.getPercentOfWidth(context, 0.025),
-                width: ScreenSize.getPercentOfWidth(context, 0.025),
+                height: ScreenSize.getPercentOfWidth(context, width),
+                width: ScreenSize.getPercentOfWidth(context, height),
                 decoration: BoxDecoration(
                   color: i == currentPage ? selectedColor : Colors.grey,
                   borderRadius:

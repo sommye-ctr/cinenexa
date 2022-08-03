@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:watrix/models/sort_movies.dart';
-import 'package:watrix/models/sort_tv.dart';
-
+import '../local/enums/sort_movies.dart';
+import '../local/enums/sort_tv.dart';
 import 'genre.dart';
 
 class Discover {

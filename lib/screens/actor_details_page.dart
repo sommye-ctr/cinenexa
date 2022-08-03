@@ -5,18 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/screens/see_more_page.dart';
-import 'package:watrix/services/constants.dart';
 import 'package:watrix/store/actor_details/actor_details_store.dart';
 import 'package:watrix/utils/date_time_formatter.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/widgets/custom_back_button.dart';
 import 'package:watrix/widgets/horizontal_list.dart';
-import 'package:watrix/widgets/rounded_image.dart';
 import 'package:watrix/widgets/screen_background_image.dart';
 
-import '../models/base_model.dart';
+import '../models/network/base_model.dart';
 import '../resources/style.dart';
-import '../services/utils.dart';
+import '../services/network/utils.dart';
 
 class ActorDetailsPage extends StatefulWidget {
   static const routeName = "/actorDetails";
@@ -44,7 +42,6 @@ class _ActorDetailsPageState extends State<ActorDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
       body: SafeArea(
         child: Stack(
           children: [
@@ -76,7 +73,7 @@ class _ActorDetailsPageState extends State<ActorDetailsPage> {
         bottom: 8,
       ),
       child: Align(
-        alignment: Alignment(0, 0.15),
+        alignment: Alignment(0, 0.12),
         child: Text(
           actorDetailsStore.baseModel.title!,
           style: TextStyle(
@@ -92,7 +89,7 @@ class _ActorDetailsPageState extends State<ActorDetailsPage> {
     return Observer(
       builder: (_) {
         return Align(
-          alignment: Alignment(0, 0.28),
+          alignment: Alignment(0, 0.25),
           child: ClipRRect(
             borderRadius:
                 BorderRadius.all(Radius.circular(Style.largeRoundEdgeRadius)),
@@ -104,7 +101,7 @@ class _ActorDetailsPageState extends State<ActorDetailsPage> {
               child: Opacity(
                 opacity: 0.5,
                 child: Container(
-                  color: Theme.of(context).primaryColor,
+                  color: Theme.of(context).cardColor,
                   width: ScreenSize.getPercentOfWidth(context, 0.9),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,

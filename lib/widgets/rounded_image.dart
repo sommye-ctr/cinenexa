@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:watrix/widgets/rounded_image_placeholder.dart';
 
 import '../resources/style.dart';
+import '../utils/screen_size.dart';
 
 class RoundedImage extends StatelessWidget {
   final String image;
@@ -24,7 +25,7 @@ class RoundedImage extends StatelessWidget {
       child: CachedNetworkImage(
         imageUrl: image,
         width: width,
-        fit: BoxFit.contain,
+        fit: BoxFit.fill,
         placeholder: (context, url) {
           return RoundedImagePlaceholder(
             width: width,

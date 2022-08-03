@@ -6,7 +6,7 @@ part of 'home_store.dart';
 // StoreGenerator
 // **************************************************************************
 
-// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
+// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$HomeStore on _HomeStore, Store {
   Computed<bool>? _$isFilterAppliedComputed;
@@ -24,8 +24,8 @@ mixin _$HomeStore on _HomeStore, Store {
               name: '_HomeStore.currentType'))
           .value;
 
-  final _$isMovieFilterAppliedAtom =
-      Atom(name: '_HomeStore.isMovieFilterApplied');
+  late final _$isMovieFilterAppliedAtom =
+      Atom(name: '_HomeStore.isMovieFilterApplied', context: context);
 
   @override
   bool get isMovieFilterApplied {
@@ -41,7 +41,8 @@ mixin _$HomeStore on _HomeStore, Store {
     });
   }
 
-  final _$isTvFilterAppliedAtom = Atom(name: '_HomeStore.isTvFilterApplied');
+  late final _$isTvFilterAppliedAtom =
+      Atom(name: '_HomeStore.isTvFilterApplied', context: context);
 
   @override
   bool get isTvFilterApplied {
@@ -56,7 +57,8 @@ mixin _$HomeStore on _HomeStore, Store {
     });
   }
 
-  final _$tabIndexAtom = Atom(name: '_HomeStore.tabIndex');
+  late final _$tabIndexAtom =
+      Atom(name: '_HomeStore.tabIndex', context: context);
 
   @override
   int get tabIndex {
@@ -71,7 +73,8 @@ mixin _$HomeStore on _HomeStore, Store {
     });
   }
 
-  final _$filterMoviePageAtom = Atom(name: '_HomeStore.filterMoviePage');
+  late final _$filterMoviePageAtom =
+      Atom(name: '_HomeStore.filterMoviePage', context: context);
 
   @override
   int get filterMoviePage {
@@ -86,7 +89,8 @@ mixin _$HomeStore on _HomeStore, Store {
     });
   }
 
-  final _$filterTvPageAtom = Atom(name: '_HomeStore.filterTvPage');
+  late final _$filterTvPageAtom =
+      Atom(name: '_HomeStore.filterTvPage', context: context);
 
   @override
   int get filterTvPage {
@@ -101,7 +105,8 @@ mixin _$HomeStore on _HomeStore, Store {
     });
   }
 
-  final _$moviesDiscoverAtom = Atom(name: '_HomeStore.moviesDiscover');
+  late final _$moviesDiscoverAtom =
+      Atom(name: '_HomeStore.moviesDiscover', context: context);
 
   @override
   Discover? get moviesDiscover {
@@ -116,7 +121,8 @@ mixin _$HomeStore on _HomeStore, Store {
     });
   }
 
-  final _$tvDiscoverAtom = Atom(name: '_HomeStore.tvDiscover');
+  late final _$tvDiscoverAtom =
+      Atom(name: '_HomeStore.tvDiscover', context: context);
 
   @override
   Discover? get tvDiscover {
@@ -131,7 +137,8 @@ mixin _$HomeStore on _HomeStore, Store {
     });
   }
 
-  final _$filterMoviesAtom = Atom(name: '_HomeStore.filterMovies');
+  late final _$filterMoviesAtom =
+      Atom(name: '_HomeStore.filterMovies', context: context);
 
   @override
   ObservableList<BaseModel> get filterMovies {
@@ -146,7 +153,8 @@ mixin _$HomeStore on _HomeStore, Store {
     });
   }
 
-  final _$filterTvAtom = Atom(name: '_HomeStore.filterTv');
+  late final _$filterTvAtom =
+      Atom(name: '_HomeStore.filterTv', context: context);
 
   @override
   ObservableList<BaseModel> get filterTv {
@@ -161,8 +169,8 @@ mixin _$HomeStore on _HomeStore, Store {
     });
   }
 
-  final _$_fetchFilteredItemsAsyncAction =
-      AsyncAction('_HomeStore._fetchFilteredItems');
+  late final _$_fetchFilteredItemsAsyncAction =
+      AsyncAction('_HomeStore._fetchFilteredItems', context: context);
 
   @override
   Future<dynamic> _fetchFilteredItems(String value,
@@ -171,7 +179,8 @@ mixin _$HomeStore on _HomeStore, Store {
         () => super._fetchFilteredItems(value, pageEndReached: pageEndReached));
   }
 
-  final _$_HomeStoreActionController = ActionController(name: '_HomeStore');
+  late final _$_HomeStoreActionController =
+      ActionController(name: '_HomeStore', context: context);
 
   @override
   void tabChanged(int index) {

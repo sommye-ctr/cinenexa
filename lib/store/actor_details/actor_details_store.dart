@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
-import 'package:watrix/models/base_model.dart';
-import 'package:watrix/models/people.dart';
-import 'package:watrix/services/requests.dart';
+import 'package:watrix/services/network/requests.dart';
 
+import '../../models/network/base_model.dart';
+import '../../models/network/people.dart';
 import '../../screens/details_page.dart';
 
 part 'actor_details_store.g.dart';

@@ -6,7 +6,7 @@ part of 'details_store.dart';
 // StoreGenerator
 // **************************************************************************
 
-// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
+// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$DetailsStore on _DetailsStore, Store {
   Computed<List<Genre>?>? _$genresComputed;
@@ -17,7 +17,8 @@ mixin _$DetailsStore on _DetailsStore, Store {
               name: '_DetailsStore.genres'))
           .value;
 
-  final _$pageIndexAtom = Atom(name: '_DetailsStore.pageIndex');
+  late final _$pageIndexAtom =
+      Atom(name: '_DetailsStore.pageIndex', context: context);
 
   @override
   int get pageIndex {
@@ -32,7 +33,7 @@ mixin _$DetailsStore on _DetailsStore, Store {
     });
   }
 
-  final _$movieAtom = Atom(name: '_DetailsStore.movie');
+  late final _$movieAtom = Atom(name: '_DetailsStore.movie', context: context);
 
   @override
   Movie? get movie {
@@ -47,7 +48,7 @@ mixin _$DetailsStore on _DetailsStore, Store {
     });
   }
 
-  final _$tvAtom = Atom(name: '_DetailsStore.tv');
+  late final _$tvAtom = Atom(name: '_DetailsStore.tv', context: context);
 
   @override
   Tv? get tv {
@@ -62,7 +63,8 @@ mixin _$DetailsStore on _DetailsStore, Store {
     });
   }
 
-  final _$creditsAtom = Atom(name: '_DetailsStore.credits');
+  late final _$creditsAtom =
+      Atom(name: '_DetailsStore.credits', context: context);
 
   @override
   ObservableList<BaseModel> get credits {
@@ -77,7 +79,8 @@ mixin _$DetailsStore on _DetailsStore, Store {
     });
   }
 
-  final _$recommendedAtom = Atom(name: '_DetailsStore.recommended');
+  late final _$recommendedAtom =
+      Atom(name: '_DetailsStore.recommended', context: context);
 
   @override
   ObservableList<BaseModel> get recommended {
@@ -92,7 +95,8 @@ mixin _$DetailsStore on _DetailsStore, Store {
     });
   }
 
-  final _$episodesAtom = Atom(name: '_DetailsStore.episodes');
+  late final _$episodesAtom =
+      Atom(name: '_DetailsStore.episodes', context: context);
 
   @override
   ObservableList<TvEpisode> get episodes {
@@ -107,7 +111,8 @@ mixin _$DetailsStore on _DetailsStore, Store {
     });
   }
 
-  final _$chosenSeasonAtom = Atom(name: '_DetailsStore.chosenSeason');
+  late final _$chosenSeasonAtom =
+      Atom(name: '_DetailsStore.chosenSeason', context: context);
 
   @override
   TvSeason? get chosenSeason {
@@ -122,8 +127,39 @@ mixin _$DetailsStore on _DetailsStore, Store {
     });
   }
 
-  final _$_DetailsStoreActionController =
-      ActionController(name: '_DetailsStore');
+  late final _$isAddedToFavAtom =
+      Atom(name: '_DetailsStore.isAddedToFav', context: context);
+
+  @override
+  bool get isAddedToFav {
+    _$isAddedToFavAtom.reportRead();
+    return super.isAddedToFav;
+  }
+
+  @override
+  set isAddedToFav(bool value) {
+    _$isAddedToFavAtom.reportWrite(value, super.isAddedToFav, () {
+      super.isAddedToFav = value;
+    });
+  }
+
+  late final _$videoAtom = Atom(name: '_DetailsStore.video', context: context);
+
+  @override
+  Video? get video {
+    _$videoAtom.reportRead();
+    return super.video;
+  }
+
+  @override
+  set video(Video? value) {
+    _$videoAtom.reportWrite(value, super.video, () {
+      super.video = value;
+    });
+  }
+
+  late final _$_DetailsStoreActionController =
+      ActionController(name: '_DetailsStore', context: context);
 
   @override
   void onPageChanged(int index) {
@@ -131,6 +167,28 @@ mixin _$DetailsStore on _DetailsStore, Store {
         name: '_DetailsStore.onPageChanged');
     try {
       return super.onPageChanged(index);
+    } finally {
+      _$_DetailsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void addToListClicked(FavoritesStore store) {
+    final _$actionInfo = _$_DetailsStoreActionController.startAction(
+        name: '_DetailsStore.addToListClicked');
+    try {
+      return super.addToListClicked(store);
+    } finally {
+      _$_DetailsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void removeFromListCLicked(FavoritesStore store) {
+    final _$actionInfo = _$_DetailsStoreActionController.startAction(
+        name: '_DetailsStore.removeFromListCLicked');
+    try {
+      return super.removeFromListCLicked(store);
     } finally {
       _$_DetailsStoreActionController.endAction(_$actionInfo);
     }
@@ -157,6 +215,8 @@ credits: ${credits},
 recommended: ${recommended},
 episodes: ${episodes},
 chosenSeason: ${chosenSeason},
+isAddedToFav: ${isAddedToFav},
+video: ${video},
 genres: ${genres}
     ''';
   }

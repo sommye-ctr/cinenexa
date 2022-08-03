@@ -6,10 +6,10 @@ part of 'see_more_store.dart';
 // StoreGenerator
 // **************************************************************************
 
-// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
+// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$SeeMoreStore on _SeeMoreStore, Store {
-  final _$itemsAtom = Atom(name: '_SeeMoreStore.items');
+  late final _$itemsAtom = Atom(name: '_SeeMoreStore.items', context: context);
 
   @override
   ObservableList<BaseModel> get items {
@@ -24,7 +24,7 @@ mixin _$SeeMoreStore on _SeeMoreStore, Store {
     });
   }
 
-  final _$pageAtom = Atom(name: '_SeeMoreStore.page');
+  late final _$pageAtom = Atom(name: '_SeeMoreStore.page', context: context);
 
   @override
   int get page {
@@ -39,15 +39,16 @@ mixin _$SeeMoreStore on _SeeMoreStore, Store {
     });
   }
 
-  final _$_fetchItemsAsyncAction = AsyncAction('_SeeMoreStore._fetchItems');
+  late final _$_fetchItemsAsyncAction =
+      AsyncAction('_SeeMoreStore._fetchItems', context: context);
 
   @override
   Future<dynamic> _fetchItems() {
     return _$_fetchItemsAsyncAction.run(() => super._fetchItems());
   }
 
-  final _$_SeeMoreStoreActionController =
-      ActionController(name: '_SeeMoreStore');
+  late final _$_SeeMoreStoreActionController =
+      ActionController(name: '_SeeMoreStore', context: context);
 
   @override
   void pageEndReached() {

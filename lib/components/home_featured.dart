@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:watrix/resources/strings.dart';
+import 'package:watrix/resources/style.dart';
 
-import '../models/base_model.dart';
-import '../services/duration_type.dart';
-import '../services/entity_type.dart';
-import '../services/requests.dart';
+import '../models/network/base_model.dart';
+import '../models/network/enums/duration_type.dart';
+import '../models/network/enums/entity_type.dart';
+import '../services/network/requests.dart';
 import '../utils/screen_size.dart';
 import '../widgets/horizontal_list.dart';
 import '../widgets/image_carousel.dart';
@@ -39,21 +40,20 @@ class _HomeFeaturedState extends State<HomeFeatured>
           Requests.titlesFuture(
             Requests.trending(EntityType.all, DurationType.day),
             limit: 5,
+            shuffle: true,
           ),
           onClick: widget.onItemClicked,
         ),
-        SizedBox(
-          height: ScreenSize.getPercentOfHeight(
-            context,
-            0.02,
-          ),
-        ),
+        Style.getVerticalSpacing(context: context),
         HorizontalList(
-          future: Requests.titlesFuture(Requests.popular(EntityType.movie)),
+          future: Requests.titlesFuture(
+            Requests.popular(EntityType.movie),
+            shuffle: true,
+          ),
           heading: Strings.popularMovies,
           onClick: (data) => widget.onItemClicked(data),
           itemWidthPercent: 0.3,
-          showTitle: true,
+          showTitle: false,
           onRightTrailClicked: (items) {
             if (widget.onSeeMoreClicked != null) {
               widget.onSeeMoreClicked!(
@@ -64,18 +64,16 @@ class _HomeFeaturedState extends State<HomeFeatured>
             }
           },
         ),
-        SizedBox(
-          height: ScreenSize.getPercentOfHeight(
-            context,
-            0.02,
-          ),
-        ),
+        Style.getVerticalSpacing(context: context),
         HorizontalList(
-          future: Requests.titlesFuture(Requests.popular(EntityType.tv)),
+          future: Requests.titlesFuture(
+            Requests.popular(EntityType.tv),
+            shuffle: true,
+          ),
           heading: Strings.popularTv,
           onClick: (data) => widget.onItemClicked(data),
           itemWidthPercent: 0.3,
-          showTitle: true,
+          showTitle: false,
           onRightTrailClicked: (items) {
             if (widget.onSeeMoreClicked != null) {
               widget.onSeeMoreClicked!(
@@ -86,18 +84,13 @@ class _HomeFeaturedState extends State<HomeFeatured>
             }
           },
         ),
-        SizedBox(
-          height: ScreenSize.getPercentOfHeight(
-            context,
-            0.02,
-          ),
-        ),
+        Style.getVerticalSpacing(context: context),
         HorizontalList(
           future: Requests.titlesFuture(Requests.popular(EntityType.people)),
           heading: Strings.popularActors,
           onClick: (data) => widget.onItemClicked(data),
           itemWidthPercent: 0.3,
-          showTitle: true,
+          showTitle: false,
           onRightTrailClicked: (items) {
             if (widget.onSeeMoreClicked != null) {
               widget.onSeeMoreClicked!(
@@ -108,21 +101,16 @@ class _HomeFeaturedState extends State<HomeFeatured>
             }
           },
         ),
-        SizedBox(
-          height: ScreenSize.getPercentOfHeight(
-            context,
-            0.02,
-          ),
-        ),
+        Style.getVerticalSpacing(context: context),
         HorizontalList(
           future: Requests.titlesFuture(
             Requests.trending(EntityType.movie, DurationType.week),
-            skip: true,
+            shuffle: true,
           ),
           heading: Strings.weeklyTrendingMovies,
           onClick: (data) => widget.onItemClicked(data),
           itemWidthPercent: 0.3,
-          showTitle: true,
+          showTitle: false,
           onRightTrailClicked: (items) {
             if (widget.onSeeMoreClicked != null) {
               widget.onSeeMoreClicked!(
@@ -133,21 +121,16 @@ class _HomeFeaturedState extends State<HomeFeatured>
             }
           },
         ),
-        SizedBox(
-          height: ScreenSize.getPercentOfHeight(
-            context,
-            0.02,
-          ),
-        ),
+        Style.getVerticalSpacing(context: context),
         HorizontalList(
           future: Requests.titlesFuture(
             Requests.trending(EntityType.tv, DurationType.week),
-            skip: true,
+            shuffle: true,
           ),
           heading: Strings.weeklyTrendingTv,
           onClick: (data) => widget.onItemClicked(data),
           itemWidthPercent: 0.3,
-          showTitle: true,
+          showTitle: false,
           onRightTrailClicked: (items) {
             if (widget.onSeeMoreClicked != null) {
               widget.onSeeMoreClicked!(
@@ -158,11 +141,9 @@ class _HomeFeaturedState extends State<HomeFeatured>
             }
           },
         ),
-        SizedBox(
-          height: ScreenSize.getPercentOfHeight(
-            context,
-            0.08,
-          ),
+        Style.getVerticalSpacing(
+          context: context,
+          percent: 0.08,
         ),
       ],
     );

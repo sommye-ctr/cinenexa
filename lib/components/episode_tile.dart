@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:watrix/models/tv_episode.dart';
-import 'package:watrix/services/utils.dart';
+import 'package:watrix/services/network/utils.dart';
 import 'package:watrix/utils/date_time_formatter.dart';
 
+import '../models/network/tv_episode.dart';
 import '../resources/style.dart';
 import '../services/constants.dart';
 import '../utils/screen_size.dart';
@@ -26,7 +26,6 @@ class EpisodeTile extends StatelessWidget {
           ),
           borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
         ),
-        color: Colors.black,
         child: Column(
           children: [
             Row(
@@ -47,16 +46,17 @@ class EpisodeTile extends StatelessWidget {
                       Text(
                         "${episode.episodeNumber}. ${episode.name}",
                         overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       Text(
                         "${DateTimeFormatter.getDateMonthYearFromString(
                           episode.airDate,
                         )}",
-                        style: TextStyle(color: Colors.grey),
+                        style: TextStyle(color: Theme.of(context).hintColor),
                       ),
                       Text(
                         "${episode.runtime} minutes",
-                        style: TextStyle(color: Colors.grey),
+                        style: TextStyle(color: Theme.of(context).hintColor),
                       ),
                     ],
                   ),
@@ -69,7 +69,7 @@ class EpisodeTile extends StatelessWidget {
             Text(
               episode.overview,
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(color: Theme.of(context).hintColor),
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
             ),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
-import 'package:watrix/components/search_history_tile.dart';
+import 'package:provider/provider.dart';
+import 'package:watrix/resources/asset.dart';
+import 'package:watrix/resources/my_theme.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/screens/actor_details_page.dart';
@@ -11,9 +13,9 @@ import 'package:watrix/widgets/search_input.dart';
 
 import '../components/movie_tile.dart';
 import '../components/search_result_tile.dart';
-import '../models/base_model.dart';
+import '../models/network/base_model.dart';
 import '../services/constants.dart';
-import '../services/utils.dart';
+import '../services/network/utils.dart';
 import 'details_page.dart';
 
 class SearchPage extends StatefulWidget {
@@ -24,28 +26,14 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  final SearchStore searchStore = SearchStore();
+  late SearchStore searchStore;
   late TextEditingController textEditingController;
   late FocusNode focusNode;
   final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
 
-  List items = [
-    "Spider",
-    "Hey Baby",
-    "Fight club",
-    "Chris evans",
-    "Shahrukh",
-    "Encanto",
-    "Spider",
-    "Hey Baby",
-    "Fight club",
-    "Chris evans",
-    "Shahrukh",
-    "Encanto"
-  ];
-
   @override
   void initState() {
+    searchStore = SearchStore();
     textEditingController = TextEditingController();
     focusNode = FocusNode();
     super.initState();
@@ -106,12 +94,10 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget _buildSearchHistory() {
-    int count = 10;
-
     return Expanded(
       child: AnimatedList(
         key: listKey,
-        initialItemCount: count,
+        initialItemCount: searchStore.history.length,
         physics: BouncingScrollPhysics(),
         itemBuilder: (context, index, animation) {
           return _buildSearchHistorySingleTerm(context, index, animation);
@@ -131,12 +117,17 @@ class _SearchPageState extends State<SearchPage> {
         children: [
           Container(
             width: ScreenSize.getPercentOfWidth(context, 0.95),
-            child: SearchHistoryTile(
-              text: items[index],
-              onClick: _onSearchHistoryClicked,
-              onClearClick: () {
-                _onSearchHistoryCleared(index);
-              },
+            child: ListTile(
+              title: Text(searchStore.history[index].term),
+              leading: Icon(Icons.history_rounded),
+              trailing: IconButton(
+                onPressed: () {
+                  _onSearchHistoryCleared(index);
+                },
+                icon: Icon(Icons.clear),
+              ),
+              onTap: () =>
+                  _onSearchHistoryClicked(searchStore.history[index].term),
             ),
           ),
           Style.getVerticalSpacing(context: context, percent: 0.01),
@@ -145,7 +136,7 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  void _onSearchHistoryCleared(index) {
+  void _onSearchHistoryCleared(int index) {
     listKey.currentState?.removeItem(
       index,
       (context, animation) =>
@@ -154,7 +145,7 @@ class _SearchPageState extends State<SearchPage> {
     );
     Future.delayed(
       kThemeAnimationDuration,
-      () => items.removeAt(index),
+      () => searchStore.historyDeleted(searchStore.history[index]),
     );
   }
 
@@ -172,11 +163,15 @@ class _SearchPageState extends State<SearchPage> {
           children: [
             _buildIconHint(
               Strings.moviesTvShows,
-              "assets/images/movies&tv.png",
+              Provider.of<MyTheme>(context, listen: false).darkMode
+                  ? Asset.moviesTvLight
+                  : Asset.moviesTvDark,
             ),
             _buildIconHint(
               Strings.actorsDirectors,
-              "assets/images/actor.png",
+              Provider.of<MyTheme>(context, listen: false).darkMode
+                  ? Asset.actorsLight
+                  : Asset.actorsDark,
             ),
           ],
         ),
@@ -198,8 +193,7 @@ class _SearchPageState extends State<SearchPage> {
           return DefaultTabController(
             length: 3,
             child: TabBar(
-              labelColor: Colors.black,
-              unselectedLabelColor: Colors.grey,
+              unselectedLabelColor: Theme.of(context).hintColor,
               indicatorColor: Colors.transparent,
               isScrollable: true,
               onTap: _onSearchTypeChanged,
@@ -244,7 +238,7 @@ class _SearchPageState extends State<SearchPage> {
               year: baseModel.releaseDate ?? "",
               overview: baseModel.overview ?? "",
               title: baseModel.title ?? "",
-              type: Utils.getEntityTypeBy(baseModel.type!),
+              type: Utils.getStringByBasemodelType(baseModel.type!),
               typeColor: Utils.getColorByEntity(baseModel.type!),
               vote: baseModel.type == BaseModelType.people
                   ? 0

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
-import 'package:watrix/models/base_model.dart';
 import 'package:watrix/store/see_more/see_more_store.dart';
 
 import '../components/movie_tile.dart';
+import '../models/network/base_model.dart';
 import '../resources/style.dart';
 import '../services/constants.dart';
 import '../utils/screen_size.dart';
@@ -50,6 +50,9 @@ class _SeeMorePageState extends State<SeeMorePage> {
         Text(
           widget.heading,
           style: Style.headingStyle,
+        ),
+        Divider(
+          color: Theme.of(context).colorScheme.onBackground,
         ),
         SizedBox(
           height: ScreenSize.getPercentOfHeight(context, 0.02),

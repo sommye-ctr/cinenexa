@@ -1,8 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:watrix/models/people.dart';
-import 'package:watrix/models/tv.dart';
+import 'package:watrix/models/local/favorites.dart';
+import 'package:watrix/models/network/people.dart';
+import 'package:watrix/models/network/tv.dart';
 
 import 'movie.dart';
 
@@ -104,6 +105,33 @@ class BaseModel {
       genreIds: movie.genreIds,
       releaseDate: movie.releaseDate,
     );
+  }
+
+  factory BaseModel.fromFavorite(Favorites favorites) {
+    return BaseModel(
+      type: BaseModelType.values.byName(favorites.type),
+      backdropPath: favorites.backdropPath,
+      genreIds: favorites.genreIds,
+      id: favorites.id,
+      overview: favorites.overview,
+      posterPath: favorites.posterPath,
+      releaseDate: favorites.releaseDate,
+      title: favorites.title,
+      voteAverage: favorites.voteAverage,
+    );
+  }
+
+  Favorites toFavorite() {
+    return Favorites()
+      ..backdropPath = backdropPath!
+      ..genreIds = genreIds!
+      ..id = id!
+      ..overview = overview!
+      ..posterPath = posterPath!
+      ..releaseDate = releaseDate!
+      ..title = title!
+      ..voteAverage = voteAverage!
+      ..type = type!.toString().split('.').last;
   }
 
   factory BaseModel.fromTv(Tv tv) {

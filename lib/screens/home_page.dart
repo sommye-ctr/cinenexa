@@ -2,20 +2,22 @@ import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
-import 'package:watrix/components/home_mylist.dart';
-import 'package:watrix/models/base_model.dart';
+import 'package:provider/provider.dart';
+import 'package:watrix/components/home_favourites.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/screens/filter_page.dart';
 import 'package:watrix/screens/see_more_page.dart';
-import 'package:watrix/services/entity_type.dart';
+import 'package:watrix/models/network/enums/entity_type.dart';
+import 'package:watrix/store/favorites/favorites_store.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/components/bottom_nav_bar.dart';
 import 'package:watrix/components/home_featured.dart';
 import 'package:watrix/components/home_movies.dart';
 import 'package:watrix/components/home_tv.dart';
 
-import '../models/discover.dart';
+import '../models/network/base_model.dart';
+import '../models/network/discover.dart';
 import '../services/constants.dart';
 import '../components/movie_tile.dart';
 import '../store/home/home_store.dart';
@@ -33,7 +35,7 @@ class _HomePageState extends State<HomePage>
     defaultMovieIndex: 1,
     defaultTvIndex: 2,
   );
-  late final Widget myList = HomeMyList();
+  late final Widget myList = HomeFavorites();
 
   late final Widget featured = HomeFeatured(
       onItemClicked: _onItemClicked, onSeeMoreClicked: _onSeeMoreClicked);
@@ -46,14 +48,11 @@ class _HomePageState extends State<HomePage>
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Container(
-          color: Theme.of(context).canvasColor,
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: ScreenSize.getPercentOfWidth(context, 0.02),
-            ),
-            child: _buildBody(),
+        Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: ScreenSize.getPercentOfWidth(context, 0.02),
           ),
+          child: _buildBody(),
         ),
         Observer(builder: (context) => _buildFilterFab()),
       ],
@@ -66,8 +65,7 @@ class _HomePageState extends State<HomePage>
       child: Column(
         children: [
           TabBar(
-            labelColor: Colors.black,
-            unselectedLabelColor: Colors.grey,
+            unselectedLabelColor: Theme.of(context).hintColor,
             indicatorColor: Colors.transparent,
             isScrollable: true,
             onTap: homeStore.tabChanged,
@@ -82,7 +80,7 @@ class _HomePageState extends State<HomePage>
                 text: Strings.tvShows,
               ),
               Tab(
-                text: Strings.myList,
+                text: Strings.favorites,
               ),
             ],
           ),

@@ -1,8 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-
-import 'package:watrix/models/tv_season.dart';
+import 'package:watrix/models/network/tv_season.dart';
 
 import 'genre.dart';
 

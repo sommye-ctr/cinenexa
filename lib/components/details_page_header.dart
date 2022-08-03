@@ -2,16 +2,17 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:provider/provider.dart';
 import 'package:watrix/components/vote_indicator.dart';
-import 'package:watrix/models/base_model.dart';
 import 'package:watrix/resources/style.dart';
-import 'package:watrix/screens/add_to_list_page.dart';
 import 'package:watrix/store/details/details_store.dart';
+import 'package:watrix/store/favorites/favorites_store.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/widgets/custom_back_button.dart';
 
+import '../models/network/base_model.dart';
 import '../resources/strings.dart';
-import '../services/utils.dart';
+import '../services/network/utils.dart';
 import '../utils/date_time_formatter.dart';
 import '../widgets/rounded_button.dart';
 import '../widgets/screen_background_image.dart';
@@ -47,16 +48,20 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
       ),
       child: Stack(
         children: [
-          Align(
-            alignment: Alignment.topLeft,
-            child: CustomBackButton(),
+          Padding(
+            padding:
+                EdgeInsets.only(top: MediaQuery.of(context).viewPadding.top),
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: CustomBackButton(),
+            ),
           ),
           Padding(
             padding: EdgeInsets.symmetric(
               horizontal: ScreenSize.getPercentOfWidth(context, 0.025),
             ),
             child: Align(
-              alignment: Alignment(0, 0.5),
+              alignment: Alignment(0, 0.6),
               child: Wrap(
                 children: [
                   Column(
@@ -81,7 +86,7 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
   Widget _buildDownArrow(shrinkOffset) {
     return _buildFading(
       Align(
-        alignment: Alignment(0, 0.85),
+        alignment: Alignment(0, 0.9),
         child: Icon(Icons.keyboard_arrow_down),
       ),
       shrinkOffset,
@@ -125,11 +130,11 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
               crossAxisAlignment: WrapCrossAlignment.center,
               spacing: ScreenSize.getPercentOfWidth(context, 0.01),
               children: [
-                _buildReleaseInfo(),
+                _buildReleaseInfo(context),
                 VoteIndicator(
                   vote: detailsStore.baseModel.voteAverage!,
                 ),
-                _buildRuntime(),
+                _buildRuntime(context),
               ],
             )
           ],
@@ -149,16 +154,16 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
     );
   }
 
-  Widget _buildReleaseInfo() {
+  Widget _buildReleaseInfo(context) {
     return Text(
       "${_getReleaseInfo()} - ",
       style: TextStyle(
-        color: Colors.grey.shade300,
+        color: Theme.of(context).colorScheme.inverseSurface,
       ),
     );
   }
 
-  Widget _buildRuntime() {
+  Widget _buildRuntime(context) {
     if (detailsStore.baseModel.type == BaseModelType.movie) {
       return AnimatedSwitcher(
         duration: Duration(milliseconds: 500),
@@ -166,7 +171,7 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
             ? Text(
                 " - ${DateTimeFormatter.getTimeFromMin(detailsStore.movie!.runtime!)}",
                 style: TextStyle(
-                  color: Colors.grey.shade300,
+                  color: Theme.of(context).colorScheme.inverseSurface,
                 ),
               )
             : Visibility(
@@ -213,22 +218,65 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
   }
 
   Widget _buildButtons(context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        RoundedButton(
-          onPressed: () => _onAddToListPressed(context),
-          child: Text(Strings.addToList),
-          type: RoundedButtonType.filled,
-        ),
-        Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
-        RoundedButton(
-          onPressed: _onViewInfoPressed,
-          child: Text(Strings.viewInfo),
-          type: RoundedButtonType.outlined,
-        ),
-      ],
-    );
+    return Observer(builder: (_) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AnimatedCrossFade(
+            duration: Duration(milliseconds: 500),
+            sizeCurve: Curves.decelerate,
+            firstChild: RoundedButton(
+              onPressed: () => detailsStore.addToListClicked(
+                  Provider.of<FavoritesStore>(context, listen: false)),
+              type: RoundedButtonType.filled,
+              child: Row(
+                children: [
+                  Text(Strings.addToFav),
+                  Icon(Icons.favorite_outline_rounded),
+                ],
+              ),
+            ),
+            secondChild: RoundedButton(
+              onPressed: () => detailsStore.removeFromListCLicked(
+                  Provider.of<FavoritesStore>(context, listen: false)),
+              type: RoundedButtonType.outlined,
+              child: Row(
+                children: [
+                  Text(Strings.removeFromFav),
+                  Icon(Icons.favorite),
+                ],
+              ),
+            ),
+            layoutBuilder: (topChild, topKey, bottomChild, bottomKey) {
+              return Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Positioned(
+                    top: 0,
+                    child: bottomChild,
+                    key: bottomKey,
+                  ),
+                  Positioned(
+                    child: topChild,
+                    key: topKey,
+                  ),
+                ],
+              );
+            },
+            crossFadeState: detailsStore.isAddedToFav
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
+          ),
+          Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
+          RoundedButton(
+            onPressed: _onViewInfoPressed,
+            child: Text(Strings.viewInfo),
+            type: RoundedButtonType.outlined,
+          ),
+        ],
+      );
+    });
   }
 
   void _onViewInfoPressed() {
@@ -236,21 +284,6 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
       maxExtent - minExtent,
       duration: duration,
       curve: Curves.easeIn,
-    );
-  }
-
-  void _onAddToListPressed(context) {
-    showModalBottomSheet(
-      context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
-      ),
-      builder: (context) {
-        return Container(
-          height: ScreenSize.getPercentOfHeight(context, 0.7),
-          child: AddToListPage(),
-        );
-      },
     );
   }
 
