@@ -2,14 +2,12 @@ import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
-import 'package:provider/provider.dart';
 import 'package:watrix/components/home_favourites.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/screens/filter_page.dart';
 import 'package:watrix/screens/see_more_page.dart';
 import 'package:watrix/models/network/enums/entity_type.dart';
-import 'package:watrix/store/favorites/favorites_store.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/components/bottom_nav_bar.dart';
 import 'package:watrix/components/home_featured.dart';
@@ -105,17 +103,25 @@ class _HomePageState extends State<HomePage>
   }
 
   Widget _buildMovieBody() {
-    if (homeStore.isMovieFilterApplied) {
-      return _buildFilteredItems(homeStore.filterMovies);
-    }
-    return movies;
+    return AnimatedCrossFade(
+      duration: Duration(milliseconds: 600),
+      crossFadeState: homeStore.isMovieFilterApplied
+          ? CrossFadeState.showSecond
+          : CrossFadeState.showFirst,
+      firstChild: movies,
+      secondChild: _buildFilteredItems(homeStore.filterMovies),
+    );
   }
 
   Widget _buildTvBody() {
-    if (homeStore.isTvFilterApplied) {
-      return _buildFilteredItems(homeStore.filterTv);
-    }
-    return tv;
+    return AnimatedCrossFade(
+      duration: Duration(milliseconds: 600),
+      crossFadeState: homeStore.isTvFilterApplied
+          ? CrossFadeState.showSecond
+          : CrossFadeState.showFirst,
+      firstChild: tv,
+      secondChild: _buildFilteredItems(homeStore.filterTv),
+    );
   }
 
   Widget _buildFilterFab() {
@@ -149,6 +155,9 @@ class _HomePageState extends State<HomePage>
   }
 
   Widget _buildFilteredItems(List<BaseModel> list) {
+    if (list.isEmpty) {
+      return Center(child: CircularProgressIndicator());
+    }
     return LazyLoadScrollView(
       onEndOfPage: () {
         homeStore.onFilterPageEndReached();
