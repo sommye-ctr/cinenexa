@@ -32,8 +32,9 @@ class DetailsPage extends StatefulWidget {
 class _DetailsPageState extends State<DetailsPage> {
   late final DetailsStore detailsStore;
   final _controller = ScrollController();
-  double get maxHeight => ScreenSize.getPercentOfHeight(context, 1);
+  YoutubePlayerController? videoController;
 
+  double get maxHeight => ScreenSize.getPercentOfHeight(context, 1);
   double get minHeight => MediaQuery.of(context).padding.top + kToolbarHeight;
 
   @override
@@ -130,6 +131,12 @@ class _DetailsPageState extends State<DetailsPage> {
   Widget _buildTrailer() {
     return Observer(builder: (_) {
       if (detailsStore.video != null) {
+        videoController = YoutubePlayerController(
+          initialVideoId: detailsStore.video!.key,
+          flags: YoutubePlayerFlags(
+            autoPlay: false,
+          ),
+        );
         return Padding(
           padding: EdgeInsets.symmetric(horizontal: 8),
           child: Column(
@@ -145,12 +152,8 @@ class _DetailsPageState extends State<DetailsPage> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
                 child: YoutubePlayer(
-                    controller: YoutubePlayerController(
-                  initialVideoId: detailsStore.video!.key,
-                  flags: YoutubePlayerFlags(
-                    autoPlay: false,
-                  ),
-                )),
+                  controller: videoController!,
+                ),
               ),
             ],
           ),
@@ -207,6 +210,7 @@ class _DetailsPageState extends State<DetailsPage> {
           items: items,
           heading: heading,
           onClick: (item) {
+            videoController?.pause();
             Navigator.pushNamed(
               context,
               route,
@@ -290,6 +294,10 @@ class _DetailsPageState extends State<DetailsPage> {
     return SizedBox();
   }
 
+  void disposeVideoController() {
+    videoController?.dispose();
+  }
+
   void _snapBehaviour() {
     final double distance = maxHeight - minHeight;
     if (_controller.offset > 0 && _controller.offset < distance) {
@@ -299,5 +307,11 @@ class _DetailsPageState extends State<DetailsPage> {
       Future.microtask(() => _controller.animateTo(snapOffset,
           duration: Duration(milliseconds: 200), curve: Curves.easeIn));
     }
+  }
+
+  @override
+  void dispose() {
+    disposeVideoController();
+    super.dispose();
   }
 }

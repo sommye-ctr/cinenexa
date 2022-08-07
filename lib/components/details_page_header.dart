@@ -40,14 +40,17 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
       milliseconds: 200,
     );
 
-    return ScreenBackgroundImage(
-      image: CachedNetworkImageProvider(
-        Utils.getPosterUrl(
-          detailsStore.baseModel.posterPath!,
+    return Stack(
+      children: [
+        ScreenBackgroundImage(
+          image: CachedNetworkImageProvider(
+            Utils.getPosterUrl(
+              detailsStore.baseModel.posterPath!,
+            ),
+          ),
+          child: Container(),
         ),
-      ),
-      child: Stack(
-        children: [
+        _buildFading(
           Padding(
             padding:
                 EdgeInsets.only(top: MediaQuery.of(context).viewPadding.top),
@@ -56,30 +59,31 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
               child: CustomBackButton(),
             ),
           ),
-          Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: ScreenSize.getPercentOfWidth(context, 0.025),
-            ),
-            child: Align(
-              alignment: Alignment(0, 0.6),
-              child: Wrap(
-                children: [
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      _buildMainDetails(context),
-                      _buildFadingContent(context, shrinkOffset),
-                    ],
-                  ),
-                ],
-              ),
+          shrinkOffset,
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: ScreenSize.getPercentOfWidth(context, 0.025),
+          ),
+          child: Align(
+            alignment: Alignment(0, 0.6),
+            child: Wrap(
+              children: [
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    _buildNonFadingContent(context, shrinkOffset),
+                    _buildFadingContent(context, shrinkOffset),
+                  ],
+                ),
+              ],
             ),
           ),
-          _buildDownArrow(shrinkOffset),
-        ],
-      ),
+        ),
+        _buildDownArrow(shrinkOffset),
+      ],
     );
   }
 
@@ -110,53 +114,83 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
 
   Widget _buildFading(Widget child, shrinkOffset) {
     return Visibility(
-      visible: shrinkOffset != minExtent,
+      visible: progress <= 0.9,
       child: AnimatedOpacity(
         duration: duration,
         opacity: 1 - progress,
         child: child,
+        onEnd: () {},
       ),
     );
   }
 
-  Widget _buildMainDetails(context) {
-    return Observer(
-      builder: (_) {
-        return Column(
-          children: [
-            _buildTitle(),
-            Wrap(
-              alignment: WrapAlignment.center,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: ScreenSize.getPercentOfWidth(context, 0.01),
+  Widget _buildNonFadingContent(context, offset) {
+    return Column(
+      children: [
+        _buildTitle(context),
+        AnimatedCrossFade(
+          duration: duration,
+          crossFadeState: progress <= 0.9
+              ? CrossFadeState.showFirst
+              : CrossFadeState.showSecond,
+          firstChild: Row(
+            key: UniqueKey(),
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildReleaseInfo(context),
+              Style.getVerticalHorizontalSpacing(
+                  context: context, percent: 0.01),
+              VoteIndicator(
+                vote: detailsStore.baseModel.voteAverage!,
+              ),
+              Style.getVerticalHorizontalSpacing(
+                  context: context, percent: 0.01),
+              Observer(builder: (context) => _buildRuntime(context)),
+            ],
+          ),
+          secondChild: Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: Row(
+              key: UniqueKey(),
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _buildReleaseInfo(context),
-                VoteIndicator(
-                  vote: detailsStore.baseModel.voteAverage!,
-                ),
-                _buildRuntime(context),
+                Observer(builder: (context) => _buildRuntime(context)),
               ],
-            )
-          ],
-        );
-      },
+            ),
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _buildTitle() {
-    return Text(
-      detailsStore.baseModel.title!,
-      textAlign: TextAlign.center,
-      style: TextStyle(
-        fontSize: 22,
-        fontWeight: FontWeight.bold,
+  Widget _buildTitle(context) {
+    return AnimatedContainer(
+      duration: duration,
+      padding: EdgeInsets.lerp(
+        null,
+        EdgeInsets.only(
+          top: MediaQuery.of(context).padding.top,
+        ),
+        progress,
+      ),
+      child: Text(
+        detailsStore.baseModel.title!,
+        textAlign: TextAlign.center,
+        overflow: progress >= 0.9 ? TextOverflow.ellipsis : null,
+        style: TextStyle(
+          fontSize: 22,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }
 
   Widget _buildReleaseInfo(context) {
     return Text(
-      "${_getReleaseInfo()} - ",
+      "${_getReleaseInfo()} ",
       style: TextStyle(
         color: Theme.of(context).colorScheme.inverseSurface,
       ),
@@ -169,7 +203,7 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
         duration: Duration(milliseconds: 500),
         child: detailsStore.movie?.runtime != null
             ? Text(
-                " - ${DateTimeFormatter.getTimeFromMin(detailsStore.movie!.runtime!)}",
+                " ${DateTimeFormatter.getTimeFromMin(detailsStore.movie!.runtime!)}",
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.inverseSurface,
                 ),
@@ -186,7 +220,7 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
     return AnimatedSwitcher(
       duration: Duration(milliseconds: 500),
       child: detailsStore.tv?.noOfSeasons != null
-          ? Text(" - ${detailsStore.tv!.noOfSeasons!} ${Strings.seasons}")
+          ? Text(" ${detailsStore.tv!.noOfSeasons!} ${Strings.seasons}")
           : Visibility(
               visible: false,
               child: Text("abcdefghi"),
