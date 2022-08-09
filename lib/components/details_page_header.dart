@@ -5,6 +5,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:provider/provider.dart';
 import 'package:watrix/components/vote_indicator.dart';
 import 'package:watrix/resources/style.dart';
+import 'package:watrix/services/constants.dart';
 import 'package:watrix/store/details/details_store.dart';
 import 'package:watrix/store/favorites/favorites_store.dart';
 import 'package:watrix/utils/screen_size.dart';
@@ -43,10 +44,12 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
     return Stack(
       children: [
         ScreenBackgroundImage(
-          image: CachedNetworkImageProvider(
-            Utils.getPosterUrl(
-              detailsStore.baseModel.posterPath!,
-            ),
+          image: Utils.getPosterUrl(
+            detailsStore.baseModel.posterPath!,
+            posterSize: Constants.hdPosterSize,
+          ),
+          placeHolder: Utils.getPosterUrl(
+            detailsStore.baseModel.posterPath!,
           ),
           child: Container(),
         ),

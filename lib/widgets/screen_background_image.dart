@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:watrix/resources/my_theme.dart';
@@ -5,12 +6,14 @@ import 'package:watrix/utils/screen_size.dart';
 
 class ScreenBackgroundImage extends StatelessWidget {
   final Widget child;
-  final ImageProvider image;
+  final String image;
+  final String? placeHolder;
   final double heightPercent;
   const ScreenBackgroundImage({
     Key? key,
     required this.child,
     required this.image,
+    this.placeHolder,
     this.heightPercent = 1,
   }) : super(key: key);
 
@@ -29,7 +32,7 @@ class ScreenBackgroundImage extends StatelessWidget {
             Colors.transparent,
             Colors.white.withOpacity(0.26),
             Colors.white.withOpacity(0.48),
-            Colors.white.withOpacity(0.7),
+            Colors.white.withOpacity(0.6),
             Colors.white
           ];
 
@@ -54,11 +57,18 @@ class ScreenBackgroundImage extends StatelessWidget {
               ).createShader(bounds);
             },
             child: Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: image,
-                  fit: BoxFit.cover,
-                ),
+              child: CachedNetworkImage(
+                imageUrl: image,
+                fit: BoxFit.cover,
+                height: ScreenSize.getPercentOfHeight(context, 1),
+                width: ScreenSize.getPercentOfWidth(context, 1),
+                fadeInDuration: Duration(microseconds: 1),
+                placeholder: placeHolder != null
+                    ? (context, url) => CachedNetworkImage(
+                          fit: BoxFit.cover,
+                          imageUrl: placeHolder!,
+                        )
+                    : null,
               ),
             ),
           ),

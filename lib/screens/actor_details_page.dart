@@ -42,27 +42,27 @@ class _ActorDetailsPageState extends State<ActorDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Stack(
-          children: [
-            ScreenBackgroundImage(
-              image: CachedNetworkImageProvider(
-                Utils.getPosterUrl(
-                  actorDetailsStore.baseModel.posterPath!,
-                ),
-              ),
-              heightPercent: 0.65,
-              child: Container(),
+      body: Stack(
+        children: [
+          ScreenBackgroundImage(
+            image: Utils.getPosterUrl(
+              actorDetailsStore.baseModel.posterPath!,
             ),
-            Align(
+            heightPercent: 0.65,
+            child: Container(),
+          ),
+          Padding(
+            padding:
+                EdgeInsets.only(top: MediaQuery.of(context).viewPadding.top),
+            child: Align(
               alignment: Alignment.topLeft,
               child: CustomBackButton(),
             ),
-            _buildTitle(),
-            _buildMainDetailsRow(),
-            _buildKnownFor(),
-          ],
-        ),
+          ),
+          _buildTitle(),
+          _buildMainDetailsRow(),
+          _buildKnownFor(),
+        ],
       ),
     );
   }

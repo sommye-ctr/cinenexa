@@ -34,7 +34,7 @@ class MyListTile extends StatelessWidget {
             children: [
               ScreenBackgroundImage(
                 child: Container(),
-                image: CachedNetworkImageProvider(backdropUrl),
+                image: backdropUrl,
               ),
               Center(
                 child: Column(
