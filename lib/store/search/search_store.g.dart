@@ -9,6 +9,14 @@ part of 'search_store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$SearchStore on _SearchStore, Store {
+  Computed<bool>? _$searchDoneComputed;
+
+  @override
+  bool get searchDone =>
+      (_$searchDoneComputed ??= Computed<bool>(() => super.searchDone,
+              name: '_SearchStore.searchDone'))
+          .value;
+
   late final _$searchTermAtom =
       Atom(name: '_SearchStore.searchTerm', context: context);
 
@@ -22,21 +30,6 @@ mixin _$SearchStore on _SearchStore, Store {
   set searchTerm(String value) {
     _$searchTermAtom.reportWrite(value, super.searchTerm, () {
       super.searchTerm = value;
-    });
-  }
-
-  late final _$itemsAtom = Atom(name: '_SearchStore.items', context: context);
-
-  @override
-  ObservableList<BaseModel> get items {
-    _$itemsAtom.reportRead();
-    return super.items;
-  }
-
-  @override
-  set items(ObservableList<BaseModel> value) {
-    _$itemsAtom.reportWrite(value, super.items, () {
-      super.items = value;
     });
   }
 
@@ -87,54 +80,6 @@ mixin _$SearchStore on _SearchStore, Store {
     });
   }
 
-  late final _$searchDoneAtom =
-      Atom(name: '_SearchStore.searchDone', context: context);
-
-  @override
-  bool get searchDone {
-    _$searchDoneAtom.reportRead();
-    return super.searchDone;
-  }
-
-  @override
-  set searchDone(bool value) {
-    _$searchDoneAtom.reportWrite(value, super.searchDone, () {
-      super.searchDone = value;
-    });
-  }
-
-  late final _$resultsEmptyAtom =
-      Atom(name: '_SearchStore.resultsEmpty', context: context);
-
-  @override
-  bool get resultsEmpty {
-    _$resultsEmptyAtom.reportRead();
-    return super.resultsEmpty;
-  }
-
-  @override
-  set resultsEmpty(bool value) {
-    _$resultsEmptyAtom.reportWrite(value, super.resultsEmpty, () {
-      super.resultsEmpty = value;
-    });
-  }
-
-  late final _$isLoadingAtom =
-      Atom(name: '_SearchStore.isLoading', context: context);
-
-  @override
-  bool get isLoading {
-    _$isLoadingAtom.reportRead();
-    return super.isLoading;
-  }
-
-  @override
-  set isLoading(bool value) {
-    _$isLoadingAtom.reportWrite(value, super.isLoading, () {
-      super.isLoading = value;
-    });
-  }
-
   late final _$searchFocusedAtom =
       Atom(name: '_SearchStore.searchFocused', context: context);
 
@@ -151,6 +96,22 @@ mixin _$SearchStore on _SearchStore, Store {
     });
   }
 
+  late final _$fetchItemsFutureAtom =
+      Atom(name: '_SearchStore.fetchItemsFuture', context: context);
+
+  @override
+  ObservableFuture<List<BaseModel>> get fetchItemsFuture {
+    _$fetchItemsFutureAtom.reportRead();
+    return super.fetchItemsFuture;
+  }
+
+  @override
+  set fetchItemsFuture(ObservableFuture<List<BaseModel>> value) {
+    _$fetchItemsFutureAtom.reportWrite(value, super.fetchItemsFuture, () {
+      super.fetchItemsFuture = value;
+    });
+  }
+
   late final _$_fetchHistoryAsyncAction =
       AsyncAction('_SearchStore._fetchHistory', context: context);
 
@@ -163,18 +124,18 @@ mixin _$SearchStore on _SearchStore, Store {
       AsyncAction('_SearchStore._fetchItems', context: context);
 
   @override
-  Future<dynamic> _fetchItems(Future<dynamic> future,
+  Future<dynamic> _fetchItems(Future<List<BaseModel>> future,
       {bool pageEndReached = false}) {
     return _$_fetchItemsAsyncAction
         .run(() => super._fetchItems(future, pageEndReached: pageEndReached));
   }
 
-  late final _$searchClickedAsyncAction =
-      AsyncAction('_SearchStore.searchClicked', context: context);
+  late final _$_addToHistoryAsyncAction =
+      AsyncAction('_SearchStore._addToHistory', context: context);
 
   @override
-  Future<dynamic> searchClicked() {
-    return _$searchClickedAsyncAction.run(() => super.searchClicked());
+  Future<dynamic> _addToHistory() {
+    return _$_addToHistoryAsyncAction.run(() => super._addToHistory());
   }
 
   late final _$_SearchStoreActionController =
@@ -208,6 +169,17 @@ mixin _$SearchStore on _SearchStore, Store {
         name: '_SearchStore.searchTypeChanged');
     try {
       return super.searchTypeChanged(type);
+    } finally {
+      _$_SearchStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void searchClicked() {
+    final _$actionInfo = _$_SearchStoreActionController.startAction(
+        name: '_SearchStore.searchClicked');
+    try {
+      return super.searchClicked();
     } finally {
       _$_SearchStoreActionController.endAction(_$actionInfo);
     }
@@ -272,14 +244,12 @@ mixin _$SearchStore on _SearchStore, Store {
   String toString() {
     return '''
 searchTerm: ${searchTerm},
-items: ${items},
 history: ${history},
 page: ${page},
 searchType: ${searchType},
-searchDone: ${searchDone},
-resultsEmpty: ${resultsEmpty},
-isLoading: ${isLoading},
-searchFocused: ${searchFocused}
+searchFocused: ${searchFocused},
+fetchItemsFuture: ${fetchItemsFuture},
+searchDone: ${searchDone}
     ''';
   }
 }

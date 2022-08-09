@@ -21,10 +21,8 @@ abstract class _HomeStore with Store {
 
   _HomeStore({required this.defaultMovieIndex, required this.defaultTvIndex});
 
-  @observable
-  bool isMovieFilterApplied = false;
-  @observable
-  bool isTvFilterApplied = false;
+  static ObservableFuture<List<BaseModel>> emptyResponse =
+      ObservableFuture.value([]);
 
   @observable
   int tabIndex = 0;
@@ -39,14 +37,19 @@ abstract class _HomeStore with Store {
   Discover? tvDiscover;
 
   @observable
-  ObservableList<BaseModel> filterMovies = <BaseModel>[].asObservable();
+  ObservableFuture<List<BaseModel>> filterMoviesFuture = emptyResponse;
   @observable
-  ObservableList<BaseModel> filterTv = <BaseModel>[].asObservable();
+  ObservableFuture<List<BaseModel>> filterTvFuture = emptyResponse;
 
   @computed
   bool get isFilterApplied =>
       (tabIndex == defaultMovieIndex && isMovieFilterApplied) ||
       (tabIndex == defaultTvIndex && isTvFilterApplied);
+
+  @computed
+  bool get isMovieFilterApplied => filterMoviesFuture != emptyResponse;
+  @computed
+  bool get isTvFilterApplied => filterTvFuture != emptyResponse;
 
   @computed
   EntityType? get currentType {
@@ -67,10 +70,8 @@ abstract class _HomeStore with Store {
   void onFilterApplied(Discover discover) {
     if (tabIndex == defaultMovieIndex) {
       moviesDiscover = discover;
-      isMovieFilterApplied = true;
     } else if (tabIndex == defaultTvIndex) {
       tvDiscover = discover;
-      isTvFilterApplied = true;
     }
     _fetchFilteredItems(
       Requests.discover(
@@ -91,14 +92,12 @@ abstract class _HomeStore with Store {
   void onFilterReset() {
     if (tabIndex == defaultMovieIndex) {
       filterMoviePage = 1;
-      isMovieFilterApplied = false;
       moviesDiscover = null;
-      filterMovies.clear();
+      filterMoviesFuture = emptyResponse;
     } else if (tabIndex == 2) {
       filterTvPage = 1;
-      isTvFilterApplied = false;
       tvDiscover = null;
-      filterTv.clear();
+      filterTvFuture = emptyResponse;
     }
   }
 
@@ -131,17 +130,24 @@ abstract class _HomeStore with Store {
   @action
   Future _fetchFilteredItems(String value,
       {bool pageEndReached = false}) async {
-    List<BaseModel> list = await Requests.discoverFuture(
-      type: tabIndex == defaultMovieIndex ? EntityType.movie : EntityType.tv,
-      query: value,
-      page: tabIndex == defaultMovieIndex ? filterMoviePage : filterTvPage,
-    );
     if (tabIndex == defaultMovieIndex) {
-      if (!pageEndReached) filterMovies.clear();
-      filterMovies.addAll(list);
+      if (!pageEndReached) filterMoviesFuture = emptyResponse;
+      filterMoviesFuture = ObservableFuture(
+        Requests.discoverFuture(
+          type: EntityType.movie,
+          query: value,
+          page: filterMoviePage,
+        ),
+      );
     } else if (tabIndex == defaultTvIndex) {
-      if (!pageEndReached) filterTv.clear();
-      filterTv.addAll(list);
+      if (!pageEndReached) filterTvFuture = emptyResponse;
+      filterTvFuture = ObservableFuture(
+        Requests.discoverFuture(
+          type: EntityType.tv,
+          query: value,
+          page: filterTvPage,
+        ),
+      );
     }
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
+import 'package:mobx/mobx.dart';
 import 'package:provider/provider.dart';
 import 'package:watrix/resources/asset.dart';
 import 'package:watrix/resources/my_theme.dart';
@@ -217,10 +218,13 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget _buildMoviesOrTv() {
-    if (searchStore.isLoading) {
+    if (searchStore.fetchItemsFuture.status == FutureStatus.pending) {
       return CircularProgressIndicator();
     }
-    if (searchStore.resultsEmpty) {
+    List<BaseModel> list =
+        searchStore.fetchItemsFuture.result as List<BaseModel>;
+    if (searchStore.fetchItemsFuture.status == FutureStatus.fulfilled &&
+        list.isEmpty) {
       return Text(Strings.noResultsFound);
     }
     return Flexible(
@@ -230,9 +234,9 @@ class _SearchPageState extends State<SearchPage> {
         },
         child: ListView.builder(
           physics: BouncingScrollPhysics(),
-          itemCount: searchStore.items.length,
+          itemCount: list.length,
           itemBuilder: (context, index) {
-            BaseModel baseModel = searchStore.items[index];
+            BaseModel baseModel = list[index];
             return SearchResultTile(
               image: Utils.getPosterUrl(baseModel.posterPath ?? ""),
               year: baseModel.releaseDate ?? "",
@@ -258,10 +262,13 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget _buildActors() {
-    if (searchStore.isLoading) {
+    if (searchStore.fetchItemsFuture.status == FutureStatus.pending) {
       return CircularProgressIndicator();
     }
-    if (searchStore.resultsEmpty) {
+    List<BaseModel> list =
+        searchStore.fetchItemsFuture.result as List<BaseModel>;
+    if (searchStore.fetchItemsFuture.status == FutureStatus.fulfilled &&
+        list.isEmpty) {
       return Text(Strings.noResultsFound);
     }
     return Expanded(
@@ -269,7 +276,7 @@ class _SearchPageState extends State<SearchPage> {
         onEndOfPage: () => searchStore.onEndOfPageReached(),
         child: GridView.builder(
           shrinkWrap: true,
-          itemCount: searchStore.items.length,
+          itemCount: list.length,
           physics: BouncingScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3,
@@ -278,18 +285,18 @@ class _SearchPageState extends State<SearchPage> {
           itemBuilder: (context, index) {
             return MovieTile(
               image:
-                  "${Constants.imageBaseUrl}${Constants.posterSize}${searchStore.items[index].posterPath}",
+                  "${Constants.imageBaseUrl}${Constants.posterSize}${list[index].posterPath}",
               width: ScreenSize.getPercentOfWidth(
                 context,
                 0.29,
               ),
               showTitle: true,
-              text: searchStore.items[index].title!,
+              text: list[index].title!,
               onClick: () {
                 Navigator.pushNamed(
                   context,
                   ActorDetailsPage.routeName,
-                  arguments: searchStore.items[index],
+                  arguments: list[index],
                 );
               },
             );

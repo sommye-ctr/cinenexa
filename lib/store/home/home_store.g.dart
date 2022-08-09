@@ -16,6 +16,20 @@ mixin _$HomeStore on _HomeStore, Store {
       (_$isFilterAppliedComputed ??= Computed<bool>(() => super.isFilterApplied,
               name: '_HomeStore.isFilterApplied'))
           .value;
+  Computed<bool>? _$isMovieFilterAppliedComputed;
+
+  @override
+  bool get isMovieFilterApplied => (_$isMovieFilterAppliedComputed ??=
+          Computed<bool>(() => super.isMovieFilterApplied,
+              name: '_HomeStore.isMovieFilterApplied'))
+      .value;
+  Computed<bool>? _$isTvFilterAppliedComputed;
+
+  @override
+  bool get isTvFilterApplied => (_$isTvFilterAppliedComputed ??= Computed<bool>(
+          () => super.isTvFilterApplied,
+          name: '_HomeStore.isTvFilterApplied'))
+      .value;
   Computed<EntityType?>? _$currentTypeComputed;
 
   @override
@@ -23,39 +37,6 @@ mixin _$HomeStore on _HomeStore, Store {
       (_$currentTypeComputed ??= Computed<EntityType?>(() => super.currentType,
               name: '_HomeStore.currentType'))
           .value;
-
-  late final _$isMovieFilterAppliedAtom =
-      Atom(name: '_HomeStore.isMovieFilterApplied', context: context);
-
-  @override
-  bool get isMovieFilterApplied {
-    _$isMovieFilterAppliedAtom.reportRead();
-    return super.isMovieFilterApplied;
-  }
-
-  @override
-  set isMovieFilterApplied(bool value) {
-    _$isMovieFilterAppliedAtom.reportWrite(value, super.isMovieFilterApplied,
-        () {
-      super.isMovieFilterApplied = value;
-    });
-  }
-
-  late final _$isTvFilterAppliedAtom =
-      Atom(name: '_HomeStore.isTvFilterApplied', context: context);
-
-  @override
-  bool get isTvFilterApplied {
-    _$isTvFilterAppliedAtom.reportRead();
-    return super.isTvFilterApplied;
-  }
-
-  @override
-  set isTvFilterApplied(bool value) {
-    _$isTvFilterAppliedAtom.reportWrite(value, super.isTvFilterApplied, () {
-      super.isTvFilterApplied = value;
-    });
-  }
 
   late final _$tabIndexAtom =
       Atom(name: '_HomeStore.tabIndex', context: context);
@@ -137,35 +118,35 @@ mixin _$HomeStore on _HomeStore, Store {
     });
   }
 
-  late final _$filterMoviesAtom =
-      Atom(name: '_HomeStore.filterMovies', context: context);
+  late final _$filterMoviesFutureAtom =
+      Atom(name: '_HomeStore.filterMoviesFuture', context: context);
 
   @override
-  ObservableList<BaseModel> get filterMovies {
-    _$filterMoviesAtom.reportRead();
-    return super.filterMovies;
+  ObservableFuture<List<BaseModel>> get filterMoviesFuture {
+    _$filterMoviesFutureAtom.reportRead();
+    return super.filterMoviesFuture;
   }
 
   @override
-  set filterMovies(ObservableList<BaseModel> value) {
-    _$filterMoviesAtom.reportWrite(value, super.filterMovies, () {
-      super.filterMovies = value;
+  set filterMoviesFuture(ObservableFuture<List<BaseModel>> value) {
+    _$filterMoviesFutureAtom.reportWrite(value, super.filterMoviesFuture, () {
+      super.filterMoviesFuture = value;
     });
   }
 
-  late final _$filterTvAtom =
-      Atom(name: '_HomeStore.filterTv', context: context);
+  late final _$filterTvFutureAtom =
+      Atom(name: '_HomeStore.filterTvFuture', context: context);
 
   @override
-  ObservableList<BaseModel> get filterTv {
-    _$filterTvAtom.reportRead();
-    return super.filterTv;
+  ObservableFuture<List<BaseModel>> get filterTvFuture {
+    _$filterTvFutureAtom.reportRead();
+    return super.filterTvFuture;
   }
 
   @override
-  set filterTv(ObservableList<BaseModel> value) {
-    _$filterTvAtom.reportWrite(value, super.filterTv, () {
-      super.filterTv = value;
+  set filterTvFuture(ObservableFuture<List<BaseModel>> value) {
+    _$filterTvFutureAtom.reportWrite(value, super.filterTvFuture, () {
+      super.filterTvFuture = value;
     });
   }
 
@@ -240,16 +221,16 @@ mixin _$HomeStore on _HomeStore, Store {
   @override
   String toString() {
     return '''
-isMovieFilterApplied: ${isMovieFilterApplied},
-isTvFilterApplied: ${isTvFilterApplied},
 tabIndex: ${tabIndex},
 filterMoviePage: ${filterMoviePage},
 filterTvPage: ${filterTvPage},
 moviesDiscover: ${moviesDiscover},
 tvDiscover: ${tvDiscover},
-filterMovies: ${filterMovies},
-filterTv: ${filterTv},
+filterMoviesFuture: ${filterMoviesFuture},
+filterTvFuture: ${filterTvFuture},
 isFilterApplied: ${isFilterApplied},
+isMovieFilterApplied: ${isMovieFilterApplied},
+isTvFilterApplied: ${isTvFilterApplied},
 currentType: ${currentType}
     ''';
   }

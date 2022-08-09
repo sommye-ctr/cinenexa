@@ -2,6 +2,7 @@ import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
+import 'package:mobx/mobx.dart';
 import 'package:watrix/components/home_favourites.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
@@ -82,20 +83,16 @@ class _HomePageState extends State<HomePage>
               ),
             ],
           ),
-          Observer(
-            builder: (_) {
-              return Expanded(
-                child: TabBarView(
-                  physics: NeverScrollableScrollPhysics(),
-                  children: [
-                    featured,
-                    _buildMovieBody(),
-                    _buildTvBody(),
-                    myList,
-                  ],
-                ),
-              );
-            },
+          Expanded(
+            child: TabBarView(
+              physics: NeverScrollableScrollPhysics(),
+              children: [
+                featured,
+                _buildMovieBody(),
+                _buildTvBody(),
+                myList,
+              ],
+            ),
           ),
         ],
       ),
@@ -103,25 +100,23 @@ class _HomePageState extends State<HomePage>
   }
 
   Widget _buildMovieBody() {
-    return AnimatedCrossFade(
-      duration: Duration(milliseconds: 600),
-      crossFadeState: homeStore.isMovieFilterApplied
-          ? CrossFadeState.showSecond
-          : CrossFadeState.showFirst,
-      firstChild: movies,
-      secondChild: _buildFilteredItems(homeStore.filterMovies),
-    );
+    return Observer(builder: (context) {
+      if (homeStore.isMovieFilterApplied) {
+        return homeStore.filterMoviesFuture.status == FutureStatus.pending
+            ? Center(child: CircularProgressIndicator())
+            : _buildFilteredItems(homeStore.filterMoviesFuture.result);
+      }
+      return movies;
+    });
   }
 
   Widget _buildTvBody() {
-    return AnimatedCrossFade(
-      duration: Duration(milliseconds: 600),
-      crossFadeState: homeStore.isTvFilterApplied
-          ? CrossFadeState.showSecond
-          : CrossFadeState.showFirst,
-      firstChild: tv,
-      secondChild: _buildFilteredItems(homeStore.filterTv),
-    );
+    if (homeStore.isTvFilterApplied) {
+      return homeStore.filterTvFuture.status == FutureStatus.pending
+          ? Center(child: CircularProgressIndicator())
+          : _buildFilteredItems(homeStore.filterTvFuture.result);
+    }
+    return tv;
   }
 
   Widget _buildFilterFab() {
@@ -155,9 +150,6 @@ class _HomePageState extends State<HomePage>
   }
 
   Widget _buildFilteredItems(List<BaseModel> list) {
-    if (list.isEmpty) {
-      return Center(child: CircularProgressIndicator());
-    }
     return LazyLoadScrollView(
       onEndOfPage: () {
         homeStore.onFilterPageEndReached();

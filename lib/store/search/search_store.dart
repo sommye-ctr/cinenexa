@@ -17,11 +17,11 @@ enum SearchType {
 }
 
 abstract class _SearchStore with Store {
-  @observable
-  String searchTerm = "";
+  static ObservableFuture<List<BaseModel>> emptyResponse =
+      ObservableFuture.value([]);
 
   @observable
-  ObservableList<BaseModel> items = <BaseModel>[].asObservable();
+  String searchTerm = "";
 
   @observable
   ObservableList<SearchHistory> history = <SearchHistory>[].asObservable();
@@ -33,18 +33,15 @@ abstract class _SearchStore with Store {
   SearchType searchType = SearchType.movie;
 
   @observable
-  bool searchDone = false;
-
-  @observable
-  bool resultsEmpty = false;
-
-  @observable
-  bool isLoading = false;
-
-  @observable
   bool searchFocused = false;
 
   Database database = Database();
+
+  @observable
+  ObservableFuture<List<BaseModel>> fetchItemsFuture = emptyResponse;
+
+  @computed
+  bool get searchDone => fetchItemsFuture != emptyResponse;
 
   _SearchStore() {
     _fetchHistory();
@@ -71,33 +68,11 @@ abstract class _SearchStore with Store {
   void searchTypeChanged(SearchType type) {
     searchType = type;
     String base = _getSearchBase();
-    resultsEmpty = false;
     _fetchItems(Requests.searchFuture(searchTerm, base));
   }
 
   @action
-  Future _fetchItems(Future future, {bool pageEndReached = false}) async {
-    if (!pageEndReached) {
-      items.clear();
-      isLoading = true;
-    }
-    List<BaseModel> list = await future;
-    items.addAll(list);
-    isLoading = false;
-    if (items.isEmpty) resultsEmpty = true;
-  }
-
-  @action
-  void backClicked() {
-    searchDone = false;
-    searchType = SearchType.movie;
-    searchTerm = "";
-    resultsEmpty = false;
-    searchFocused = false;
-  }
-
-  @action
-  Future searchClicked() async {
+  void searchClicked() {
     EntityType entityType;
     switch (searchType) {
       case SearchType.movie:
@@ -111,14 +86,35 @@ abstract class _SearchStore with Store {
         break;
     }
     page = 1;
-    searchDone = true;
-    resultsEmpty = false;
+
     _fetchItems(
       Requests.searchFuture(
         searchTerm,
         Requests.search(entityType),
       ),
     );
+    _addToHistory();
+  }
+
+  @action
+  Future _fetchItems(Future<List<BaseModel>> future,
+      {bool pageEndReached = false}) async {
+    if (!pageEndReached) {
+      fetchItemsFuture = emptyResponse;
+    }
+    fetchItemsFuture = ObservableFuture(future);
+  }
+
+  @action
+  void backClicked() {
+    searchType = SearchType.movie;
+    searchTerm = "";
+    searchFocused = false;
+    fetchItemsFuture = emptyResponse;
+  }
+
+  @action
+  Future _addToHistory() async {
     bool isAdded = await database.addSearchHistory(searchTerm);
     if (isAdded) history.add(SearchHistory()..term = searchTerm);
   }
@@ -143,9 +139,6 @@ abstract class _SearchStore with Store {
 
   @action
   void searchHistoryTermClicked(String term) {
-    searchDone = true;
-    page = 1;
-    resultsEmpty = false;
     searchTerm = term;
     searchClicked();
   }

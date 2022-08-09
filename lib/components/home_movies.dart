@@ -34,6 +34,7 @@ class _HomeMoviesState extends State<HomeMovies>
     super.build(context);
     return ListView(
       physics: BouncingScrollPhysics(),
+      shrinkWrap: true,
       children: [
         HorizontalList(
           future: Requests.titlesFuture(
