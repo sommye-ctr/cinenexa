@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -43,26 +42,40 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
 
     return Stack(
       children: [
-        ScreenBackgroundImage(
-          image: Utils.getPosterUrl(
-            detailsStore.baseModel.posterPath!,
-            posterSize: Constants.hdPosterSize,
-          ),
-          placeHolder: Utils.getPosterUrl(
-            detailsStore.baseModel.posterPath!,
-          ),
-          child: Container(),
-        ),
         _buildFading(
-          Padding(
-            padding:
-                EdgeInsets.only(top: MediaQuery.of(context).viewPadding.top),
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: CustomBackButton(),
+          ScreenBackgroundImage(
+            image: Utils.getPosterUrl(
+              detailsStore.baseModel.posterPath!,
+              posterSize: Constants.hdPosterSize,
             ),
+            placeHolder: Utils.getPosterUrl(
+              detailsStore.baseModel.posterPath!,
+            ),
+            child: Container(),
           ),
           shrinkOffset,
+        ),
+        _buildFading(
+          ScreenBackgroundImage(
+            image: Utils.getBackdropUrl(detailsStore.baseModel.backdropPath!),
+            child: Container(),
+          ),
+          shrinkOffset,
+          reverse: true,
+        ),
+        Visibility(
+          visible: progress <= 0.9,
+          child: _buildFading(
+            Padding(
+              padding:
+                  EdgeInsets.only(top: MediaQuery.of(context).viewPadding.top),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: CustomBackButton(),
+              ),
+            ),
+            shrinkOffset,
+          ),
         ),
         Padding(
           padding: EdgeInsets.symmetric(
@@ -115,15 +128,11 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
     );
   }
 
-  Widget _buildFading(Widget child, shrinkOffset) {
-    return Visibility(
-      visible: progress <= 0.9,
-      child: AnimatedOpacity(
-        duration: duration,
-        opacity: 1 - progress,
-        child: child,
-        onEnd: () {},
-      ),
+  Widget _buildFading(Widget child, shrinkOffset, {bool reverse = false}) {
+    return AnimatedOpacity(
+      duration: duration,
+      opacity: reverse ? (progress).clamp(0, 1) : (1 - progress).clamp(0, 1),
+      child: child,
     );
   }
 
@@ -175,7 +184,7 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
       padding: EdgeInsets.lerp(
         null,
         EdgeInsets.only(
-          top: MediaQuery.of(context).padding.top,
+          top: minExtent / 2,
         ),
         progress,
       ),
