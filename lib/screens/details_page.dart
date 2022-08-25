@@ -1,20 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:watrix/components/details_page_header.dart';
-import 'package:watrix/components/episode_tile.dart';
 import 'package:watrix/components/more_details.dart';
 
-import 'package:watrix/resources/strings.dart';
-import 'package:watrix/resources/style.dart';
-import 'package:watrix/screens/actor_details_page.dart';
-import 'package:watrix/screens/see_more_page.dart';
 import 'package:watrix/services/constants.dart';
 import 'package:watrix/store/details/details_store.dart';
-import 'package:watrix/widgets/horizontal_list.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '../models/network/base_model.dart';
-import '../models/network/tv_season.dart';
 import '../utils/screen_size.dart';
 
 class DetailsPage extends StatefulWidget {

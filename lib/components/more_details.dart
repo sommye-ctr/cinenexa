@@ -90,6 +90,7 @@ class _MoreDetailsState extends State<MoreDetails> {
           initialVideoId: widget.detailsStore.video!.key,
           flags: YoutubePlayerFlags(
             autoPlay: false,
+            showLiveFullscreenButton: false,
           ),
         );
         return Padding(
@@ -98,7 +99,7 @@ class _MoreDetailsState extends State<MoreDetails> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Trailer",
+                Strings.trailer,
                 style: Style.headingStyle,
               ),
               Container(
@@ -215,7 +216,7 @@ class _MoreDetailsState extends State<MoreDetails> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              "Episodes",
+              Strings.episodes,
               style: Style.headingStyle,
             ),
             Container(

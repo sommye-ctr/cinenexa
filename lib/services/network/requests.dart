@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:watrix/models/network/video.dart';
@@ -145,6 +144,7 @@ class Requests {
     int? voteAverageGreaterThan,
     List<Genre>? withGenres,
     String? certification,
+    String? withPeople,
   }) {
     List<String> queries = ['language=en-US'];
 
@@ -180,6 +180,10 @@ class Requests {
 
     if (releaseDateLessThan != null) {
       queries.add('$dateBase.lte=${releaseDateLessThan.toIso8601String()}');
+    }
+
+    if (withPeople != null) {
+      queries.add("with_people=$withPeople");
     }
 
     if (withGenres != null && withGenres.isNotEmpty) {

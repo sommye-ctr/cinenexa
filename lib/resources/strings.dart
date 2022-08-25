@@ -54,9 +54,13 @@ class Strings {
   static const String recommendedMovies = "Recommended Movies";
   static const String recommendedTv = "Recommended Tv Shows";
   static const String seasons = "Seasons";
+  static const String trailer = "Trailer";
+  static const String episodes = "Episodes";
 
 //Actor Details
   static const String knownFor = "Known For";
+  static const String birthPlace = "BirthPlace";
+  static const String birthday = "Birthday";
 
 //Profile
   static const String darkMode = "Dark Mode";

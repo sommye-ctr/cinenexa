@@ -1,19 +1,17 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:provider/provider.dart';
+import 'package:watrix/components/actor_details_page_header.dart';
+import 'package:watrix/resources/my_theme.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/screens/see_more_page.dart';
 import 'package:watrix/store/actor_details/actor_details_store.dart';
-import 'package:watrix/utils/date_time_formatter.dart';
 import 'package:watrix/utils/screen_size.dart';
-import 'package:watrix/widgets/custom_back_button.dart';
 import 'package:watrix/widgets/horizontal_list.dart';
-import 'package:watrix/widgets/screen_background_image.dart';
 
 import '../models/network/base_model.dart';
 import '../resources/style.dart';
-import '../services/network/utils.dart';
+import '../services/constants.dart';
 
 class ActorDetailsPage extends StatefulWidget {
   static const routeName = "/actorDetails";
@@ -31,6 +29,13 @@ class ActorDetailsPage extends StatefulWidget {
 
 class _ActorDetailsPageState extends State<ActorDetailsPage> {
   late ActorDetailsStore actorDetailsStore;
+  final _controller = ScrollController();
+
+  double get maxHeight => ScreenSize.getPercentOfHeight(context, 1);
+  double get minHeight =>
+      ScreenSize.getPercentOfHeight(context, 1) -
+      (ScreenSize.getPercentOfWidth(context, 0.3) /
+          Constants.posterAspectRatio); // total screen - height by the bottom
 
   @override
   void initState() {
@@ -41,182 +46,67 @@ class _ActorDetailsPageState extends State<ActorDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          ScreenBackgroundImage(
-            image: Utils.getPosterUrl(
-              actorDetailsStore.baseModel.posterPath!,
-            ),
-            heightPercent: 0.65,
-            child: Container(),
-          ),
-          Padding(
-            padding:
-                EdgeInsets.only(top: MediaQuery.of(context).viewPadding.top),
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: CustomBackButton(),
+      backgroundColor:
+          Provider.of<MyTheme>(context).darkMode ? Colors.black : Colors.white,
+      body: CustomScrollView(
+        controller: _controller,
+        physics: BouncingScrollPhysics(),
+        slivers: [
+          SliverPersistentHeader(
+            pinned: true,
+            floating: true,
+            delegate: ActorDetailsPageHeader(
+              maxHeight: maxHeight,
+              minHeight: minHeight,
+              actorDetailsStore: actorDetailsStore,
             ),
           ),
-          _buildTitle(),
-          _buildMainDetailsRow(),
-          _buildKnownFor(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTitle() {
-    return Padding(
-      padding: const EdgeInsets.only(
-        bottom: 8,
-      ),
-      child: Align(
-        alignment: Alignment(0, 0.12),
-        child: Text(
-          actorDetailsStore.baseModel.title!,
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMainDetailsRow() {
-    return Observer(
-      builder: (_) {
-        return Align(
-          alignment: Alignment(0, 0.25),
-          child: ClipRRect(
-            borderRadius:
-                BorderRadius.all(Radius.circular(Style.largeRoundEdgeRadius)),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(
-                sigmaX: 10,
-                sigmaY: 10,
-              ),
-              child: Opacity(
-                opacity: 0.5,
-                child: Container(
-                  color: Theme.of(context).cardColor,
-                  width: ScreenSize.getPercentOfWidth(context, 0.9),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildMainDetailColumn(
-                        Text(
-                          _getPlaceOfBirth(),
-                          style: TextStyle(
-                            fontSize: 20,
+          SliverToBoxAdapter(
+            child: Observer(builder: (_) {
+              if (actorDetailsStore.credits.isNotEmpty) {
+                return Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: ScreenSize.getPercentOfWidth(context, 0.02),
+                    ),
+                    child: HorizontalList.fromInititalValues(
+                      items: actorDetailsStore.credits,
+                      heading: Strings.knownFor,
+                      itemWidthPercent: 0.3,
+                      showTitle: true,
+                      limitItems: 10,
+                      onClick: (baseModel) =>
+                          actorDetailsStore.onItemClicked(context, baseModel),
+                      onRightTrailClicked: (list) {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                Style.largeRoundEdgeRadius),
                           ),
-                        ),
-                        "Birthplace",
-                      ),
-                      _buildMainDetailColumn(
-                        Text(
-                          actorDetailsStore.baseModel.voteAverage!
-                              .toStringAsFixed(1),
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                        ),
-                        "Popularity",
-                      ),
-                      _buildMainDetailColumn(
-                        Text(
-                          _getBirthday(),
-                          style: TextStyle(
-                            fontSize: 20,
-                          ),
-                        ),
-                        "Birthday",
-                      ),
-                    ],
+                          builder: (context) {
+                            return FractionallySizedBox(
+                              heightFactor: 0.75,
+                              child: SeeMorePage(
+                                initialItems: list,
+                                heading: Strings.knownFor,
+                                isLazyLoad: false,
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
                   ),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildMainDetailColumn(Widget top, String text) {
-    return Container(
-      height: ScreenSize.getPercentOfHeight(context, 0.08),
-      padding: EdgeInsets.only(top: 4),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          top,
-          Text(text),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildKnownFor() {
-    return Observer(builder: (_) {
-      if (actorDetailsStore.credits.isNotEmpty) {
-        return Align(
-          alignment: Alignment.bottomCenter,
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: ScreenSize.getPercentOfWidth(context, 0.02),
-            ),
-            child: HorizontalList.fromInititalValues(
-              items: actorDetailsStore.credits,
-              heading: Strings.knownFor,
-              itemWidthPercent: 0.3,
-              showTitle: true,
-              limitItems: 10,
-              onClick: (baseModel) =>
-                  actorDetailsStore.onItemClicked(context, baseModel),
-              onRightTrailClicked: (list) {
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(Style.largeRoundEdgeRadius),
-                  ),
-                  builder: (context) {
-                    return FractionallySizedBox(
-                      heightFactor: 0.75,
-                      child: SeeMorePage(
-                        initialItems: list,
-                        heading: Strings.knownFor,
-                        isLazyLoad: false,
-                      ),
-                    );
-                  },
                 );
-              },
-            ),
+              }
+              return Container();
+            }),
           ),
-        );
-      }
-      return Container();
-    });
-  }
-
-  String _getPlaceOfBirth() {
-    if (actorDetailsStore.actor == null) {
-      return "";
-    }
-    String string = actorDetailsStore.actor!.placeOfBirth!;
-    return string.substring(string.lastIndexOf(',') + 2);
-  }
-
-  String _getBirthday() {
-    return (actorDetailsStore.actor == null
-        ? ""
-        : DateTimeFormatter.getMonthYearFromString(
-            actorDetailsStore.actor!.birthday!));
+        ],
+      ),
+    );
   }
 }

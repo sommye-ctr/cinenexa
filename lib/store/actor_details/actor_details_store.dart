@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:mobx/mobx.dart';
+import 'package:watrix/models/local/enums/sort_movies.dart';
+import 'package:watrix/models/network/enums/entity_type.dart';
 import 'package:watrix/services/network/requests.dart';
 
 import '../../models/network/base_model.dart';
@@ -23,6 +26,12 @@ abstract class _ActorDetailsStore with Store {
   @observable
   ObservableList<BaseModel> credits = <BaseModel>[].asObservable();
 
+  @observable
+  ObservableList<BaseModel> topMovies = <BaseModel>[].asObservable();
+
+  @observable
+  ObservableList<BaseModel> topTv = <BaseModel>[].asObservable();
+
   _ActorDetailsStore({
     required this.baseModel,
   }) {
@@ -31,9 +40,20 @@ abstract class _ActorDetailsStore with Store {
 
   @action
   Future _fetchActorDetails() async {
-    Map obj = await Requests.getPeopleDetails(id: baseModel.id!);
-    actor = obj['person'];
-    credits.addAll(obj['credits']);
+    var value = await Future.wait([
+      Requests.getPeopleDetails(id: baseModel.id!),
+      Requests.discoverFuture(
+        query: Requests.discover(
+          type: EntityType.movie,
+          withPeople: baseModel.id!.toString(),
+          sortMoviesBy: SortMoviesBy.voteAverage,
+        ),
+        type: EntityType.movie,
+      ),
+    ]);
+    actor = (value[0] as Map)['person'];
+    credits.addAll((value[0] as Map)['credits']);
+    topMovies.addAll(value[1] as List<BaseModel>);
   }
 
   @action
