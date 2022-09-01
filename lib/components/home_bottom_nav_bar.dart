@@ -4,18 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 
-class BottomNavBar extends StatefulWidget {
+class HomeBottomNavBar extends StatefulWidget {
   static const double bottomNavHeight = 56;
   static const double bottomNavPadding = 8;
 
   final Function(int index) onChanged;
-  const BottomNavBar(this.onChanged, {Key? key}) : super(key: key);
+  const HomeBottomNavBar(this.onChanged, {Key? key}) : super(key: key);
 
   @override
-  State<BottomNavBar> createState() => _BottomNavBarState();
+  State<HomeBottomNavBar> createState() => _HomeBottomNavBarState();
 }
 
-class _BottomNavBarState extends State<BottomNavBar> {
+class _HomeBottomNavBarState extends State<HomeBottomNavBar> {
   int _pageIndex = 0;
 
   void onBottomNavChanged(int index) {

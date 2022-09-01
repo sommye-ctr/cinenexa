@@ -13,14 +13,14 @@ import '../utils/screen_size.dart';
 import '../widgets/custom_back_button.dart';
 import '../widgets/screen_background_image.dart';
 
-class ActorDetailsPageHeader extends SliverPersistentHeaderDelegate {
+class ActorDetailsHeader extends SliverPersistentHeaderDelegate {
   final double maxHeight, minHeight;
   final ActorDetailsStore actorDetailsStore;
 
   late double progress;
   final Duration duration = Duration(milliseconds: 200);
 
-  ActorDetailsPageHeader({
+  ActorDetailsHeader({
     required this.maxHeight,
     required this.minHeight,
     required this.actorDetailsStore,

@@ -57,6 +57,38 @@ mixin _$ActorDetailsStore on _ActorDetailsStore, Store {
     });
   }
 
+  late final _$topMoviesAtom =
+      Atom(name: '_ActorDetailsStore.topMovies', context: context);
+
+  @override
+  ObservableList<BaseModel> get topMovies {
+    _$topMoviesAtom.reportRead();
+    return super.topMovies;
+  }
+
+  @override
+  set topMovies(ObservableList<BaseModel> value) {
+    _$topMoviesAtom.reportWrite(value, super.topMovies, () {
+      super.topMovies = value;
+    });
+  }
+
+  late final _$topTvAtom =
+      Atom(name: '_ActorDetailsStore.topTv', context: context);
+
+  @override
+  ObservableList<BaseModel> get topTv {
+    _$topTvAtom.reportRead();
+    return super.topTv;
+  }
+
+  @override
+  set topTv(ObservableList<BaseModel> value) {
+    _$topTvAtom.reportWrite(value, super.topTv, () {
+      super.topTv = value;
+    });
+  }
+
   late final _$_fetchActorDetailsAsyncAction =
       AsyncAction('_ActorDetailsStore._fetchActorDetails', context: context);
 
@@ -85,7 +117,9 @@ mixin _$ActorDetailsStore on _ActorDetailsStore, Store {
     return '''
 baseModel: ${baseModel},
 actor: ${actor},
-credits: ${credits}
+credits: ${credits},
+topMovies: ${topMovies},
+topTv: ${topTv}
     ''';
   }
 }

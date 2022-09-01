@@ -1,6 +1,7 @@
 import 'package:mobx/mobx.dart';
 import 'package:watrix/models/local/search_history.dart';
 import 'package:watrix/services/local/database.dart';
+import 'package:watrix/services/network/repository.dart';
 
 import '../../models/network/base_model.dart';
 import '../../models/network/enums/entity_type.dart';
@@ -43,6 +44,18 @@ abstract class _SearchStore with Store {
   @computed
   bool get searchDone => fetchItemsFuture != emptyResponse;
 
+  @computed
+  EntityType get entityType {
+    switch (searchType) {
+      case SearchType.movie:
+        return EntityType.movie;
+      case SearchType.tv:
+        return EntityType.tv;
+      case SearchType.people:
+        return EntityType.people;
+    }
+  }
+
   _SearchStore() {
     _fetchHistory();
   }
@@ -67,31 +80,15 @@ abstract class _SearchStore with Store {
   @action
   void searchTypeChanged(SearchType type) {
     searchType = type;
-    String base = _getSearchBase();
-    _fetchItems(Requests.searchFuture(searchTerm, base));
+    _fetchItems(Repository.search(searchTerm, entityType));
   }
 
   @action
   void searchClicked() {
-    EntityType entityType;
-    switch (searchType) {
-      case SearchType.movie:
-        entityType = EntityType.movie;
-        break;
-      case SearchType.tv:
-        entityType = EntityType.tv;
-        break;
-      case SearchType.people:
-        entityType = EntityType.people;
-        break;
-    }
     page = 1;
 
     _fetchItems(
-      Requests.searchFuture(
-        searchTerm,
-        Requests.search(entityType),
-      ),
+      Repository.search(searchTerm, entityType),
     );
     _addToHistory();
   }
@@ -123,11 +120,7 @@ abstract class _SearchStore with Store {
   void onEndOfPageReached() {
     page++;
     _fetchItems(
-      Requests.searchFuture(
-        searchTerm,
-        _getSearchBase(),
-        page: page,
-      ),
+      Repository.search(searchTerm, entityType, page: page),
       pageEndReached: true,
     );
   }
@@ -146,16 +139,5 @@ abstract class _SearchStore with Store {
   @action
   void searchBoxFocused() {
     searchFocused = true;
-  }
-
-  String _getSearchBase() {
-    switch (searchType) {
-      case SearchType.movie:
-        return Requests.search(EntityType.movie);
-      case SearchType.tv:
-        return Requests.search(EntityType.tv);
-      case SearchType.people:
-        return Requests.search(EntityType.people);
-    }
   }
 }

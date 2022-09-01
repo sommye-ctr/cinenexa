@@ -10,7 +10,7 @@ import 'package:watrix/screens/filter_page.dart';
 import 'package:watrix/screens/see_more_page.dart';
 import 'package:watrix/models/network/enums/entity_type.dart';
 import 'package:watrix/utils/screen_size.dart';
-import 'package:watrix/components/bottom_nav_bar.dart';
+import 'package:watrix/components/home_bottom_nav_bar.dart';
 import 'package:watrix/components/home_featured.dart';
 import 'package:watrix/components/home_movies.dart';
 import 'package:watrix/components/home_tv.dart';
@@ -124,10 +124,10 @@ class _HomePageState extends State<HomePage>
       builder: (context) {
         if (homeStore.tabIndex == 1 || homeStore.tabIndex == 2) {
           return Positioned(
-            bottom: BottomNavBar.bottomNavHeight +
-                BottomNavBar.bottomNavPadding +
+            bottom: HomeBottomNavBar.bottomNavHeight +
+                HomeBottomNavBar.bottomNavPadding +
                 4,
-            right: BottomNavBar.bottomNavPadding,
+            right: HomeBottomNavBar.bottomNavPadding,
             child: FloatingActionButton(
               child: Badge(
                 alignment: Alignment.topRight,

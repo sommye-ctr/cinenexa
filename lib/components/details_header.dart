@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:provider/provider.dart';
-import 'package:watrix/components/vote_indicator.dart';
+import 'package:watrix/widgets/vote_indicator.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/services/constants.dart';
 import 'package:watrix/store/details/details_store.dart';
@@ -17,7 +17,7 @@ import '../utils/date_time_formatter.dart';
 import '../widgets/rounded_button.dart';
 import '../widgets/screen_background_image.dart';
 
-class DetailsPageHeader extends SliverPersistentHeaderDelegate {
+class DetailsHeader extends SliverPersistentHeaderDelegate {
   final double maxHeight, minHeight;
   final DetailsStore detailsStore;
   final ScrollController scrollController;
@@ -25,7 +25,7 @@ class DetailsPageHeader extends SliverPersistentHeaderDelegate {
   late double progress;
   late Duration duration;
 
-  DetailsPageHeader({
+  DetailsHeader({
     required this.maxHeight,
     required this.minHeight,
     required this.detailsStore,

@@ -12,7 +12,7 @@ import 'package:watrix/screens/details_page.dart';
 import 'package:watrix/screens/home_page.dart';
 import 'package:watrix/screens/profile_page.dart';
 import 'package:watrix/screens/search_page.dart';
-import 'package:watrix/components/bottom_nav_bar.dart';
+import 'package:watrix/components/home_bottom_nav_bar.dart';
 import 'package:watrix/store/favorites/favorites_store.dart';
 
 import 'models/network/base_model.dart';
@@ -85,7 +85,7 @@ class _MyAppState extends State<MyApp> {
                 ),
                 Align(
                   alignment: Alignment.bottomCenter,
-                  child: BottomNavBar((index) {
+                  child: HomeBottomNavBar((index) {
                     setState(() {
                       _pageIndex = index;
                     });

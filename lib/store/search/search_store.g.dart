@@ -16,6 +16,13 @@ mixin _$SearchStore on _SearchStore, Store {
       (_$searchDoneComputed ??= Computed<bool>(() => super.searchDone,
               name: '_SearchStore.searchDone'))
           .value;
+  Computed<EntityType>? _$entityTypeComputed;
+
+  @override
+  EntityType get entityType =>
+      (_$entityTypeComputed ??= Computed<EntityType>(() => super.entityType,
+              name: '_SearchStore.entityType'))
+          .value;
 
   late final _$searchTermAtom =
       Atom(name: '_SearchStore.searchTerm', context: context);
@@ -249,7 +256,8 @@ page: ${page},
 searchType: ${searchType},
 searchFocused: ${searchFocused},
 fetchItemsFuture: ${fetchItemsFuture},
-searchDone: ${searchDone}
+searchDone: ${searchDone},
+entityType: ${entityType}
     ''';
   }
 }

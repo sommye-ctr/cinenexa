@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:watrix/components/details_page_header.dart';
-import 'package:watrix/components/more_details.dart';
+import 'package:watrix/components/details_header.dart';
+import 'package:watrix/components/details_more_details.dart';
 
 import 'package:watrix/services/constants.dart';
 import 'package:watrix/store/details/details_store.dart';
@@ -53,7 +53,7 @@ class _DetailsPageState extends State<DetailsPage> {
             SliverPersistentHeader(
               pinned: true,
               floating: true,
-              delegate: DetailsPageHeader(
+              delegate: DetailsHeader(
                 maxHeight: maxHeight,
                 minHeight: minHeight,
                 detailsStore: detailsStore,
@@ -61,7 +61,7 @@ class _DetailsPageState extends State<DetailsPage> {
               ),
             ),
             SliverToBoxAdapter(
-              child: MoreDetails(
+              child: DetailsMoreDetails(
                 detailsStore: detailsStore,
                 height: ScreenSize.getPercentOfHeight(context, 1) - minHeight,
               ),

@@ -1,5 +1,8 @@
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:video_player/video_player.dart';
+import 'package:watrix/services/constants.dart';
 import 'package:watrix/store/details/details_store.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
@@ -12,23 +15,35 @@ import '../screens/details_page.dart';
 import '../screens/see_more_page.dart';
 import '../utils/screen_size.dart';
 import '../widgets/horizontal_list.dart';
-import 'episode_tile.dart';
+import 'details_episode_tile.dart';
 
-class MoreDetails extends StatefulWidget {
+class DetailsMoreDetails extends StatefulWidget {
   final DetailsStore detailsStore;
   final double height;
-  const MoreDetails({
+  const DetailsMoreDetails({
     Key? key,
     required this.detailsStore,
     required this.height,
   }) : super(key: key);
 
   @override
-  State<MoreDetails> createState() => _MoreDetailsState();
+  State<DetailsMoreDetails> createState() => _DetailsMoreDetailsState();
 }
 
-class _MoreDetailsState extends State<MoreDetails> {
+class _DetailsMoreDetailsState extends State<DetailsMoreDetails> {
   YoutubePlayerController? videoController;
+  late ChewieController chewieController;
+  final VideoPlayerController controller = VideoPlayerController.network(
+      "https://thumbs2.redgifs.com/OnlyDrearyJavalina-mobile.mp4#t=0");
+  @override
+  void initState() {
+    chewieController = ChewieController(
+      videoPlayerController: controller,
+      aspectRatio: 16 / 9,
+      autoInitialize: true,
+    );
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +78,8 @@ class _MoreDetailsState extends State<MoreDetails> {
           Style.getVerticalSpacing(context: context),
           _buildTrailer(),
           Style.getVerticalSpacing(context: context),
+          _buildVideo(),
+          Style.getVerticalSpacing(context: context),
           Observer(builder: (_) => _buildSeasonsHeading()),
           Style.getVerticalSpacing(context: context),
           Observer(
@@ -79,6 +96,20 @@ class _MoreDetailsState extends State<MoreDetails> {
           ),
           Style.getVerticalSpacing(context: context),
         ],
+      ),
+    );
+  }
+
+  Widget _buildVideo() {
+    return Container(
+      height: ScreenSize.getPercentOfWidth(context, 1) /
+          Constants.backdropAspectRatio,
+      margin: EdgeInsets.all(8),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
+        child: Chewie(
+          controller: chewieController,
+        ),
       ),
     );
   }
@@ -257,6 +288,8 @@ class _MoreDetailsState extends State<MoreDetails> {
 
   void disposeVideoController() {
     videoController?.dispose();
+    controller.dispose();
+    chewieController.dispose();
   }
 
   @override

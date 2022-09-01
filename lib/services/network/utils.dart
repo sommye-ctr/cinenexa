@@ -78,7 +78,7 @@ class Utils {
     }
   }
 
-  static List<BaseModel> convertToListString(var parsedList) {
+  static List<BaseModel> convertToBaseModelList(var parsedList) {
     return (parsedList as List).map((e) => BaseModel.fromMap(e)).toList();
   }
 
@@ -92,7 +92,7 @@ class Utils {
         .first;
   }
 
-  static List<BaseModel> convertToListStringWithSkipLimit(
+  static List<BaseModel> convertToBaseModelListWithSkipLimit(
       var parsedList, int limit, bool shuffle) {
     List<BaseModel> list = (parsedList as List)
         .sublist(

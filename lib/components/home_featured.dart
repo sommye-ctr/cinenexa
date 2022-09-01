@@ -6,7 +6,6 @@ import '../models/network/base_model.dart';
 import '../models/network/enums/duration_type.dart';
 import '../models/network/enums/entity_type.dart';
 import '../services/network/requests.dart';
-import '../utils/screen_size.dart';
 import '../widgets/horizontal_list.dart';
 import '../widgets/image_carousel.dart';
 

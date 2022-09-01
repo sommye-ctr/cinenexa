@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:provider/provider.dart';
-import 'package:watrix/components/actor_details_page_header.dart';
+import 'package:watrix/components/actor_details_header.dart';
 import 'package:watrix/resources/my_theme.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/screens/see_more_page.dart';
@@ -55,7 +55,7 @@ class _ActorDetailsPageState extends State<ActorDetailsPage> {
           SliverPersistentHeader(
             pinned: true,
             floating: true,
-            delegate: ActorDetailsPageHeader(
+            delegate: ActorDetailsHeader(
               maxHeight: maxHeight,
               minHeight: minHeight,
               actorDetailsStore: actorDetailsStore,

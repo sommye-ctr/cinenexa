@@ -29,7 +29,7 @@ class Requests {
     } else {
       throw FlutterError("Invalid media type");
     }
-    return "${Constants.baseUrl}${stringType}${Constants.popular}?api_key=${Constants.apiKey}&language=en-US";
+    return "${stringType}${Constants.popular}";
   }
 
   static String topRated(EntityType type) {
@@ -41,7 +41,7 @@ class Requests {
     } else {
       throw FlutterError("Invalid media type");
     }
-    return "${Constants.baseUrl}${stringType}${Constants.topRated}?api_key=${Constants.apiKey}&language=en-US";
+    return "${stringType}${Constants.topRated}";
   }
 
   static String trending(EntityType type, DurationType durationType) {
@@ -66,25 +66,10 @@ class Requests {
       throw FlutterError("Invalid media type");
     }
 
-    return "${Constants.baseUrl}${Constants.trending}${stringType}${duration}?api_key=${Constants.apiKey}";
+    return "${Constants.trending}${stringType}${duration}";
   }
 
-  static String nowPlayingMovies({
-    int page = 1,
-  }) {
-    return "${Constants.baseUrl}${Constants.movie}${Constants.nowPlaying}?api_key=${Constants.apiKey}&language=en-US&page=$page";
-  }
-
-  static String airingTodayTv({
-    int page = 1,
-  }) {
-    return "${Constants.baseUrl}${Constants.tv}${Constants.airingToday}?api_key=${Constants.apiKey}&language=en-US&page=$page";
-  }
-
-  static String genres(
-    EntityType type, {
-    int page = 1,
-  }) {
+  static String genres(EntityType type) {
     String stringType;
     if (type == EntityType.movie) {
       stringType = Constants.movie;
@@ -94,13 +79,10 @@ class Requests {
       throw FlutterError("Invalid media type");
     }
 
-    return "${Constants.baseUrl}${Constants.genre}${stringType}/list?api_key=${Constants.apiKey}&language=en-US";
+    return "${Constants.genre}${stringType}/list";
   }
 
-  static String certifications(
-    EntityType type, {
-    int page = 1,
-  }) {
+  static String certifications(EntityType type) {
     String stringType;
     if (type == EntityType.movie) {
       stringType = Constants.movie;
@@ -110,27 +92,7 @@ class Requests {
       throw FlutterError("Invalid media type");
     }
 
-    return "${Constants.baseUrl}${Constants.certification}${stringType}/list?api_key=${Constants.apiKey}";
-  }
-
-  static String search(
-    EntityType type, {
-    int page = 1,
-  }) {
-    String stringType;
-    if (type == EntityType.movie) {
-      stringType = Constants.movie;
-    } else if (type == EntityType.tv) {
-      stringType = Constants.tv;
-    } else if (type == EntityType.people) {
-      stringType = Constants.person;
-    } else if (type == EntityType.all) {
-      stringType = Constants.multi;
-    } else {
-      throw FlutterError("Invalid media type");
-    }
-
-    return "${Constants.baseUrl}${Constants.search}${stringType}?api_key=${Constants.apiKey}&language=en-US";
+    return "${Constants.certification}${stringType}/list";
   }
 
   static String discover({
@@ -204,7 +166,7 @@ class Requests {
     final response = await http.get(Uri.parse(req));
     var parsedList = json.decode(response.body)['results'];
 
-    return Utils.convertToListStringWithSkipLimit(
+    return Utils.convertToBaseModelListWithSkipLimit(
       parsedList,
       limit ?? Constants.homeLimit,
       shuffle ?? false,
@@ -229,7 +191,7 @@ class Requests {
     final response =
         await http.get(Uri.parse(base + "&query=$encoded&page=$page"));
     var parsedList = json.decode(response.body)['results'];
-    return Utils.convertToListString(parsedList);
+    return Utils.convertToBaseModelList(parsedList);
   }
 
   static Future<List<Certification>> certificationsFuture(String query) async {
@@ -251,7 +213,7 @@ class Requests {
 
     final response = await http.get(Uri.parse(request));
     var parsedList = json.decode(response.body)['results'];
-    return Utils.convertToListString(parsedList);
+    return Utils.convertToBaseModelList(parsedList);
   }
 
   static Future<Map> getMovieDetails({required int id}) async {
@@ -263,9 +225,9 @@ class Requests {
     Video? vid = Utils.convertToVideo(map['videos']['results'] as List);
     return {
       "movie": Movie.fromMap(map),
-      "credits": Utils.convertToListString(map['credits']['cast']),
+      "credits": Utils.convertToBaseModelList(map['credits']['cast']),
       "recommended":
-          Utils.convertToListString(map['recommendations']['results']),
+          Utils.convertToBaseModelList(map['recommendations']['results']),
       "video": vid,
     };
   }
@@ -279,9 +241,9 @@ class Requests {
     Video? vid = Utils.convertToVideo(map['videos']['results'] as List);
     return {
       "tv": Tv.fromMap(map),
-      "credits": Utils.convertToListString(map['credits']['cast']),
+      "credits": Utils.convertToBaseModelList(map['credits']['cast']),
       "recommended":
-          Utils.convertToListString(map['recommendations']['results']),
+          Utils.convertToBaseModelList(map['recommendations']['results']),
       "video": vid,
     };
   }
@@ -295,7 +257,7 @@ class Requests {
     var map = json.decode(response.body);
     return {
       "person": People.fromMap(map),
-      "credits": Utils.convertToListString(map['combined_credits']['cast'])
+      "credits": Utils.convertToBaseModelList(map['combined_credits']['cast'])
     };
   }
 
