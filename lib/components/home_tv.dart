@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:watrix/services/network/repository.dart';
 
 import '../models/network/base_model.dart';
 import '../resources/strings.dart';
@@ -35,7 +36,7 @@ class _HomeTvState extends State<HomeTv> with AutomaticKeepAliveClientMixin {
       physics: BouncingScrollPhysics(),
       children: [
         HorizontalList(
-          future: Requests.titlesFuture(
+          future: Repository.getTitles(
               Requests.trending(EntityType.tv, DurationType.day)),
           heading: Strings.trendingToday,
           onClick: (data) => widget.onItemClicked(data),
@@ -53,7 +54,7 @@ class _HomeTvState extends State<HomeTv> with AutomaticKeepAliveClientMixin {
         ),
         Style.getVerticalSpacing(context: context),
         HorizontalList(
-          future: Requests.titlesFuture(Requests.topRated(EntityType.tv)),
+          future: Repository.getTitles(Requests.topRated(EntityType.tv)),
           heading: Strings.topRated,
           onClick: (data) => widget.onItemClicked(data),
           itemWidthPercent: 0.3,
@@ -70,7 +71,7 @@ class _HomeTvState extends State<HomeTv> with AutomaticKeepAliveClientMixin {
         ),
         Style.getVerticalSpacing(context: context),
         HorizontalList(
-          future: Requests.titlesFuture(Requests.popular(EntityType.tv)),
+          future: Repository.getTitles(Requests.popular(EntityType.tv)),
           heading: Strings.popular,
           onClick: (data) => widget.onItemClicked(data),
           itemWidthPercent: 0.3,
@@ -87,7 +88,7 @@ class _HomeTvState extends State<HomeTv> with AutomaticKeepAliveClientMixin {
         ),
         Style.getVerticalSpacing(context: context),
         HorizontalList(
-          future: Requests.titlesFuture(
+          future: Repository.getTitles(
               Requests.trending(EntityType.tv, DurationType.week)),
           heading: Strings.trendingThisWeek,
           onClick: (data) => widget.onItemClicked(data),

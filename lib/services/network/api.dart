@@ -36,6 +36,7 @@ class Api {
         throw NotFoundException(response.body);
       case 500:
         throw FetchException(response.body);
+
       case 200:
         var responseJson = json.decode(response.body);
         return responseJson;

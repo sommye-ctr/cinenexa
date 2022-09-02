@@ -3,6 +3,7 @@ import 'package:http/http.dart';
 import 'package:mobx/mobx.dart';
 import 'package:watrix/models/local/enums/sort_movies.dart';
 import 'package:watrix/models/network/enums/entity_type.dart';
+import 'package:watrix/services/network/repository.dart';
 import 'package:watrix/services/network/requests.dart';
 
 import '../../models/network/base_model.dart';
@@ -41,8 +42,8 @@ abstract class _ActorDetailsStore with Store {
   @action
   Future _fetchActorDetails() async {
     var value = await Future.wait([
-      Requests.getPeopleDetails(id: baseModel.id!),
-      Requests.discoverFuture(
+      Repository.getPeopleDetails(id: baseModel.id!),
+      Repository.discover(
         query: Requests.discover(
           type: EntityType.movie,
           withPeople: baseModel.id!.toString(),

@@ -1,11 +1,8 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:watrix/services/network/api.dart';
 import 'package:watrix/services/network/utils.dart';
 
 import '../../models/network/base_model.dart';
-import 'package:http/http.dart' as http;
 
 import '../../models/network/certification.dart';
 import '../../models/network/enums/entity_type.dart';
@@ -89,7 +86,7 @@ class Repository {
         type == EntityType.movie ? Constants.movie : Constants.tv;
     String request = "${Constants.discover}${stringType}?$query&page=$page";
 
-    final response = await api.getRequest(request);
+    final response = await api.getRequest(request, haveQueries: true);
     var parsedList = response['results'];
     return Utils.convertToBaseModelList(parsedList);
   }

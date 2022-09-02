@@ -5,7 +5,6 @@ import 'package:watrix/services/network/repository.dart';
 
 import '../../models/network/base_model.dart';
 import '../../models/network/enums/entity_type.dart';
-import '../../services/network/requests.dart';
 
 part 'search_store.g.dart';
 
@@ -40,6 +39,9 @@ abstract class _SearchStore with Store {
 
   @observable
   ObservableFuture<List<BaseModel>> fetchItemsFuture = emptyResponse;
+
+  @computed
+  ObservableList<BaseModel> results = <BaseModel>[].asObservable();
 
   @computed
   bool get searchDone => fetchItemsFuture != emptyResponse;
@@ -97,9 +99,14 @@ abstract class _SearchStore with Store {
   Future _fetchItems(Future<List<BaseModel>> future,
       {bool pageEndReached = false}) async {
     if (!pageEndReached) {
-      fetchItemsFuture = emptyResponse;
+      results.clear();
     }
     fetchItemsFuture = ObservableFuture(future);
+    fetchItemsFuture.whenComplete(() {
+      if (fetchItemsFuture.status == FutureStatus.fulfilled) {
+        results.addAll(fetchItemsFuture.value!);
+      }
+    });
   }
 
   @action

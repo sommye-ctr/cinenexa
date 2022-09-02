@@ -5,6 +5,7 @@ import '../../models/network/discover.dart';
 import '../../screens/actor_details_page.dart';
 import '../../screens/details_page.dart';
 import '../../models/network/enums/entity_type.dart';
+import '../../services/network/repository.dart';
 import '../../services/network/requests.dart';
 
 part 'home_store.g.dart';
@@ -37,9 +38,14 @@ abstract class _HomeStore with Store {
   Discover? tvDiscover;
 
   @observable
-  ObservableFuture<List<BaseModel>> filterMoviesFuture = emptyResponse;
+  ObservableFuture<List<BaseModel>> currentFilterMovieFuture = emptyResponse;
   @observable
-  ObservableFuture<List<BaseModel>> filterTvFuture = emptyResponse;
+  ObservableFuture<List<BaseModel>> currentFilterTvFuture = emptyResponse;
+
+  @observable
+  ObservableList<BaseModel> filterMovies = <BaseModel>[].asObservable();
+  @observable
+  ObservableList<BaseModel> filterTv = <BaseModel>[].asObservable();
 
   @computed
   bool get isFilterApplied =>
@@ -47,9 +53,9 @@ abstract class _HomeStore with Store {
       (tabIndex == defaultTvIndex && isTvFilterApplied);
 
   @computed
-  bool get isMovieFilterApplied => filterMoviesFuture != emptyResponse;
+  bool get isMovieFilterApplied => currentFilterMovieFuture != emptyResponse;
   @computed
-  bool get isTvFilterApplied => filterTvFuture != emptyResponse;
+  bool get isTvFilterApplied => currentFilterTvFuture != emptyResponse;
 
   @computed
   EntityType? get currentType {
@@ -93,11 +99,11 @@ abstract class _HomeStore with Store {
     if (tabIndex == defaultMovieIndex) {
       filterMoviePage = 1;
       moviesDiscover = null;
-      filterMoviesFuture = emptyResponse;
+      currentFilterMovieFuture = emptyResponse;
     } else if (tabIndex == 2) {
       filterTvPage = 1;
       tvDiscover = null;
-      filterTvFuture = emptyResponse;
+      currentFilterTvFuture = emptyResponse;
     }
   }
 
@@ -128,26 +134,58 @@ abstract class _HomeStore with Store {
   }
 
   @action
-  Future _fetchFilteredItems(String value,
-      {bool pageEndReached = false}) async {
+  Future _fetchFilteredItems(
+    String value, {
+    bool pageEndReached = false,
+  }) async {
     if (tabIndex == defaultMovieIndex) {
-      if (!pageEndReached) filterMoviesFuture = emptyResponse;
-      filterMoviesFuture = ObservableFuture(
-        Requests.discoverFuture(
+      currentFilterMovieFuture = ObservableFuture(
+        Repository.discover(
           type: EntityType.movie,
           query: value,
           page: filterMoviePage,
         ),
       );
+      currentFilterMovieFuture.then((value) {
+        _onFilterProcessed(pageEndReached);
+      });
     } else if (tabIndex == defaultTvIndex) {
-      if (!pageEndReached) filterTvFuture = emptyResponse;
-      filterTvFuture = ObservableFuture(
-        Requests.discoverFuture(
+      currentFilterTvFuture = ObservableFuture(
+        Repository.discover(
           type: EntityType.tv,
           query: value,
           page: filterTvPage,
         ),
       );
+      currentFilterTvFuture.then((value) {
+        _onFilterProcessed(pageEndReached);
+      });
+    }
+  }
+
+  @action
+  void _onFilterProcessed(bool endPage) {
+    if (endPage) {
+      if (tabIndex == defaultMovieIndex &&
+          currentFilterMovieFuture.status == FutureStatus.fulfilled) {
+        filterMovies.addAll(currentFilterMovieFuture.value!);
+        return;
+      } else if (tabIndex == defaultTvIndex &&
+          currentFilterTvFuture.status == FutureStatus.fulfilled) {
+        filterTv.addAll(currentFilterTvFuture.value!.asObservable());
+        return;
+      }
+    }
+    if (tabIndex == defaultMovieIndex &&
+        currentFilterMovieFuture.status == FutureStatus.fulfilled) {
+      filterMovies.clear();
+      filterMovies.addAll(currentFilterMovieFuture.value!);
+      return;
+    } else if (tabIndex == defaultTvIndex &&
+        currentFilterTvFuture.status == FutureStatus.fulfilled) {
+      filterTv.clear();
+      filterTv.addAll(currentFilterTvFuture.value!);
+      return;
     }
   }
 

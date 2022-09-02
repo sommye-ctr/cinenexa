@@ -102,21 +102,27 @@ class _HomePageState extends State<HomePage>
   Widget _buildMovieBody() {
     return Observer(builder: (context) {
       if (homeStore.isMovieFilterApplied) {
-        return homeStore.filterMoviesFuture.status == FutureStatus.pending
+        return (homeStore.currentFilterMovieFuture.status ==
+                    FutureStatus.pending &&
+                homeStore.filterMovies.isEmpty)
             ? Center(child: CircularProgressIndicator())
-            : _buildFilteredItems(homeStore.filterMoviesFuture.result);
+            : _buildFilteredItems(homeStore.filterMovies);
       }
       return movies;
     });
   }
 
   Widget _buildTvBody() {
-    if (homeStore.isTvFilterApplied) {
-      return homeStore.filterTvFuture.status == FutureStatus.pending
-          ? Center(child: CircularProgressIndicator())
-          : _buildFilteredItems(homeStore.filterTvFuture.result);
-    }
-    return tv;
+    return Observer(builder: (context) {
+      if (homeStore.isTvFilterApplied) {
+        return (homeStore.currentFilterTvFuture.status ==
+                    FutureStatus.pending &&
+                homeStore.filterTv.isEmpty)
+            ? Center(child: CircularProgressIndicator())
+            : _buildFilteredItems(homeStore.filterTv);
+      }
+      return tv;
+    });
   }
 
   Widget _buildFilterFab() {

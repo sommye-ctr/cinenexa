@@ -118,35 +118,69 @@ mixin _$HomeStore on _HomeStore, Store {
     });
   }
 
-  late final _$filterMoviesFutureAtom =
-      Atom(name: '_HomeStore.filterMoviesFuture', context: context);
+  late final _$currentFilterMovieFutureAtom =
+      Atom(name: '_HomeStore.currentFilterMovieFuture', context: context);
 
   @override
-  ObservableFuture<List<BaseModel>> get filterMoviesFuture {
-    _$filterMoviesFutureAtom.reportRead();
-    return super.filterMoviesFuture;
+  ObservableFuture<List<BaseModel>> get currentFilterMovieFuture {
+    _$currentFilterMovieFutureAtom.reportRead();
+    return super.currentFilterMovieFuture;
   }
 
   @override
-  set filterMoviesFuture(ObservableFuture<List<BaseModel>> value) {
-    _$filterMoviesFutureAtom.reportWrite(value, super.filterMoviesFuture, () {
-      super.filterMoviesFuture = value;
+  set currentFilterMovieFuture(ObservableFuture<List<BaseModel>> value) {
+    _$currentFilterMovieFutureAtom
+        .reportWrite(value, super.currentFilterMovieFuture, () {
+      super.currentFilterMovieFuture = value;
     });
   }
 
-  late final _$filterTvFutureAtom =
-      Atom(name: '_HomeStore.filterTvFuture', context: context);
+  late final _$currentFilterTvFutureAtom =
+      Atom(name: '_HomeStore.currentFilterTvFuture', context: context);
 
   @override
-  ObservableFuture<List<BaseModel>> get filterTvFuture {
-    _$filterTvFutureAtom.reportRead();
-    return super.filterTvFuture;
+  ObservableFuture<List<BaseModel>> get currentFilterTvFuture {
+    _$currentFilterTvFutureAtom.reportRead();
+    return super.currentFilterTvFuture;
   }
 
   @override
-  set filterTvFuture(ObservableFuture<List<BaseModel>> value) {
-    _$filterTvFutureAtom.reportWrite(value, super.filterTvFuture, () {
-      super.filterTvFuture = value;
+  set currentFilterTvFuture(ObservableFuture<List<BaseModel>> value) {
+    _$currentFilterTvFutureAtom.reportWrite(value, super.currentFilterTvFuture,
+        () {
+      super.currentFilterTvFuture = value;
+    });
+  }
+
+  late final _$filterMoviesAtom =
+      Atom(name: '_HomeStore.filterMovies', context: context);
+
+  @override
+  ObservableList<BaseModel> get filterMovies {
+    _$filterMoviesAtom.reportRead();
+    return super.filterMovies;
+  }
+
+  @override
+  set filterMovies(ObservableList<BaseModel> value) {
+    _$filterMoviesAtom.reportWrite(value, super.filterMovies, () {
+      super.filterMovies = value;
+    });
+  }
+
+  late final _$filterTvAtom =
+      Atom(name: '_HomeStore.filterTv', context: context);
+
+  @override
+  ObservableList<BaseModel> get filterTv {
+    _$filterTvAtom.reportRead();
+    return super.filterTv;
+  }
+
+  @override
+  set filterTv(ObservableList<BaseModel> value) {
+    _$filterTvAtom.reportWrite(value, super.filterTv, () {
+      super.filterTv = value;
     });
   }
 
@@ -208,6 +242,17 @@ mixin _$HomeStore on _HomeStore, Store {
   }
 
   @override
+  void _onFilterProcessed(bool endPage) {
+    final _$actionInfo = _$_HomeStoreActionController.startAction(
+        name: '_HomeStore._onFilterProcessed');
+    try {
+      return super._onFilterProcessed(endPage);
+    } finally {
+      _$_HomeStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void onItemClicked(BuildContext context, BaseModel baseModel) {
     final _$actionInfo = _$_HomeStoreActionController.startAction(
         name: '_HomeStore.onItemClicked');
@@ -226,8 +271,10 @@ filterMoviePage: ${filterMoviePage},
 filterTvPage: ${filterTvPage},
 moviesDiscover: ${moviesDiscover},
 tvDiscover: ${tvDiscover},
-filterMoviesFuture: ${filterMoviesFuture},
-filterTvFuture: ${filterTvFuture},
+currentFilterMovieFuture: ${currentFilterMovieFuture},
+currentFilterTvFuture: ${currentFilterTvFuture},
+filterMovies: ${filterMovies},
+filterTv: ${filterTv},
 isFilterApplied: ${isFilterApplied},
 isMovieFilterApplied: ${isMovieFilterApplied},
 isTvFilterApplied: ${isTvFilterApplied},

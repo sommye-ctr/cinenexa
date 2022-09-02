@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/models/network/enums/entity_type.dart';
+import 'package:watrix/services/network/repository.dart';
 import 'package:watrix/services/network/requests.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/widgets/custom_checkbox_list.dart';
@@ -144,7 +145,7 @@ class FilterPage extends StatelessWidget {
         ),
         Style.getVerticalSpacing(context: context),
         FutureBuilder<List<Certification>>(
-          future: Requests.certificationsFuture(
+          future: Repository.getCertification(
             Requests.certifications(type),
           ),
           builder: _buildCertificationList,
@@ -207,7 +208,7 @@ class FilterPage extends StatelessWidget {
         height: ScreenSize.getPercentOfHeight(context, 0.01),
       ),
       FutureBuilder<List<Genre>>(
-        future: Requests.genreFuture(Requests.genres(type)),
+        future: Repository.getGenre(Requests.genres(type)),
         builder: _buildGenresGrid,
       ),
     ];

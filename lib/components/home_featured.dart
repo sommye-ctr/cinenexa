@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
+import 'package:watrix/services/network/repository.dart';
 
 import '../models/network/base_model.dart';
 import '../models/network/enums/duration_type.dart';
@@ -36,7 +37,7 @@ class _HomeFeaturedState extends State<HomeFeatured>
       physics: BouncingScrollPhysics(),
       children: [
         ImageCarousel(
-          Requests.titlesFuture(
+          Repository.getTitles(
             Requests.trending(EntityType.all, DurationType.day),
             limit: 5,
             shuffle: true,
@@ -45,7 +46,7 @@ class _HomeFeaturedState extends State<HomeFeatured>
         ),
         Style.getVerticalSpacing(context: context),
         HorizontalList(
-          future: Requests.titlesFuture(
+          future: Repository.getTitles(
             Requests.popular(EntityType.movie),
             shuffle: true,
           ),
@@ -65,7 +66,7 @@ class _HomeFeaturedState extends State<HomeFeatured>
         ),
         Style.getVerticalSpacing(context: context),
         HorizontalList(
-          future: Requests.titlesFuture(
+          future: Repository.getTitles(
             Requests.popular(EntityType.tv),
             shuffle: true,
           ),
@@ -85,7 +86,7 @@ class _HomeFeaturedState extends State<HomeFeatured>
         ),
         Style.getVerticalSpacing(context: context),
         HorizontalList(
-          future: Requests.titlesFuture(Requests.popular(EntityType.people)),
+          future: Repository.getTitles(Requests.popular(EntityType.people)),
           heading: Strings.popularActors,
           onClick: (data) => widget.onItemClicked(data),
           itemWidthPercent: 0.3,
@@ -102,7 +103,7 @@ class _HomeFeaturedState extends State<HomeFeatured>
         ),
         Style.getVerticalSpacing(context: context),
         HorizontalList(
-          future: Requests.titlesFuture(
+          future: Repository.getTitles(
             Requests.trending(EntityType.movie, DurationType.week),
             shuffle: true,
           ),
@@ -122,7 +123,7 @@ class _HomeFeaturedState extends State<HomeFeatured>
         ),
         Style.getVerticalSpacing(context: context),
         HorizontalList(
-          future: Requests.titlesFuture(
+          future: Repository.getTitles(
             Requests.trending(EntityType.tv, DurationType.week),
             shuffle: true,
           ),

@@ -8,6 +8,7 @@ import '../../models/network/tv.dart';
 import '../../models/network/tv_episode.dart';
 import '../../models/network/tv_season.dart';
 import '../../models/network/video.dart';
+import '../../services/network/repository.dart';
 import '../../services/network/requests.dart';
 import '../favorites/favorites_store.dart';
 
@@ -86,7 +87,7 @@ abstract class _DetailsStore with Store {
   }
 
   void _fetchEpisodes() async {
-    List<TvEpisode> latest = await Requests.getSeasonEpisodes(
+    List<TvEpisode> latest = await Repository.getSeasonEpisodes(
       tvId: baseModel.id!,
       seasonNo: chosenSeason!.seasonNumber,
     );
@@ -97,13 +98,13 @@ abstract class _DetailsStore with Store {
   void _fetchDetails() async {
     isAddedToFav = await database.isAddedInFav(baseModel.id!);
     if (baseModel.type == BaseModelType.movie) {
-      Map map = await Requests.getMovieDetails(id: baseModel.id!);
+      Map map = await Repository.getMovieDetails(id: baseModel.id!);
       movie = map['movie'];
       credits.addAll(map['credits']);
       recommended.addAll(map['recommended']);
       video = map['video'];
     } else if (baseModel.type == BaseModelType.tv) {
-      Map map = await Requests.getTvDetails(id: baseModel.id!);
+      Map map = await Repository.getTvDetails(id: baseModel.id!);
       tv = map['tv'];
       credits.addAll(map['credits']);
       recommended.addAll(map['recommended']);

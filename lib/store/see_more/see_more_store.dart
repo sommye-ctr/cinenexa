@@ -2,6 +2,7 @@ import 'package:mobx/mobx.dart';
 import 'package:watrix/services/network/requests.dart';
 
 import '../../models/network/base_model.dart';
+import '../../services/network/repository.dart';
 
 part 'see_more_store.g.dart';
 
@@ -31,7 +32,7 @@ abstract class _SeeMoreStore with Store {
 
   @action
   Future _fetchItems() async {
-    List<BaseModel> list = await Requests.titlesFuture(
+    List<BaseModel> list = await Repository.getTitles(
       future!,
       page: page,
     );

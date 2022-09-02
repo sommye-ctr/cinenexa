@@ -218,11 +218,11 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget _buildMoviesOrTv() {
-    if (searchStore.fetchItemsFuture.status == FutureStatus.pending) {
+    if (searchStore.fetchItemsFuture.status == FutureStatus.pending &&
+        searchStore.results.isEmpty) {
       return CircularProgressIndicator();
     }
-    List<BaseModel> list =
-        searchStore.fetchItemsFuture.result as List<BaseModel>;
+    List<BaseModel> list = searchStore.results;
     if (searchStore.fetchItemsFuture.status == FutureStatus.fulfilled &&
         list.isEmpty) {
       return Text(Strings.noResultsFound);
@@ -262,11 +262,11 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget _buildActors() {
-    if (searchStore.fetchItemsFuture.status == FutureStatus.pending) {
+    if (searchStore.fetchItemsFuture.status == FutureStatus.pending &&
+        searchStore.results.isEmpty) {
       return CircularProgressIndicator();
     }
-    List<BaseModel> list =
-        searchStore.fetchItemsFuture.result as List<BaseModel>;
+    List<BaseModel> list = searchStore.results;
     if (searchStore.fetchItemsFuture.status == FutureStatus.fulfilled &&
         list.isEmpty) {
       return Text(Strings.noResultsFound);

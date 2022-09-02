@@ -5,6 +5,7 @@ import '../models/network/base_model.dart';
 import '../models/network/enums/duration_type.dart';
 import '../models/network/enums/entity_type.dart';
 import '../resources/style.dart';
+import '../services/network/repository.dart';
 import '../services/network/requests.dart';
 import '../utils/screen_size.dart';
 import '../widgets/horizontal_list.dart';
@@ -37,7 +38,7 @@ class _HomeMoviesState extends State<HomeMovies>
       shrinkWrap: true,
       children: [
         HorizontalList(
-          future: Requests.titlesFuture(
+          future: Repository.getTitles(
               Requests.trending(EntityType.movie, DurationType.day)),
           heading: Strings.trendingToday,
           onClick: (data) => widget.onItemClicked(data),
@@ -55,7 +56,7 @@ class _HomeMoviesState extends State<HomeMovies>
         ),
         Style.getVerticalSpacing(context: context),
         HorizontalList(
-          future: Requests.titlesFuture(Requests.topRated(EntityType.movie)),
+          future: Repository.getTitles(Requests.topRated(EntityType.movie)),
           heading: Strings.topRated,
           onClick: (data) => widget.onItemClicked(data),
           itemWidthPercent: 0.3,
@@ -72,7 +73,7 @@ class _HomeMoviesState extends State<HomeMovies>
         ),
         Style.getVerticalSpacing(context: context),
         HorizontalList(
-          future: Requests.titlesFuture(Requests.popular(EntityType.movie)),
+          future: Repository.getTitles(Requests.popular(EntityType.movie)),
           heading: Strings.popular,
           onClick: (data) => widget.onItemClicked(data),
           itemWidthPercent: 0.3,
@@ -89,7 +90,7 @@ class _HomeMoviesState extends State<HomeMovies>
         ),
         Style.getVerticalSpacing(context: context),
         HorizontalList(
-          future: Requests.titlesFuture(
+          future: Repository.getTitles(
             Requests.trending(EntityType.movie, DurationType.week),
             shuffle: true,
           ),
