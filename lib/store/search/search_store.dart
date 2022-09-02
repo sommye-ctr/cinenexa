@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:watrix/models/local/search_history.dart';
 import 'package:watrix/services/local/database.dart';
@@ -17,6 +20,8 @@ enum SearchType {
 }
 
 abstract class _SearchStore with Store {
+  static const Duration _debounceDuration = Duration(milliseconds: 300);
+
   static ObservableFuture<List<BaseModel>> emptyResponse =
       ObservableFuture.value([]);
 
@@ -40,11 +45,16 @@ abstract class _SearchStore with Store {
   @observable
   ObservableFuture<List<BaseModel>> fetchItemsFuture = emptyResponse;
 
-  @computed
+  @observable
+  ObservableFuture<List<BaseModel>> autoCompleteTerms = emptyResponse;
+
+  @observable
   ObservableList<BaseModel> results = <BaseModel>[].asObservable();
 
   @computed
   bool get searchDone => fetchItemsFuture != emptyResponse;
+
+  Timer? _debounceTimer;
 
   @computed
   EntityType get entityType {
@@ -69,6 +79,12 @@ abstract class _SearchStore with Store {
   }
 
   @action
+  Future _fetchAutocompleteTerms() async {
+    autoCompleteTerms =
+        Repository.search(searchTerm, EntityType.all).asObservable();
+  }
+
+  @action
   void historyDeleted(SearchHistory history) {
     this.history.remove(history);
     database.deleteSearchHistory(history.id);
@@ -77,6 +93,15 @@ abstract class _SearchStore with Store {
   @action
   void searchTermChanged(String value) {
     searchTerm = value;
+    if (value.isNotEmpty) {
+      if (_debounceTimer?.isActive ?? false) _debounceTimer?.cancel();
+      _debounceTimer = Timer(
+        _debounceDuration,
+        () {
+          _fetchAutocompleteTerms();
+        },
+      );
+    }
   }
 
   @action

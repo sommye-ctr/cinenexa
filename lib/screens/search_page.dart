@@ -73,12 +73,12 @@ class _SearchPageState extends State<SearchPage> {
 
   Widget _buildSearchBar() {
     return SearchInput(
-      onChanged: searchStore.searchTermChanged,
       onEditingComplete: () => searchStore.searchClicked(),
       controller: textEditingController,
-      onCancelSearch: searchStore.searchCancelled,
       focus: focusNode,
+      onChanged: searchStore.searchTermChanged,
       onSearchFocused: searchStore.searchBoxFocused,
+      onCancelSearch: searchStore.searchCancelled,
     );
   }
 
@@ -88,10 +88,33 @@ class _SearchPageState extends State<SearchPage> {
         return _buildSearchResults();
       }
       if (searchStore.searchFocused) {
-        return _buildSearchHistory();
+        if (searchStore.searchTerm.isEmpty) return _buildSearchHistory();
+        return _buildSearchAutocomplete();
       }
       return _buildSearchHint();
     });
+  }
+
+  Widget _buildSearchAutocomplete() {
+    if (searchStore.autoCompleteTerms.status == FutureStatus.fulfilled) {
+      var list = searchStore.autoCompleteTerms.value!.take(10).toList();
+      return Expanded(
+        child: ListView.builder(
+          shrinkWrap: true,
+          physics: BouncingScrollPhysics(),
+          itemCount: list.length,
+          itemBuilder: (context, index) {
+            return ListTile(
+              title: Text(list[index].title!),
+              onTap: () {
+                _onAutocompleteClicked(list[index].title!);
+              },
+            );
+          },
+        ),
+      );
+    }
+    return Container();
   }
 
   Widget _buildSearchHistory() {
@@ -324,6 +347,12 @@ class _SearchPageState extends State<SearchPage> {
     focusNode.requestFocus();
     textEditingController.value = TextEditingValue(text: term);
     searchStore.searchHistoryTermClicked(term);
+  }
+
+  void _onAutocompleteClicked(String term) {
+    focusNode.requestFocus();
+    textEditingController.value = TextEditingValue(text: term);
+    searchStore.searchClicked();
   }
 
   void _onSearchTypeChanged(int index) {

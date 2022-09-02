@@ -119,12 +119,53 @@ mixin _$SearchStore on _SearchStore, Store {
     });
   }
 
+  late final _$autoCompleteTermsAtom =
+      Atom(name: '_SearchStore.autoCompleteTerms', context: context);
+
+  @override
+  ObservableFuture<List<BaseModel>> get autoCompleteTerms {
+    _$autoCompleteTermsAtom.reportRead();
+    return super.autoCompleteTerms;
+  }
+
+  @override
+  set autoCompleteTerms(ObservableFuture<List<BaseModel>> value) {
+    _$autoCompleteTermsAtom.reportWrite(value, super.autoCompleteTerms, () {
+      super.autoCompleteTerms = value;
+    });
+  }
+
+  late final _$resultsAtom =
+      Atom(name: '_SearchStore.results', context: context);
+
+  @override
+  ObservableList<BaseModel> get results {
+    _$resultsAtom.reportRead();
+    return super.results;
+  }
+
+  @override
+  set results(ObservableList<BaseModel> value) {
+    _$resultsAtom.reportWrite(value, super.results, () {
+      super.results = value;
+    });
+  }
+
   late final _$_fetchHistoryAsyncAction =
       AsyncAction('_SearchStore._fetchHistory', context: context);
 
   @override
   Future<dynamic> _fetchHistory() {
     return _$_fetchHistoryAsyncAction.run(() => super._fetchHistory());
+  }
+
+  late final _$_fetchAutocompleteTermsAsyncAction =
+      AsyncAction('_SearchStore._fetchAutocompleteTerms', context: context);
+
+  @override
+  Future<dynamic> _fetchAutocompleteTerms() {
+    return _$_fetchAutocompleteTermsAsyncAction
+        .run(() => super._fetchAutocompleteTerms());
   }
 
   late final _$_fetchItemsAsyncAction =
@@ -256,6 +297,8 @@ page: ${page},
 searchType: ${searchType},
 searchFocused: ${searchFocused},
 fetchItemsFuture: ${fetchItemsFuture},
+autoCompleteTerms: ${autoCompleteTerms},
+results: ${results},
 searchDone: ${searchDone},
 entityType: ${entityType}
     ''';

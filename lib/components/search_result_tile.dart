@@ -34,7 +34,7 @@ class SearchResultTile extends StatelessWidget {
             Constants.posterAspectRatio,
         child: Card(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
+            borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
           ),
           elevation: 0,
           child: Row(
@@ -44,6 +44,10 @@ class SearchResultTile extends StatelessWidget {
                 image: Utils.getPosterUrl(image),
                 width: ScreenSize.getPercentOfWidth(context, 0.22),
                 ratio: Constants.posterAspectRatio,
+                radius: Style.smallRoundEdgeRadius,
+              ),
+              SizedBox(
+                width: ScreenSize.getPercentOfWidth(context, 0.01),
               ),
               Expanded(
                 child: Column(

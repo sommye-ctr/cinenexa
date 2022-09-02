@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:watrix/widgets/rounded_image_placeholder.dart';
 
 import '../resources/style.dart';
-import '../utils/screen_size.dart';
 
 class RoundedImage extends StatelessWidget {
   final String image;
