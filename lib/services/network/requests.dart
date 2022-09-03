@@ -1,7 +1,5 @@
-import 'dart:convert';
 import 'package:flutter/widgets.dart';
-import 'package:http/http.dart' as http;
-import 'package:watrix/models/network/video.dart';
+import 'package:watrix/models/network/enums/languages.dart';
 import 'package:watrix/services/constants.dart';
 import 'package:watrix/models/network/enums/duration_type.dart';
 import 'package:watrix/models/network/enums/entity_type.dart';
@@ -9,13 +7,7 @@ import 'package:watrix/services/network/utils.dart';
 
 import '../../models/local/enums/sort_movies.dart';
 import '../../models/local/enums/sort_tv.dart';
-import '../../models/network/base_model.dart';
-import '../../models/network/certification.dart';
 import '../../models/network/genre.dart';
-import '../../models/network/movie.dart';
-import '../../models/network/people.dart';
-import '../../models/network/tv.dart';
-import '../../models/network/tv_episode.dart';
 
 class Requests {
   static String popular(EntityType type) {
@@ -107,6 +99,7 @@ class Requests {
     List<Genre>? withGenres,
     String? certification,
     String? withPeople,
+    List<Languages>? withLanguages,
   }) {
     List<String> queries = ['language=en-US'];
 
@@ -153,6 +146,12 @@ class Requests {
       queries.add('with_genres=$q');
     }
 
+    if (withLanguages != null && withLanguages.isNotEmpty) {
+      String q = withLanguages.map((e) => e.name).toList().join("|");
+      queries.add('with_original_language=$q');
+    }
+
+    print(queries.toString());
     return queries.join("&");
   }
 }

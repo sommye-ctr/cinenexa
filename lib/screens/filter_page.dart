@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:watrix/models/network/enums/languages.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/models/network/enums/entity_type.dart';
@@ -52,6 +53,8 @@ class FilterPage extends StatelessWidget {
               ..._buildVoteAverage(context),
               Divider(),
               ..._buildReleaseYear(context),
+              Divider(),
+              ..._buildLanguages(context),
               Divider(),
               ..._buildGenres(context),
               SizedBox(
@@ -214,6 +217,39 @@ class FilterPage extends StatelessWidget {
     ];
   }
 
+  List<Widget> _buildLanguages(context) {
+    List<String> lang = [];
+    for (var element in Languages.values) {
+      lang.add(element.getName());
+    }
+    return [
+      Text(
+        Strings.languages,
+        style: Style.headingStyle,
+      ),
+      SizedBox(
+        height: ScreenSize.getPercentOfHeight(context, 0.01),
+      ),
+      CustomCheckBoxList(
+        children: lang,
+        type: CheckBoxListType.grid,
+        selectedItems: getSelectedLanguages(Languages.values),
+        onSelectionChanged: (values) {
+          print(values.toString());
+          discover.languages
+            ..clear()
+            ..addAll(values.map((e) => e.getLanguage()).toList());
+        },
+        delegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          childAspectRatio: 16 / 9,
+          crossAxisSpacing: ScreenSize.getPercentOfWidth(context, 0.025),
+          mainAxisSpacing: ScreenSize.getPercentOfWidth(context, 0.025),
+        ),
+      ),
+    ];
+  }
+
   Widget _buildButtons(context) {
     return Align(
       alignment: Alignment.bottomCenter,
@@ -305,7 +341,8 @@ class FilterPage extends StatelessWidget {
         (discover.sortMoviesBy == null && discover.sortTvBy == null) &&
         discover.releaseDateRange == null &&
         discover.voteAverage == null &&
-        discover.genres.isEmpty) {
+        discover.genres.isEmpty &&
+        discover.languages.isEmpty) {
       return;
     }
     Navigator.pop(context, discover);
@@ -343,6 +380,16 @@ class FilterPage extends StatelessWidget {
     for (Genre genre in discover.genres) {
       if (list.contains(genre)) {
         indexes.add(list.indexOf(genre));
+      }
+    }
+    return indexes;
+  }
+
+  List<int> getSelectedLanguages(List<Languages> list) {
+    List<int> indexes = [];
+    for (var element in discover.languages) {
+      if (list.contains(element)) {
+        indexes.add(list.indexOf(element));
       }
     }
     return indexes;

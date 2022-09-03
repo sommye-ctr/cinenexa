@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:watrix/models/network/enums/languages.dart';
 
 import '../local/enums/sort_movies.dart';
 import '../local/enums/sort_tv.dart';
@@ -11,6 +12,7 @@ class Discover {
   DateTimeRange? releaseDateRange;
   RangeValues? voteAverage;
   List<Genre> genres;
+  List<Languages> languages;
   Discover({
     this.certification,
     this.sortMoviesBy,
@@ -18,7 +20,9 @@ class Discover {
     this.releaseDateRange,
     this.voteAverage,
     List<Genre>? genres,
-  }) : this.genres = genres ?? [];
+    List<Languages>? languages,
+  })  : this.genres = genres ?? [],
+        this.languages = languages ?? [];
 
   set setCertification(String string) {
     certification = string;

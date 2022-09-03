@@ -44,6 +44,7 @@ class Strings {
   static const String genres = "Genres";
   static const String submit = "Submit";
   static const String reset = "Reset";
+  static const String languages = "Languages";
   static const String certificationSubtitle = "Long Press for description";
 
 //Details

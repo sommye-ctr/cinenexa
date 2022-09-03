@@ -90,6 +90,7 @@ abstract class _HomeStore with Store {
         withGenres: discover.genres,
         sortMoviesBy: discover.sortMoviesBy,
         sortTvBy: discover.sortTvBy,
+        withLanguages: discover.languages,
       ),
     );
   }
@@ -128,6 +129,7 @@ abstract class _HomeStore with Store {
         withGenres: discover.genres,
         sortMoviesBy: discover.sortMoviesBy,
         sortTvBy: discover.sortTvBy,
+        withLanguages: discover.languages,
       ),
       pageEndReached: true,
     );
