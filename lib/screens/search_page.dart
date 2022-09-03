@@ -217,8 +217,16 @@ class _SearchPageState extends State<SearchPage> {
           return DefaultTabController(
             length: 3,
             child: TabBar(
-              unselectedLabelColor: Theme.of(context).hintColor,
-              indicatorColor: Colors.transparent,
+              indicator: ShapeDecoration(
+                shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(Style.largeRoundEdgeRadius),
+                ),
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              indicatorSize: TabBarIndicatorSize.tab,
+              indicatorPadding: EdgeInsets.all(8),
+              splashBorderRadius: BorderRadius.circular(40),
               isScrollable: true,
               onTap: _onSearchTypeChanged,
               tabs: [

@@ -63,18 +63,11 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
           shrinkOffset,
           reverse: true,
         ),
-        Visibility(
-          visible: progress <= 0.9,
-          child: _buildFading(
-            Padding(
-              padding:
-                  EdgeInsets.only(top: MediaQuery.of(context).viewPadding.top),
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: CustomBackButton(),
-              ),
-            ),
-            shrinkOffset,
+        Padding(
+          padding: EdgeInsets.only(top: MediaQuery.of(context).viewPadding.top),
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: CustomBackButton(),
           ),
         ),
         Padding(
@@ -184,7 +177,7 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
       padding: EdgeInsets.lerp(
         null,
         EdgeInsets.only(
-          top: minExtent / 2,
+          top: minExtent / 1.8,
         ),
         progress,
       ),
