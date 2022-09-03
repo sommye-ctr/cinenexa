@@ -75,7 +75,7 @@ abstract class _SearchStore with Store {
   @action
   Future _fetchHistory() async {
     List<SearchHistory> list = await database.getSearchHistory();
-    history.addAll(list);
+    history.addAll(list.reversed);
   }
 
   @action
@@ -106,8 +106,13 @@ abstract class _SearchStore with Store {
 
   @action
   void searchTypeChanged(SearchType type) {
-    searchType = type;
+    changeSearchType(type);
     _fetchItems(Repository.search(searchTerm, entityType));
+  }
+
+  @action
+  void changeSearchType(SearchType type) {
+    searchType = type;
   }
 
   @action
@@ -145,7 +150,7 @@ abstract class _SearchStore with Store {
   @action
   Future _addToHistory() async {
     bool isAdded = await database.addSearchHistory(searchTerm);
-    if (isAdded) history.add(SearchHistory()..term = searchTerm);
+    if (isAdded) history.insert(0, SearchHistory()..term = searchTerm);
   }
 
   @action

@@ -26,17 +26,19 @@ class SearchPage extends StatefulWidget {
   State<SearchPage> createState() => _SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> {
+class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   late SearchStore searchStore;
   late TextEditingController textEditingController;
   late FocusNode focusNode;
   final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
+  late TabController tabController;
 
   @override
   void initState() {
     searchStore = SearchStore();
     textEditingController = TextEditingController();
     focusNode = FocusNode();
+    tabController = TabController(length: 3, vsync: this);
     super.initState();
   }
 
@@ -107,7 +109,7 @@ class _SearchPageState extends State<SearchPage> {
             return ListTile(
               title: Text(list[index].title!),
               onTap: () {
-                _onAutocompleteClicked(list[index].title!);
+                _onAutocompleteClicked(list[index]);
               },
             );
           },
@@ -229,6 +231,7 @@ class _SearchPageState extends State<SearchPage> {
               splashBorderRadius: BorderRadius.circular(40),
               isScrollable: true,
               onTap: _onSearchTypeChanged,
+              controller: tabController,
               tabs: [
                 Tab(
                   text: Strings.movies,
@@ -357,10 +360,37 @@ class _SearchPageState extends State<SearchPage> {
     searchStore.searchHistoryTermClicked(term);
   }
 
-  void _onAutocompleteClicked(String term) {
+  void _onAutocompleteClicked(BaseModel baseModel) {
     focusNode.requestFocus();
-    textEditingController.value = TextEditingValue(text: term);
+    textEditingController.value = TextEditingValue(text: baseModel.title!);
+    switch (baseModel.type) {
+      case BaseModelType.movie:
+        searchStore.changeSearchType(SearchType.movie);
+        tabController.animateTo(0);
+        break;
+      case BaseModelType.people:
+        searchStore.changeSearchType(SearchType.people);
+        tabController.animateTo(2);
+        break;
+      case BaseModelType.tv:
+        searchStore.changeSearchType(SearchType.tv);
+        tabController.animateTo(1);
+        break;
+      default:
+    }
+
     searchStore.searchClicked();
+  }
+
+  SearchType _getSearchType(BaseModelType type) {
+    switch (type) {
+      case BaseModelType.movie:
+        return SearchType.movie;
+      case BaseModelType.tv:
+        return SearchType.tv;
+      case BaseModelType.people:
+        return SearchType.people;
+    }
   }
 
   void _onSearchTypeChanged(int index) {
