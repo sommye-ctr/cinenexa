@@ -1,15 +1,15 @@
 import 'package:mobx/mobx.dart';
+import 'package:watrix/models/network/review.dart';
 import 'package:watrix/services/local/database.dart';
+import 'package:watrix/services/network/requests.dart';
 
 import '../../models/network/base_model.dart';
 import '../../models/network/genre.dart';
 import '../../models/network/movie.dart';
 import '../../models/network/tv.dart';
 import '../../models/network/tv_episode.dart';
-import '../../models/network/tv_season.dart';
 import '../../models/network/video.dart';
 import '../../services/network/repository.dart';
-import '../../services/network/requests.dart';
 import '../favorites/favorites_store.dart';
 
 part 'details_store.g.dart';
@@ -45,13 +45,37 @@ abstract class _DetailsStore with Store {
   ObservableList<TvEpisode> episodes = <TvEpisode>[].asObservable();
 
   @observable
-  TvSeason? chosenSeason;
+  ObservableFuture<Map> reviews = ObservableFuture.value({});
+
+  @observable
+  int? chosenSeason;
 
   @observable
   bool isAddedToFav = false;
 
   @observable
   Video? video;
+
+  @observable
+  int? chosenEpisode;
+
+  @computed
+  int get totalReviews {
+    if (reviews.status == FutureStatus.fulfilled && reviews.value != null) {
+      return reviews.value!['total'];
+    }
+    return 0;
+  }
+
+  @computed
+  List<Review> get reviewList {
+    if (reviews.status == FutureStatus.fulfilled &&
+        reviews.value != null &&
+        reviews.value!['results'] != null) {
+      return reviews.value!['results'];
+    }
+    return [];
+  }
 
   @computed
   List<Genre>? get genres {
@@ -81,18 +105,35 @@ abstract class _DetailsStore with Store {
   }
 
   @action
-  void onSeasonChanged(TvSeason tvSeason) {
-    chosenSeason = tvSeason;
+  void onSeasonChanged(int index) {
+    chosenSeason = index;
     _fetchEpisodes();
+  }
+
+  @action
+  void onEpiodeClicked(int index) {
+    chosenEpisode = index;
+  }
+
+  @action
+  void onEpBackClicked() {
+    chosenEpisode = null;
   }
 
   void _fetchEpisodes() async {
     List<TvEpisode> latest = await Repository.getSeasonEpisodes(
       tvId: baseModel.id!,
-      seasonNo: chosenSeason!.seasonNumber,
+      seasonNo: tv!.seasons![chosenSeason!].seasonNumber,
     );
     episodes.clear();
     episodes.addAll(latest);
+  }
+
+  @action
+  Future fetchReviews() async {
+    reviews = Repository.getReviews(
+      query: Requests.reviews(baseModel.type!, baseModel.id!),
+    ).asObservable();
   }
 
   void _fetchDetails() async {
@@ -109,7 +150,7 @@ abstract class _DetailsStore with Store {
       credits.addAll(map['credits']);
       recommended.addAll(map['recommended']);
       video = map['video'];
-      chosenSeason = tv!.seasons![0];
+      chosenSeason = 0;
       _fetchEpisodes();
     }
   }

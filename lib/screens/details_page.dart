@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:watrix/components/details_header.dart';
 import 'package:watrix/components/details_more_details.dart';
 
@@ -61,10 +62,15 @@ class _DetailsPageState extends State<DetailsPage> {
               ),
             ),
             SliverToBoxAdapter(
-              child: DetailsMoreDetails(
-                detailsStore: detailsStore,
-                height: ScreenSize.getPercentOfHeight(context, 1) - minHeight,
-              ),
+              child: Observer(builder: (context) {
+                if (detailsStore.movie == null && detailsStore.tv == null) {
+                  return Container();
+                }
+                return DetailsMoreDetails(
+                  detailsStore: detailsStore,
+                  height: ScreenSize.getPercentOfHeight(context, 1) - minHeight,
+                );
+              }),
             )
           ],
         ),

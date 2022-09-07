@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:watrix/models/local/search_history.dart';
 import 'package:watrix/services/local/database.dart';

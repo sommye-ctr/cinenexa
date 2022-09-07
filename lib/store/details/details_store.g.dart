@@ -9,6 +9,20 @@ part of 'details_store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$DetailsStore on _DetailsStore, Store {
+  Computed<int>? _$totalReviewsComputed;
+
+  @override
+  int get totalReviews =>
+      (_$totalReviewsComputed ??= Computed<int>(() => super.totalReviews,
+              name: '_DetailsStore.totalReviews'))
+          .value;
+  Computed<List<Review>>? _$reviewListComputed;
+
+  @override
+  List<Review> get reviewList =>
+      (_$reviewListComputed ??= Computed<List<Review>>(() => super.reviewList,
+              name: '_DetailsStore.reviewList'))
+          .value;
   Computed<List<Genre>?>? _$genresComputed;
 
   @override
@@ -111,17 +125,33 @@ mixin _$DetailsStore on _DetailsStore, Store {
     });
   }
 
+  late final _$reviewsAtom =
+      Atom(name: '_DetailsStore.reviews', context: context);
+
+  @override
+  ObservableFuture<Map<dynamic, dynamic>> get reviews {
+    _$reviewsAtom.reportRead();
+    return super.reviews;
+  }
+
+  @override
+  set reviews(ObservableFuture<Map<dynamic, dynamic>> value) {
+    _$reviewsAtom.reportWrite(value, super.reviews, () {
+      super.reviews = value;
+    });
+  }
+
   late final _$chosenSeasonAtom =
       Atom(name: '_DetailsStore.chosenSeason', context: context);
 
   @override
-  TvSeason? get chosenSeason {
+  int? get chosenSeason {
     _$chosenSeasonAtom.reportRead();
     return super.chosenSeason;
   }
 
   @override
-  set chosenSeason(TvSeason? value) {
+  set chosenSeason(int? value) {
     _$chosenSeasonAtom.reportWrite(value, super.chosenSeason, () {
       super.chosenSeason = value;
     });
@@ -156,6 +186,30 @@ mixin _$DetailsStore on _DetailsStore, Store {
     _$videoAtom.reportWrite(value, super.video, () {
       super.video = value;
     });
+  }
+
+  late final _$chosenEpisodeAtom =
+      Atom(name: '_DetailsStore.chosenEpisode', context: context);
+
+  @override
+  int? get chosenEpisode {
+    _$chosenEpisodeAtom.reportRead();
+    return super.chosenEpisode;
+  }
+
+  @override
+  set chosenEpisode(int? value) {
+    _$chosenEpisodeAtom.reportWrite(value, super.chosenEpisode, () {
+      super.chosenEpisode = value;
+    });
+  }
+
+  late final _$fetchReviewsAsyncAction =
+      AsyncAction('_DetailsStore.fetchReviews', context: context);
+
+  @override
+  Future<dynamic> fetchReviews() {
+    return _$fetchReviewsAsyncAction.run(() => super.fetchReviews());
   }
 
   late final _$_DetailsStoreActionController =
@@ -195,11 +249,22 @@ mixin _$DetailsStore on _DetailsStore, Store {
   }
 
   @override
-  void onSeasonChanged(TvSeason tvSeason) {
+  void onSeasonChanged(int index) {
     final _$actionInfo = _$_DetailsStoreActionController.startAction(
         name: '_DetailsStore.onSeasonChanged');
     try {
-      return super.onSeasonChanged(tvSeason);
+      return super.onSeasonChanged(index);
+    } finally {
+      _$_DetailsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void onEpiodeClicked(int index) {
+    final _$actionInfo = _$_DetailsStoreActionController.startAction(
+        name: '_DetailsStore.onEpiodeClicked');
+    try {
+      return super.onEpiodeClicked(index);
     } finally {
       _$_DetailsStoreActionController.endAction(_$actionInfo);
     }
@@ -214,9 +279,13 @@ tv: ${tv},
 credits: ${credits},
 recommended: ${recommended},
 episodes: ${episodes},
+reviews: ${reviews},
 chosenSeason: ${chosenSeason},
 isAddedToFav: ${isAddedToFav},
 video: ${video},
+chosenEpisode: ${chosenEpisode},
+totalReviews: ${totalReviews},
+reviewList: ${reviewList},
 genres: ${genres}
     ''';
   }

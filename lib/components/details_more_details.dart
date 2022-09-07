@@ -1,8 +1,9 @@
-import 'package:chewie/chewie.dart';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:video_player/video_player.dart';
-import 'package:watrix/services/constants.dart';
+import 'package:mobx/mobx.dart';
+import 'package:watrix/components/details_review_tile.dart';
 import 'package:watrix/store/details/details_store.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
@@ -30,18 +31,19 @@ class DetailsMoreDetails extends StatefulWidget {
   State<DetailsMoreDetails> createState() => _DetailsMoreDetailsState();
 }
 
-class _DetailsMoreDetailsState extends State<DetailsMoreDetails> {
+class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
+    with TickerProviderStateMixin {
   YoutubePlayerController? videoController;
-  late ChewieController chewieController;
-  final VideoPlayerController controller = VideoPlayerController.network(
-      "https://thumbs2.redgifs.com/OnlyDrearyJavalina-mobile.mp4#t=0");
+
+  late TabController tabController;
   @override
   void initState() {
-    chewieController = ChewieController(
-      videoPlayerController: controller,
-      aspectRatio: 16 / 9,
-      autoInitialize: true,
-    );
+    tabController = TabController(length: 3, vsync: this);
+    tabController.addListener(() {
+      if (tabController.index == 2 && widget.detailsStore.reviewList.isEmpty) {
+        widget.detailsStore.fetchReviews();
+      }
+    });
     super.initState();
   }
 
@@ -50,67 +52,185 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails> {
     return Container(
       margin: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
       height: widget.height,
-      child: ListView(
-        physics: BouncingScrollPhysics(),
-        shrinkWrap: true,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          _buildGenres(context),
-          Style.getVerticalSpacing(context: context),
-          Observer(
-            builder: (_) => _buildList(
-              Strings.cast,
-              context,
-              widget.detailsStore.credits,
-              ActorDetailsPage.routeName,
+          TabBar(
+            controller: tabController,
+            indicator: ShapeDecoration(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
+              ),
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            indicatorSize: TabBarIndicatorSize.tab,
+            indicatorPadding: EdgeInsets.all(8),
+            splashBorderRadius: BorderRadius.circular(40),
+            isScrollable: true,
+            tabs: [
+              Tab(text: "Streams"),
+              Tab(text: "Other Info"),
+              Tab(text: "Reviews"),
+            ],
+          ),
+          Expanded(
+            child: TabBarView(
+              controller: tabController,
+              children: [
+                _buildStreams(),
+                _buildOtherInfo(),
+                _buildReviews(),
+              ],
             ),
           ),
-          Style.getVerticalSpacing(context: context),
-          Observer(
-            builder: (_) => _buildList(
-              widget.detailsStore.baseModel.type == BaseModelType.movie
-                  ? Strings.recommendedMovies
-                  : Strings.recommendedTv,
-              context,
-              widget.detailsStore.recommended,
-              DetailsPage.routeName,
-            ),
-          ),
-          Style.getVerticalSpacing(context: context),
-          _buildTrailer(),
-          Style.getVerticalSpacing(context: context),
-          _buildVideo(),
-          Style.getVerticalSpacing(context: context),
-          Observer(builder: (_) => _buildSeasonsHeading()),
-          Style.getVerticalSpacing(context: context),
-          Observer(
-            builder: (context1) => ListView.builder(
-              shrinkWrap: true,
-              physics: ClampingScrollPhysics(),
-              itemCount: widget.detailsStore.episodes.length,
-              itemBuilder: (context, index) {
-                return EpisodeTile(
-                  episode: widget.detailsStore.episodes[index],
-                );
-              },
-            ),
-          ),
-          Style.getVerticalSpacing(context: context),
         ],
       ),
     );
   }
 
-  Widget _buildVideo() {
-    return Container(
-      height: ScreenSize.getPercentOfWidth(context, 1) /
-          Constants.backdropAspectRatio,
-      margin: EdgeInsets.all(8),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
-        child: Chewie(
-          controller: chewieController,
+  Widget _buildStreams() {
+    return Observer(
+      builder: (context) {
+        if (widget.detailsStore.baseModel.type == BaseModelType.movie) {
+          return Text("Streams will show up here...");
+        }
+        return AnimatedSwitcher(
+          duration: Duration(milliseconds: 500),
+          transitionBuilder: (child, animation) {
+            final offset = Tween(
+              begin: Offset(1, 0),
+              end: Offset(0, 0),
+            ).animate(animation);
+            return ClipRect(
+              child: SlideTransition(
+                position: offset,
+                child: child,
+              ),
+            );
+          },
+          child: widget.detailsStore.chosenEpisode == null
+              ? ListView(
+                  physics: BouncingScrollPhysics(),
+                  children: _buildSeasonDetails(),
+                )
+              : _buildEpisodeStreams(),
+        );
+      },
+    );
+  }
+
+  Widget _buildReviews() {
+    return Observer(builder: (context) {
+      if (widget.detailsStore.reviews.status == FutureStatus.pending) {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            "${widget.detailsStore.totalReviews} Reviews",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              physics: BouncingScrollPhysics(),
+              itemCount: widget.detailsStore.reviewList.length,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                return UnconstrainedBox(
+                  child: DetailsReviewTile(
+                    review: widget.detailsStore.reviewList[index],
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      );
+    });
+  }
+
+  List<Widget> _buildSeasonDetails() {
+    return [
+      Observer(builder: (_) => _buildSeasonsHeading()),
+      Style.getVerticalSpacing(context: context),
+      Observer(
+        builder: (context1) => ListView.builder(
+          shrinkWrap: true,
+          physics: ClampingScrollPhysics(),
+          itemCount: widget.detailsStore.episodes.length,
+          itemBuilder: (context, index) {
+            return UnconstrainedBox(
+              child: EpisodeTile(
+                episode: widget.detailsStore.episodes[index],
+                onTap: () {
+                  widget.detailsStore.onEpiodeClicked(index);
+                },
+              ),
+            );
+          },
         ),
       ),
+      Style.getVerticalSpacing(context: context),
+    ];
+  }
+
+  Widget _buildEpisodeStreams() {
+    DetailsStore store = widget.detailsStore;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            BackButton(
+              onPressed: () => store.onEpBackClicked(),
+            ),
+            Text(
+              "${store.tv!.seasons![store.chosenSeason!].name} Episode ${store.episodes[store.chosenEpisode!].episodeNumber}",
+              style: TextStyle(fontSize: 18, fontStyle: FontStyle.italic),
+            ),
+          ],
+        ),
+        Center(child: Text("Streams will show up here...")),
+      ],
+    );
+  }
+
+  Widget _buildOtherInfo() {
+    return ListView(
+      physics: BouncingScrollPhysics(),
+      shrinkWrap: true,
+      children: [
+        Observer(
+          builder: (_) => _buildList(
+            Strings.cast,
+            context,
+            widget.detailsStore.credits,
+            ActorDetailsPage.routeName,
+          ),
+        ),
+        Style.getVerticalSpacing(context: context),
+        Observer(
+          builder: (_) => _buildList(
+            widget.detailsStore.baseModel.type == BaseModelType.movie
+                ? Strings.recommendedMovies
+                : Strings.recommendedTv,
+            context,
+            widget.detailsStore.recommended,
+            DetailsPage.routeName,
+          ),
+        ),
+        Style.getVerticalSpacing(context: context),
+        _buildTrailer(),
+        Style.getVerticalSpacing(context: context),
+      ],
     );
   }
 
@@ -148,49 +268,6 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails> {
       }
       return Container();
     });
-  }
-
-  Widget _buildGenres(context) {
-    return Observer(
-      builder: (context) {
-        if (widget.detailsStore.genres != null) {
-          List<Widget> widgets = [];
-          for (var item in widget.detailsStore.genres!) {
-            widgets.add(Padding(
-              padding: EdgeInsets.only(
-                right: ScreenSize.getPercentOfWidth(context, 0.01),
-              ),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius:
-                      BorderRadius.circular(Style.smallRoundEdgeRadius),
-                  color: Colors.grey.withOpacity(0.4),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(2),
-                  child: Text(
-                    "${item.name}",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-              ),
-            ));
-          }
-
-          return Center(
-            child: Wrap(
-              alignment: WrapAlignment.center,
-              runSpacing: ScreenSize.getPercentOfWidth(context, 0.01),
-              children: widgets,
-            ),
-          );
-        }
-        return Container();
-      },
-    );
   }
 
   Widget _buildList(
@@ -247,7 +324,7 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              Strings.episodes,
+              Strings.chooseEp,
               style: Style.headingStyle,
             ),
             Container(
@@ -263,7 +340,8 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails> {
                   alignment: Alignment.centerLeft,
                   borderRadius:
                       BorderRadius.circular(Style.largeRoundEdgeRadius),
-                  value: widget.detailsStore.chosenSeason,
+                  value: widget.detailsStore.tv!
+                      .seasons![widget.detailsStore.chosenSeason!],
                   menuMaxHeight: ScreenSize.getPercentOfHeight(context, 0.25),
                   items: widget.detailsStore.tv!.seasons!.map((e) {
                     return DropdownMenuItem(
@@ -274,7 +352,8 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails> {
                     );
                   }).toList(),
                   onChanged: (value) {
-                    widget.detailsStore.onSeasonChanged(value!);
+                    widget.detailsStore.onSeasonChanged(
+                        widget.detailsStore.tv!.seasons!.indexOf(value!));
                   },
                 ),
               ),
@@ -288,8 +367,6 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails> {
 
   void disposeVideoController() {
     videoController?.dispose();
-    controller.dispose();
-    chewieController.dispose();
   }
 
   @override

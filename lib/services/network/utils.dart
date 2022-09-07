@@ -21,6 +21,10 @@ class Utils {
     return "${Constants.imageBaseUrl}${Constants.stillSize}$url";
   }
 
+  static String getProfileUrl(String url) {
+    return "${Constants.imageBaseUrl}${Constants.profileSize}$url";
+  }
+
   static String getSortMoviesBy(SortMoviesBy sortMoviesBy) {
     switch (sortMoviesBy) {
       case SortMoviesBy.popularity:

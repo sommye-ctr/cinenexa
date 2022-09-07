@@ -4,4 +4,6 @@ class Asset {
 
   static const String actorsDark = "assets/images/actor_dark.png";
   static const String actorsLight = "assets/images/actor_light.png";
+
+  static const String star = "assets/images/star.png";
 }

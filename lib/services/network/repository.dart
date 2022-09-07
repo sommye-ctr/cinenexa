@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:watrix/models/network/review.dart';
 import 'package:watrix/services/network/api.dart';
 import 'package:watrix/services/network/utils.dart';
 
@@ -89,6 +90,16 @@ class Repository {
     final response = await api.getRequest(request, haveQueries: true);
     var parsedList = response['results'];
     return Utils.convertToBaseModelList(parsedList);
+  }
+
+  static Future<Map> getReviews({required String query, int page = 1}) async {
+    String req = "$query?page=$page";
+    final response = await api.getRequest(req, haveQueries: true);
+    List list = response['results'];
+    return {
+      "total": response['total_results'],
+      "results": list.map((e) => Review.fromMap(e)).toList(),
+    };
   }
 
   static Future<Map> getMovieDetails({required int id}) async {

@@ -57,7 +57,8 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
         ),
         _buildFading(
           ScreenBackgroundImage(
-            image: Utils.getBackdropUrl(detailsStore.baseModel.backdropPath!),
+            image:
+                Utils.getBackdropUrl(detailsStore.baseModel.backdropPath ?? ""),
             child: Container(),
           ),
           shrinkOffset,
@@ -83,6 +84,7 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
+                    _buildFading(_buildGenres(context), shrinkOffset),
                     _buildNonFadingContent(context, shrinkOffset),
                     _buildFadingContent(context, shrinkOffset),
                   ],
@@ -177,7 +179,7 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
       padding: EdgeInsets.lerp(
         null,
         EdgeInsets.only(
-          top: minExtent / 1.8,
+          top: minExtent / 2.2,
         ),
         progress,
       ),
@@ -190,6 +192,49 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
           fontWeight: FontWeight.bold,
         ),
       ),
+    );
+  }
+
+  Widget _buildGenres(context) {
+    return Observer(
+      builder: (context) {
+        if (detailsStore.genres != null) {
+          List<Widget> widgets = [];
+          for (var item in detailsStore.genres!) {
+            widgets.add(Padding(
+              padding: EdgeInsets.only(
+                right: ScreenSize.getPercentOfWidth(context, 0.01),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius:
+                      BorderRadius.circular(Style.smallRoundEdgeRadius),
+                  color: Colors.grey.withOpacity(0.4),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(2),
+                  child: Text(
+                    "${item.name}",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ),
+            ));
+          }
+
+          return Center(
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              runSpacing: ScreenSize.getPercentOfWidth(context, 0.01),
+              children: widgets,
+            ),
+          );
+        }
+        return Container();
+      },
     );
   }
 
@@ -262,6 +307,17 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
+          RoundedButton(
+            onPressed: _onPlayPressed,
+            child: Row(
+              children: [
+                Text(Strings.play),
+                Icon(Icons.play_arrow_sharp),
+              ],
+            ),
+            type: RoundedButtonType.filled,
+          ),
+          Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
           AnimatedCrossFade(
             duration: Duration(milliseconds: 500),
             sizeCurve: Curves.decelerate,
@@ -272,7 +328,7 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
               child: Row(
                 children: [
                   Text(Strings.addToFav),
-                  Icon(Icons.favorite_outline_rounded),
+                  Icon(Icons.favorite, size: 20),
                 ],
               ),
             ),
@@ -307,18 +363,12 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
                 ? CrossFadeState.showSecond
                 : CrossFadeState.showFirst,
           ),
-          Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
-          RoundedButton(
-            onPressed: _onViewInfoPressed,
-            child: Text(Strings.viewInfo),
-            type: RoundedButtonType.outlined,
-          ),
         ],
       );
     });
   }
 
-  void _onViewInfoPressed() {
+  void _onPlayPressed() {
     scrollController.animateTo(
       maxExtent - minExtent,
       duration: duration,

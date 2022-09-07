@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:watrix/models/network/base_model.dart';
 import 'package:watrix/models/network/enums/languages.dart';
 import 'package:watrix/services/constants.dart';
 import 'package:watrix/models/network/enums/duration_type.dart';
@@ -59,6 +60,19 @@ class Requests {
     }
 
     return "${Constants.trending}${stringType}${duration}";
+  }
+
+  static String reviews(BaseModelType type, int id) {
+    String string;
+    if (type == BaseModelType.movie) {
+      string = Constants.movie;
+    } else if (type == BaseModelType.tv) {
+      string = Constants.tv;
+    } else {
+      throw FlutterError("Invalid media type");
+    }
+
+    return "${string}/$id${Constants.reviews}";
   }
 
   static String genres(EntityType type) {

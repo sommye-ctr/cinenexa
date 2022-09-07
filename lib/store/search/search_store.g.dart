@@ -223,6 +223,17 @@ mixin _$SearchStore on _SearchStore, Store {
   }
 
   @override
+  void changeSearchType(SearchType type) {
+    final _$actionInfo = _$_SearchStoreActionController.startAction(
+        name: '_SearchStore.changeSearchType');
+    try {
+      return super.changeSearchType(type);
+    } finally {
+      _$_SearchStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void searchClicked() {
     final _$actionInfo = _$_SearchStoreActionController.startAction(
         name: '_SearchStore.searchClicked');

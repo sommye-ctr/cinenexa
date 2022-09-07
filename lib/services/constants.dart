@@ -7,6 +7,7 @@ class Constants {
   static String posterSize = "/w300";
   static String backdropSize = "/w780";
   static String stillSize = "/w300";
+  static String profileSize = "/w92";
 
   static String hdPosterSize = "/w500";
 
@@ -28,6 +29,7 @@ class Constants {
   static String nowPlaying = "/now_playing";
   static String trending = "/trending";
   static String airingToday = "/airing_today";
+  static String reviews = "/reviews";
 
   static const double posterAspectRatio = 2 / 3;
   static const double backdropAspectRatio = 16 / 9;

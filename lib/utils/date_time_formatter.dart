@@ -19,8 +19,11 @@ class DateTimeFormatter {
   }
 
   static String getDateMonthYearFromString(String string) {
-    DateTime date = DateFormat("yyyy-MM-dd").parse(string);
-    return DateFormat("dd MMM yyyy").format(date);
+    if (string.isNotEmpty) {
+      DateTime date = DateFormat("yyyy-MM-dd").parse(string);
+      return DateFormat("dd MMM yyyy").format(date);
+    }
+    return "";
   }
 
   static int getAge(String string) {

@@ -50,13 +50,13 @@ class Strings {
 //Details
   static const String addToFav = "Add to";
   static const String removeFromFav = "Remove from";
-  static const String viewInfo = "View Info";
+  static const String play = "Play";
   static const String cast = "Cast";
   static const String recommendedMovies = "Recommended Movies";
   static const String recommendedTv = "Recommended Tv Shows";
   static const String seasons = "Seasons";
   static const String trailer = "Trailer";
-  static const String episodes = "Episodes";
+  static const String chooseEp = "Choose Episode";
 
 //Actor Details
   static const String knownFor = "Known For";
