@@ -39,7 +39,6 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
     duration = Duration(
       milliseconds: 200,
     );
-
     return Stack(
       children: [
         _buildFading(
@@ -55,45 +54,64 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
           ),
           shrinkOffset,
         ),
-        _buildFading(
-          ScreenBackgroundImage(
-            image:
-                Utils.getBackdropUrl(detailsStore.baseModel.backdropPath ?? ""),
-            child: Container(),
-          ),
-          shrinkOffset,
-          reverse: true,
+        Observer(
+          builder: (context) {
+            return AnimatedCrossFade(
+              duration: Duration(milliseconds: 500),
+              secondCurve: Curves.decelerate,
+              crossFadeState:
+                  detailsStore.movie == null && detailsStore.tv == null
+                      ? CrossFadeState.showFirst
+                      : CrossFadeState.showSecond,
+              firstChild: Container(),
+              secondChild: Stack(
+                key: UniqueKey(),
+                children: [
+                  _buildFading(
+                    ScreenBackgroundImage(
+                      image: Utils.getBackdropUrl(
+                          detailsStore.baseModel.backdropPath ?? ""),
+                      child: Container(),
+                    ),
+                    shrinkOffset,
+                    reverse: true,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(
+                        top: MediaQuery.of(context).viewPadding.top),
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: CustomBackButton(),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: ScreenSize.getPercentOfWidth(context, 0.025),
+                    ),
+                    child: Align(
+                      alignment: Alignment(0, 0.6),
+                      child: Wrap(
+                        children: [
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              _buildFading(_buildGenres(context), shrinkOffset),
+                              _buildNonFadingContent(context, shrinkOffset),
+                              _buildFadingContent(context, shrinkOffset),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  _buildDownArrow(shrinkOffset),
+                ],
+              ),
+            );
+          },
         ),
-        Padding(
-          padding: EdgeInsets.only(top: MediaQuery.of(context).viewPadding.top),
-          child: Align(
-            alignment: Alignment.topLeft,
-            child: CustomBackButton(),
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: ScreenSize.getPercentOfWidth(context, 0.025),
-          ),
-          child: Align(
-            alignment: Alignment(0, 0.6),
-            child: Wrap(
-              children: [
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    _buildFading(_buildGenres(context), shrinkOffset),
-                    _buildNonFadingContent(context, shrinkOffset),
-                    _buildFadingContent(context, shrinkOffset),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-        _buildDownArrow(shrinkOffset),
       ],
     );
   }

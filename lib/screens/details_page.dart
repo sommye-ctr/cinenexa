@@ -62,15 +62,10 @@ class _DetailsPageState extends State<DetailsPage> {
               ),
             ),
             SliverToBoxAdapter(
-              child: Observer(builder: (context) {
-                if (detailsStore.movie == null && detailsStore.tv == null) {
-                  return Container();
-                }
-                return DetailsMoreDetails(
-                  detailsStore: detailsStore,
-                  height: ScreenSize.getPercentOfHeight(context, 1) - minHeight,
-                );
-              }),
+              child: DetailsMoreDetails(
+                detailsStore: detailsStore,
+                height: ScreenSize.getPercentOfHeight(context, 1) - minHeight,
+              ),
             )
           ],
         ),
