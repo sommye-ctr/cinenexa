@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:watrix/models/network/review.dart';
-import 'package:watrix/resources/asset.dart';
 import 'package:watrix/services/network/utils.dart';
 import 'package:watrix/utils/date_time_formatter.dart';
 import 'package:watrix/utils/screen_size.dart';
@@ -32,10 +31,16 @@ class DetailsReviewTile extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CircleAvatar(
-                        backgroundImage: NetworkImage(
-                          Utils.getProfileUrl(review.avatar ?? ""),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        clipBehavior: Clip.hardEdge,
+                        child: Container(
+                          color: Theme.of(context).colorScheme.primary,
+                          child: Icon(
+                            Icons.person,
+                          ),
                         ),
                       ),
                       SizedBox(
@@ -45,7 +50,7 @@ class DetailsReviewTile extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            review.author ?? "",
+                            review.user ?? "",
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           Text(
@@ -73,17 +78,17 @@ class DetailsReviewTile extends StatelessWidget {
   Widget _buildContent(context) {
     return GestureDetector(
       onTap: () {
-        if (review.content?.isNotEmpty ?? true)
+        if (review.comment?.isNotEmpty ?? true)
           showDialog(
               context: context,
               builder: (context) {
                 return CupertinoAlertDialog(
-                  content: Text(review.content ?? ""),
+                  content: Text(review.comment ?? ""),
                 );
               });
       },
       child: Text(
-        review.content ?? "",
+        review.comment ?? "",
         maxLines: 10,
         overflow: TextOverflow.ellipsis,
       ),
@@ -91,6 +96,9 @@ class DetailsReviewTile extends StatelessWidget {
   }
 
   Widget _buildRating(context) {
+    if (review.rating == null) {
+      return Container();
+    }
     return Card(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius)),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:watrix/models/network/review.dart';
 import 'package:watrix/services/network/api.dart';
 import 'package:watrix/services/network/utils.dart';
@@ -94,12 +95,21 @@ class Repository {
 
   static Future<Map> getReviews({required String query, int page = 1}) async {
     String req = "$query?page=$page";
-    final response = await api.getRequest(req, haveQueries: true);
-    List list = response['results'];
+    final Response response = await api.getTraktRequest(req);
+
+    List list = api.parseJson(response.body);
     return {
-      "total": response['total_results'],
+      "total": int.parse(response.headers["x-pagination-item-count"]!),
       "results": list.map((e) => Review.fromMap(e)).toList(),
     };
+  }
+
+  static Future<int> getTraktIdFromTmdb(
+      {required int tmdbId, required String type}) async {
+    String req = "${Constants.search}/tmdb/$tmdbId?type=$type";
+    Response response = await api.getTraktRequest(req);
+    List list = api.parseJson(response.body);
+    return list.first[type]['ids']['trakt'];
   }
 
   static Future<Map> getMovieDetails({required int id}) async {

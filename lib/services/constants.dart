@@ -11,6 +11,9 @@ class Constants {
 
   static String hdPosterSize = "/w500";
 
+  static String movies = "/movies";
+  static String shows = "/shows";
+
   static String movie = "/movie";
   static String tv = "/tv";
   static String person = "/person";
@@ -29,7 +32,8 @@ class Constants {
   static String nowPlaying = "/now_playing";
   static String trending = "/trending";
   static String airingToday = "/airing_today";
-  static String reviews = "/reviews";
+
+  static String comments = "/comments";
 
   static const double posterAspectRatio = 2 / 3;
   static const double backdropAspectRatio = 16 / 9;

@@ -1,5 +1,4 @@
 import 'package:mobx/mobx.dart';
-import 'package:watrix/services/network/requests.dart';
 
 import '../../models/network/base_model.dart';
 import '../../services/network/repository.dart';

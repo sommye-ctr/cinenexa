@@ -16,13 +16,6 @@ mixin _$DetailsStore on _DetailsStore, Store {
       (_$totalReviewsComputed ??= Computed<int>(() => super.totalReviews,
               name: '_DetailsStore.totalReviews'))
           .value;
-  Computed<List<Review>>? _$reviewListComputed;
-
-  @override
-  List<Review> get reviewList =>
-      (_$reviewListComputed ??= Computed<List<Review>>(() => super.reviewList,
-              name: '_DetailsStore.reviewList'))
-          .value;
   Computed<List<Genre>?>? _$genresComputed;
 
   @override
@@ -204,6 +197,22 @@ mixin _$DetailsStore on _DetailsStore, Store {
     });
   }
 
+  late final _$reviewListAtom =
+      Atom(name: '_DetailsStore.reviewList', context: context);
+
+  @override
+  ObservableList<Review> get reviewList {
+    _$reviewListAtom.reportRead();
+    return super.reviewList;
+  }
+
+  @override
+  set reviewList(ObservableList<Review> value) {
+    _$reviewListAtom.reportWrite(value, super.reviewList, () {
+      super.reviewList = value;
+    });
+  }
+
   late final _$fetchReviewsAsyncAction =
       AsyncAction('_DetailsStore.fetchReviews', context: context);
 
@@ -271,6 +280,28 @@ mixin _$DetailsStore on _DetailsStore, Store {
   }
 
   @override
+  void onEpBackClicked() {
+    final _$actionInfo = _$_DetailsStoreActionController.startAction(
+        name: '_DetailsStore.onEpBackClicked');
+    try {
+      return super.onEpBackClicked();
+    } finally {
+      _$_DetailsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void onReviewEndReached() {
+    final _$actionInfo = _$_DetailsStoreActionController.startAction(
+        name: '_DetailsStore.onReviewEndReached');
+    try {
+      return super.onReviewEndReached();
+    } finally {
+      _$_DetailsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 pageIndex: ${pageIndex},
@@ -284,8 +315,8 @@ chosenSeason: ${chosenSeason},
 isAddedToFav: ${isAddedToFav},
 video: ${video},
 chosenEpisode: ${chosenEpisode},
-totalReviews: ${totalReviews},
 reviewList: ${reviewList},
+totalReviews: ${totalReviews},
 genres: ${genres}
     ''';
   }

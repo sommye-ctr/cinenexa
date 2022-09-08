@@ -1,5 +1,6 @@
 import 'package:mobx/mobx.dart';
 import 'package:watrix/models/network/review.dart';
+import 'package:watrix/services/constants.dart';
 import 'package:watrix/services/local/database.dart';
 import 'package:watrix/services/network/requests.dart';
 
@@ -59,23 +60,15 @@ abstract class _DetailsStore with Store {
   @observable
   int? chosenEpisode;
 
-  @computed
-  int get totalReviews {
-    if (reviews.status == FutureStatus.fulfilled && reviews.value != null) {
-      return reviews.value!['total'];
-    }
-    return 0;
-  }
+  @observable
+  int totalReviews = 0;
 
-  @computed
-  List<Review> get reviewList {
-    if (reviews.status == FutureStatus.fulfilled &&
-        reviews.value != null &&
-        reviews.value!['results'] != null) {
-      return reviews.value!['results'];
-    }
-    return [];
-  }
+  @observable
+  ObservableList<Review> reviewList = <Review>[].asObservable();
+
+  int reviewPage = 1;
+  bool isReviewNextPageLoading = false;
+  int traktId = -1;
 
   @computed
   List<Genre>? get genres {
@@ -120,6 +113,15 @@ abstract class _DetailsStore with Store {
     chosenEpisode = null;
   }
 
+  @action
+  void onReviewEndReached() {
+    if (!isReviewNextPageLoading && totalReviews != reviewList.length) {
+      reviewPage++;
+      isReviewNextPageLoading = true;
+      fetchReviews();
+    }
+  }
+
   void _fetchEpisodes() async {
     List<TvEpisode> latest = await Repository.getSeasonEpisodes(
       tvId: baseModel.id!,
@@ -131,9 +133,26 @@ abstract class _DetailsStore with Store {
 
   @action
   Future fetchReviews() async {
-    reviews = Repository.getReviews(
-      query: Requests.reviews(baseModel.type!, baseModel.id!),
-    ).asObservable();
+    if (traktId == -1) {
+      traktId = await Repository.getTraktIdFromTmdb(
+        tmdbId: baseModel.id!,
+        type: baseModel.type! == BaseModelType.movie ? "movie" : "show",
+      );
+    }
+
+    reviews = ObservableFuture(Repository.getReviews(
+      query: await Requests.reviews(baseModel.type!, traktId),
+      page: reviewPage,
+    ));
+    reviews.then((value) {
+      if (reviews.status == FutureStatus.fulfilled) {
+        if (reviews.value != null && reviews.value!['results'] != null) {
+          reviewList.addAll(reviews.value!['results']);
+          totalReviews = reviews.value!['total'];
+        }
+        if (isReviewNextPageLoading) isReviewNextPageLoading = false;
+      }
+    });
   }
 
   void _fetchDetails() async {

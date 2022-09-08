@@ -1,40 +1,40 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 class Review {
-  final String? author;
-  final String? avatar;
+  final String? user;
   final int? rating;
-  final String? content;
+  final String? comment;
   final String? createdAt;
+  final bool? review;
+
   Review({
-    this.author,
-    this.avatar,
+    this.user,
     this.rating,
-    this.content,
+    this.comment,
     this.createdAt,
+    this.review,
   });
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'author': author,
-      'avatar': avatar,
+      'user': user,
       'rating': rating,
-      'content': content,
+      'comment': comment,
       'createdAt': createdAt,
+      'review': review,
     };
   }
 
   factory Review.fromMap(Map<String, dynamic> map) {
     return Review(
-      author: map['author'] != null ? map['author'] as String : null,
-      avatar: map['author_details']['avatar_path'] != null
-          ? map['author_details']['avatar_path'] as String
+      user: map['user']['name'] != null ? map['user']['name'] as String : null,
+      rating: map['user_stats']['rating'] != null
+          ? map['user_stats']['rating'] as int
           : null,
-      rating: map['author_details']['rating'] != null
-          ? (map['author_details']['rating'] as double).toInt()
-          : null,
-      content: map['content'] != null ? map['content'] as String : null,
-      createdAt: map['createdAt'] != null ? map['createdAt'] as String : null,
+      comment: map['comment'] != null ? map['comment'] as String : null,
+      createdAt: map['created_at'] != null ? map['created_at'] as String : null,
+      review: map['review'] != null ? map['review'] as bool : null,
     );
   }
 
@@ -45,26 +45,6 @@ class Review {
 
   @override
   String toString() {
-    return 'Review(author: $author, avatar: $avatar, rating: $rating, content: $content, createdAt: $createdAt)';
-  }
-
-  @override
-  bool operator ==(covariant Review other) {
-    if (identical(this, other)) return true;
-
-    return other.author == author &&
-        other.avatar == avatar &&
-        other.rating == rating &&
-        other.content == content &&
-        other.createdAt == createdAt;
-  }
-
-  @override
-  int get hashCode {
-    return author.hashCode ^
-        avatar.hashCode ^
-        rating.hashCode ^
-        content.hashCode ^
-        createdAt.hashCode;
+    return 'Review(user: $user, rating: $rating, comment: $comment, createdAt: $createdAt, review: $review)';
   }
 }
