@@ -40,20 +40,37 @@ class ActorDetailsHeader extends SliverPersistentHeaderDelegate {
           heightPercent: 0.65,
           child: Container(),
         ),
-        Padding(
-          padding: EdgeInsets.only(top: MediaQuery.of(context).viewPadding.top),
-          child: Align(
-            alignment: Alignment.topLeft,
-            child: CustomBackButton(),
-          ),
+        Observer(
+          builder: (context) {
+            return AnimatedCrossFade(
+              duration: Duration(milliseconds: 500),
+              crossFadeState: actorDetailsStore.actor == null
+                  ? CrossFadeState.showFirst
+                  : CrossFadeState.showSecond,
+              firstChild: Container(),
+              secondChild: Stack(children: [
+                Padding(
+                  padding: EdgeInsets.only(
+                      top: MediaQuery.of(context).viewPadding.top),
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: CustomBackButton(),
+                  ),
+                ),
+                _buildTitle(),
+                _buildMainDetailsRow(context),
+                Visibility(
+                  visible: progress >= 0.98 ? false : true,
+                  child: _buildFading(
+                    _buildBiography(context),
+                    shrinkOffset,
+                  ),
+                ),
+                _buildDownArrow(shrinkOffset),
+              ]),
+            );
+          },
         ),
-        _buildTitle(),
-        _buildMainDetailsRow(),
-        Visibility(
-          visible: progress >= 0.98 ? false : true,
-          child: _buildFading(_buildBiography(), shrinkOffset),
-        ),
-        _buildDownArrow(shrinkOffset),
       ],
     );
   }
@@ -91,72 +108,68 @@ class ActorDetailsHeader extends SliverPersistentHeaderDelegate {
     );
   }
 
-  Widget _buildMainDetailsRow() {
-    return Observer(
-      builder: (context) {
-        return AnimatedContainer(
-          duration: duration,
-          alignment: AlignmentGeometry.lerp(
-            Alignment(0, 0.16),
-            Alignment(0, 0.45),
-            progress,
+  Widget _buildMainDetailsRow(context) {
+    return AnimatedContainer(
+      duration: duration,
+      alignment: AlignmentGeometry.lerp(
+        Alignment(0, 0.16),
+        Alignment(0, 0.45),
+        progress,
+      ),
+      child: ClipRRect(
+        borderRadius:
+            BorderRadius.all(Radius.circular(Style.largeRoundEdgeRadius)),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(
+            sigmaX: 10,
+            sigmaY: 10,
           ),
-          child: ClipRRect(
-            borderRadius:
-                BorderRadius.all(Radius.circular(Style.largeRoundEdgeRadius)),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(
-                sigmaX: 10,
-                sigmaY: 10,
-              ),
-              child: Opacity(
-                opacity: 0.5,
-                child: Container(
-                  color: Theme.of(context).cardColor,
-                  width: ScreenSize.getPercentOfWidth(context, 0.9),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildMainDetailColumn(
-                        Text(
-                          _getPlaceOfBirth(),
-                          style: TextStyle(
-                            fontSize: 20,
-                          ),
-                        ),
-                        Strings.birthPlace,
-                        context,
+          child: Opacity(
+            opacity: 0.5,
+            child: Container(
+              color: Theme.of(context).cardColor,
+              width: ScreenSize.getPercentOfWidth(context, 0.9),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildMainDetailColumn(
+                    Text(
+                      _getPlaceOfBirth(),
+                      style: TextStyle(
+                        fontSize: 20,
                       ),
-                      _buildMainDetailColumn(
-                        Text(
-                          actorDetailsStore.baseModel.voteAverage!
-                              .toStringAsFixed(1),
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                        ),
-                        Strings.popularity,
-                        context,
-                      ),
-                      _buildMainDetailColumn(
-                        Text(
-                          _getBirthday(),
-                          style: TextStyle(
-                            fontSize: 20,
-                          ),
-                        ),
-                        Strings.birthday,
-                        context,
-                      ),
-                    ],
+                    ),
+                    Strings.birthPlace,
+                    context,
                   ),
-                ),
+                  _buildMainDetailColumn(
+                    Text(
+                      actorDetailsStore.baseModel.voteAverage!
+                          .toStringAsFixed(1),
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                    Strings.popularity,
+                    context,
+                  ),
+                  _buildMainDetailColumn(
+                    Text(
+                      _getBirthday(),
+                      style: TextStyle(
+                        fontSize: 20,
+                      ),
+                    ),
+                    Strings.birthday,
+                    context,
+                  ),
+                ],
               ),
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
@@ -175,38 +188,36 @@ class ActorDetailsHeader extends SliverPersistentHeaderDelegate {
     );
   }
 
-  Widget _buildBiography() {
-    return Observer(builder: (context) {
-      if (actorDetailsStore.actor?.biography != null) {
-        return Align(
-          alignment: Alignment.bottomCenter,
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: ScreenSize.getPercentOfWidth(context, 0.02),
-              vertical: ScreenSize.getPercentOfWidth(context, 0.18),
-            ),
-            child: GestureDetector(
-              onTap: () {
-                showDialog(
-                    context: context,
-                    builder: (context) {
-                      return CupertinoAlertDialog(
-                        content: Text(actorDetailsStore.actor!.biography!),
-                      );
-                    });
-              },
-              child: Text(
-                actorDetailsStore.actor!.biography!,
-                maxLines: 10,
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-              ),
+  Widget _buildBiography(context) {
+    if (actorDetailsStore.actor?.biography != null) {
+      return Align(
+        alignment: Alignment.bottomCenter,
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: ScreenSize.getPercentOfWidth(context, 0.02),
+            vertical: ScreenSize.getPercentOfWidth(context, 0.18),
+          ),
+          child: GestureDetector(
+            onTap: () {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return CupertinoAlertDialog(
+                      content: Text(actorDetailsStore.actor!.biography!),
+                    );
+                  });
+            },
+            child: Text(
+              actorDetailsStore.actor!.biography!,
+              maxLines: 10,
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
-        );
-      }
-      return Container();
-    });
+        ),
+      );
+    }
+    return Container();
   }
 
   Widget _buildFading(Widget child, shrinkOffset) {

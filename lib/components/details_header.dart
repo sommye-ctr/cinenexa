@@ -214,46 +214,41 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
   }
 
   Widget _buildGenres(context) {
-    return Observer(
-      builder: (context) {
-        if (detailsStore.genres != null) {
-          List<Widget> widgets = [];
-          for (var item in detailsStore.genres!) {
-            widgets.add(Padding(
-              padding: EdgeInsets.only(
-                right: ScreenSize.getPercentOfWidth(context, 0.01),
-              ),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius:
-                      BorderRadius.circular(Style.smallRoundEdgeRadius),
-                  color: Colors.grey.withOpacity(0.4),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(2),
-                  child: Text(
-                    "${item.name}",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-              ),
-            ));
-          }
-
-          return Center(
-            child: Wrap(
-              alignment: WrapAlignment.center,
-              runSpacing: ScreenSize.getPercentOfWidth(context, 0.01),
-              children: widgets,
+    if (detailsStore.genres != null) {
+      List<Widget> widgets = [];
+      for (var item in detailsStore.genres!) {
+        widgets.add(Padding(
+          padding: EdgeInsets.only(
+            right: ScreenSize.getPercentOfWidth(context, 0.01),
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
+              color: Colors.grey.withOpacity(0.4),
             ),
-          );
-        }
-        return Container();
-      },
-    );
+            child: Padding(
+              padding: const EdgeInsets.all(2),
+              child: Text(
+                "${item.name}",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 12,
+                ),
+              ),
+            ),
+          ),
+        ));
+      }
+
+      return Center(
+        child: Wrap(
+          alignment: WrapAlignment.center,
+          runSpacing: ScreenSize.getPercentOfWidth(context, 0.01),
+          children: widgets,
+        ),
+      );
+    }
+    return Container();
   }
 
   Widget _buildReleaseInfo(context) {
