@@ -13,7 +13,10 @@ import 'package:watrix/screens/home_page.dart';
 import 'package:watrix/screens/profile_page.dart';
 import 'package:watrix/screens/search_page.dart';
 import 'package:watrix/components/home_bottom_nav_bar.dart';
+import 'package:watrix/services/network/trakt_oauth_client.dart';
+import 'package:watrix/services/network/trakt_repository.dart';
 import 'package:watrix/store/favorites/favorites_store.dart';
+import 'package:watrix/store/user/user_store.dart';
 
 import 'models/network/base_model.dart';
 
@@ -25,7 +28,7 @@ void main() async {
   );
   runApp(
     ChangeNotifierProvider(
-      create: (_) => MyTheme(),
+      create: (_) => MyTheme()..changeTheme(true),
       child: MyApp(),
     ),
   );
@@ -43,8 +46,14 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return Provider(
-      create: (_) => FavoritesStore()..fetchFavorites(),
+    return MultiProvider(
+      providers: [
+        Provider(create: (_) => FavoritesStore()..fetchFavorites()),
+        Provider(
+            create: (_) => UserStore()
+              ..fetchUserStats()
+              ..fetchUserProfile()),
+      ],
       child: MaterialApp(
         title: Strings.appName,
         debugShowCheckedModeBanner: false,

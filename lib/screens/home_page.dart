@@ -178,7 +178,7 @@ class _HomePageState extends State<HomePage>
         itemBuilder: (context, index) {
           return MovieTile(
             image:
-                "${Constants.imageBaseUrl}${Constants.posterSize}${list[index].posterPath}",
+                "${Constants.tmdbImageBase}${Constants.posterSize}${list[index].posterPath}",
             width: ScreenSize.getPercentOfWidth(
               context,
               0.29,

@@ -9,13 +9,6 @@ part of 'details_store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$DetailsStore on _DetailsStore, Store {
-  Computed<int>? _$totalReviewsComputed;
-
-  @override
-  int get totalReviews =>
-      (_$totalReviewsComputed ??= Computed<int>(() => super.totalReviews,
-              name: '_DetailsStore.totalReviews'))
-          .value;
   Computed<List<Genre>?>? _$genresComputed;
 
   @override
@@ -197,6 +190,22 @@ mixin _$DetailsStore on _DetailsStore, Store {
     });
   }
 
+  late final _$totalReviewsAtom =
+      Atom(name: '_DetailsStore.totalReviews', context: context);
+
+  @override
+  int get totalReviews {
+    _$totalReviewsAtom.reportRead();
+    return super.totalReviews;
+  }
+
+  @override
+  set totalReviews(int value) {
+    _$totalReviewsAtom.reportWrite(value, super.totalReviews, () {
+      super.totalReviews = value;
+    });
+  }
+
   late final _$reviewListAtom =
       Atom(name: '_DetailsStore.reviewList', context: context);
 
@@ -315,8 +324,8 @@ chosenSeason: ${chosenSeason},
 isAddedToFav: ${isAddedToFav},
 video: ${video},
 chosenEpisode: ${chosenEpisode},
-reviewList: ${reviewList},
 totalReviews: ${totalReviews},
+reviewList: ${reviewList},
 genres: ${genres}
     ''';
   }

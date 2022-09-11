@@ -3,30 +3,17 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:watrix/models/network/custom_exception.dart';
+import 'package:watrix/services/constants.dart';
 
 class Api {
-  static const String apiKey =
-      "c76700d23b7e001aa141938818340e79"; //TODO Obfuscate this
-  static String base = "https://api.themoviedb.org/3";
-
-  static const String traktApi =
-      "4cd822c6833df1369125d7c2f8266524993f460908af5381207e4c147059c3d4";
-  static String traktBase = "https://api.trakt.tv";
-
-  Map<String, String> requestHeaders = {
-    'Content-type': 'application/json',
-    'trakt-api-key': '$traktApi',
-    'trakt-api-version': "2",
-  };
-
   Future<dynamic> getRequest(String url, {bool haveQueries = false}) async {
     var responseJson;
     try {
       final response = await http.get(
-        Uri.parse(base +
+        Uri.parse(Constants.tmdbBase +
             url +
             (haveQueries ? "&" : "?") +
-            "api_key=$apiKey&language=en-US"),
+            "api_key=${Constants.apiKey}&language=en-US"),
       );
       responseJson = json.decode(_invalidate(response).body);
     } on SocketException {
@@ -39,8 +26,8 @@ class Api {
     var resp;
     try {
       final response = await http.get(
-        Uri.parse("${traktBase}${url}"),
-        headers: requestHeaders,
+        Uri.parse("${Constants.traktBase}${url}"),
+        headers: Constants.traktRequestHeaders,
       );
       resp = _invalidate(response);
     } on SocketException {

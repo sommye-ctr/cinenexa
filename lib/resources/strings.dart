@@ -65,4 +65,9 @@ class Strings {
 
 //Profile
   static const String darkMode = "Dark Mode";
+  static const String unknown = "Unknown";
+  static const String watchedMovies = "Movies\nWatched";
+  static const String watchedShows = "Shows\nWatched";
+  static const String minSpentMovies = "Minutes spent\non movies";
+  static const String minSpentShows = "Minutes spent\non shows";
 }

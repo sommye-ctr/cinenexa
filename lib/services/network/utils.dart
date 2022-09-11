@@ -10,19 +10,19 @@ import '../../models/network/enums/entity_type.dart';
 
 class Utils {
   static String getPosterUrl(String url, {String? posterSize}) {
-    return "${Constants.imageBaseUrl}${posterSize ?? Constants.posterSize}${url}";
+    return "${Constants.tmdbImageBase}${posterSize ?? Constants.posterSize}${url}";
   }
 
   static String getBackdropUrl(String url) {
-    return "${Constants.imageBaseUrl}${Constants.backdropSize}${url}";
+    return "${Constants.tmdbImageBase}${Constants.backdropSize}${url}";
   }
 
   static String getStillUrl(String url) {
-    return "${Constants.imageBaseUrl}${Constants.stillSize}$url";
+    return "${Constants.tmdbImageBase}${Constants.stillSize}$url";
   }
 
   static String getProfileUrl(String url) {
-    return "${Constants.imageBaseUrl}${Constants.profileSize}$url";
+    return "${Constants.tmdbImageBase}${Constants.profileSize}$url";
   }
 
   static String getSortMoviesBy(SortMoviesBy sortMoviesBy) {

@@ -73,7 +73,7 @@ class _SeeMorePageState extends State<SeeMorePage> {
                   itemBuilder: (context, index) {
                     return MovieTile(
                       image:
-                          "${Constants.imageBaseUrl}${Constants.posterSize}${seeMoreStore.items[index].posterPath}",
+                          "${Constants.tmdbImageBase}${Constants.posterSize}${seeMoreStore.items[index].posterPath}",
                       width: ScreenSize.getPercentOfWidth(
                         context,
                         0.29,
