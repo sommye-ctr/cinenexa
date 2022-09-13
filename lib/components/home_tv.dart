@@ -7,7 +7,6 @@ import '../models/network/enums/duration_type.dart';
 import '../models/network/enums/entity_type.dart';
 import '../resources/style.dart';
 import '../services/network/requests.dart';
-import '../utils/screen_size.dart';
 import '../widgets/horizontal_list.dart';
 
 class HomeTv extends StatefulWidget {
@@ -35,13 +34,20 @@ class _HomeTvState extends State<HomeTv> with AutomaticKeepAliveClientMixin {
     return ListView(
       physics: BouncingScrollPhysics(),
       children: [
-        HorizontalList(
+        HorizontalList<BaseModel>(
           future: Repository.getTitles(
               Requests.trending(EntityType.tv, DurationType.day)),
           heading: Strings.trendingToday,
-          onClick: (data) => widget.onItemClicked(data),
-          itemWidthPercent: 0.3,
-          showTitle: false,
+          buildPlaceHolder: () => Style.getMovieTilePlaceHolder(
+              context: context, widthPercent: 0.3),
+          buildWidget: (item) => Style.getMovieTile(
+            item: item,
+            widhtPercent: 0.3,
+            showTitle: false,
+            context: context,
+            onClick: widget.onItemClicked,
+          ),
+          height: Style.getMovieTileHeight(context: context, widthPercent: 0.3),
           onRightTrailClicked: (items) {
             if (widget.onSeeMoreClicked != null) {
               widget.onSeeMoreClicked!(
@@ -53,12 +59,19 @@ class _HomeTvState extends State<HomeTv> with AutomaticKeepAliveClientMixin {
           },
         ),
         Style.getVerticalSpacing(context: context),
-        HorizontalList(
+        HorizontalList<BaseModel>(
           future: Repository.getTitles(Requests.topRated(EntityType.tv)),
           heading: Strings.topRated,
-          onClick: (data) => widget.onItemClicked(data),
-          itemWidthPercent: 0.3,
-          showTitle: false,
+          buildPlaceHolder: () => Style.getMovieTilePlaceHolder(
+              context: context, widthPercent: 0.3),
+          buildWidget: (item) => Style.getMovieTile(
+            item: item,
+            widhtPercent: 0.3,
+            showTitle: false,
+            context: context,
+            onClick: widget.onItemClicked,
+          ),
+          height: Style.getMovieTileHeight(context: context, widthPercent: 0.3),
           onRightTrailClicked: (items) {
             if (widget.onSeeMoreClicked != null) {
               widget.onSeeMoreClicked!(
@@ -70,12 +83,19 @@ class _HomeTvState extends State<HomeTv> with AutomaticKeepAliveClientMixin {
           },
         ),
         Style.getVerticalSpacing(context: context),
-        HorizontalList(
+        HorizontalList<BaseModel>(
           future: Repository.getTitles(Requests.popular(EntityType.tv)),
           heading: Strings.popular,
-          onClick: (data) => widget.onItemClicked(data),
-          itemWidthPercent: 0.3,
-          showTitle: false,
+          buildPlaceHolder: () => Style.getMovieTilePlaceHolder(
+              context: context, widthPercent: 0.3),
+          buildWidget: (item) => Style.getMovieTile(
+            item: item,
+            widhtPercent: 0.3,
+            showTitle: false,
+            context: context,
+            onClick: widget.onItemClicked,
+          ),
+          height: Style.getMovieTileHeight(context: context, widthPercent: 0.3),
           onRightTrailClicked: (items) {
             if (widget.onSeeMoreClicked != null) {
               widget.onSeeMoreClicked!(
@@ -87,13 +107,20 @@ class _HomeTvState extends State<HomeTv> with AutomaticKeepAliveClientMixin {
           },
         ),
         Style.getVerticalSpacing(context: context),
-        HorizontalList(
+        HorizontalList<BaseModel>(
           future: Repository.getTitles(
               Requests.trending(EntityType.tv, DurationType.week)),
           heading: Strings.trendingThisWeek,
-          onClick: (data) => widget.onItemClicked(data),
-          itemWidthPercent: 0.3,
-          showTitle: false,
+          buildPlaceHolder: () => Style.getMovieTilePlaceHolder(
+              context: context, widthPercent: 0.3),
+          buildWidget: (item) => Style.getMovieTile(
+            item: item,
+            widhtPercent: 0.3,
+            showTitle: false,
+            context: context,
+            onClick: widget.onItemClicked,
+          ),
+          height: Style.getMovieTileHeight(context: context, widthPercent: 0.3),
           onRightTrailClicked: (items) {
             if (widget.onSeeMoreClicked != null) {
               widget.onSeeMoreClicked!(

@@ -45,15 +45,22 @@ class _HomeFeaturedState extends State<HomeFeatured>
           onClick: widget.onItemClicked,
         ),
         Style.getVerticalSpacing(context: context),
-        HorizontalList(
+        HorizontalList<BaseModel>(
           future: Repository.getTitles(
             Requests.popular(EntityType.movie),
             shuffle: true,
           ),
           heading: Strings.popularMovies,
-          onClick: (data) => widget.onItemClicked(data),
-          itemWidthPercent: 0.3,
-          showTitle: false,
+          buildPlaceHolder: () => Style.getMovieTilePlaceHolder(
+              context: context, widthPercent: 0.3),
+          buildWidget: (item) => Style.getMovieTile(
+            item: item,
+            widhtPercent: 0.3,
+            showTitle: false,
+            context: context,
+            onClick: widget.onItemClicked,
+          ),
+          height: Style.getMovieTileHeight(context: context, widthPercent: 0.3),
           onRightTrailClicked: (items) {
             if (widget.onSeeMoreClicked != null) {
               widget.onSeeMoreClicked!(
@@ -65,15 +72,22 @@ class _HomeFeaturedState extends State<HomeFeatured>
           },
         ),
         Style.getVerticalSpacing(context: context),
-        HorizontalList(
+        HorizontalList<BaseModel>(
           future: Repository.getTitles(
             Requests.popular(EntityType.tv),
             shuffle: true,
           ),
           heading: Strings.popularTv,
-          onClick: (data) => widget.onItemClicked(data),
-          itemWidthPercent: 0.3,
-          showTitle: false,
+          buildPlaceHolder: () => Style.getMovieTilePlaceHolder(
+              context: context, widthPercent: 0.3),
+          buildWidget: (item) => Style.getMovieTile(
+            item: item,
+            widhtPercent: 0.3,
+            showTitle: false,
+            context: context,
+            onClick: widget.onItemClicked,
+          ),
+          height: Style.getMovieTileHeight(context: context, widthPercent: 0.3),
           onRightTrailClicked: (items) {
             if (widget.onSeeMoreClicked != null) {
               widget.onSeeMoreClicked!(
@@ -85,12 +99,19 @@ class _HomeFeaturedState extends State<HomeFeatured>
           },
         ),
         Style.getVerticalSpacing(context: context),
-        HorizontalList(
+        HorizontalList<BaseModel>(
           future: Repository.getTitles(Requests.popular(EntityType.people)),
           heading: Strings.popularActors,
-          onClick: (data) => widget.onItemClicked(data),
-          itemWidthPercent: 0.3,
-          showTitle: false,
+          buildPlaceHolder: () => Style.getMovieTilePlaceHolder(
+              context: context, widthPercent: 0.3),
+          buildWidget: (item) => Style.getMovieTile(
+            item: item,
+            widhtPercent: 0.3,
+            showTitle: false,
+            context: context,
+            onClick: widget.onItemClicked,
+          ),
+          height: Style.getMovieTileHeight(context: context, widthPercent: 0.3),
           onRightTrailClicked: (items) {
             if (widget.onSeeMoreClicked != null) {
               widget.onSeeMoreClicked!(
@@ -102,15 +123,22 @@ class _HomeFeaturedState extends State<HomeFeatured>
           },
         ),
         Style.getVerticalSpacing(context: context),
-        HorizontalList(
+        HorizontalList<BaseModel>(
           future: Repository.getTitles(
             Requests.trending(EntityType.movie, DurationType.week),
             shuffle: true,
           ),
           heading: Strings.weeklyTrendingMovies,
-          onClick: (data) => widget.onItemClicked(data),
-          itemWidthPercent: 0.3,
-          showTitle: false,
+          buildPlaceHolder: () => Style.getMovieTilePlaceHolder(
+              context: context, widthPercent: 0.3),
+          buildWidget: (item) => Style.getMovieTile(
+            item: item,
+            widhtPercent: 0.3,
+            showTitle: false,
+            context: context,
+            onClick: widget.onItemClicked,
+          ),
+          height: Style.getMovieTileHeight(context: context, widthPercent: 0.3),
           onRightTrailClicked: (items) {
             if (widget.onSeeMoreClicked != null) {
               widget.onSeeMoreClicked!(
@@ -122,15 +150,22 @@ class _HomeFeaturedState extends State<HomeFeatured>
           },
         ),
         Style.getVerticalSpacing(context: context),
-        HorizontalList(
+        HorizontalList<BaseModel>(
           future: Repository.getTitles(
             Requests.trending(EntityType.tv, DurationType.week),
             shuffle: true,
           ),
           heading: Strings.weeklyTrendingTv,
-          onClick: (data) => widget.onItemClicked(data),
-          itemWidthPercent: 0.3,
-          showTitle: false,
+          buildPlaceHolder: () => Style.getMovieTilePlaceHolder(
+              context: context, widthPercent: 0.3),
+          buildWidget: (item) => Style.getMovieTile(
+            item: item,
+            widhtPercent: 0.3,
+            showTitle: false,
+            context: context,
+            onClick: widget.onItemClicked,
+          ),
+          height: Style.getMovieTileHeight(context: context, widthPercent: 0.3),
           onRightTrailClicked: (items) {
             if (widget.onSeeMoreClicked != null) {
               widget.onSeeMoreClicked!(

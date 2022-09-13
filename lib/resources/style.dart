@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:watrix/models/network/base_model.dart';
 import 'package:watrix/utils/screen_size.dart';
+
+import '../components/movie_tile.dart';
+import '../services/constants.dart';
+import '../services/network/utils.dart';
+import '../widgets/rounded_image_placeholder.dart';
 
 class Style {
   static double movieTileWithTitleRatio = 1 / 1.6;
@@ -47,6 +53,40 @@ class Style {
     return SizedBox(
       height: ScreenSize.getPercentOfHeight(context, percent ?? 0.02),
       width: ScreenSize.getPercentOfWidth(context, percent ?? 0.02),
+    );
+  }
+
+  static Widget getMovieTile({
+    required BaseModel item,
+    required double widhtPercent,
+    required bool showTitle,
+    required BuildContext context,
+    required Function(BaseModel) onClick,
+  }) {
+    return MovieTile(
+      image: Utils.getPosterUrl(item.posterPath ?? ""),
+      text: item.title!,
+      width: ScreenSize.getPercentOfWidth(context, widhtPercent),
+      showTitle: showTitle,
+      onClick: () => onClick(item),
+    );
+  }
+
+  static double getMovieTileHeight({
+    required BuildContext context,
+    required double widthPercent,
+  }) {
+    return ScreenSize.getPercentOfWidth(context, widthPercent) /
+        Constants.posterAspectRatio;
+  }
+
+  static Widget getMovieTilePlaceHolder({
+    required BuildContext context,
+    required double widthPercent,
+  }) {
+    return RoundedImagePlaceholder(
+      width: ScreenSize.getPercentOfWidth(context, widthPercent),
+      ratio: Constants.posterAspectRatio,
     );
   }
 }

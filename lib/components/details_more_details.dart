@@ -277,19 +277,26 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
     if (items.isNotEmpty) {
       return Container(
         margin: EdgeInsets.symmetric(horizontal: 8),
-        child: HorizontalList.fromInititalValues(
+        child: HorizontalList<BaseModel>.fromInititalValues(
           items: items,
           heading: heading,
-          onClick: (item) {
-            videoController?.pause();
-            Navigator.pushNamed(
-              context,
-              route,
-              arguments: item,
-            );
-          },
-          itemWidthPercent: 0.3,
-          showTitle: true,
+          buildPlaceHolder: () => Style.getMovieTilePlaceHolder(
+              context: context, widthPercent: 0.3),
+          buildWidget: (item) => Style.getMovieTile(
+            item: item,
+            widhtPercent: 0.3,
+            showTitle: true,
+            context: context,
+            onClick: (item) {
+              videoController?.pause();
+              Navigator.pushNamed(
+                context,
+                route,
+                arguments: item,
+              );
+            },
+          ),
+          height: Style.getMovieTileHeight(context: context, widthPercent: 0.3),
           limitItems: 10,
           onRightTrailClicked: (list) {
             showModalBottomSheet(

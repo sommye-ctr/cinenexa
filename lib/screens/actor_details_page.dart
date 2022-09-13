@@ -70,14 +70,22 @@ class _ActorDetailsPageState extends State<ActorDetailsPage> {
                     padding: EdgeInsets.symmetric(
                       horizontal: ScreenSize.getPercentOfWidth(context, 0.02),
                     ),
-                    child: HorizontalList.fromInititalValues(
+                    child: HorizontalList<BaseModel>.fromInititalValues(
                       items: actorDetailsStore.credits,
                       heading: Strings.knownFor,
-                      itemWidthPercent: 0.3,
-                      showTitle: true,
+                      buildPlaceHolder: () => Style.getMovieTilePlaceHolder(
+                          context: context, widthPercent: 0.3),
+                      buildWidget: (item) => Style.getMovieTile(
+                        item: item,
+                        widhtPercent: 0.3,
+                        showTitle: true,
+                        context: context,
+                        onClick: (baseModel) =>
+                            actorDetailsStore.onItemClicked(context, baseModel),
+                      ),
+                      height: Style.getMovieTileHeight(
+                          context: context, widthPercent: 0.3),
                       limitItems: 10,
-                      onClick: (baseModel) =>
-                          actorDetailsStore.onItemClicked(context, baseModel),
                       onRightTrailClicked: (list) {
                         showModalBottomSheet(
                           context: context,
