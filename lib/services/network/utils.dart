@@ -92,6 +92,10 @@ class Utils {
     return json.decode(object);
   }
 
+  static dynamic encodeJson(dynamic object) {
+    return json.encode(object);
+  }
+
   static Video? convertToVideo(var parsedList) {
     if (parsedList.isEmpty) return null;
     return parsedList

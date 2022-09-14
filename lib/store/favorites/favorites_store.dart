@@ -4,6 +4,8 @@ import 'package:watrix/models/network/base_model.dart';
 import 'package:watrix/models/network/enums/entity_type.dart';
 import 'package:watrix/screens/details_page.dart';
 import 'package:watrix/services/local/database.dart';
+import 'package:watrix/services/network/trakt_oauth_client.dart';
+import 'package:watrix/services/network/trakt_repository.dart';
 
 part 'favorites_store.g.dart';
 
@@ -12,6 +14,8 @@ class FavoritesStore extends _FavoritesStore with _$FavoritesStore {}
 abstract class _FavoritesStore with Store {
   @observable
   ObservableList<BaseModel> _favorites = <BaseModel>[].asObservable();
+
+  TraktRepository traktRepository = TraktRepository(client: TraktOAuthClient());
 
   @computed
   ObservableList<BaseModel> get currentFav {
@@ -44,11 +48,15 @@ abstract class _FavoritesStore with Store {
   @action
   void addFavorite(BaseModel baseModel) {
     _favorites.add(baseModel);
+    traktRepository.addFavorites(
+        tmdbId: baseModel.id!, entityType: baseModel.type!.getEntityType());
   }
 
   @action
   void removeFavorite(BaseModel baseModel) {
     _favorites.remove(baseModel);
+    traktRepository.removeFavorite(
+        tmdbId: baseModel.id!, entityType: baseModel.type!.getEntityType());
   }
 
   @action

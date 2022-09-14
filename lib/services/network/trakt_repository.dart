@@ -4,7 +4,6 @@ import 'package:oauth2_client/oauth2_client.dart';
 import 'package:oauth2_client/oauth2_helper.dart';
 import 'package:watrix/models/network/base_model.dart';
 import 'package:watrix/models/network/movie.dart';
-import 'package:watrix/models/network/trakt/trakt_base.dart';
 import 'package:watrix/models/network/trakt/trakt_progress.dart';
 import 'package:watrix/models/network/user.dart';
 import 'package:watrix/models/network/user_stats.dart';
@@ -27,6 +26,14 @@ class TraktRepository {
 
   Future get(String url) {
     return helper.get(url, headers: Constants.traktRequestHeaders);
+  }
+
+  Future post(String url, {dynamic data}) {
+    return helper.post(
+      url,
+      body: data,
+      headers: Constants.traktRequestHeaders,
+    );
   }
 
   Future<UserStats> getUserStats() async {
@@ -129,5 +136,62 @@ class TraktRepository {
     });
 
     return respList;
+  }
+
+//this adds to the "Collected" in trakt
+  Future addFavorites(
+      {required int tmdbId, required EntityType entityType}) async {
+    Map body;
+    if (entityType == EntityType.movie) {
+      body = {
+        "movies": [
+          {
+            "ids": {
+              "tmdb": tmdbId,
+            }
+          }
+        ]
+      };
+    } else {
+      body = {
+        "shows": [
+          {
+            "ids": {
+              "tmdb": tmdbId,
+            }
+          }
+        ]
+      };
+    }
+    await post("https://api.trakt.tv/sync/collection",
+        data: Utils.encodeJson(body));
+  }
+
+  Future removeFavorite(
+      {required int tmdbId, required EntityType entityType}) async {
+    Map body;
+    if (entityType == EntityType.movie) {
+      body = {
+        "movies": [
+          {
+            "ids": {
+              "tmdb": tmdbId,
+            }
+          }
+        ]
+      };
+    } else {
+      body = {
+        "shows": [
+          {
+            "ids": {
+              "tmdb": tmdbId,
+            }
+          }
+        ]
+      };
+    }
+    await post("https://api.trakt.tv/sync/collection/remove",
+        data: Utils.encodeJson(body));
   }
 }
