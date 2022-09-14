@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
+import 'package:watrix/services/network/utils.dart';
 import 'package:watrix/store/see_more/see_more_store.dart';
 
 import '../components/movie_tile.dart';
@@ -11,12 +13,17 @@ import '../utils/screen_size.dart';
 import 'actor_details_page.dart';
 import 'details_page.dart';
 
+enum SeeMoreChildType {
+  squicircle,
+  circle,
+}
+
 class SeeMorePage extends StatefulWidget {
   final String? future;
   final List<BaseModel> initialItems;
   final String heading;
-
   final bool isLazyLoad;
+  final SeeMoreChildType type;
 
   const SeeMorePage({
     Key? key,
@@ -24,6 +31,7 @@ class SeeMorePage extends StatefulWidget {
     required this.heading,
     this.future,
     this.isLazyLoad = true,
+    this.type = SeeMoreChildType.squicircle,
   }) : super(key: key);
 
   @override
@@ -68,38 +76,59 @@ class _SeeMorePageState extends State<SeeMorePage> {
                   physics: BouncingScrollPhysics(),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
-                    childAspectRatio: Style.movieTileWithTitleRatio,
+                    childAspectRatio: widget.type == SeeMoreChildType.squicircle
+                        ? Style.movieTileWithTitleRatio
+                        : 1 / 1.33,
                   ),
                   itemBuilder: (context, index) {
-                    return MovieTile(
-                      image:
-                          "${Constants.tmdbImageBase}${Constants.posterSize}${seeMoreStore.items[index].posterPath}",
-                      width: ScreenSize.getPercentOfWidth(
-                        context,
-                        0.29,
-                      ),
-                      showTitle: true,
-                      text: seeMoreStore.items[index].title!,
-                      onClick: () {
-                        String name;
-                        if (seeMoreStore.items[index].type ==
-                            BaseModelType.people) {
-                          name = ActorDetailsPage.routeName;
-                        } else {
-                          name = DetailsPage.routeName;
-                        }
-                        Navigator.pushNamed(
-                          context,
-                          name,
-                          arguments: seeMoreStore.items[index],
-                        );
-                      },
-                    );
+                    return _buildChild(index);
                   },
                 ),
               );
             },
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildChild(index) {
+    if (widget.type == SeeMoreChildType.squicircle) {
+      return MovieTile(
+        image:
+            "${Constants.tmdbImageBase}${Constants.posterSize}${seeMoreStore.items[index].posterPath}",
+        width: ScreenSize.getPercentOfWidth(
+          context,
+          0.29,
+        ),
+        showTitle: true,
+        text: seeMoreStore.items[index].title!,
+        onClick: () {
+          String name;
+          if (seeMoreStore.items[index].type == BaseModelType.people) {
+            name = ActorDetailsPage.routeName;
+          } else {
+            name = DetailsPage.routeName;
+          }
+          Navigator.pushNamed(
+            context,
+            name,
+            arguments: seeMoreStore.items[index],
+          );
+        },
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        CircleAvatar(
+          backgroundImage: CachedNetworkImageProvider(
+              Utils.getPosterUrl(seeMoreStore.items[index].posterPath!)),
+          radius: ScreenSize.getPercentOfWidth(context, 0.15),
+        ),
+        Text(
+          seeMoreStore.items[index].title!,
+          textAlign: TextAlign.center,
         ),
       ],
     );

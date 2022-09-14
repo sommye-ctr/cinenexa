@@ -53,7 +53,8 @@ class _MyAppState extends State<MyApp> {
           create: (_) => UserStore()
             ..fetchUserStats()
             ..fetchUserProfile()
-            ..fetchUserProgress(),
+            ..fetchUserProgress()
+            ..fetchUserRecommendations(),
         ),
       ],
       child: MaterialApp(

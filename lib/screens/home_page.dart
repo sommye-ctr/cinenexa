@@ -196,12 +196,17 @@ class _HomePageState extends State<HomePage>
     homeStore.onItemClicked(context, baseModel);
   }
 
-  void _onSeeMoreClicked(String future, List<BaseModel> items, String heading) {
-    _showSeeMoreSheet(context, future, items, heading);
+  void _onSeeMoreClicked(String future, List<BaseModel> items, String heading,
+      {SeeMoreChildType seeMoreChildType = SeeMoreChildType.squicircle}) {
+    _showSeeMoreSheet(context, future, items, heading, seeMoreChildType);
   }
 
-  void _showSeeMoreSheet(BuildContext context, String future,
-      List<BaseModel> items, String heading) {
+  void _showSeeMoreSheet(
+      BuildContext context,
+      String future,
+      List<BaseModel> items,
+      String heading,
+      SeeMoreChildType seeMoreChildType) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -215,6 +220,7 @@ class _HomePageState extends State<HomePage>
             future: future,
             initialItems: items,
             heading: heading,
+            type: seeMoreChildType,
           ),
         );
       },

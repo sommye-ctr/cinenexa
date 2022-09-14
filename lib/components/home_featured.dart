@@ -1,9 +1,12 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:provider/provider.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
+import 'package:watrix/screens/see_more_page.dart';
 import 'package:watrix/services/network/repository.dart';
+import 'package:watrix/services/network/trakt_repository.dart';
 
 import '../models/network/base_model.dart';
 import '../models/network/enums/duration_type.dart';
@@ -20,8 +23,12 @@ import 'movie_tile.dart';
 
 class HomeFeatured extends StatefulWidget {
   final Function(BaseModel data) onItemClicked;
-  final Function(String future, List<BaseModel> items, String heading)?
-      onSeeMoreClicked;
+  final Function(
+    String future,
+    List<BaseModel> items,
+    String heading, {
+    SeeMoreChildType seeMoreChildType,
+  })? onSeeMoreClicked;
 
   const HomeFeatured({
     Key? key,
@@ -104,6 +111,85 @@ class _HomeFeaturedState extends State<HomeFeatured>
           );
         }),
         Style.getVerticalSpacing(context: context),
+        Observer(
+          builder: (_) {
+            UserStore userStore = Provider.of<UserStore>(context);
+            userStore.movieRecommendations.length;
+            return HorizontalList<BaseModel>.fromInititalValues(
+              items: userStore.movieRecommendations,
+              heading: Strings.pickedMovies,
+              buildWidget: (item) => Style.getMovieTile(
+                item: item,
+                widhtPercent: 0.3,
+                showTitle: false,
+                context: context,
+                onClick: widget.onItemClicked,
+              ),
+              buildPlaceHolder: () => Style.getMovieTilePlaceHolder(
+                  context: context, widthPercent: 0.3),
+              height:
+                  Style.getMovieTileHeight(context: context, widthPercent: 0.3),
+            );
+          },
+        ),
+        Style.getVerticalSpacing(context: context),
+        Observer(
+          builder: (_) {
+            UserStore userStore = Provider.of<UserStore>(context);
+            userStore.showRecommendations.length;
+            return HorizontalList<BaseModel>.fromInititalValues(
+              items: userStore.showRecommendations,
+              heading: Strings.pickedShows,
+              buildWidget: (item) => Style.getMovieTile(
+                item: item,
+                widhtPercent: 0.3,
+                showTitle: false,
+                context: context,
+                onClick: widget.onItemClicked,
+              ),
+              buildPlaceHolder: () => Style.getMovieTilePlaceHolder(
+                  context: context, widthPercent: 0.3),
+              height:
+                  Style.getMovieTileHeight(context: context, widthPercent: 0.3),
+            );
+          },
+        ),
+        Style.getVerticalSpacing(context: context),
+        HorizontalList<BaseModel>(
+          future: Repository.getTitles(Requests.popular(EntityType.people)),
+          heading: Strings.popularActors,
+          buildPlaceHolder: () => Style.getMovieTilePlaceHolder(
+              context: context, widthPercent: 0.3),
+          buildWidget: (item) {
+            return GestureDetector(
+              onTap: () => widget.onItemClicked(item),
+              child: Column(
+                children: [
+                  CircleAvatar(
+                    backgroundImage: CachedNetworkImageProvider(
+                        Utils.getPosterUrl(item.posterPath!)),
+                    radius: ScreenSize.getPercentOfWidth(context, 0.15),
+                  ),
+                  Text(item.title!)
+                ],
+              ),
+            );
+          },
+          height:
+              Style.getMovieTileHeight(context: context, widthPercent: 0.15) *
+                  1.8,
+          onRightTrailClicked: (items) {
+            if (widget.onSeeMoreClicked != null) {
+              widget.onSeeMoreClicked!(
+                Requests.popular(EntityType.people),
+                items,
+                Strings.popularActors,
+                seeMoreChildType: SeeMoreChildType.circle,
+              );
+            }
+          },
+        ),
+        Style.getVerticalSpacing(context: context),
         HorizontalList<BaseModel>(
           future: Repository.getTitles(
             Requests.popular(EntityType.movie),
@@ -153,30 +239,6 @@ class _HomeFeaturedState extends State<HomeFeatured>
                 Requests.popular(EntityType.tv),
                 items,
                 Strings.popularTv,
-              );
-            }
-          },
-        ),
-        Style.getVerticalSpacing(context: context),
-        HorizontalList<BaseModel>(
-          future: Repository.getTitles(Requests.popular(EntityType.people)),
-          heading: Strings.popularActors,
-          buildPlaceHolder: () => Style.getMovieTilePlaceHolder(
-              context: context, widthPercent: 0.3),
-          buildWidget: (item) => Style.getMovieTile(
-            item: item,
-            widhtPercent: 0.3,
-            showTitle: false,
-            context: context,
-            onClick: widget.onItemClicked,
-          ),
-          height: Style.getMovieTileHeight(context: context, widthPercent: 0.3),
-          onRightTrailClicked: (items) {
-            if (widget.onSeeMoreClicked != null) {
-              widget.onSeeMoreClicked!(
-                Requests.popular(EntityType.people),
-                items,
-                Strings.popularActors,
               );
             }
           },

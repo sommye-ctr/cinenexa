@@ -1,4 +1,6 @@
 import 'package:mobx/mobx.dart';
+import 'package:watrix/models/network/base_model.dart';
+import 'package:watrix/models/network/enums/entity_type.dart';
 import 'package:watrix/models/network/trakt/trakt_progress.dart';
 import 'package:watrix/models/network/user.dart';
 import 'package:watrix/models/network/user_stats.dart';
@@ -18,6 +20,12 @@ abstract class _UserStoreBase with Store {
   @observable
   ObservableList<TraktProgress> progress = <TraktProgress>[].asObservable();
 
+  @observable
+  ObservableList<BaseModel> movieRecommendations = <BaseModel>[].asObservable();
+
+  @observable
+  ObservableList<BaseModel> showRecommendations = <BaseModel>[].asObservable();
+
   TraktRepository repository = TraktRepository(client: TraktOAuthClient());
 
   @action
@@ -33,5 +41,15 @@ abstract class _UserStoreBase with Store {
   @action
   Future fetchUserProgress() async {
     progress.addAll(await repository.getUserMovieProgress());
+  }
+
+  @action
+  Future fetchUserRecommendations() async {
+    List list = await Future.wait([
+      repository.getRecommendations(type: EntityType.movie),
+      repository.getRecommendations(type: EntityType.tv)
+    ]);
+    movieRecommendations.addAll(list[0]);
+    showRecommendations.addAll(list[1]);
   }
 }

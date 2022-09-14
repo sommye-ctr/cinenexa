@@ -1,13 +1,17 @@
+import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:oauth2_client/oauth2_client.dart';
 import 'package:oauth2_client/oauth2_helper.dart';
+import 'package:watrix/models/network/base_model.dart';
 import 'package:watrix/models/network/movie.dart';
+import 'package:watrix/models/network/trakt/trakt_base.dart';
 import 'package:watrix/models/network/trakt/trakt_progress.dart';
 import 'package:watrix/models/network/user.dart';
 import 'package:watrix/models/network/user_stats.dart';
 import 'package:watrix/services/network/repository.dart';
 import 'package:watrix/services/network/utils.dart';
 
+import '../../models/network/enums/entity_type.dart';
 import '../../models/network/tv.dart';
 import '../constants.dart';
 
@@ -96,8 +100,34 @@ class TraktRepository {
     return progressList;
   }
 
-  Future getUserWatched() async {
-    Response resp = await get("https://api.trakt.tv/sync/watched/shows");
-    //print(resp.body);
+  Future getRecommendations({
+    required EntityType type,
+    int page = 1,
+  }) async {
+    String stringType;
+    if (type == EntityType.movie) {
+      stringType = Constants.movies;
+    } else if (type == EntityType.tv) {
+      stringType = Constants.shows;
+    } else {
+      throw FlutterError("Invalid media type");
+    }
+    Response resp = await get(
+        "https://api.trakt.tv/recommendations/$stringType?ignore_collected=false&page=$page");
+    List list = Utils.parseJson(resp.body);
+
+    List<BaseModel> respList = [];
+    await Future.forEach(list, (element) async {
+      element as Map;
+      if (type == EntityType.movie) {
+        respList.add(BaseModel.fromMovie(
+            await Repository.getMovieDetails(id: element['ids']['tmdb'])));
+        return;
+      }
+      respList.add(BaseModel.fromTv(
+          await Repository.getTvDetails(id: element['ids']['tmdb'])));
+    });
+
+    return respList;
   }
 }

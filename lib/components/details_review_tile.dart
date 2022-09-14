@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:watrix/models/network/review.dart';
-import 'package:watrix/services/network/utils.dart';
 import 'package:watrix/utils/date_time_formatter.dart';
 import 'package:watrix/utils/screen_size.dart';
 
@@ -27,42 +26,47 @@ class DetailsReviewTile extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(16),
-                        clipBehavior: Clip.hardEdge,
-                        child: Container(
-                          color: Theme.of(context).colorScheme.primary,
-                          child: Icon(
-                            Icons.person,
+              Container(
+                width: double.infinity,
+                child: Wrap(
+                  alignment: WrapAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          clipBehavior: Clip.hardEdge,
+                          child: Container(
+                            color: Theme.of(context).colorScheme.primary,
+                            child: Icon(
+                              Icons.person,
+                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(
-                        width: ScreenSize.getPercentOfWidth(context, 0.01),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            review.user ?? "",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            DateTimeFormatter.getDateMonthYearFromString(
-                                review.createdAt ?? ""),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  _buildRating(context),
-                ],
+                        SizedBox(
+                          width: ScreenSize.getPercentOfWidth(context, 0.01),
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              review.user ?? "",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              DateTimeFormatter.getDateMonthYearFromString(
+                                  review.createdAt ?? ""),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    _buildRating(context),
+                  ],
+                ),
               ),
               SizedBox(
                 height: ScreenSize.getPercentOfHeight(context, 0.02),

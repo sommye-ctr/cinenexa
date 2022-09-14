@@ -18,6 +18,8 @@ class Strings {
   static const String favorites = "Favorites";
 
   static const String pickupLeft = "Pickup where you left";
+  static const String pickedMovies = "Movies picked for you";
+  static const String pickedShows = "Shows picked for you";
 
   static const String trendingToday = "Trending Today";
   static const String topRated = "Top Rated";
@@ -27,8 +29,8 @@ class Strings {
   static const String popularMovies = "Popular Movies";
   static const String popularTv = "Popular Tv Shows";
   static const String popularActors = "Popular Actors";
-  static const String weeklyTrendingMovies = "Weekly Trending Movies";
-  static const String weeklyTrendingTv = "Weekly Trending Tv Shows";
+  static const String weeklyTrendingMovies = "Movies of the week";
+  static const String weeklyTrendingTv = "Shows of the week";
 
 //Search
   static const String searchHint = "You can search for";
