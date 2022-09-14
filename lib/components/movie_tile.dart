@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:watrix/resources/style.dart';
 import 'package:watrix/widgets/rounded_image.dart';
 
 import '../services/constants.dart';
@@ -35,16 +36,25 @@ class MovieTile extends StatelessWidget {
                   width: width,
                   ratio: Constants.posterAspectRatio,
                 )),
-            if (showTitle)
-              Text(
-                text,
-                maxLines: 1,
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-              ),
+            ...getConditionedWidgets(context),
           ],
         ),
       ),
     );
+  }
+
+  List<Widget> getConditionedWidgets(context) {
+    if (showTitle) {
+      return [
+        Style.getVerticalSpacing(context: context, percent: 0.01),
+        Text(
+          text,
+          maxLines: 1,
+          textAlign: TextAlign.center,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ];
+    }
+    return [];
   }
 }

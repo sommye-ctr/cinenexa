@@ -6,7 +6,6 @@ import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/store/user/user_store.dart';
 import 'package:watrix/utils/screen_size.dart';
-import 'package:watrix/widgets/horizontal_list.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);

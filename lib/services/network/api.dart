@@ -36,10 +36,6 @@ class Api {
     return resp;
   }
 
-  dynamic parseJson(dynamic object) {
-    return json.decode(object);
-  }
-
   http.Response _invalidate(http.Response response) {
     switch (response.statusCode) {
       case 400:

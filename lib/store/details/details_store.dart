@@ -1,6 +1,5 @@
 import 'package:mobx/mobx.dart';
 import 'package:watrix/models/network/review.dart';
-import 'package:watrix/services/constants.dart';
 import 'package:watrix/services/local/database.dart';
 import 'package:watrix/services/network/requests.dart';
 
@@ -23,7 +22,9 @@ abstract class _DetailsStore with Store {
   final BaseModel baseModel;
   Database database = Database();
 
-  _DetailsStore({required this.baseModel}) {
+  _DetailsStore({
+    required this.baseModel,
+  }) {
     _fetchDetails();
   }
 
@@ -158,13 +159,13 @@ abstract class _DetailsStore with Store {
   void _fetchDetails() async {
     isAddedToFav = await database.isAddedInFav(baseModel.id!);
     if (baseModel.type == BaseModelType.movie) {
-      Map map = await Repository.getMovieDetails(id: baseModel.id!);
+      Map map = await Repository.getMovieDetailsWithExtras(id: baseModel.id!);
       movie = map['movie'];
       credits.addAll(map['credits']);
       recommended.addAll(map['recommended']);
       video = map['video'];
     } else if (baseModel.type == BaseModelType.tv) {
-      Map map = await Repository.getTvDetails(id: baseModel.id!);
+      Map map = await Repository.getTvDetailsWithExtras(id: baseModel.id!);
       tv = map['tv'];
       credits.addAll(map['credits']);
       recommended.addAll(map['recommended']);

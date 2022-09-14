@@ -1,4 +1,5 @@
 import 'package:mobx/mobx.dart';
+import 'package:watrix/models/network/trakt/trakt_progress.dart';
 import 'package:watrix/models/network/user.dart';
 import 'package:watrix/models/network/user_stats.dart';
 import 'package:watrix/services/network/trakt_oauth_client.dart';
@@ -14,6 +15,9 @@ abstract class _UserStoreBase with Store {
   @observable
   User? user;
 
+  @observable
+  ObservableList<TraktProgress> progress = <TraktProgress>[].asObservable();
+
   TraktRepository repository = TraktRepository(client: TraktOAuthClient());
 
   @action
@@ -24,5 +28,10 @@ abstract class _UserStoreBase with Store {
   @action
   Future fetchUserStats() async {
     userStats = await repository.getUserStats();
+  }
+
+  @action
+  Future fetchUserProgress() async {
+    progress.addAll(await repository.getUserMovieProgress());
   }
 }

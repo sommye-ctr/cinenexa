@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
-import 'package:mobx/mobx.dart';
 import 'package:watrix/components/details_review_tile.dart';
 import 'package:watrix/store/details/details_store.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -296,7 +295,9 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
               );
             },
           ),
-          height: Style.getMovieTileHeight(context: context, widthPercent: 0.3),
+          height:
+              Style.getMovieTileHeight(context: context, widthPercent: 0.3) +
+                  ScreenSize.getPercentOfHeight(context, 0.05),
           limitItems: 10,
           onRightTrailClicked: (list) {
             showModalBottomSheet(

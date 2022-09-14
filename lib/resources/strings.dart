@@ -17,6 +17,8 @@ class Strings {
   static const String tvShows = "TV Shows";
   static const String favorites = "Favorites";
 
+  static const String pickupLeft = "Pickup where you left";
+
   static const String trendingToday = "Trending Today";
   static const String topRated = "Top Rated";
   static const String popular = "Popular";

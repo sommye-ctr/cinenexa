@@ -97,7 +97,7 @@ class Repository {
     String req = "$query?page=$page";
     final Response response = await api.getTraktRequest(req);
 
-    List list = api.parseJson(response.body);
+    List list = Utils.parseJson(response.body);
     return {
       "total": int.parse(response.headers["x-pagination-item-count"]!),
       "results": list.map((e) => Review.fromMap(e)).toList(),
@@ -108,11 +108,11 @@ class Repository {
       {required int tmdbId, required String type}) async {
     String req = "${Constants.search}/tmdb/$tmdbId?type=$type";
     Response response = await api.getTraktRequest(req);
-    List list = api.parseJson(response.body);
+    List list = Utils.parseJson(response.body);
     return list.first[type]['ids']['trakt'];
   }
 
-  static Future<Map> getMovieDetails({required int id}) async {
+  static Future<Map> getMovieDetailsWithExtras({required int id}) async {
     final response = await api.getRequest(
       "${Constants.movie}/${id}?append_to_response=credits,recommendations,videos",
       haveQueries: true,
@@ -127,7 +127,21 @@ class Repository {
     };
   }
 
-  static Future<Map> getTvDetails({required int id}) async {
+  static Future<Movie> getMovieDetails({required int id}) async {
+    final response = await api.getRequest(
+      "${Constants.movie}/${id}",
+    );
+    return Movie.fromMap(response);
+  }
+
+  static Future<Tv> getTvDetails({required int id}) async {
+    final response = await api.getRequest(
+      "${Constants.tv}/${id}",
+    );
+    return Tv.fromMap(response);
+  }
+
+  static Future<Map> getTvDetailsWithExtras({required int id}) async {
     final response = await api.getRequest(
       "${Constants.tv}/${id}?append_to_response=credits,recommendations,videos",
       haveQueries: true,

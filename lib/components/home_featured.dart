@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:provider/provider.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/services/network/repository.dart';
@@ -6,9 +8,15 @@ import 'package:watrix/services/network/repository.dart';
 import '../models/network/base_model.dart';
 import '../models/network/enums/duration_type.dart';
 import '../models/network/enums/entity_type.dart';
+import '../models/network/trakt/trakt_progress.dart';
+import '../services/constants.dart';
 import '../services/network/requests.dart';
+import '../services/network/utils.dart';
+import '../store/user/user_store.dart';
+import '../utils/screen_size.dart';
 import '../widgets/horizontal_list.dart';
 import '../widgets/image_carousel.dart';
+import 'movie_tile.dart';
 
 class HomeFeatured extends StatefulWidget {
   final Function(BaseModel data) onItemClicked;
@@ -44,6 +52,57 @@ class _HomeFeaturedState extends State<HomeFeatured>
           ),
           onClick: widget.onItemClicked,
         ),
+        Style.getVerticalSpacing(context: context),
+        Observer(builder: (_) {
+          UserStore userStore = Provider.of<UserStore>(context);
+          userStore.progress.length;
+          return HorizontalList<TraktProgress>.fromInititalValues(
+            items: userStore.progress,
+            heading: Strings.pickupLeft,
+            buildWidget: (item) {
+              bool isMovie = item.type == "movie";
+
+              return Stack(
+                children: [
+                  Positioned(
+                    top: ScreenSize.getPercentOfWidth(context, 0.3) /
+                        Constants.posterAspectRatio,
+                    child: Container(
+                      width: ScreenSize.getPercentOfWidth(context, 0.3),
+                      child: ClipRRect(
+                        borderRadius:
+                            BorderRadius.circular(Style.largeRoundEdgeRadius),
+                        child: LinearProgressIndicator(
+                          value: item.progress! / 100,
+                        ),
+                      ),
+                    ),
+                  ),
+                  MovieTile(
+                    image: Utils.getPosterUrl(isMovie
+                        ? (item.movie?.posterPath ?? "")
+                        : (item.show?.posterPath ?? "")),
+                    text: isMovie
+                        ? item.movie?.title ?? ""
+                        : item.show?.name ?? "",
+                    width: ScreenSize.getPercentOfWidth(context, 0.3),
+                    showTitle: true,
+                    onClick: () {
+                      widget.onItemClicked(isMovie
+                          ? BaseModel.fromMovie(item.movie!)
+                          : BaseModel.fromTv(item.show!));
+                    },
+                  ),
+                ],
+              );
+            },
+            buildPlaceHolder: () => Style.getMovieTilePlaceHolder(
+                context: context, widthPercent: 0.3),
+            height:
+                Style.getMovieTileHeight(context: context, widthPercent: 0.3) +
+                    ScreenSize.getPercentOfHeight(context, 0.05),
+          );
+        }),
         Style.getVerticalSpacing(context: context),
         HorizontalList<BaseModel>(
           future: Repository.getTitles(

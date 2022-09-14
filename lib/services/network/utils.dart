@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:watrix/models/network/video.dart';
 import 'package:watrix/resources/strings.dart';
@@ -84,6 +86,10 @@ class Utils {
 
   static List<BaseModel> convertToBaseModelList(var parsedList) {
     return (parsedList as List).map((e) => BaseModel.fromMap(e)).toList();
+  }
+
+  static dynamic parseJson(dynamic object) {
+    return json.decode(object);
   }
 
   static Video? convertToVideo(var parsedList) {

@@ -50,9 +50,11 @@ class _MyAppState extends State<MyApp> {
       providers: [
         Provider(create: (_) => FavoritesStore()..fetchFavorites()),
         Provider(
-            create: (_) => UserStore()
-              ..fetchUserStats()
-              ..fetchUserProfile()),
+          create: (_) => UserStore()
+            ..fetchUserStats()
+            ..fetchUserProfile()
+            ..fetchUserProgress(),
+        ),
       ],
       child: MaterialApp(
         title: Strings.appName,
