@@ -28,7 +28,7 @@ void main() async {
   );
   runApp(
     ChangeNotifierProvider(
-      create: (_) => MyTheme()..changeTheme(true),
+      create: (_) => MyTheme(),
       child: MyApp(),
     ),
   );

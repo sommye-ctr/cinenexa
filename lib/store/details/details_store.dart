@@ -26,6 +26,7 @@ abstract class _DetailsStore with Store {
     required this.baseModel,
   }) {
     _fetchDetails();
+    fetchReviews();
   }
 
   @observable
@@ -142,7 +143,7 @@ abstract class _DetailsStore with Store {
     }
 
     reviews = ObservableFuture(Repository.getReviews(
-      query: await Requests.reviews(baseModel.type!, traktId),
+      query: Requests.reviews(baseModel.type!, traktId),
       page: reviewPage,
     ));
     reviews.then((value) {

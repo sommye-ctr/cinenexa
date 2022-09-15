@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
+import 'package:lottie/lottie.dart';
+import 'package:mobx/mobx.dart';
 import 'package:watrix/components/details_review_tile.dart';
 import 'package:watrix/store/details/details_store.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '../models/network/base_model.dart';
 import '../models/network/tv_season.dart';
+import '../resources/asset.dart';
 import '../resources/strings.dart';
 import '../resources/style.dart';
 import '../screens/actor_details_page.dart';
@@ -37,11 +40,6 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
   @override
   void initState() {
     tabController = TabController(length: 3, vsync: this);
-    tabController.addListener(() {
-      if (tabController.index == 2 && widget.detailsStore.reviewList.isEmpty) {
-        widget.detailsStore.fetchReviews();
-      }
-    });
     super.initState();
   }
 
@@ -119,7 +117,14 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
 
   Widget _buildReviews() {
     return Observer(builder: (context) {
-      if (widget.detailsStore.reviewList.isNotEmpty) {
+      DetailsStore detailsStore = widget.detailsStore;
+      if (detailsStore.reviewList.isEmpty &&
+          detailsStore.reviews.status == FutureStatus.pending) {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+      if (detailsStore.reviewList.isNotEmpty) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
@@ -150,8 +155,9 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
           ],
         );
       }
-      return Center(
-        child: CircularProgressIndicator(),
+      return LottieBuilder.asset(
+        Asset.notFound,
+        repeat: true,
       );
     });
   }

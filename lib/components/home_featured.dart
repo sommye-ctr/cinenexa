@@ -76,11 +76,13 @@ class _HomeFeaturedState extends State<HomeFeatured>
                         Constants.posterAspectRatio,
                     child: Container(
                       width: ScreenSize.getPercentOfWidth(context, 0.3),
+                      margin: EdgeInsets.all(4),
                       child: ClipRRect(
                         borderRadius:
                             BorderRadius.circular(Style.largeRoundEdgeRadius),
                         child: LinearProgressIndicator(
                           value: item.progress! / 100,
+                          backgroundColor: Colors.transparent,
                         ),
                       ),
                     ),

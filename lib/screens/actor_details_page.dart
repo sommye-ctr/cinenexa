@@ -84,7 +84,8 @@ class _ActorDetailsPageState extends State<ActorDetailsPage> {
                             actorDetailsStore.onItemClicked(context, baseModel),
                       ),
                       height: Style.getMovieTileHeight(
-                          context: context, widthPercent: 0.3),
+                              context: context, widthPercent: 0.3) +
+                          ScreenSize.getPercentOfHeight(context, 0.05),
                       limitItems: 10,
                       onRightTrailClicked: (list) {
                         showModalBottomSheet(

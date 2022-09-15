@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
+import 'package:lottie/lottie.dart';
 import 'package:mobx/mobx.dart';
 import 'package:provider/provider.dart';
 import 'package:watrix/resources/asset.dart';
@@ -259,7 +260,10 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     List<BaseModel> list = searchStore.results;
     if (searchStore.fetchItemsFuture.status == FutureStatus.fulfilled &&
         list.isEmpty) {
-      return Text(Strings.noResultsFound);
+      return LottieBuilder.asset(
+        Asset.notFound,
+        repeat: true,
+      );
     }
     return Flexible(
       child: LazyLoadScrollView(
@@ -303,7 +307,10 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     List<BaseModel> list = searchStore.results;
     if (searchStore.fetchItemsFuture.status == FutureStatus.fulfilled &&
         list.isEmpty) {
-      return Text(Strings.noResultsFound);
+      return LottieBuilder.asset(
+        Asset.notFound,
+        repeat: true,
+      );
     }
     return Expanded(
       child: LazyLoadScrollView(
