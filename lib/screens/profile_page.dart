@@ -25,16 +25,18 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Style.getVerticalHorizontalSpacing(context: context),
-          _buildProfileTile(),
-          Style.getVerticalHorizontalSpacing(context: context),
-          _buildStatCardsTile(),
-        ],
+    return Material(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Style.getVerticalHorizontalSpacing(context: context),
+            _buildProfileTile(),
+            Style.getVerticalHorizontalSpacing(context: context),
+            _buildStatCardsTile(),
+          ],
+        ),
       ),
     );
   }

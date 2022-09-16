@@ -89,7 +89,10 @@ class Movie {
 
   String toJson() => json.encode(toMap());
 
-  factory Movie.fromJson(String source) => Movie.fromMap(json.decode(source));
+  factory Movie.fromJson(String? source) {
+    if (source != null) return Movie.fromMap(json.decode(source));
+    return Movie.fromMap({});
+  }
 
   @override
   String toString() {

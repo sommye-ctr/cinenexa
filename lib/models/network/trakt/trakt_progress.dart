@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:watrix/models/local/progress.dart';
 import 'package:watrix/models/network/movie.dart';
 import 'package:watrix/models/network/tv.dart';
 
@@ -95,5 +96,24 @@ class TraktProgress {
         show.hashCode ^
         seasonNo.hashCode ^
         episodeNo.hashCode;
+  }
+}
+
+extension TraktProgressConverter on TraktProgress {
+  Progress getProgress() {
+    if (this.movie == null) {
+      return Progress()
+        ..episodeNo = this.episodeNo!
+        ..progress = this.progress!
+        ..seasonNo = this.seasonNo!
+        ..type = this.type!
+        ..show = this.show!
+        ..id = this.show!.id;
+    }
+    return Progress()
+      ..progress = this.progress!
+      ..type = this.type!
+      ..movie = this.movie!
+      ..id = this.movie!.id;
   }
 }

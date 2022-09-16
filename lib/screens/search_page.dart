@@ -45,21 +45,23 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _onBackClicked,
-      child: Container(
-        width: ScreenSize.getPercentOfWidth(context, 1),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _buildSearchBar(),
-            Style.getVerticalSpacing(context: context),
-            _buildSearchTypeTabs(),
-            _buildMainBody(),
-            SizedBox(
-              height: kBottomNavigationBarHeight,
-            )
-          ],
+    return Material(
+      child: WillPopScope(
+        onWillPop: _onBackClicked,
+        child: Container(
+          width: ScreenSize.getPercentOfWidth(context, 1),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _buildSearchBar(),
+              Style.getVerticalSpacing(context: context),
+              _buildSearchTypeTabs(),
+              _buildMainBody(),
+              SizedBox(
+                height: kBottomNavigationBarHeight,
+              )
+            ],
+          ),
         ),
       ),
     );

@@ -4,6 +4,7 @@ import 'package:watrix/models/network/enums/entity_type.dart';
 import 'package:watrix/models/network/trakt/trakt_progress.dart';
 import 'package:watrix/models/network/user.dart';
 import 'package:watrix/models/network/user_stats.dart';
+import 'package:watrix/services/local/database.dart';
 import 'package:watrix/services/network/trakt_oauth_client.dart';
 import 'package:watrix/services/network/trakt_repository.dart';
 part 'user_store.g.dart';
@@ -27,6 +28,7 @@ abstract class _UserStoreBase with Store {
   ObservableList<BaseModel> showRecommendations = <BaseModel>[].asObservable();
 
   TraktRepository repository = TraktRepository(client: TraktOAuthClient());
+  Database localDb = Database();
 
   @action
   Future fetchUserProfile() async {
@@ -40,7 +42,16 @@ abstract class _UserStoreBase with Store {
 
   @action
   Future fetchUserProgress() async {
-    progress.addAll(await repository.getUserMovieProgress());
+    progress
+      ..clear()
+      ..addAll(await localDb.getProgress());
+    localDb.updateProgress(
+        list: await repository.getUserMovieProgress(),
+        onChange: (list) {
+          progress
+            ..clear()
+            ..addAll(list);
+        });
   }
 
   @action

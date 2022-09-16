@@ -3,6 +3,7 @@ import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:watrix/models/local/favorites.dart';
+import 'package:watrix/models/local/progress.dart';
 import 'package:watrix/models/local/search_history.dart';
 import 'package:watrix/resources/my_theme.dart';
 import 'package:watrix/resources/strings.dart';
@@ -13,8 +14,6 @@ import 'package:watrix/screens/home_page.dart';
 import 'package:watrix/screens/profile_page.dart';
 import 'package:watrix/screens/search_page.dart';
 import 'package:watrix/components/home_bottom_nav_bar.dart';
-import 'package:watrix/services/network/trakt_oauth_client.dart';
-import 'package:watrix/services/network/trakt_repository.dart';
 import 'package:watrix/store/favorites/favorites_store.dart';
 import 'package:watrix/store/user/user_store.dart';
 
@@ -23,7 +22,7 @@ import 'models/network/base_model.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Isar.open(
-    schemas: [FavoritesSchema, SearchHistorySchema],
+    schemas: [FavoritesSchema, SearchHistorySchema, ProgressSchema],
     directory: (await getApplicationSupportDirectory()).path,
   );
   runApp(

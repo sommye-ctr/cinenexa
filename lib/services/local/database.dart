@@ -1,7 +1,10 @@
 import 'package:isar/isar.dart';
 import 'package:watrix/models/local/favorites.dart';
+import 'package:watrix/models/local/progress.dart';
 import 'package:watrix/models/local/search_history.dart';
 import 'package:watrix/models/network/base_model.dart';
+
+import '../../models/network/trakt/trakt_progress.dart';
 
 class Database {
   late Isar isar;
@@ -58,6 +61,31 @@ class Database {
   void removeFromFav(int id) {
     isar.writeTxn((isar) async {
       await isar.favoritess.delete(id);
+    });
+  }
+
+  void updateProgress({
+    required List<TraktProgress> list,
+    required Function(List<TraktProgress>) onChange,
+  }) async {
+    List<Progress> items = list.map((e) => e.getProgress()).toList();
+
+    await isar.writeTxn((isar) async {
+      await isar.progresss.clear();
+      await isar.progresss.putAll(items);
+    }).whenComplete(() async {
+      onChange(await getProgress());
+    });
+  }
+
+  Future<List<TraktProgress>> getProgress() async {
+    List<Progress> list = await isar.progresss.where().findAll();
+    return list.map((e) => e.getTraktProgress()).toList();
+  }
+
+  void removeProgress({required int id}) {
+    isar.writeTxn((isar) async {
+      await isar.progresss.delete(id);
     });
   }
 }

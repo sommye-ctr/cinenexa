@@ -87,9 +87,9 @@ class Tv {
   }
 
   factory Tv.fromMap(Map<String, dynamic> map) {
-    List<TvSeason> list =
-        List<TvSeason>.from(map['seasons']?.map((x) => TvSeason.fromMap(x)))
-          ..removeWhere((element) => element.seasonNumber == 0);
+    List<TvSeason> list = List<TvSeason>.from(
+        map['seasons']?.map((x) => TvSeason.fromMap(x)) ?? [])
+      ..removeWhere((element) => element.seasonNumber == 0);
     return Tv(
       name: map['name'] ?? '',
       id: map['id']?.toInt() ?? 0,
@@ -111,7 +111,10 @@ class Tv {
 
   String toJson() => json.encode(toMap());
 
-  factory Tv.fromJson(String source) => Tv.fromMap(json.decode(source));
+  factory Tv.fromJson(String? source) {
+    if (source != null) return Tv.fromMap(json.decode(source));
+    return Tv.fromMap({});
+  }
 
   @override
   String toString() {
