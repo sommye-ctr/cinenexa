@@ -16,6 +16,7 @@ abstract class _FavoritesStore with Store {
   ObservableList<BaseModel> _favorites = <BaseModel>[].asObservable();
 
   TraktRepository traktRepository = TraktRepository(client: TraktOAuthClient());
+  Database localDb = Database();
 
   @computed
   ObservableList<BaseModel> get currentFav {
@@ -43,11 +44,21 @@ abstract class _FavoritesStore with Store {
   @action
   Future fetchFavorites() async {
     _favorites.addAll(await Database().getFavorites());
+    localDb.updateFavorites(
+        favorites: (await traktRepository.getUserFavorites())
+            .map((e) => e.toFavorite())
+            .toList(),
+        onChange: (list) {
+          _favorites
+            ..clear()
+            ..addAll(list);
+        });
   }
 
   @action
   void addFavorite(BaseModel baseModel) {
     _favorites.add(baseModel);
+    localDb.addToFavorites(baseModel.toFavorite());
     traktRepository.addFavorites(
         tmdbId: baseModel.id!, entityType: baseModel.type!.getEntityType());
   }
@@ -55,6 +66,7 @@ abstract class _FavoritesStore with Store {
   @action
   void removeFavorite(BaseModel baseModel) {
     _favorites.remove(baseModel);
+    localDb.removeFromFav(baseModel.id!);
     traktRepository.removeFavorite(
         tmdbId: baseModel.id!, entityType: baseModel.type!.getEntityType());
   }

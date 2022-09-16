@@ -46,7 +46,7 @@ abstract class _UserStoreBase with Store {
       ..clear()
       ..addAll(await localDb.getProgress());
     localDb.updateProgress(
-        list: await repository.getUserMovieProgress(),
+        list: await repository.getUserProgress(),
         onChange: (list) {
           progress
             ..clear()

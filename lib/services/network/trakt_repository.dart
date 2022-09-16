@@ -47,31 +47,34 @@ class TraktRepository {
     return User.fromJson(resp.body);
   }
 
-  Future<List<TraktProgress>> getUserProgress() async {
-    Response resp = await get("https://api.trakt.tv/sync/playback/episodes");
+  Future<List<BaseModel>> getUserFavorites() async {
+    List list = await Future.wait([
+      get("https://api.trakt.tv/sync/collection/movies"),
+      get("https://api.trakt.tv/sync/collection/shows")
+    ]);
+    Response movieResp = list[0];
+    Response tvResp = list[1];
 
-    List list = (Utils.parseJson(resp.body) as List);
-    List<TraktProgress> progressList = [];
-    await Future.forEach(list, (element) async {
+    List movieList = (Utils.parseJson(movieResp.body) as List);
+    List tvList = (Utils.parseJson(tvResp.body) as List);
+
+    List<BaseModel> basemodels = [];
+    await Future.forEach(movieList..addAll(tvList), (element) async {
       element as Map;
-      Tv tv = await Repository.getTvDetails(
-        id: (element)['show']['ids']['tmdb'],
-      );
-      progressList.add(
-        TraktProgress(
-          progress: element['progress'],
-          type: element['type'],
-          show: tv,
-          episodeNo: element['episode']['number'],
-          seasonNo: element['episode']['season'],
-        ),
-      );
+      if (element['movie'] != null) {
+        Movie movie = await Repository.getMovieDetails(
+            id: (element)['movie']['ids']['tmdb']);
+        basemodels.add(BaseModel.fromMovie(movie));
+        return;
+      }
+      Tv tv =
+          await Repository.getTvDetails(id: (element)['show']['ids']['tmdb']);
+      basemodels.add(BaseModel.fromTv(tv));
     });
-
-    return progressList;
+    return basemodels;
   }
 
-  Future<List<TraktProgress>> getUserMovieProgress() async {
+  Future<List<TraktProgress>> getUserProgress() async {
     Response resp = await get("https://api.trakt.tv/sync/playback");
     List list = (Utils.parseJson(resp.body) as List);
     List<TraktProgress> progressList = [];

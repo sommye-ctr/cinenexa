@@ -58,6 +58,18 @@ class Database {
     });
   }
 
+  void updateFavorites({
+    required List<Favorites> favorites,
+    required Function(List<BaseModel>) onChange,
+  }) {
+    isar.writeTxn((isar) async {
+      await isar.favoritess.clear();
+      await isar.favoritess.putAll(favorites);
+    }).whenComplete(() async {
+      onChange(await getFavorites());
+    });
+  }
+
   void removeFromFav(int id) {
     isar.writeTxn((isar) async {
       await isar.favoritess.delete(id);
@@ -81,11 +93,5 @@ class Database {
   Future<List<TraktProgress>> getProgress() async {
     List<Progress> list = await isar.progresss.where().findAll();
     return list.map((e) => e.getTraktProgress()).toList();
-  }
-
-  void removeProgress({required int id}) {
-    isar.writeTxn((isar) async {
-      await isar.progresss.delete(id);
-    });
   }
 }
