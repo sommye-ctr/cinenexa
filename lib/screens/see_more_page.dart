@@ -118,19 +118,10 @@ class _SeeMorePageState extends State<SeeMorePage> {
         },
       );
     }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        CircleAvatar(
-          backgroundImage: CachedNetworkImageProvider(
-              Utils.getPosterUrl(seeMoreStore.items[index].posterPath!)),
-          radius: ScreenSize.getPercentOfWidth(context, 0.15),
-        ),
-        Text(
-          seeMoreStore.items[index].title!,
-          textAlign: TextAlign.center,
-        ),
-      ],
-    );
+    return Style.getActorTile(
+        callback: () {},
+        context: context,
+        title: seeMoreStore.items[index].title,
+        poster: seeMoreStore.items[index].posterPath);
   }
 }

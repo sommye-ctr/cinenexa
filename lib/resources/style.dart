@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:watrix/models/network/base_model.dart';
@@ -87,6 +88,32 @@ class Style {
     return RoundedImagePlaceholder(
       width: ScreenSize.getPercentOfWidth(context, widthPercent),
       ratio: Constants.posterAspectRatio,
+    );
+  }
+
+  static Widget getActorTile({
+    required BuildContext context,
+    required String? poster,
+    required String? title,
+    required VoidCallback callback,
+  }) {
+    int length = title?.length ?? 0;
+    return GestureDetector(
+      onTap: callback,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          CircleAvatar(
+            backgroundImage:
+                CachedNetworkImageProvider(Utils.getPosterUrl(poster ?? "")),
+            radius: ScreenSize.getPercentOfWidth(context, 0.15),
+          ),
+          Text(
+            (length >= 15 ? "${title?.substring(0, 10)}..." : title) ?? "",
+            textAlign: TextAlign.center,
+          )
+        ],
+      ),
     );
   }
 }

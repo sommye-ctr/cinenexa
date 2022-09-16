@@ -163,18 +163,11 @@ class _HomeFeaturedState extends State<HomeFeatured>
           buildPlaceHolder: () => Style.getMovieTilePlaceHolder(
               context: context, widthPercent: 0.3),
           buildWidget: (item) {
-            return GestureDetector(
-              onTap: () => widget.onItemClicked(item),
-              child: Column(
-                children: [
-                  CircleAvatar(
-                    backgroundImage: CachedNetworkImageProvider(
-                        Utils.getPosterUrl(item.posterPath!)),
-                    radius: ScreenSize.getPercentOfWidth(context, 0.15),
-                  ),
-                  Text(item.title!)
-                ],
-              ),
+            return Style.getActorTile(
+              callback: () => widget.onItemClicked(item),
+              context: context,
+              poster: item.posterPath,
+              title: item.title,
             );
           },
           height:

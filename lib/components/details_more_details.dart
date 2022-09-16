@@ -221,6 +221,7 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
             context,
             widget.detailsStore.credits,
             ActorDetailsPage.routeName,
+            isCast: true,
           ),
         ),
         Style.getVerticalSpacing(context: context),
@@ -278,16 +279,35 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
   }
 
   Widget _buildList(
-      String heading, context, List<BaseModel> items, String route) {
-    if (items.isNotEmpty) {
-      return Container(
-        margin: EdgeInsets.symmetric(horizontal: 8),
-        child: HorizontalList<BaseModel>.fromInititalValues(
-          items: items,
-          heading: heading,
-          buildPlaceHolder: () => Style.getMovieTilePlaceHolder(
-              context: context, widthPercent: 0.3),
-          buildWidget: (item) => Style.getMovieTile(
+      String heading, context, List<BaseModel> items, String route,
+      {bool isCast = false}) {
+    if (items.isEmpty) {
+      return Container();
+    }
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 8),
+      child: HorizontalList<BaseModel>.fromInititalValues(
+        items: items,
+        heading: heading,
+        buildPlaceHolder: () =>
+            Style.getMovieTilePlaceHolder(context: context, widthPercent: 0.3),
+        buildWidget: (item) {
+          if (isCast) {
+            return Style.getActorTile(
+              context: context,
+              poster: item.posterPath,
+              title: item.title,
+              callback: () {
+                videoController?.pause();
+                Navigator.pushNamed(
+                  context,
+                  route,
+                  arguments: item,
+                );
+              },
+            );
+          }
+          return Style.getMovieTile(
             item: item,
             widhtPercent: 0.3,
             showTitle: true,
@@ -300,34 +320,32 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
                 arguments: item,
               );
             },
-          ),
-          height:
-              Style.getMovieTileHeight(context: context, widthPercent: 0.3) +
-                  ScreenSize.getPercentOfHeight(context, 0.05),
-          limitItems: 10,
-          onRightTrailClicked: (list) {
-            showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
-              ),
-              builder: (context) {
-                return FractionallySizedBox(
-                  heightFactor: 0.75,
-                  child: SeeMorePage(
-                    initialItems: list,
-                    heading: heading,
-                    isLazyLoad: false,
-                  ),
-                );
-              },
-            );
-          },
-        ),
-      );
-    }
-    return Container();
+          );
+        },
+        height: Style.getMovieTileHeight(context: context, widthPercent: 0.3) +
+            (isCast ? 0 : ScreenSize.getPercentOfHeight(context, 0.05)),
+        limitItems: 10,
+        onRightTrailClicked: (list) {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
+            ),
+            builder: (context) {
+              return FractionallySizedBox(
+                heightFactor: 0.75,
+                child: SeeMorePage(
+                  initialItems: list,
+                  heading: heading,
+                  isLazyLoad: false,
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
   }
 
   Widget _buildSeasonsHeading() {

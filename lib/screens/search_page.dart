@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
@@ -326,22 +327,15 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
             childAspectRatio: Style.movieTileWithTitleRatio,
           ),
           itemBuilder: (context, index) {
-            return MovieTile(
-              image:
-                  "${Constants.tmdbImageBase}${Constants.posterSize}${list[index].posterPath}",
-              width: ScreenSize.getPercentOfWidth(
+            return Style.getActorTile(
+              callback: () => Navigator.pushNamed(
                 context,
-                0.29,
+                ActorDetailsPage.routeName,
+                arguments: list[index],
               ),
-              showTitle: true,
-              text: list[index].title!,
-              onClick: () {
-                Navigator.pushNamed(
-                  context,
-                  ActorDetailsPage.routeName,
-                  arguments: list[index],
-                );
-              },
+              context: context,
+              poster: list[index].title,
+              title: list[index].posterPath,
             );
           },
         ),
