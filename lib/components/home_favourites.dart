@@ -7,7 +7,6 @@ import 'package:watrix/resources/style.dart';
 import 'package:watrix/services/network/utils.dart';
 import 'package:watrix/store/favorites/favorites_store.dart';
 import 'package:watrix/utils/screen_size.dart';
-import 'package:watrix/widgets/custom_checkbox_list.dart';
 
 class HomeFavorites extends StatefulWidget {
   const HomeFavorites({Key? key}) : super(key: key);
@@ -34,28 +33,7 @@ class _HomeFavoritesState extends State<HomeFavorites>
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Observer(builder: (_) {
-          return Container(
-            width: ScreenSize.getPercentOfWidth(context, 0.8),
-            child: CustomCheckBoxList(
-              type: CheckBoxListType.grid,
-              singleSelect: true,
-              alwaysEnabled: true,
-              selectedItems: [0],
-              children: [
-                Strings.all,
-                Strings.movies,
-                Strings.tvShows,
-              ],
-              delegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                childAspectRatio: 20 / 9,
-                crossAxisSpacing: ScreenSize.getPercentOfWidth(context, 0.025),
-              ),
-              onSelectionAdded: (list) {
-                store.selectedFilter = Utils.getEntityByString(list.first);
-              },
-            ),
-          );
+          return _buildHeading();
         }),
         Style.getVerticalSpacing(context: context),
         Observer(
@@ -84,6 +62,62 @@ class _HomeFavoritesState extends State<HomeFavorites>
         Style.getVerticalSpacing(
           context: context,
           percent: 0.08,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeading() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          "${store.currentFav.length} Results",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
+            border: Border.all(
+              color: Theme.of(context).highlightColor,
+            ),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<int>(
+              alignment: Alignment.centerLeft,
+              borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
+              value: store.chosenFilter,
+              menuMaxHeight: ScreenSize.getPercentOfHeight(context, 0.25),
+              items: [
+                DropdownMenuItem(
+                  child: Text(
+                    Strings.all,
+                  ),
+                  value: 0,
+                ),
+                DropdownMenuItem(
+                  child: Text(
+                    Strings.movies,
+                  ),
+                  value: 1,
+                ),
+                DropdownMenuItem(
+                  child: Text(
+                    Strings.shows,
+                  ),
+                  value: 2,
+                ),
+              ],
+              onChanged: (value) {
+                store.changeFilter(value!);
+              },
+            ),
+          ),
         ),
       ],
     );

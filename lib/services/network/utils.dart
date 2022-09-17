@@ -56,7 +56,7 @@ class Utils {
       case BaseModelType.people:
         return Strings.actor;
       case BaseModelType.tv:
-        return Strings.tvShow;
+        return Strings.show;
     }
   }
 
@@ -66,7 +66,7 @@ class Utils {
         return EntityType.all;
       case Strings.movies:
         return EntityType.movie;
-      case Strings.tvShows:
+      case Strings.shows:
         return EntityType.tv;
       default:
         throw UnimplementedError();

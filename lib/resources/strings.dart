@@ -7,14 +7,14 @@ class Strings {
   static const String wishlist = "Wishlist";
   static const String profile = "Profile";
   static const String movie = "Movie";
-  static const String tvShow = "TV Show";
+  static const String show = "Show";
   static const String actor = "Actor";
   static const String all = "All";
 
 //Home
   static const String featured = "Featured";
   static const String movies = "Movies";
-  static const String tvShows = "TV Shows";
+  static const String shows = "Shows";
   static const String favorites = "Favorites";
 
   static const String pickupLeft = "Pickup where you left";
@@ -27,14 +27,14 @@ class Strings {
   static const String trendingThisWeek = "Trending this Week";
 
   static const String popularMovies = "Popular Movies";
-  static const String popularTv = "Popular Tv Shows";
+  static const String popularTv = "Popular Shows";
   static const String popularActors = "Popular Actors";
   static const String weeklyTrendingMovies = "Movies of the week";
   static const String weeklyTrendingTv = "Shows of the week";
 
 //Search
   static const String searchHint = "You can search for";
-  static const String moviesTvShows = "Movies, Tv Shows...";
+  static const String moviesTvShows = "Movies, Shows...";
   static const String actorsDirectors = "Actors, Directors...";
   static const String noResultsFound = "No results found!";
 //Filter

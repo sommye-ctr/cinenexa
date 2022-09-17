@@ -83,7 +83,7 @@ class _HomePageState extends State<HomePage>
                 text: Strings.movies,
               ),
               Tab(
-                text: Strings.tvShows,
+                text: Strings.shows,
               ),
               Tab(
                 text: Strings.favorites,

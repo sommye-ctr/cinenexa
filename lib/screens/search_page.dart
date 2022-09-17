@@ -241,7 +241,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                   text: Strings.movies,
                 ),
                 Tab(
-                  text: Strings.tvShows,
+                  text: Strings.shows,
                 ),
                 Tab(
                   text: Strings.actor,

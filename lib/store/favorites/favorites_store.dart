@@ -13,51 +13,60 @@ class FavoritesStore extends _FavoritesStore with _$FavoritesStore {}
 
 abstract class _FavoritesStore with Store {
   @observable
-  ObservableList<BaseModel> _favorites = <BaseModel>[].asObservable();
+  ObservableList<BaseModel> favorites = <BaseModel>[].asObservable();
+
+  @observable
+  int chosenFilter = 0;
 
   TraktRepository traktRepository = TraktRepository(client: TraktOAuthClient());
   Database localDb = Database();
 
   @computed
   ObservableList<BaseModel> get currentFav {
-    switch (selectedFilter) {
-      case EntityType.all:
-        return _favorites;
-      case EntityType.movie:
-        return _favorites
+    switch (chosenFilter) {
+      case 0:
+        return favorites;
+      case 1:
+        ObservableList<BaseModel> list = favorites
             .where((element) => element.type == BaseModelType.movie)
             .toList()
             .asObservable();
-      case EntityType.tv:
-        return _favorites
+        return list;
+      case 2:
+        ObservableList<BaseModel> list = favorites
             .where((element) => element.type == BaseModelType.tv)
             .toList()
             .asObservable();
+        return list;
       default:
         throw UnimplementedError();
     }
   }
 
-  @observable
-  EntityType selectedFilter = EntityType.all;
-
   @action
   Future fetchFavorites() async {
-    _favorites.addAll(await Database().getFavorites());
+    favorites.addAll(await Database().getFavorites());
+
     localDb.updateFavorites(
         favorites: (await traktRepository.getUserFavorites())
             .map((e) => e.toFavorite())
             .toList(),
         onChange: (list) {
-          _favorites
+          favorites
             ..clear()
             ..addAll(list);
         });
   }
 
   @action
+  void changeFilter(int index) {
+    chosenFilter = index;
+  }
+
+  @action
   void addFavorite(BaseModel baseModel) {
-    _favorites.add(baseModel);
+    favorites.add(baseModel);
+
     localDb.addToFavorites(baseModel.toFavorite());
     traktRepository.addFavorites(
         tmdbId: baseModel.id!, entityType: baseModel.type!.getEntityType());
@@ -65,7 +74,8 @@ abstract class _FavoritesStore with Store {
 
   @action
   void removeFavorite(BaseModel baseModel) {
-    _favorites.remove(baseModel);
+    favorites.remove(baseModel);
+
     localDb.removeFromFav(baseModel.id!);
     traktRepository.removeFavorite(
         tmdbId: baseModel.id!, entityType: baseModel.type!.getEntityType());

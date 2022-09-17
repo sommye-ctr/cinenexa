@@ -17,35 +17,35 @@ mixin _$FavoritesStore on _FavoritesStore, Store {
               name: '_FavoritesStore.currentFav'))
       .value;
 
-  late final _$_favoritesAtom =
-      Atom(name: '_FavoritesStore._favorites', context: context);
+  late final _$favoritesAtom =
+      Atom(name: '_FavoritesStore.favorites', context: context);
 
   @override
-  ObservableList<BaseModel> get _favorites {
-    _$_favoritesAtom.reportRead();
-    return super._favorites;
+  ObservableList<BaseModel> get favorites {
+    _$favoritesAtom.reportRead();
+    return super.favorites;
   }
 
   @override
-  set _favorites(ObservableList<BaseModel> value) {
-    _$_favoritesAtom.reportWrite(value, super._favorites, () {
-      super._favorites = value;
+  set favorites(ObservableList<BaseModel> value) {
+    _$favoritesAtom.reportWrite(value, super.favorites, () {
+      super.favorites = value;
     });
   }
 
-  late final _$selectedFilterAtom =
-      Atom(name: '_FavoritesStore.selectedFilter', context: context);
+  late final _$chosenFilterAtom =
+      Atom(name: '_FavoritesStore.chosenFilter', context: context);
 
   @override
-  EntityType get selectedFilter {
-    _$selectedFilterAtom.reportRead();
-    return super.selectedFilter;
+  int get chosenFilter {
+    _$chosenFilterAtom.reportRead();
+    return super.chosenFilter;
   }
 
   @override
-  set selectedFilter(EntityType value) {
-    _$selectedFilterAtom.reportWrite(value, super.selectedFilter, () {
-      super.selectedFilter = value;
+  set chosenFilter(int value) {
+    _$chosenFilterAtom.reportWrite(value, super.chosenFilter, () {
+      super.chosenFilter = value;
     });
   }
 
@@ -59,6 +59,17 @@ mixin _$FavoritesStore on _FavoritesStore, Store {
 
   late final _$_FavoritesStoreActionController =
       ActionController(name: '_FavoritesStore', context: context);
+
+  @override
+  void changeFilter(int index) {
+    final _$actionInfo = _$_FavoritesStoreActionController.startAction(
+        name: '_FavoritesStore.changeFilter');
+    try {
+      return super.changeFilter(index);
+    } finally {
+      _$_FavoritesStoreActionController.endAction(_$actionInfo);
+    }
+  }
 
   @override
   void addFavorite(BaseModel baseModel) {
@@ -96,7 +107,8 @@ mixin _$FavoritesStore on _FavoritesStore, Store {
   @override
   String toString() {
     return '''
-selectedFilter: ${selectedFilter},
+favorites: ${favorites},
+chosenFilter: ${chosenFilter},
 currentFav: ${currentFav}
     ''';
   }
