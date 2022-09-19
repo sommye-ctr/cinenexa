@@ -18,7 +18,7 @@ class ActorDetailsHeader extends SliverPersistentHeaderDelegate {
   final ActorDetailsStore actorDetailsStore;
 
   late double progress;
-  final Duration duration = Duration(milliseconds: 200);
+  final Duration duration = const Duration(milliseconds: 200);
 
   ActorDetailsHeader({
     required this.maxHeight,

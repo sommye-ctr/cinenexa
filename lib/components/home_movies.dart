@@ -1,12 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:provider/provider.dart';
-import 'package:watrix/models/network/trakt/trakt_progress.dart';
 import 'package:watrix/resources/strings.dart';
-import 'package:watrix/services/constants.dart';
-import 'package:watrix/store/user/user_store.dart';
-import 'package:watrix/utils/screen_size.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '../models/network/base_model.dart';
 import '../models/network/enums/duration_type.dart';
@@ -14,9 +7,7 @@ import '../models/network/enums/entity_type.dart';
 import '../resources/style.dart';
 import '../services/network/repository.dart';
 import '../services/network/requests.dart';
-import '../services/network/utils.dart';
 import '../widgets/horizontal_list.dart';
-import 'movie_tile.dart';
 
 class HomeMovies extends StatefulWidget {
   final Function(BaseModel data) onItemClicked;

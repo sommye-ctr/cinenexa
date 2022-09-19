@@ -4,7 +4,6 @@ import 'package:watrix/models/network/enums/languages.dart';
 import 'package:watrix/services/constants.dart';
 import 'package:watrix/models/network/enums/duration_type.dart';
 import 'package:watrix/models/network/enums/entity_type.dart';
-import 'package:watrix/services/network/repository.dart';
 import 'package:watrix/services/network/utils.dart';
 
 import '../../models/local/enums/sort_movies.dart';

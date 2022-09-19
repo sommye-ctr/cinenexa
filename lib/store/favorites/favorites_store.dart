@@ -1,8 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:mobx/mobx.dart';
 import 'package:watrix/models/network/base_model.dart';
 import 'package:watrix/models/network/enums/entity_type.dart';
-import 'package:watrix/screens/details_page.dart';
 import 'package:watrix/services/local/database.dart';
 import 'package:watrix/services/network/trakt_oauth_client.dart';
 import 'package:watrix/services/network/trakt_repository.dart';
@@ -44,18 +42,20 @@ abstract class _FavoritesStore with Store {
   }
 
   @action
-  Future fetchFavorites() async {
+  Future fetchFavorites({bool fromApi = false}) async {
     favorites.addAll(await Database().getFavorites());
 
-    localDb.updateFavorites(
-        favorites: (await traktRepository.getUserFavorites())
-            .map((e) => e.toFavorite())
-            .toList(),
-        onChange: (list) {
-          favorites
-            ..clear()
-            ..addAll(list);
-        });
+    if (fromApi) {
+      localDb.updateFavorites(
+          favorites: (await traktRepository.getUserFavorites())
+              .map((e) => e.toFavorite())
+              .toList(),
+          onChange: (list) {
+            favorites
+              ..clear()
+              ..addAll(list);
+          });
+    }
   }
 
   @action
@@ -79,10 +79,5 @@ abstract class _FavoritesStore with Store {
     localDb.removeFromFav(baseModel.id!);
     traktRepository.removeFavorite(
         tmdbId: baseModel.id!, entityType: baseModel.type!.getEntityType());
-  }
-
-  @action
-  void itemClicked(BuildContext context, BaseModel baseModel) {
-    Navigator.pushNamed(context, DetailsPage.routeName, arguments: baseModel);
   }
 }

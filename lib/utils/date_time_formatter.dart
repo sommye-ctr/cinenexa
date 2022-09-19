@@ -32,4 +32,12 @@ class DateTimeFormatter {
 
     return current.year - date.year;
   }
+
+  static DateTime? parseDate(String? string) {
+    try {
+      return DateTime.parse(string!);
+    } catch (e) {
+      return null;
+    }
+  }
 }

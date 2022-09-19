@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:watrix/resources/style.dart';
@@ -8,7 +7,6 @@ import 'package:watrix/services/network/utils.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/widgets/bubble_page_indicator.dart';
 import 'package:watrix/widgets/rounded_image.dart';
-import 'package:watrix/widgets/screen_background_image.dart';
 
 import '../models/network/base_model.dart';
 

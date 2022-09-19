@@ -89,6 +89,31 @@ mixin _$UserStore on _UserStoreBase, Store {
     });
   }
 
+  late final _$showHistoryAtom =
+      Atom(name: '_UserStoreBase.showHistory', context: context);
+
+  @override
+  ObservableList<ShowHistory> get showHistory {
+    _$showHistoryAtom.reportRead();
+    return super.showHistory;
+  }
+
+  @override
+  set showHistory(ObservableList<ShowHistory> value) {
+    _$showHistoryAtom.reportWrite(value, super.showHistory, () {
+      super.showHistory = value;
+    });
+  }
+
+  late final _$initAsyncAction =
+      AsyncAction('_UserStoreBase.init', context: context);
+
+  @override
+  Future<dynamic> init({FavoritesStore? favoritesStore}) {
+    return _$initAsyncAction
+        .run(() => super.init(favoritesStore: favoritesStore));
+  }
+
   late final _$fetchUserProfileAsyncAction =
       AsyncAction('_UserStoreBase.fetchUserProfile', context: context);
 
@@ -113,6 +138,16 @@ mixin _$UserStore on _UserStoreBase, Store {
     return _$fetchUserProgressAsyncAction.run(() => super.fetchUserProgress());
   }
 
+  late final _$fetchUserWatchedShowsAsyncAction =
+      AsyncAction('_UserStoreBase.fetchUserWatchedShows', context: context);
+
+  @override
+  Future<dynamic> fetchUserWatchedShows(
+      {LastActivities? local, LastActivities? api, bool fromApi = false}) {
+    return _$fetchUserWatchedShowsAsyncAction.run(() =>
+        super.fetchUserWatchedShows(local: local, api: api, fromApi: fromApi));
+  }
+
   late final _$fetchUserRecommendationsAsyncAction =
       AsyncAction('_UserStoreBase.fetchUserRecommendations', context: context);
 
@@ -129,7 +164,8 @@ userStats: ${userStats},
 user: ${user},
 progress: ${progress},
 movieRecommendations: ${movieRecommendations},
-showRecommendations: ${showRecommendations}
+showRecommendations: ${showRecommendations},
+showHistory: ${showHistory}
     ''';
   }
 }

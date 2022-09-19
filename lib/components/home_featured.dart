@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:provider/provider.dart';
@@ -6,7 +5,6 @@ import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/screens/see_more_page.dart';
 import 'package:watrix/services/network/repository.dart';
-import 'package:watrix/services/network/trakt_repository.dart';
 
 import '../models/network/base_model.dart';
 import '../models/network/enums/duration_type.dart';

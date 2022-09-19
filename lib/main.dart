@@ -3,8 +3,11 @@ import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:watrix/models/local/favorites.dart';
+import 'package:watrix/models/local/last_activities.dart';
 import 'package:watrix/models/local/progress.dart';
 import 'package:watrix/models/local/search_history.dart';
+import 'package:watrix/models/local/show_history.dart';
+import 'package:watrix/models/local/show_history_season.dart';
 import 'package:watrix/resources/my_theme.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
@@ -22,7 +25,14 @@ import 'models/network/base_model.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Isar.open(
-    schemas: [FavoritesSchema, SearchHistorySchema, ProgressSchema],
+    schemas: [
+      FavoritesSchema,
+      SearchHistorySchema,
+      ProgressSchema,
+      ShowHistorySchema,
+      LastActivitiesSchema,
+      ShowHistorySeasonSchema,
+    ],
     directory: (await getApplicationSupportDirectory()).path,
   );
   runApp(
@@ -45,15 +55,12 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    FavoritesStore favoritesStore = FavoritesStore();
     return MultiProvider(
       providers: [
-        Provider(create: (_) => FavoritesStore()..fetchFavorites()),
+        Provider(create: (_) => favoritesStore),
         Provider(
-          create: (_) => UserStore()
-            ..fetchUserStats()
-            ..fetchUserProfile()
-            ..fetchUserProgress()
-            ..fetchUserRecommendations(),
+          create: (_) => UserStore(favoritesStore: favoritesStore),
         ),
       ],
       child: MaterialApp(

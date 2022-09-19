@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
@@ -14,10 +13,8 @@ import 'package:watrix/store/search/search_store.dart';
 import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/widgets/search_input.dart';
 
-import '../components/movie_tile.dart';
 import '../components/search_result_tile.dart';
 import '../models/network/base_model.dart';
-import '../services/constants.dart';
 import '../services/network/utils.dart';
 import 'details_page.dart';
 
@@ -383,17 +380,6 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     }
 
     searchStore.searchClicked();
-  }
-
-  SearchType _getSearchType(BaseModelType type) {
-    switch (type) {
-      case BaseModelType.movie:
-        return SearchType.movie;
-      case BaseModelType.tv:
-        return SearchType.tv;
-      case BaseModelType.people:
-        return SearchType.people;
-    }
   }
 
   void _onSearchTypeChanged(int index) {

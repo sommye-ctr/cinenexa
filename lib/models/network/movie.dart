@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:isar/isar.dart';
 
 import 'genre.dart';
 

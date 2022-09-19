@@ -8,6 +8,9 @@ import 'package:watrix/services/network/utils.dart';
 import 'package:watrix/store/favorites/favorites_store.dart';
 import 'package:watrix/utils/screen_size.dart';
 
+import '../models/network/base_model.dart';
+import '../screens/details_page.dart';
+
 class HomeFavorites extends StatefulWidget {
   const HomeFavorites({Key? key}) : super(key: key);
 
@@ -52,8 +55,7 @@ class _HomeFavoritesState extends State<HomeFavorites>
                       Utils.getPosterUrl(store.currentFav[index].posterPath!),
                   width: ScreenSize.getPercentOfWidth(context, 0.3),
                   showTitle: false,
-                  onClick: () =>
-                      store.itemClicked(context, store.currentFav[index]),
+                  onClick: () => itemClicked(context, store.currentFav[index]),
                 );
               },
             ),
@@ -65,6 +67,10 @@ class _HomeFavoritesState extends State<HomeFavorites>
         ),
       ],
     );
+  }
+
+  void itemClicked(BuildContext context, BaseModel baseModel) {
+    Navigator.pushNamed(context, DetailsPage.routeName, arguments: baseModel);
   }
 
   Widget _buildHeading() {

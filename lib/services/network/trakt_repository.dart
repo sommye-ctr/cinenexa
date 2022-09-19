@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:oauth2_client/oauth2_client.dart';
 import 'package:oauth2_client/oauth2_helper.dart';
+import 'package:watrix/models/local/last_activities.dart';
+import 'package:watrix/models/local/show_history.dart';
 import 'package:watrix/models/network/base_model.dart';
 import 'package:watrix/models/network/movie.dart';
 import 'package:watrix/models/network/trakt/trakt_progress.dart';
@@ -9,6 +11,7 @@ import 'package:watrix/models/network/user.dart';
 import 'package:watrix/models/network/user_stats.dart';
 import 'package:watrix/services/network/repository.dart';
 import 'package:watrix/services/network/utils.dart';
+import 'package:watrix/utils/date_time_formatter.dart';
 
 import '../../models/network/enums/entity_type.dart';
 import '../../models/network/tv.dart';
@@ -34,6 +37,21 @@ class TraktRepository {
       body: data,
       headers: Constants.traktRequestHeaders,
     );
+  }
+
+  Future<LastActivities> getUserLastActivity() async {
+    Response resp = await get("https://api.trakt.tv/sync/last_activities");
+    Map map = Utils.parseJson(resp.body) as Map;
+
+    return LastActivities()
+      ..epWatchedAt =
+          DateTimeFormatter.parseDate(map['episodes']['watched_at'])!
+      ..epCollectedAt =
+          DateTimeFormatter.parseDate(map['episodes']['collected_at'])!
+      ..movieCollectedAt =
+          DateTimeFormatter.parseDate(map['movies']['collected_at'])!
+      ..movieWatchedAt =
+          DateTimeFormatter.parseDate(map['movies']['watched_at'])!;
   }
 
   Future<UserStats> getUserStats() async {
@@ -109,6 +127,44 @@ class TraktRepository {
 
     return progressList;
   }
+
+  Future<List<ShowHistory>> getUserWatched() async {
+    Response resp = await get("https://api.trakt.tv/sync/watched/shows");
+    List list = (Utils.parseJson(resp.body) as List);
+
+    List<ShowHistory> respList = [];
+    await Future.forEach(list, (element) async {
+      element as Map;
+
+      Tv tv = await Repository.getTvDetails(id: element['show']['ids']['tmdb']);
+
+      respList.add(ShowHistory.fromMap({
+        "show": tv.toMap(),
+        "seasons": element['seasons'],
+        "last_updated_at": element['last_updated_at'],
+      }));
+    });
+    return respList;
+  }
+
+  /* Future getShowHistory() async {
+    Response resp = await get("https://api.trakt.tv/sync/watched/shows");
+
+    List<Map> ids = (Utils.parseJson(resp.body) as List).map((e) {
+      e as Map;
+      return {
+        "trakt": e['show']['ids']['trakt'],
+        "tmdb": e['show']['ids']['tmdb'],
+      };
+    }).toList();
+
+    Future.forEach<Map>(ids, (element) async {
+      Future.wait([
+        Repository.getTvDetails(id: element['tmdb']),
+        get("https://api.trakt.tv/shows/${element['trakt']}/progress/watched"),
+      ]);
+    });
+  } */
 
   Future getRecommendations({
     required EntityType type,

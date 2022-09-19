@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../resources/style.dart';
+// ignore: unused_import
 import '../utils/screen_size.dart';
 
 class RoundedImagePlaceholder extends StatelessWidget {

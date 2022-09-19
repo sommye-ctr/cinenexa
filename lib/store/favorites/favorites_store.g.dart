@@ -53,8 +53,9 @@ mixin _$FavoritesStore on _FavoritesStore, Store {
       AsyncAction('_FavoritesStore.fetchFavorites', context: context);
 
   @override
-  Future<dynamic> fetchFavorites() {
-    return _$fetchFavoritesAsyncAction.run(() => super.fetchFavorites());
+  Future<dynamic> fetchFavorites({bool fromApi = false}) {
+    return _$fetchFavoritesAsyncAction
+        .run(() => super.fetchFavorites(fromApi: fromApi));
   }
 
   late final _$_FavoritesStoreActionController =
@@ -88,17 +89,6 @@ mixin _$FavoritesStore on _FavoritesStore, Store {
         name: '_FavoritesStore.removeFavorite');
     try {
       return super.removeFavorite(baseModel);
-    } finally {
-      _$_FavoritesStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void itemClicked(BuildContext context, BaseModel baseModel) {
-    final _$actionInfo = _$_FavoritesStoreActionController.startAction(
-        name: '_FavoritesStore.itemClicked');
-    try {
-      return super.itemClicked(context, baseModel);
     } finally {
       _$_FavoritesStoreActionController.endAction(_$actionInfo);
     }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:mobx/mobx.dart';
 import 'package:watrix/models/local/enums/sort_movies.dart';
 import 'package:watrix/models/network/enums/entity_type.dart';

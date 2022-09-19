@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:watrix/components/home_tv_next.dart';
 import 'package:watrix/services/network/repository.dart';
 
 import '../models/network/base_model.dart';
@@ -34,6 +35,8 @@ class _HomeTvState extends State<HomeTv> with AutomaticKeepAliveClientMixin {
     return ListView(
       physics: BouncingScrollPhysics(),
       children: [
+        HomeTvNext(),
+        Style.getVerticalSpacing(context: context),
         HorizontalList<BaseModel>(
           future: Repository.getTitles(
               Requests.trending(EntityType.tv, DurationType.day)),
