@@ -3,6 +3,7 @@ import 'package:watrix/models/network/review.dart';
 import 'package:watrix/services/local/database.dart';
 import 'package:watrix/services/network/requests.dart';
 
+import '../../models/local/show_history.dart';
 import '../../models/network/base_model.dart';
 import '../../models/network/genre.dart';
 import '../../models/network/movie.dart';
@@ -68,6 +69,9 @@ abstract class _DetailsStore with Store {
   @observable
   ObservableList<Review> reviewList = <Review>[].asObservable();
 
+  @observable
+  ShowHistory? showHistory;
+
   int reviewPage = 1;
   bool isReviewNextPageLoading = false;
   int traktId = -1;
@@ -127,7 +131,7 @@ abstract class _DetailsStore with Store {
   void _fetchEpisodes() async {
     List<TvEpisode> latest = await Repository.getSeasonEpisodes(
       tvId: baseModel.id!,
-      seasonNo: tv!.seasons![chosenSeason!].seasonNumber,
+      seasonNo: tv!.seasons![chosenSeason!].seasonNumber!,
     );
     episodes.clear();
     episodes.addAll(latest);
@@ -157,6 +161,12 @@ abstract class _DetailsStore with Store {
     });
   }
 
+  @action
+  Future fetchWatchHistory() async {
+    Database database = Database();
+    showHistory = await database.getShowHistory(id: baseModel.id!);
+  }
+
   void _fetchDetails() async {
     isAddedToFav = await database.isAddedInFav(baseModel.id!);
     if (baseModel.type == BaseModelType.movie) {
@@ -173,6 +183,7 @@ abstract class _DetailsStore with Store {
       video = map['video'];
       chosenSeason = 0;
       _fetchEpisodes();
+      fetchWatchHistory();
     }
   }
 }

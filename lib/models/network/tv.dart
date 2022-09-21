@@ -6,15 +6,18 @@ import 'package:watrix/models/network/tv_season.dart';
 
 import 'genre.dart';
 
+part 'tv.g.dart';
+
+@embedded
 class Tv {
-  String name;
-  int id;
-  String posterPath;
-  String backdropPath;
-  String overview;
-  String firstAirDate;
-  List<int> genreIds;
-  double voteAverage;
+  String? name;
+  int? id;
+  String? posterPath;
+  String? backdropPath;
+  String? overview;
+  String? firstAirDate;
+  List<int>? genreIds;
+  double? voteAverage;
 
   List<Genre>? genres;
   String? lastAirDate;
@@ -22,14 +25,14 @@ class Tv {
   int? noOfSeasons;
   List<TvSeason>? seasons;
   Tv({
-    required this.name,
-    required this.id,
-    required this.posterPath,
-    required this.backdropPath,
-    required this.overview,
-    required this.firstAirDate,
-    required this.genreIds,
-    required this.voteAverage,
+    this.name,
+    this.id,
+    this.posterPath,
+    this.backdropPath,
+    this.overview,
+    this.firstAirDate,
+    this.genreIds,
+    this.voteAverage,
     this.genres,
     this.lastAirDate,
     this.noOfEpisodes,

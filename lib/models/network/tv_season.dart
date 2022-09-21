@@ -1,16 +1,21 @@
 import 'dart:convert';
 
+import 'package:isar/isar.dart';
+
+part 'tv_season.g.dart';
+
+@embedded
 class TvSeason {
-  final int id;
-  final String name;
-  final String overview;
-  final int seasonNumber;
+  final int? id;
+  final String? name;
+  final String? overview;
+  final int? seasonNumber;
 
   TvSeason({
-    required this.id,
-    required this.name,
-    required this.overview,
-    required this.seasonNumber,
+    this.id,
+    this.name,
+    this.overview,
+    this.seasonNumber,
   });
 
   TvSeason copyWith({

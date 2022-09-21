@@ -235,7 +235,6 @@ class FilterPage extends StatelessWidget {
         type: CheckBoxListType.grid,
         selectedItems: getSelectedLanguages(Languages.values),
         onSelectionChanged: (values) {
-          print(values.toString());
           discover.languages
             ..clear()
             ..addAll(values.map((e) => e.getLanguage()).toList());
@@ -314,7 +313,7 @@ class FilterPage extends StatelessWidget {
     if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
       return CustomCheckBoxList(
         type: CheckBoxListType.grid,
-        children: snapshot.data!.map((e) => e.name).toList(),
+        children: snapshot.data!.map((e) => e.name!).toList(),
         selectedItems: getSelectedGenres(snapshot.data!),
         onSelectionChanged: (values) {
           discover.genres

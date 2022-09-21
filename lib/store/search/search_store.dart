@@ -85,7 +85,7 @@ abstract class _SearchStore with Store {
   @action
   void historyDeleted(SearchHistory history) {
     this.history.remove(history);
-    database.deleteSearchHistory(history.id);
+    database.deleteSearchHistory(history.id!);
   }
 
   @action

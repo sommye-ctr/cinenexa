@@ -11,18 +11,21 @@ import '../widgets/rounded_image.dart';
 class EpisodeTile extends StatelessWidget {
   final TvEpisode episode;
   final VoidCallback? onTap;
+  final bool watched;
   const EpisodeTile({
     Key? key,
     required this.episode,
     this.onTap,
-  }) : super(key: key);
+    bool? watched,
+  })  : this.watched = watched ?? false,
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: ScreenSize.getPercentOfWidth(context, 0.95),
+        width: ScreenSize.getPercentOfWidth(context, 0.99),
         child: Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
@@ -49,15 +52,38 @@ class EpisodeTile extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        Text(
-                          "${DateTimeFormatter.getDateMonthYearFromString(
-                            episode.airDate,
-                          )}",
-                          style: TextStyle(color: Theme.of(context).hintColor),
-                        ),
-                        Text(
-                          "${episode.runtime} minutes",
-                          style: TextStyle(color: Theme.of(context).hintColor),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "${DateTimeFormatter.getDateMonthYearFromString(
+                                    episode.airDate,
+                                  )}",
+                                  style: TextStyle(
+                                      color: Theme.of(context).hintColor),
+                                ),
+                                Text(
+                                  "${episode.runtime} minutes",
+                                  style: TextStyle(
+                                      color: Theme.of(context).hintColor),
+                                ),
+                              ],
+                            ),
+                            if (watched)
+                              Padding(
+                                padding: EdgeInsets.only(
+                                    right: ScreenSize.getPercentOfWidth(
+                                        context, 0.01)),
+                                child: Icon(
+                                  Icons.check_box_rounded,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
+                          ],
                         ),
                       ],
                     ),

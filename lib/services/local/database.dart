@@ -15,17 +15,24 @@ class Database {
     isar = Isar.getInstance()!;
   }
 
+  void clear() async {
+    await isar.writeTxn(() async {
+      await isar.showHistorys.clear();
+      await isar.lastActivities.clear();
+    });
+  }
+
   Future<LastActivities?> getLastActivities() async {
     try {
-      return (await isar.lastActivitiess.get(0));
+      return (await isar.lastActivities.get(0));
     } catch (e) {
       return null;
     }
   }
 
   void addLastActivities({required LastActivities lastActivities}) async {
-    isar.writeTxn((isar) async {
-      isar.lastActivitiess.put(lastActivities..id = 0);
+    isar.writeTxn(() async {
+      isar.lastActivities.put(lastActivities..id = 0);
     });
   }
 
@@ -40,7 +47,7 @@ class Database {
     if (prev != null) {
       return false;
     }
-    isar.writeTxn((isar) async {
+    isar.writeTxn(() async {
       await isar.searchHistorys.put(SearchHistory()..term = term);
     });
     return true;
@@ -51,26 +58,26 @@ class Database {
   }
 
   void deleteSearchHistory(int id) async {
-    isar.writeTxn((isar) async {
+    isar.writeTxn(() async {
       await isar.searchHistorys.delete(id);
     });
   }
 
   Future<List<BaseModel>> getFavorites() async {
-    List<Favorites> list = await isar.favoritess.where().findAll();
+    List<Favorites> list = await isar.favorites.where().findAll();
     return list.map((e) => BaseModel.fromFavorite(e)).toList();
   }
 
   Future<bool> isAddedInFav(int id) async {
-    if (await isar.favoritess.get(id) != null) {
+    if (await isar.favorites.get(id) != null) {
       return true;
     }
     return false;
   }
 
   void addToFavorites(Favorites favorite) {
-    isar.writeTxn((isar) async {
-      await isar.favoritess.put(favorite);
+    isar.writeTxn(() async {
+      await isar.favorites.put(favorite);
     });
   }
 
@@ -78,17 +85,17 @@ class Database {
     required List<Favorites> favorites,
     required Function(List<BaseModel>) onChange,
   }) {
-    isar.writeTxn((isar) async {
-      await isar.favoritess.clear();
-      await isar.favoritess.putAll(favorites);
+    isar.writeTxn(() async {
+      await isar.favorites.clear();
+      await isar.favorites.putAll(favorites);
     }).whenComplete(() async {
       onChange(await getFavorites());
     });
   }
 
   void removeFromFav(int id) {
-    isar.writeTxn((isar) async {
-      await isar.favoritess.delete(id);
+    isar.writeTxn(() async {
+      await isar.favorites.delete(id);
     });
   }
 
@@ -98,16 +105,16 @@ class Database {
   }) async {
     List<Progress> items = list.map((e) => e.getProgress()).toList();
 
-    await isar.writeTxn((isar) async {
-      await isar.progresss.clear();
-      await isar.progresss.putAll(items);
+    await isar.writeTxn(() async {
+      await isar.progress.clear();
+      await isar.progress.putAll(items);
     }).whenComplete(() async {
       onChange(await getProgress());
     });
   }
 
   Future<List<TraktProgress>> getProgress() async {
-    List<Progress> list = await isar.progresss.where().findAll();
+    List<Progress> list = await isar.progress.where().findAll();
     return list.map((e) => e.getTraktProgress()).toList();
   }
 
@@ -118,23 +125,26 @@ class Database {
     required Function(List<ShowHistory>) onChange,
   }) async {
     if (localLastWatched != null && apiLastWatched != null) {
-      items = items
-          .where((element) =>
-              element.lastUpdatedAt != null &&
-              element.lastUpdatedAt!.isAfter(localLastWatched) &&
-              (element.lastUpdatedAt!.isBefore(apiLastWatched) ||
-                  element.lastUpdatedAt!.isAtSameMomentAs(apiLastWatched)))
-          .toList();
+      items = items.where((element) {
+        return element.lastUpdatedAt != null &&
+            element.lastUpdatedAt!.isAfter(localLastWatched) &&
+            (element.lastUpdatedAt!.isBefore(apiLastWatched) ||
+                element.lastUpdatedAt!.isAtSameMomentAs(apiLastWatched));
+      }).toList();
     }
 
-    await isar.writeTxn((isar) async {
+    await isar.writeTxn(() async {
       await isar.showHistorys.putAll(items);
     }).whenComplete(() async {
-      onChange(await getShowHistory());
+      await isar.showHistorys.where().findAll();
     });
   }
 
-  Future<List<ShowHistory>> getShowHistory() async {
+  Future<List<ShowHistory>> getShowHistories() async {
     return await isar.showHistorys.where().findAll();
+  }
+
+  Future<ShowHistory?> getShowHistory({required int id}) async {
+    return await isar.showHistorys.get(id);
   }
 }

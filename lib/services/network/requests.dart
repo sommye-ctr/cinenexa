@@ -163,8 +163,6 @@ class Requests {
       String q = withLanguages.map((e) => e.name).toList().join("|");
       queries.add('with_original_language=$q');
     }
-
-    print(queries.toString());
     return queries.join("&");
   }
 }

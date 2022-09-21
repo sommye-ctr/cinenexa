@@ -1,11 +1,16 @@
 import 'dart:convert';
 
+import 'package:isar/isar.dart';
+
+part 'genre.g.dart';
+
+@embedded
 class Genre {
-  int id;
-  String name;
+  int? id;
+  String? name;
   Genre({
-    required this.id,
-    required this.name,
+    this.id,
+    this.name,
   });
 
   Genre copyWith({

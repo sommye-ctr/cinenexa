@@ -6,304 +6,313 @@ part of 'progress.dart';
 // IsarCollectionGenerator
 // **************************************************************************
 
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, unused_local_variable
+// coverage:ignore-file
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters
 
 extension GetProgressCollection on Isar {
-  IsarCollection<Progress> get progresss => getCollection();
+  IsarCollection<Progress> get progress => this.collection();
 }
 
 const ProgressSchema = CollectionSchema(
-  name: 'Progress',
-  schema:
-      '{"name":"Progress","idName":"id","properties":[{"name":"episodeNo","type":"Long"},{"name":"movie","type":"String"},{"name":"progress","type":"Double"},{"name":"seasonNo","type":"Long"},{"name":"show","type":"String"},{"name":"type","type":"String"}],"indexes":[],"links":[]}',
-  idName: 'id',
-  propertyIds: {
-    'episodeNo': 0,
-    'movie': 1,
-    'progress': 2,
-    'seasonNo': 3,
-    'show': 4,
-    'type': 5
+  name: r'Progress',
+  id: 4416052739984182258,
+  properties: {
+    r'episodeNo': PropertySchema(
+      id: 0,
+      name: r'episodeNo',
+      type: IsarType.long,
+    ),
+    r'movie': PropertySchema(
+      id: 1,
+      name: r'movie',
+      type: IsarType.object,
+      target: r'Movie',
+    ),
+    r'progress': PropertySchema(
+      id: 2,
+      name: r'progress',
+      type: IsarType.double,
+    ),
+    r'seasonNo': PropertySchema(
+      id: 3,
+      name: r'seasonNo',
+      type: IsarType.long,
+    ),
+    r'show': PropertySchema(
+      id: 4,
+      name: r'show',
+      type: IsarType.object,
+      target: r'Tv',
+    ),
+    r'type': PropertySchema(
+      id: 5,
+      name: r'type',
+      type: IsarType.string,
+    )
   },
-  listProperties: {},
-  indexIds: {},
-  indexValueTypes: {},
-  linkIds: {},
-  backlinkLinkNames: {},
+  estimateSize: _progressEstimateSize,
+  serialize: _progressSerialize,
+  deserialize: _progressDeserialize,
+  deserializeProp: _progressDeserializeProp,
+  idName: r'id',
+  indexes: {},
+  links: {},
+  embeddedSchemas: {
+    r'Movie': MovieSchema,
+    r'Genre': GenreSchema,
+    r'Tv': TvSchema,
+    r'TvSeason': TvSeasonSchema
+  },
   getId: _progressGetId,
-  setId: _progressSetId,
   getLinks: _progressGetLinks,
-  attachLinks: _progressAttachLinks,
-  serializeNative: _progressSerializeNative,
-  deserializeNative: _progressDeserializeNative,
-  deserializePropNative: _progressDeserializePropNative,
-  serializeWeb: _progressSerializeWeb,
-  deserializeWeb: _progressDeserializeWeb,
-  deserializePropWeb: _progressDeserializePropWeb,
-  version: 3,
+  attach: _progressAttach,
+  version: '3.0.0',
 );
 
-int? _progressGetId(Progress object) {
-  if (object.id == Isar.autoIncrement) {
-    return null;
-  } else {
-    return object.id;
+int _progressEstimateSize(
+  Progress object,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  var bytesCount = offsets.last;
+  {
+    final value = object.movie;
+    if (value != null) {
+      bytesCount +=
+          3 + MovieSchema.estimateSize(value, allOffsets[Movie]!, allOffsets);
+    }
   }
-}
-
-void _progressSetId(Progress object, int id) {
-  object.id = id;
-}
-
-List<IsarLinkBase> _progressGetLinks(Progress object) {
-  return [];
-}
-
-const _progressMovieTypeConverter = MovieTypeConverter();
-const _progressShowTypeConverter = ShowTypeConverter();
-
-void _progressSerializeNative(
-    IsarCollection<Progress> collection,
-    IsarRawObject rawObj,
-    Progress object,
-    int staticSize,
-    List<int> offsets,
-    AdapterAlloc alloc) {
-  var dynamicSize = 0;
-  final value0 = object.episodeNo;
-  final _episodeNo = value0;
-  final value1 = _progressMovieTypeConverter.toIsar(object.movie);
-  IsarUint8List? _movie;
-  if (value1 != null) {
-    _movie = IsarBinaryWriter.utf8Encoder.convert(value1);
+  {
+    final value = object.show;
+    if (value != null) {
+      bytesCount +=
+          3 + TvSchema.estimateSize(value, allOffsets[Tv]!, allOffsets);
+    }
   }
-  dynamicSize += (_movie?.length ?? 0) as int;
-  final value2 = object.progress;
-  final _progress = value2;
-  final value3 = object.seasonNo;
-  final _seasonNo = value3;
-  final value4 = _progressShowTypeConverter.toIsar(object.show);
-  IsarUint8List? _show;
-  if (value4 != null) {
-    _show = IsarBinaryWriter.utf8Encoder.convert(value4);
-  }
-  dynamicSize += (_show?.length ?? 0) as int;
-  final value5 = object.type;
-  final _type = IsarBinaryWriter.utf8Encoder.convert(value5);
-  dynamicSize += (_type.length) as int;
-  final size = staticSize + dynamicSize;
-
-  rawObj.buffer = alloc(size);
-  rawObj.buffer_length = size;
-  final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
-  final writer = IsarBinaryWriter(buffer, staticSize);
-  writer.writeLong(offsets[0], _episodeNo);
-  writer.writeBytes(offsets[1], _movie);
-  writer.writeDouble(offsets[2], _progress);
-  writer.writeLong(offsets[3], _seasonNo);
-  writer.writeBytes(offsets[4], _show);
-  writer.writeBytes(offsets[5], _type);
+  bytesCount += 3 + object.type.length * 3;
+  return bytesCount;
 }
 
-Progress _progressDeserializeNative(IsarCollection<Progress> collection, int id,
-    IsarBinaryReader reader, List<int> offsets) {
+void _progressSerialize(
+  Progress object,
+  IsarWriter writer,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  writer.writeLong(offsets[0], object.episodeNo);
+  writer.writeObject<Movie>(
+    offsets[1],
+    allOffsets,
+    MovieSchema.serialize,
+    object.movie,
+  );
+  writer.writeDouble(offsets[2], object.progress);
+  writer.writeLong(offsets[3], object.seasonNo);
+  writer.writeObject<Tv>(
+    offsets[4],
+    allOffsets,
+    TvSchema.serialize,
+    object.show,
+  );
+  writer.writeString(offsets[5], object.type);
+}
+
+Progress _progressDeserialize(
+  Id id,
+  IsarReader reader,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
   final object = Progress();
   object.episodeNo = reader.readLongOrNull(offsets[0]);
   object.id = id;
-  object.movie =
-      _progressMovieTypeConverter.fromIsar(reader.readStringOrNull(offsets[1]));
+  object.movie = reader.readObjectOrNull<Movie>(
+    offsets[1],
+    MovieSchema.deserialize,
+    allOffsets,
+  );
   object.progress = reader.readDouble(offsets[2]);
   object.seasonNo = reader.readLongOrNull(offsets[3]);
-  object.show =
-      _progressShowTypeConverter.fromIsar(reader.readStringOrNull(offsets[4]));
+  object.show = reader.readObjectOrNull<Tv>(
+    offsets[4],
+    TvSchema.deserialize,
+    allOffsets,
+  );
   object.type = reader.readString(offsets[5]);
   return object;
 }
 
-P _progressDeserializePropNative<P>(
-    int id, IsarBinaryReader reader, int propertyIndex, int offset) {
-  switch (propertyIndex) {
-    case -1:
-      return id as P;
+P _progressDeserializeProp<P>(
+  IsarReader reader,
+  int propertyId,
+  int offset,
+  Map<Type, List<int>> allOffsets,
+) {
+  switch (propertyId) {
     case 0:
       return (reader.readLongOrNull(offset)) as P;
     case 1:
-      return (_progressMovieTypeConverter
-          .fromIsar(reader.readStringOrNull(offset))) as P;
+      return (reader.readObjectOrNull<Movie>(
+        offset,
+        MovieSchema.deserialize,
+        allOffsets,
+      )) as P;
     case 2:
       return (reader.readDouble(offset)) as P;
     case 3:
       return (reader.readLongOrNull(offset)) as P;
     case 4:
-      return (_progressShowTypeConverter
-          .fromIsar(reader.readStringOrNull(offset))) as P;
+      return (reader.readObjectOrNull<Tv>(
+        offset,
+        TvSchema.deserialize,
+        allOffsets,
+      )) as P;
     case 5:
       return (reader.readString(offset)) as P;
     default:
-      throw 'Illegal propertyIndex';
+      throw IsarError('Unknown property with id $propertyId');
   }
 }
 
-dynamic _progressSerializeWeb(
-    IsarCollection<Progress> collection, Progress object) {
-  final jsObj = IsarNative.newJsObject();
-  IsarNative.jsObjectSet(jsObj, 'episodeNo', object.episodeNo);
-  IsarNative.jsObjectSet(jsObj, 'id', object.id);
-  IsarNative.jsObjectSet(
-      jsObj, 'movie', _progressMovieTypeConverter.toIsar(object.movie));
-  IsarNative.jsObjectSet(jsObj, 'progress', object.progress);
-  IsarNative.jsObjectSet(jsObj, 'seasonNo', object.seasonNo);
-  IsarNative.jsObjectSet(
-      jsObj, 'show', _progressShowTypeConverter.toIsar(object.show));
-  IsarNative.jsObjectSet(jsObj, 'type', object.type);
-  return jsObj;
+Id _progressGetId(Progress object) {
+  return object.id ?? Isar.autoIncrement;
 }
 
-Progress _progressDeserializeWeb(
-    IsarCollection<Progress> collection, dynamic jsObj) {
-  final object = Progress();
-  object.episodeNo = IsarNative.jsObjectGet(jsObj, 'episodeNo');
-  object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
-  object.movie = _progressMovieTypeConverter
-      .fromIsar(IsarNative.jsObjectGet(jsObj, 'movie'));
-  object.progress =
-      IsarNative.jsObjectGet(jsObj, 'progress') ?? double.negativeInfinity;
-  object.seasonNo = IsarNative.jsObjectGet(jsObj, 'seasonNo');
-  object.show = _progressShowTypeConverter
-      .fromIsar(IsarNative.jsObjectGet(jsObj, 'show'));
-  object.type = IsarNative.jsObjectGet(jsObj, 'type') ?? '';
-  return object;
+List<IsarLinkBase<dynamic>> _progressGetLinks(Progress object) {
+  return [];
 }
 
-P _progressDeserializePropWeb<P>(Object jsObj, String propertyName) {
-  switch (propertyName) {
-    case 'episodeNo':
-      return (IsarNative.jsObjectGet(jsObj, 'episodeNo')) as P;
-    case 'id':
-      return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
-          as P;
-    case 'movie':
-      return (_progressMovieTypeConverter
-          .fromIsar(IsarNative.jsObjectGet(jsObj, 'movie'))) as P;
-    case 'progress':
-      return (IsarNative.jsObjectGet(jsObj, 'progress') ??
-          double.negativeInfinity) as P;
-    case 'seasonNo':
-      return (IsarNative.jsObjectGet(jsObj, 'seasonNo')) as P;
-    case 'show':
-      return (_progressShowTypeConverter
-          .fromIsar(IsarNative.jsObjectGet(jsObj, 'show'))) as P;
-    case 'type':
-      return (IsarNative.jsObjectGet(jsObj, 'type') ?? '') as P;
-    default:
-      throw 'Illegal propertyName';
-  }
+void _progressAttach(IsarCollection<dynamic> col, Id id, Progress object) {
+  object.id = id;
 }
-
-void _progressAttachLinks(IsarCollection col, int id, Progress object) {}
 
 extension ProgressQueryWhereSort on QueryBuilder<Progress, Progress, QWhere> {
   QueryBuilder<Progress, Progress, QAfterWhere> anyId() {
-    return addWhereClauseInternal(const IdWhereClause.any());
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(const IdWhereClause.any());
+    });
   }
 }
 
 extension ProgressQueryWhere on QueryBuilder<Progress, Progress, QWhereClause> {
-  QueryBuilder<Progress, Progress, QAfterWhereClause> idEqualTo(int id) {
-    return addWhereClauseInternal(IdWhereClause.between(
-      lower: id,
-      includeLower: true,
-      upper: id,
-      includeUpper: true,
-    ));
+  QueryBuilder<Progress, Progress, QAfterWhereClause> idEqualTo(Id id) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IdWhereClause.between(
+        lower: id,
+        upper: id,
+      ));
+    });
   }
 
-  QueryBuilder<Progress, Progress, QAfterWhereClause> idNotEqualTo(int id) {
-    if (whereSortInternal == Sort.asc) {
-      return addWhereClauseInternal(
-        IdWhereClause.lessThan(upper: id, includeUpper: false),
-      ).addWhereClauseInternal(
-        IdWhereClause.greaterThan(lower: id, includeLower: false),
-      );
-    } else {
-      return addWhereClauseInternal(
-        IdWhereClause.greaterThan(lower: id, includeLower: false),
-      ).addWhereClauseInternal(
-        IdWhereClause.lessThan(upper: id, includeUpper: false),
-      );
-    }
+  QueryBuilder<Progress, Progress, QAfterWhereClause> idNotEqualTo(Id id) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            )
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            )
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            );
+      }
+    });
   }
 
-  QueryBuilder<Progress, Progress, QAfterWhereClause> idGreaterThan(int id,
+  QueryBuilder<Progress, Progress, QAfterWhereClause> idGreaterThan(Id id,
       {bool include = false}) {
-    return addWhereClauseInternal(
-      IdWhereClause.greaterThan(lower: id, includeLower: include),
-    );
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.greaterThan(lower: id, includeLower: include),
+      );
+    });
   }
 
-  QueryBuilder<Progress, Progress, QAfterWhereClause> idLessThan(int id,
+  QueryBuilder<Progress, Progress, QAfterWhereClause> idLessThan(Id id,
       {bool include = false}) {
-    return addWhereClauseInternal(
-      IdWhereClause.lessThan(upper: id, includeUpper: include),
-    );
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.lessThan(upper: id, includeUpper: include),
+      );
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterWhereClause> idBetween(
-    int lowerId,
-    int upperId, {
+    Id lowerId,
+    Id upperId, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addWhereClauseInternal(IdWhereClause.between(
-      lower: lowerId,
-      includeLower: includeLower,
-      upper: upperId,
-      includeUpper: includeUpper,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IdWhereClause.between(
+        lower: lowerId,
+        includeLower: includeLower,
+        upper: upperId,
+        includeUpper: includeUpper,
+      ));
+    });
   }
 }
 
 extension ProgressQueryFilter
     on QueryBuilder<Progress, Progress, QFilterCondition> {
   QueryBuilder<Progress, Progress, QAfterFilterCondition> episodeNoIsNull() {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.isNull,
-      property: 'episodeNo',
-      value: null,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'episodeNo',
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> episodeNoIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'episodeNo',
+      ));
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterFilterCondition> episodeNoEqualTo(
       int? value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'episodeNo',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'episodeNo',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterFilterCondition> episodeNoGreaterThan(
     int? value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'episodeNo',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'episodeNo',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterFilterCondition> episodeNoLessThan(
     int? value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'episodeNo',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'episodeNo',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterFilterCondition> episodeNoBetween(
@@ -312,243 +321,213 @@ extension ProgressQueryFilter
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'episodeNo',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'episodeNo',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
   }
 
-  QueryBuilder<Progress, Progress, QAfterFilterCondition> idEqualTo(int value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'id',
-      value: value,
-    ));
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> idIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'id',
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> idIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'id',
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> idEqualTo(Id? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'id',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterFilterCondition> idGreaterThan(
-    int value, {
+    Id? value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'id',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'id',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterFilterCondition> idLessThan(
-    int value, {
+    Id? value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'id',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'id',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterFilterCondition> idBetween(
-    int lower,
-    int upper, {
+    Id? lower,
+    Id? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'id',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'id',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterFilterCondition> movieIsNull() {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.isNull,
-      property: 'movie',
-      value: null,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'movie',
+      ));
+    });
   }
 
-  QueryBuilder<Progress, Progress, QAfterFilterCondition> movieEqualTo(
-    Movie? value, {
-    bool caseSensitive = true,
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> movieIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'movie',
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> progressEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'movie',
-      value: _progressMovieTypeConverter.toIsar(value),
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<Progress, Progress, QAfterFilterCondition> movieGreaterThan(
-    Movie? value, {
-    bool caseSensitive = true,
-    bool include = false,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'movie',
-      value: _progressMovieTypeConverter.toIsar(value),
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<Progress, Progress, QAfterFilterCondition> movieLessThan(
-    Movie? value, {
-    bool caseSensitive = true,
-    bool include = false,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'movie',
-      value: _progressMovieTypeConverter.toIsar(value),
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<Progress, Progress, QAfterFilterCondition> movieBetween(
-    Movie? lower,
-    Movie? upper, {
-    bool caseSensitive = true,
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'movie',
-      lower: _progressMovieTypeConverter.toIsar(lower),
-      includeLower: includeLower,
-      upper: _progressMovieTypeConverter.toIsar(upper),
-      includeUpper: includeUpper,
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<Progress, Progress, QAfterFilterCondition> movieStartsWith(
-    Movie value, {
-    bool caseSensitive = true,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.startsWith,
-      property: 'movie',
-      value: _progressMovieTypeConverter.toIsar(value),
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<Progress, Progress, QAfterFilterCondition> movieEndsWith(
-    Movie value, {
-    bool caseSensitive = true,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.endsWith,
-      property: 'movie',
-      value: _progressMovieTypeConverter.toIsar(value),
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<Progress, Progress, QAfterFilterCondition> movieContains(
-      Movie value,
-      {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.contains,
-      property: 'movie',
-      value: _progressMovieTypeConverter.toIsar(value),
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<Progress, Progress, QAfterFilterCondition> movieMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.matches,
-      property: 'movie',
-      value: pattern,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'progress',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterFilterCondition> progressGreaterThan(
-      double value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: false,
-      property: 'progress',
-      value: value,
-    ));
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'progress',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterFilterCondition> progressLessThan(
-      double value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: false,
-      property: 'progress',
-      value: value,
-    ));
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'progress',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterFilterCondition> progressBetween(
-      double lower, double upper) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'progress',
-      lower: lower,
-      includeLower: false,
-      upper: upper,
-      includeUpper: false,
-    ));
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'progress',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterFilterCondition> seasonNoIsNull() {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.isNull,
-      property: 'seasonNo',
-      value: null,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'seasonNo',
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> seasonNoIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'seasonNo',
+      ));
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterFilterCondition> seasonNoEqualTo(
       int? value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'seasonNo',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'seasonNo',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterFilterCondition> seasonNoGreaterThan(
     int? value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'seasonNo',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'seasonNo',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterFilterCondition> seasonNoLessThan(
     int? value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'seasonNo',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'seasonNo',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterFilterCondition> seasonNoBetween(
@@ -557,411 +536,366 @@ extension ProgressQueryFilter
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'seasonNo',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'seasonNo',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterFilterCondition> showIsNull() {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.isNull,
-      property: 'show',
-      value: null,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'show',
+      ));
+    });
   }
 
-  QueryBuilder<Progress, Progress, QAfterFilterCondition> showEqualTo(
-    Tv? value, {
-    bool caseSensitive = true,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'show',
-      value: _progressShowTypeConverter.toIsar(value),
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<Progress, Progress, QAfterFilterCondition> showGreaterThan(
-    Tv? value, {
-    bool caseSensitive = true,
-    bool include = false,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'show',
-      value: _progressShowTypeConverter.toIsar(value),
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<Progress, Progress, QAfterFilterCondition> showLessThan(
-    Tv? value, {
-    bool caseSensitive = true,
-    bool include = false,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'show',
-      value: _progressShowTypeConverter.toIsar(value),
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<Progress, Progress, QAfterFilterCondition> showBetween(
-    Tv? lower,
-    Tv? upper, {
-    bool caseSensitive = true,
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'show',
-      lower: _progressShowTypeConverter.toIsar(lower),
-      includeLower: includeLower,
-      upper: _progressShowTypeConverter.toIsar(upper),
-      includeUpper: includeUpper,
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<Progress, Progress, QAfterFilterCondition> showStartsWith(
-    Tv value, {
-    bool caseSensitive = true,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.startsWith,
-      property: 'show',
-      value: _progressShowTypeConverter.toIsar(value),
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<Progress, Progress, QAfterFilterCondition> showEndsWith(
-    Tv value, {
-    bool caseSensitive = true,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.endsWith,
-      property: 'show',
-      value: _progressShowTypeConverter.toIsar(value),
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<Progress, Progress, QAfterFilterCondition> showContains(Tv value,
-      {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.contains,
-      property: 'show',
-      value: _progressShowTypeConverter.toIsar(value),
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<Progress, Progress, QAfterFilterCondition> showMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.matches,
-      property: 'show',
-      value: pattern,
-      caseSensitive: caseSensitive,
-    ));
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> showIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'show',
+      ));
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterFilterCondition> typeEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'type',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'type',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterFilterCondition> typeGreaterThan(
     String value, {
-    bool caseSensitive = true,
     bool include = false,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'type',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'type',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterFilterCondition> typeLessThan(
     String value, {
-    bool caseSensitive = true,
     bool include = false,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'type',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'type',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterFilterCondition> typeBetween(
     String lower,
     String upper, {
-    bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'type',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'type',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterFilterCondition> typeStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.startsWith,
-      property: 'type',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'type',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterFilterCondition> typeEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.endsWith,
-      property: 'type',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'type',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterFilterCondition> typeContains(
       String value,
       {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.contains,
-      property: 'type',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'type',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterFilterCondition> typeMatches(
       String pattern,
       {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.matches,
-      property: 'type',
-      value: pattern,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'type',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> typeIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'type',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> typeIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'type',
+        value: '',
+      ));
+    });
+  }
+}
+
+extension ProgressQueryObject
+    on QueryBuilder<Progress, Progress, QFilterCondition> {
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> movie(
+      FilterQuery<Movie> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'movie');
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> show(
+      FilterQuery<Tv> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'show');
+    });
   }
 }
 
 extension ProgressQueryLinks
     on QueryBuilder<Progress, Progress, QFilterCondition> {}
 
-extension ProgressQueryWhereSortBy
-    on QueryBuilder<Progress, Progress, QSortBy> {
+extension ProgressQuerySortBy on QueryBuilder<Progress, Progress, QSortBy> {
   QueryBuilder<Progress, Progress, QAfterSortBy> sortByEpisodeNo() {
-    return addSortByInternal('episodeNo', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'episodeNo', Sort.asc);
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterSortBy> sortByEpisodeNoDesc() {
-    return addSortByInternal('episodeNo', Sort.desc);
-  }
-
-  QueryBuilder<Progress, Progress, QAfterSortBy> sortById() {
-    return addSortByInternal('id', Sort.asc);
-  }
-
-  QueryBuilder<Progress, Progress, QAfterSortBy> sortByIdDesc() {
-    return addSortByInternal('id', Sort.desc);
-  }
-
-  QueryBuilder<Progress, Progress, QAfterSortBy> sortByMovie() {
-    return addSortByInternal('movie', Sort.asc);
-  }
-
-  QueryBuilder<Progress, Progress, QAfterSortBy> sortByMovieDesc() {
-    return addSortByInternal('movie', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'episodeNo', Sort.desc);
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterSortBy> sortByProgress() {
-    return addSortByInternal('progress', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'progress', Sort.asc);
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterSortBy> sortByProgressDesc() {
-    return addSortByInternal('progress', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'progress', Sort.desc);
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterSortBy> sortBySeasonNo() {
-    return addSortByInternal('seasonNo', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'seasonNo', Sort.asc);
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterSortBy> sortBySeasonNoDesc() {
-    return addSortByInternal('seasonNo', Sort.desc);
-  }
-
-  QueryBuilder<Progress, Progress, QAfterSortBy> sortByShow() {
-    return addSortByInternal('show', Sort.asc);
-  }
-
-  QueryBuilder<Progress, Progress, QAfterSortBy> sortByShowDesc() {
-    return addSortByInternal('show', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'seasonNo', Sort.desc);
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterSortBy> sortByType() {
-    return addSortByInternal('type', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'type', Sort.asc);
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterSortBy> sortByTypeDesc() {
-    return addSortByInternal('type', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'type', Sort.desc);
+    });
   }
 }
 
-extension ProgressQueryWhereSortThenBy
+extension ProgressQuerySortThenBy
     on QueryBuilder<Progress, Progress, QSortThenBy> {
   QueryBuilder<Progress, Progress, QAfterSortBy> thenByEpisodeNo() {
-    return addSortByInternal('episodeNo', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'episodeNo', Sort.asc);
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterSortBy> thenByEpisodeNoDesc() {
-    return addSortByInternal('episodeNo', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'episodeNo', Sort.desc);
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterSortBy> thenById() {
-    return addSortByInternal('id', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.asc);
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterSortBy> thenByIdDesc() {
-    return addSortByInternal('id', Sort.desc);
-  }
-
-  QueryBuilder<Progress, Progress, QAfterSortBy> thenByMovie() {
-    return addSortByInternal('movie', Sort.asc);
-  }
-
-  QueryBuilder<Progress, Progress, QAfterSortBy> thenByMovieDesc() {
-    return addSortByInternal('movie', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.desc);
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterSortBy> thenByProgress() {
-    return addSortByInternal('progress', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'progress', Sort.asc);
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterSortBy> thenByProgressDesc() {
-    return addSortByInternal('progress', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'progress', Sort.desc);
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterSortBy> thenBySeasonNo() {
-    return addSortByInternal('seasonNo', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'seasonNo', Sort.asc);
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterSortBy> thenBySeasonNoDesc() {
-    return addSortByInternal('seasonNo', Sort.desc);
-  }
-
-  QueryBuilder<Progress, Progress, QAfterSortBy> thenByShow() {
-    return addSortByInternal('show', Sort.asc);
-  }
-
-  QueryBuilder<Progress, Progress, QAfterSortBy> thenByShowDesc() {
-    return addSortByInternal('show', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'seasonNo', Sort.desc);
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterSortBy> thenByType() {
-    return addSortByInternal('type', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'type', Sort.asc);
+    });
   }
 
   QueryBuilder<Progress, Progress, QAfterSortBy> thenByTypeDesc() {
-    return addSortByInternal('type', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'type', Sort.desc);
+    });
   }
 }
 
 extension ProgressQueryWhereDistinct
     on QueryBuilder<Progress, Progress, QDistinct> {
   QueryBuilder<Progress, Progress, QDistinct> distinctByEpisodeNo() {
-    return addDistinctByInternal('episodeNo');
-  }
-
-  QueryBuilder<Progress, Progress, QDistinct> distinctById() {
-    return addDistinctByInternal('id');
-  }
-
-  QueryBuilder<Progress, Progress, QDistinct> distinctByMovie(
-      {bool caseSensitive = true}) {
-    return addDistinctByInternal('movie', caseSensitive: caseSensitive);
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'episodeNo');
+    });
   }
 
   QueryBuilder<Progress, Progress, QDistinct> distinctByProgress() {
-    return addDistinctByInternal('progress');
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'progress');
+    });
   }
 
   QueryBuilder<Progress, Progress, QDistinct> distinctBySeasonNo() {
-    return addDistinctByInternal('seasonNo');
-  }
-
-  QueryBuilder<Progress, Progress, QDistinct> distinctByShow(
-      {bool caseSensitive = true}) {
-    return addDistinctByInternal('show', caseSensitive: caseSensitive);
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'seasonNo');
+    });
   }
 
   QueryBuilder<Progress, Progress, QDistinct> distinctByType(
       {bool caseSensitive = true}) {
-    return addDistinctByInternal('type', caseSensitive: caseSensitive);
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'type', caseSensitive: caseSensitive);
+    });
   }
 }
 
 extension ProgressQueryProperty
     on QueryBuilder<Progress, Progress, QQueryProperty> {
-  QueryBuilder<Progress, int?, QQueryOperations> episodeNoProperty() {
-    return addPropertyNameInternal('episodeNo');
+  QueryBuilder<Progress, int, QQueryOperations> idProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'id');
+    });
   }
 
-  QueryBuilder<Progress, int, QQueryOperations> idProperty() {
-    return addPropertyNameInternal('id');
+  QueryBuilder<Progress, int?, QQueryOperations> episodeNoProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'episodeNo');
+    });
   }
 
   QueryBuilder<Progress, Movie?, QQueryOperations> movieProperty() {
-    return addPropertyNameInternal('movie');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'movie');
+    });
   }
 
   QueryBuilder<Progress, double, QQueryOperations> progressProperty() {
-    return addPropertyNameInternal('progress');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'progress');
+    });
   }
 
   QueryBuilder<Progress, int?, QQueryOperations> seasonNoProperty() {
-    return addPropertyNameInternal('seasonNo');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'seasonNo');
+    });
   }
 
   QueryBuilder<Progress, Tv?, QQueryOperations> showProperty() {
-    return addPropertyNameInternal('show');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'show');
+    });
   }
 
   QueryBuilder<Progress, String, QQueryOperations> typeProperty() {
-    return addPropertyNameInternal('type');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'type');
+    });
   }
 }

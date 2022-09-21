@@ -222,12 +222,36 @@ mixin _$DetailsStore on _DetailsStore, Store {
     });
   }
 
+  late final _$showHistoryAtom =
+      Atom(name: '_DetailsStore.showHistory', context: context);
+
+  @override
+  ShowHistory? get showHistory {
+    _$showHistoryAtom.reportRead();
+    return super.showHistory;
+  }
+
+  @override
+  set showHistory(ShowHistory? value) {
+    _$showHistoryAtom.reportWrite(value, super.showHistory, () {
+      super.showHistory = value;
+    });
+  }
+
   late final _$fetchReviewsAsyncAction =
       AsyncAction('_DetailsStore.fetchReviews', context: context);
 
   @override
   Future<dynamic> fetchReviews() {
     return _$fetchReviewsAsyncAction.run(() => super.fetchReviews());
+  }
+
+  late final _$fetchWatchHistoryAsyncAction =
+      AsyncAction('_DetailsStore.fetchWatchHistory', context: context);
+
+  @override
+  Future<dynamic> fetchWatchHistory() {
+    return _$fetchWatchHistoryAsyncAction.run(() => super.fetchWatchHistory());
   }
 
   late final _$_DetailsStoreActionController =
@@ -326,6 +350,7 @@ video: ${video},
 chosenEpisode: ${chosenEpisode},
 totalReviews: ${totalReviews},
 reviewList: ${reviewList},
+showHistory: ${showHistory},
 genres: ${genres}
     ''';
   }

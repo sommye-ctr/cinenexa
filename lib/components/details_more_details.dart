@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:focused_menu/focused_menu.dart';
+import 'package:focused_menu/modals.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mobx/mobx.dart';
 import 'package:watrix/components/details_review_tile.dart';
+import 'package:watrix/models/network/trakt/trakt_show_history_season_ep.dart';
 import 'package:watrix/store/details/details_store.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '../models/network/base_model.dart';
+import '../models/network/trakt/trakt_show_history_season.dart';
 import '../models/network/tv_season.dart';
 import '../resources/asset.dart';
 import '../resources/strings.dart';
@@ -172,12 +176,44 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
           physics: ClampingScrollPhysics(),
           itemCount: widget.detailsStore.episodes.length,
           itemBuilder: (context, index) {
-            return UnconstrainedBox(
-              child: EpisodeTile(
-                episode: widget.detailsStore.episodes[index],
-                onTap: () {
-                  widget.detailsStore.onEpiodeClicked(index);
-                },
+            bool? watched = false;
+
+            Iterable<TraktShowHistorySeason>? iterable =
+                widget.detailsStore.showHistory?.seasons?.where(
+              (element) =>
+                  element.number ==
+                  widget.detailsStore.tv!
+                      .seasons![widget.detailsStore.chosenSeason!].seasonNumber,
+            );
+            if (iterable != null && iterable.isNotEmpty) {
+              TraktShowHistorySeason? historySeason = iterable.elementAt(0);
+              Iterable<TraktShowHistorySeasonEp>? list = historySeason.episodes
+                  ?.where((element) =>
+                      element.number ==
+                      widget.detailsStore.episodes[index].episodeNumber);
+              watched = list != null && list.isNotEmpty;
+            }
+
+            return FocusedMenuHolder(
+              menuItems: [
+                FocusedMenuItem(
+                  title: Text("Mark as Watched"),
+                  trailingIcon: Icon(Icons.playlist_add_check_rounded),
+                  backgroundColor: Theme.of(context).backgroundColor,
+                  onPressed: () {},
+                ),
+              ],
+              onPressed: () {},
+              animateMenuItems: true,
+              blurSize: 5,
+              child: UnconstrainedBox(
+                child: EpisodeTile(
+                  episode: widget.detailsStore.episodes[index],
+                  watched: watched,
+                  onTap: () {
+                    widget.detailsStore.onEpiodeClicked(index);
+                  },
+                ),
               ),
             );
           },
@@ -380,7 +416,7 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
                   items: widget.detailsStore.tv!.seasons!.map((e) {
                     return DropdownMenuItem(
                       child: Text(
-                        e.name,
+                        e.name!,
                       ),
                       value: e,
                     );

@@ -3,8 +3,7 @@ part 'search_history.g.dart';
 
 @Collection()
 class SearchHistory {
-  @Id()
-  int id = Isar.autoIncrement;
+  Id? id;
 
   late String term;
 }

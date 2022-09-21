@@ -3,8 +3,7 @@ part 'favorites.g.dart';
 
 @Collection()
 class Favorites {
-  @Id()
-  late int id;
+  Id? id;
 
   late String type;
   late String title;

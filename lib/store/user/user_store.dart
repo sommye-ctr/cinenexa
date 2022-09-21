@@ -38,6 +38,7 @@ abstract class _UserStoreBase with Store {
 
   _UserStoreBase({FavoritesStore? favoritesStore}) {
     init(favoritesStore: favoritesStore);
+    //localDb.clear();
   }
 
   @action
@@ -110,7 +111,7 @@ abstract class _UserStoreBase with Store {
       {LastActivities? local,
       LastActivities? api,
       bool fromApi = false}) async {
-    showHistory.addAll(await repository.getUserWatched());
+    showHistory.addAll(await localDb.getShowHistories());
     if (fromApi) {
       localDb.updateShowHistory(
         items: await repository.getUserWatched(),

@@ -5,27 +5,30 @@ import 'package:isar/isar.dart';
 
 import 'genre.dart';
 
+part 'movie.g.dart';
+
+@embedded
 class Movie {
-  String title;
-  int id;
-  String posterPath;
-  String backdropPath;
-  String overView;
-  String releaseDate;
-  List<int> genreIds;
-  double voteAverage;
+  String? title;
+  int? id;
+  String? posterPath;
+  String? backdropPath;
+  String? overView;
+  String? releaseDate;
+  List<int>? genreIds;
+  double? voteAverage;
   int? runtime;
   List<Genre>? genres;
 
   Movie({
-    required this.title,
-    required this.id,
-    required this.posterPath,
-    required this.backdropPath,
-    required this.overView,
-    required this.releaseDate,
-    required this.genreIds,
-    required this.voteAverage,
+    this.title,
+    this.id,
+    this.posterPath,
+    this.backdropPath,
+    this.overView,
+    this.releaseDate,
+    this.genreIds,
+    this.voteAverage,
     this.runtime,
     this.genres,
   });

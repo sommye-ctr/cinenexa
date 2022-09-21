@@ -6,110 +6,110 @@ part of 'favorites.dart';
 // IsarCollectionGenerator
 // **************************************************************************
 
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, unused_local_variable
+// coverage:ignore-file
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters
 
 extension GetFavoritesCollection on Isar {
-  IsarCollection<Favorites> get favoritess => getCollection();
+  IsarCollection<Favorites> get favorites => this.collection();
 }
 
 const FavoritesSchema = CollectionSchema(
-  name: 'Favorites',
-  schema:
-      '{"name":"Favorites","idName":"id","properties":[{"name":"backdropPath","type":"String"},{"name":"genreIds","type":"LongList"},{"name":"overview","type":"String"},{"name":"posterPath","type":"String"},{"name":"releaseDate","type":"String"},{"name":"title","type":"String"},{"name":"type","type":"String"},{"name":"voteAverage","type":"Double"}],"indexes":[],"links":[]}',
-  idName: 'id',
-  propertyIds: {
-    'backdropPath': 0,
-    'genreIds': 1,
-    'overview': 2,
-    'posterPath': 3,
-    'releaseDate': 4,
-    'title': 5,
-    'type': 6,
-    'voteAverage': 7
+  name: r'Favorites',
+  id: -565980893400198248,
+  properties: {
+    r'backdropPath': PropertySchema(
+      id: 0,
+      name: r'backdropPath',
+      type: IsarType.string,
+    ),
+    r'genreIds': PropertySchema(
+      id: 1,
+      name: r'genreIds',
+      type: IsarType.longList,
+    ),
+    r'overview': PropertySchema(
+      id: 2,
+      name: r'overview',
+      type: IsarType.string,
+    ),
+    r'posterPath': PropertySchema(
+      id: 3,
+      name: r'posterPath',
+      type: IsarType.string,
+    ),
+    r'releaseDate': PropertySchema(
+      id: 4,
+      name: r'releaseDate',
+      type: IsarType.string,
+    ),
+    r'title': PropertySchema(
+      id: 5,
+      name: r'title',
+      type: IsarType.string,
+    ),
+    r'type': PropertySchema(
+      id: 6,
+      name: r'type',
+      type: IsarType.string,
+    ),
+    r'voteAverage': PropertySchema(
+      id: 7,
+      name: r'voteAverage',
+      type: IsarType.double,
+    )
   },
-  listProperties: {'genreIds'},
-  indexIds: {},
-  indexValueTypes: {},
-  linkIds: {},
-  backlinkLinkNames: {},
+  estimateSize: _favoritesEstimateSize,
+  serialize: _favoritesSerialize,
+  deserialize: _favoritesDeserialize,
+  deserializeProp: _favoritesDeserializeProp,
+  idName: r'id',
+  indexes: {},
+  links: {},
+  embeddedSchemas: {},
   getId: _favoritesGetId,
-  setId: _favoritesSetId,
   getLinks: _favoritesGetLinks,
-  attachLinks: _favoritesAttachLinks,
-  serializeNative: _favoritesSerializeNative,
-  deserializeNative: _favoritesDeserializeNative,
-  deserializePropNative: _favoritesDeserializePropNative,
-  serializeWeb: _favoritesSerializeWeb,
-  deserializeWeb: _favoritesDeserializeWeb,
-  deserializePropWeb: _favoritesDeserializePropWeb,
-  version: 3,
+  attach: _favoritesAttach,
+  version: '3.0.0',
 );
 
-int? _favoritesGetId(Favorites object) {
-  if (object.id == Isar.autoIncrement) {
-    return null;
-  } else {
-    return object.id;
-  }
+int _favoritesEstimateSize(
+  Favorites object,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  var bytesCount = offsets.last;
+  bytesCount += 3 + object.backdropPath.length * 3;
+  bytesCount += 3 + object.genreIds.length * 8;
+  bytesCount += 3 + object.overview.length * 3;
+  bytesCount += 3 + object.posterPath.length * 3;
+  bytesCount += 3 + object.releaseDate.length * 3;
+  bytesCount += 3 + object.title.length * 3;
+  bytesCount += 3 + object.type.length * 3;
+  return bytesCount;
 }
 
-void _favoritesSetId(Favorites object, int id) {
-  object.id = id;
+void _favoritesSerialize(
+  Favorites object,
+  IsarWriter writer,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  writer.writeString(offsets[0], object.backdropPath);
+  writer.writeLongList(offsets[1], object.genreIds);
+  writer.writeString(offsets[2], object.overview);
+  writer.writeString(offsets[3], object.posterPath);
+  writer.writeString(offsets[4], object.releaseDate);
+  writer.writeString(offsets[5], object.title);
+  writer.writeString(offsets[6], object.type);
+  writer.writeDouble(offsets[7], object.voteAverage);
 }
 
-List<IsarLinkBase> _favoritesGetLinks(Favorites object) {
-  return [];
-}
-
-void _favoritesSerializeNative(
-    IsarCollection<Favorites> collection,
-    IsarRawObject rawObj,
-    Favorites object,
-    int staticSize,
-    List<int> offsets,
-    AdapterAlloc alloc) {
-  var dynamicSize = 0;
-  final value0 = object.backdropPath;
-  final _backdropPath = IsarBinaryWriter.utf8Encoder.convert(value0);
-  dynamicSize += (_backdropPath.length) as int;
-  final value1 = object.genreIds;
-  dynamicSize += (value1.length) * 8;
-  final _genreIds = value1;
-  final value2 = object.overview;
-  final _overview = IsarBinaryWriter.utf8Encoder.convert(value2);
-  dynamicSize += (_overview.length) as int;
-  final value3 = object.posterPath;
-  final _posterPath = IsarBinaryWriter.utf8Encoder.convert(value3);
-  dynamicSize += (_posterPath.length) as int;
-  final value4 = object.releaseDate;
-  final _releaseDate = IsarBinaryWriter.utf8Encoder.convert(value4);
-  dynamicSize += (_releaseDate.length) as int;
-  final value5 = object.title;
-  final _title = IsarBinaryWriter.utf8Encoder.convert(value5);
-  dynamicSize += (_title.length) as int;
-  final value6 = object.type;
-  final _type = IsarBinaryWriter.utf8Encoder.convert(value6);
-  dynamicSize += (_type.length) as int;
-  final value7 = object.voteAverage;
-  final _voteAverage = value7;
-  final size = staticSize + dynamicSize;
-
-  rawObj.buffer = alloc(size);
-  rawObj.buffer_length = size;
-  final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
-  final writer = IsarBinaryWriter(buffer, staticSize);
-  writer.writeBytes(offsets[0], _backdropPath);
-  writer.writeLongList(offsets[1], _genreIds);
-  writer.writeBytes(offsets[2], _overview);
-  writer.writeBytes(offsets[3], _posterPath);
-  writer.writeBytes(offsets[4], _releaseDate);
-  writer.writeBytes(offsets[5], _title);
-  writer.writeBytes(offsets[6], _type);
-  writer.writeDouble(offsets[7], _voteAverage);
-}
-
-Favorites _favoritesDeserializeNative(IsarCollection<Favorites> collection,
-    int id, IsarBinaryReader reader, List<int> offsets) {
+Favorites _favoritesDeserialize(
+  Id id,
+  IsarReader reader,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
   final object = Favorites();
   object.backdropPath = reader.readString(offsets[0]);
   object.genreIds = reader.readLongList(offsets[1]) ?? [];
@@ -123,11 +123,13 @@ Favorites _favoritesDeserializeNative(IsarCollection<Favorites> collection,
   return object;
 }
 
-P _favoritesDeserializePropNative<P>(
-    int id, IsarBinaryReader reader, int propertyIndex, int offset) {
-  switch (propertyIndex) {
-    case -1:
-      return id as P;
+P _favoritesDeserializeProp<P>(
+  IsarReader reader,
+  int propertyId,
+  int offset,
+  Map<Type, List<int>> allOffsets,
+) {
+  switch (propertyId) {
     case 0:
       return (reader.readString(offset)) as P;
     case 1:
@@ -145,138 +147,96 @@ P _favoritesDeserializePropNative<P>(
     case 7:
       return (reader.readDouble(offset)) as P;
     default:
-      throw 'Illegal propertyIndex';
+      throw IsarError('Unknown property with id $propertyId');
   }
 }
 
-dynamic _favoritesSerializeWeb(
-    IsarCollection<Favorites> collection, Favorites object) {
-  final jsObj = IsarNative.newJsObject();
-  IsarNative.jsObjectSet(jsObj, 'backdropPath', object.backdropPath);
-  IsarNative.jsObjectSet(jsObj, 'genreIds', object.genreIds);
-  IsarNative.jsObjectSet(jsObj, 'id', object.id);
-  IsarNative.jsObjectSet(jsObj, 'overview', object.overview);
-  IsarNative.jsObjectSet(jsObj, 'posterPath', object.posterPath);
-  IsarNative.jsObjectSet(jsObj, 'releaseDate', object.releaseDate);
-  IsarNative.jsObjectSet(jsObj, 'title', object.title);
-  IsarNative.jsObjectSet(jsObj, 'type', object.type);
-  IsarNative.jsObjectSet(jsObj, 'voteAverage', object.voteAverage);
-  return jsObj;
+Id _favoritesGetId(Favorites object) {
+  return object.id ?? Isar.autoIncrement;
 }
 
-Favorites _favoritesDeserializeWeb(
-    IsarCollection<Favorites> collection, dynamic jsObj) {
-  final object = Favorites();
-  object.backdropPath = IsarNative.jsObjectGet(jsObj, 'backdropPath') ?? '';
-  object.genreIds = (IsarNative.jsObjectGet(jsObj, 'genreIds') as List?)
-          ?.map((e) => e ?? double.negativeInfinity)
-          .toList()
-          .cast<int>() ??
-      [];
-  object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
-  object.overview = IsarNative.jsObjectGet(jsObj, 'overview') ?? '';
-  object.posterPath = IsarNative.jsObjectGet(jsObj, 'posterPath') ?? '';
-  object.releaseDate = IsarNative.jsObjectGet(jsObj, 'releaseDate') ?? '';
-  object.title = IsarNative.jsObjectGet(jsObj, 'title') ?? '';
-  object.type = IsarNative.jsObjectGet(jsObj, 'type') ?? '';
-  object.voteAverage =
-      IsarNative.jsObjectGet(jsObj, 'voteAverage') ?? double.negativeInfinity;
-  return object;
+List<IsarLinkBase<dynamic>> _favoritesGetLinks(Favorites object) {
+  return [];
 }
 
-P _favoritesDeserializePropWeb<P>(Object jsObj, String propertyName) {
-  switch (propertyName) {
-    case 'backdropPath':
-      return (IsarNative.jsObjectGet(jsObj, 'backdropPath') ?? '') as P;
-    case 'genreIds':
-      return ((IsarNative.jsObjectGet(jsObj, 'genreIds') as List?)
-              ?.map((e) => e ?? double.negativeInfinity)
-              .toList()
-              .cast<int>() ??
-          []) as P;
-    case 'id':
-      return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
-          as P;
-    case 'overview':
-      return (IsarNative.jsObjectGet(jsObj, 'overview') ?? '') as P;
-    case 'posterPath':
-      return (IsarNative.jsObjectGet(jsObj, 'posterPath') ?? '') as P;
-    case 'releaseDate':
-      return (IsarNative.jsObjectGet(jsObj, 'releaseDate') ?? '') as P;
-    case 'title':
-      return (IsarNative.jsObjectGet(jsObj, 'title') ?? '') as P;
-    case 'type':
-      return (IsarNative.jsObjectGet(jsObj, 'type') ?? '') as P;
-    case 'voteAverage':
-      return (IsarNative.jsObjectGet(jsObj, 'voteAverage') ??
-          double.negativeInfinity) as P;
-    default:
-      throw 'Illegal propertyName';
-  }
+void _favoritesAttach(IsarCollection<dynamic> col, Id id, Favorites object) {
+  object.id = id;
 }
-
-void _favoritesAttachLinks(IsarCollection col, int id, Favorites object) {}
 
 extension FavoritesQueryWhereSort
     on QueryBuilder<Favorites, Favorites, QWhere> {
   QueryBuilder<Favorites, Favorites, QAfterWhere> anyId() {
-    return addWhereClauseInternal(const IdWhereClause.any());
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(const IdWhereClause.any());
+    });
   }
 }
 
 extension FavoritesQueryWhere
     on QueryBuilder<Favorites, Favorites, QWhereClause> {
-  QueryBuilder<Favorites, Favorites, QAfterWhereClause> idEqualTo(int id) {
-    return addWhereClauseInternal(IdWhereClause.between(
-      lower: id,
-      includeLower: true,
-      upper: id,
-      includeUpper: true,
-    ));
+  QueryBuilder<Favorites, Favorites, QAfterWhereClause> idEqualTo(Id id) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IdWhereClause.between(
+        lower: id,
+        upper: id,
+      ));
+    });
   }
 
-  QueryBuilder<Favorites, Favorites, QAfterWhereClause> idNotEqualTo(int id) {
-    if (whereSortInternal == Sort.asc) {
-      return addWhereClauseInternal(
-        IdWhereClause.lessThan(upper: id, includeUpper: false),
-      ).addWhereClauseInternal(
-        IdWhereClause.greaterThan(lower: id, includeLower: false),
-      );
-    } else {
-      return addWhereClauseInternal(
-        IdWhereClause.greaterThan(lower: id, includeLower: false),
-      ).addWhereClauseInternal(
-        IdWhereClause.lessThan(upper: id, includeUpper: false),
-      );
-    }
+  QueryBuilder<Favorites, Favorites, QAfterWhereClause> idNotEqualTo(Id id) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            )
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            )
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            );
+      }
+    });
   }
 
-  QueryBuilder<Favorites, Favorites, QAfterWhereClause> idGreaterThan(int id,
+  QueryBuilder<Favorites, Favorites, QAfterWhereClause> idGreaterThan(Id id,
       {bool include = false}) {
-    return addWhereClauseInternal(
-      IdWhereClause.greaterThan(lower: id, includeLower: include),
-    );
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.greaterThan(lower: id, includeLower: include),
+      );
+    });
   }
 
-  QueryBuilder<Favorites, Favorites, QAfterWhereClause> idLessThan(int id,
+  QueryBuilder<Favorites, Favorites, QAfterWhereClause> idLessThan(Id id,
       {bool include = false}) {
-    return addWhereClauseInternal(
-      IdWhereClause.lessThan(upper: id, includeUpper: include),
-    );
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.lessThan(upper: id, includeUpper: include),
+      );
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterWhereClause> idBetween(
-    int lowerId,
-    int upperId, {
+    Id lowerId,
+    Id upperId, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addWhereClauseInternal(IdWhereClause.between(
-      lower: lowerId,
-      includeLower: includeLower,
-      upper: upperId,
-      includeUpper: includeUpper,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IdWhereClause.between(
+        lower: lowerId,
+        includeLower: includeLower,
+        upper: upperId,
+        includeUpper: includeUpper,
+      ));
+    });
   }
 }
 
@@ -286,59 +246,64 @@ extension FavoritesQueryFilter
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'backdropPath',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'backdropPath',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition>
       backdropPathGreaterThan(
     String value, {
-    bool caseSensitive = true,
     bool include = false,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'backdropPath',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'backdropPath',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition>
       backdropPathLessThan(
     String value, {
-    bool caseSensitive = true,
     bool include = false,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'backdropPath',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'backdropPath',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> backdropPathBetween(
     String lower,
     String upper, {
-    bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'backdropPath',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'backdropPath',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition>
@@ -346,12 +311,13 @@ extension FavoritesQueryFilter
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.startsWith,
-      property: 'backdropPath',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'backdropPath',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition>
@@ -359,291 +325,463 @@ extension FavoritesQueryFilter
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.endsWith,
-      property: 'backdropPath',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'backdropPath',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition>
       backdropPathContains(String value, {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.contains,
-      property: 'backdropPath',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'backdropPath',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> backdropPathMatches(
       String pattern,
       {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.matches,
-      property: 'backdropPath',
-      value: pattern,
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<Favorites, Favorites, QAfterFilterCondition> genreIdsAnyEqualTo(
-      int value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'genreIds',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'backdropPath',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition>
-      genreIdsAnyGreaterThan(
+      backdropPathIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'backdropPath',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Favorites, Favorites, QAfterFilterCondition>
+      backdropPathIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'backdropPath',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Favorites, Favorites, QAfterFilterCondition>
+      genreIdsElementEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'genreIds',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Favorites, Favorites, QAfterFilterCondition>
+      genreIdsElementGreaterThan(
     int value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'genreIds',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'genreIds',
+        value: value,
+      ));
+    });
   }
 
-  QueryBuilder<Favorites, Favorites, QAfterFilterCondition> genreIdsAnyLessThan(
+  QueryBuilder<Favorites, Favorites, QAfterFilterCondition>
+      genreIdsElementLessThan(
     int value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'genreIds',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'genreIds',
+        value: value,
+      ));
+    });
   }
 
-  QueryBuilder<Favorites, Favorites, QAfterFilterCondition> genreIdsAnyBetween(
+  QueryBuilder<Favorites, Favorites, QAfterFilterCondition>
+      genreIdsElementBetween(
     int lower,
     int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'genreIds',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'genreIds',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Favorites, Favorites, QAfterFilterCondition>
+      genreIdsLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'genreIds',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Favorites, Favorites, QAfterFilterCondition> genreIdsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'genreIds',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Favorites, Favorites, QAfterFilterCondition>
+      genreIdsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'genreIds',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Favorites, Favorites, QAfterFilterCondition>
+      genreIdsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'genreIds',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<Favorites, Favorites, QAfterFilterCondition>
+      genreIdsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'genreIds',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Favorites, Favorites, QAfterFilterCondition>
+      genreIdsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'genreIds',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
+
+  QueryBuilder<Favorites, Favorites, QAfterFilterCondition> idIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'id',
+      ));
+    });
+  }
+
+  QueryBuilder<Favorites, Favorites, QAfterFilterCondition> idIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'id',
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> idEqualTo(
-      int value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'id',
-      value: value,
-    ));
+      Id? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'id',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> idGreaterThan(
-    int value, {
+    Id? value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'id',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'id',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> idLessThan(
-    int value, {
+    Id? value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'id',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'id',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> idBetween(
-    int lower,
-    int upper, {
+    Id? lower,
+    Id? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'id',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'id',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> overviewEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'overview',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'overview',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> overviewGreaterThan(
     String value, {
-    bool caseSensitive = true,
     bool include = false,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'overview',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'overview',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> overviewLessThan(
     String value, {
-    bool caseSensitive = true,
     bool include = false,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'overview',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'overview',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> overviewBetween(
     String lower,
     String upper, {
-    bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'overview',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'overview',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> overviewStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.startsWith,
-      property: 'overview',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'overview',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> overviewEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.endsWith,
-      property: 'overview',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'overview',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> overviewContains(
       String value,
       {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.contains,
-      property: 'overview',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'overview',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> overviewMatches(
       String pattern,
       {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.matches,
-      property: 'overview',
-      value: pattern,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'overview',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Favorites, Favorites, QAfterFilterCondition> overviewIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'overview',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Favorites, Favorites, QAfterFilterCondition>
+      overviewIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'overview',
+        value: '',
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> posterPathEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'posterPath',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'posterPath',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition>
       posterPathGreaterThan(
     String value, {
-    bool caseSensitive = true,
     bool include = false,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'posterPath',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'posterPath',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> posterPathLessThan(
     String value, {
-    bool caseSensitive = true,
     bool include = false,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'posterPath',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'posterPath',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> posterPathBetween(
     String lower,
     String upper, {
-    bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'posterPath',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'posterPath',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition>
@@ -651,104 +789,133 @@ extension FavoritesQueryFilter
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.startsWith,
-      property: 'posterPath',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'posterPath',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> posterPathEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.endsWith,
-      property: 'posterPath',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'posterPath',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> posterPathContains(
       String value,
       {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.contains,
-      property: 'posterPath',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'posterPath',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> posterPathMatches(
       String pattern,
       {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.matches,
-      property: 'posterPath',
-      value: pattern,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'posterPath',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Favorites, Favorites, QAfterFilterCondition>
+      posterPathIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'posterPath',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Favorites, Favorites, QAfterFilterCondition>
+      posterPathIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'posterPath',
+        value: '',
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> releaseDateEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'releaseDate',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'releaseDate',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition>
       releaseDateGreaterThan(
     String value, {
-    bool caseSensitive = true,
     bool include = false,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'releaseDate',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'releaseDate',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> releaseDateLessThan(
     String value, {
-    bool caseSensitive = true,
     bool include = false,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'releaseDate',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'releaseDate',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> releaseDateBetween(
     String lower,
     String upper, {
-    bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'releaseDate',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'releaseDate',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition>
@@ -756,420 +923,584 @@ extension FavoritesQueryFilter
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.startsWith,
-      property: 'releaseDate',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'releaseDate',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> releaseDateEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.endsWith,
-      property: 'releaseDate',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'releaseDate',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> releaseDateContains(
       String value,
       {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.contains,
-      property: 'releaseDate',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'releaseDate',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> releaseDateMatches(
       String pattern,
       {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.matches,
-      property: 'releaseDate',
-      value: pattern,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'releaseDate',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Favorites, Favorites, QAfterFilterCondition>
+      releaseDateIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'releaseDate',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Favorites, Favorites, QAfterFilterCondition>
+      releaseDateIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'releaseDate',
+        value: '',
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> titleEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'title',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'title',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> titleGreaterThan(
     String value, {
-    bool caseSensitive = true,
     bool include = false,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'title',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'title',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> titleLessThan(
     String value, {
-    bool caseSensitive = true,
     bool include = false,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'title',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'title',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> titleBetween(
     String lower,
     String upper, {
-    bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'title',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'title',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> titleStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.startsWith,
-      property: 'title',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'title',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> titleEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.endsWith,
-      property: 'title',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'title',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> titleContains(
       String value,
       {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.contains,
-      property: 'title',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'title',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> titleMatches(
       String pattern,
       {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.matches,
-      property: 'title',
-      value: pattern,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'title',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Favorites, Favorites, QAfterFilterCondition> titleIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'title',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Favorites, Favorites, QAfterFilterCondition> titleIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'title',
+        value: '',
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> typeEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'type',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'type',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> typeGreaterThan(
     String value, {
-    bool caseSensitive = true,
     bool include = false,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'type',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'type',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> typeLessThan(
     String value, {
-    bool caseSensitive = true,
     bool include = false,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'type',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'type',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> typeBetween(
     String lower,
     String upper, {
-    bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
+    bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'type',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'type',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> typeStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.startsWith,
-      property: 'type',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'type',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> typeEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.endsWith,
-      property: 'type',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'type',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> typeContains(
       String value,
       {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.contains,
-      property: 'type',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'type',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> typeMatches(
       String pattern,
       {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.matches,
-      property: 'type',
-      value: pattern,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'type',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Favorites, Favorites, QAfterFilterCondition> typeIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'type',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Favorites, Favorites, QAfterFilterCondition> typeIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'type',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Favorites, Favorites, QAfterFilterCondition> voteAverageEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'voteAverage',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition>
-      voteAverageGreaterThan(double value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: false,
-      property: 'voteAverage',
-      value: value,
-    ));
+      voteAverageGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'voteAverage',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> voteAverageLessThan(
-      double value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: false,
-      property: 'voteAverage',
-      value: value,
-    ));
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'voteAverage',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterFilterCondition> voteAverageBetween(
-      double lower, double upper) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'voteAverage',
-      lower: lower,
-      includeLower: false,
-      upper: upper,
-      includeUpper: false,
-    ));
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'voteAverage',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
   }
 }
+
+extension FavoritesQueryObject
+    on QueryBuilder<Favorites, Favorites, QFilterCondition> {}
 
 extension FavoritesQueryLinks
     on QueryBuilder<Favorites, Favorites, QFilterCondition> {}
 
-extension FavoritesQueryWhereSortBy
-    on QueryBuilder<Favorites, Favorites, QSortBy> {
+extension FavoritesQuerySortBy on QueryBuilder<Favorites, Favorites, QSortBy> {
   QueryBuilder<Favorites, Favorites, QAfterSortBy> sortByBackdropPath() {
-    return addSortByInternal('backdropPath', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'backdropPath', Sort.asc);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterSortBy> sortByBackdropPathDesc() {
-    return addSortByInternal('backdropPath', Sort.desc);
-  }
-
-  QueryBuilder<Favorites, Favorites, QAfterSortBy> sortById() {
-    return addSortByInternal('id', Sort.asc);
-  }
-
-  QueryBuilder<Favorites, Favorites, QAfterSortBy> sortByIdDesc() {
-    return addSortByInternal('id', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'backdropPath', Sort.desc);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterSortBy> sortByOverview() {
-    return addSortByInternal('overview', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'overview', Sort.asc);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterSortBy> sortByOverviewDesc() {
-    return addSortByInternal('overview', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'overview', Sort.desc);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterSortBy> sortByPosterPath() {
-    return addSortByInternal('posterPath', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'posterPath', Sort.asc);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterSortBy> sortByPosterPathDesc() {
-    return addSortByInternal('posterPath', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'posterPath', Sort.desc);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterSortBy> sortByReleaseDate() {
-    return addSortByInternal('releaseDate', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'releaseDate', Sort.asc);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterSortBy> sortByReleaseDateDesc() {
-    return addSortByInternal('releaseDate', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'releaseDate', Sort.desc);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterSortBy> sortByTitle() {
-    return addSortByInternal('title', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'title', Sort.asc);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterSortBy> sortByTitleDesc() {
-    return addSortByInternal('title', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'title', Sort.desc);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterSortBy> sortByType() {
-    return addSortByInternal('type', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'type', Sort.asc);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterSortBy> sortByTypeDesc() {
-    return addSortByInternal('type', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'type', Sort.desc);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterSortBy> sortByVoteAverage() {
-    return addSortByInternal('voteAverage', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'voteAverage', Sort.asc);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterSortBy> sortByVoteAverageDesc() {
-    return addSortByInternal('voteAverage', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'voteAverage', Sort.desc);
+    });
   }
 }
 
-extension FavoritesQueryWhereSortThenBy
+extension FavoritesQuerySortThenBy
     on QueryBuilder<Favorites, Favorites, QSortThenBy> {
   QueryBuilder<Favorites, Favorites, QAfterSortBy> thenByBackdropPath() {
-    return addSortByInternal('backdropPath', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'backdropPath', Sort.asc);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterSortBy> thenByBackdropPathDesc() {
-    return addSortByInternal('backdropPath', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'backdropPath', Sort.desc);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterSortBy> thenById() {
-    return addSortByInternal('id', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.asc);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterSortBy> thenByIdDesc() {
-    return addSortByInternal('id', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.desc);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterSortBy> thenByOverview() {
-    return addSortByInternal('overview', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'overview', Sort.asc);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterSortBy> thenByOverviewDesc() {
-    return addSortByInternal('overview', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'overview', Sort.desc);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterSortBy> thenByPosterPath() {
-    return addSortByInternal('posterPath', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'posterPath', Sort.asc);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterSortBy> thenByPosterPathDesc() {
-    return addSortByInternal('posterPath', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'posterPath', Sort.desc);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterSortBy> thenByReleaseDate() {
-    return addSortByInternal('releaseDate', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'releaseDate', Sort.asc);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterSortBy> thenByReleaseDateDesc() {
-    return addSortByInternal('releaseDate', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'releaseDate', Sort.desc);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterSortBy> thenByTitle() {
-    return addSortByInternal('title', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'title', Sort.asc);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterSortBy> thenByTitleDesc() {
-    return addSortByInternal('title', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'title', Sort.desc);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterSortBy> thenByType() {
-    return addSortByInternal('type', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'type', Sort.asc);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterSortBy> thenByTypeDesc() {
-    return addSortByInternal('type', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'type', Sort.desc);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterSortBy> thenByVoteAverage() {
-    return addSortByInternal('voteAverage', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'voteAverage', Sort.asc);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QAfterSortBy> thenByVoteAverageDesc() {
-    return addSortByInternal('voteAverage', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'voteAverage', Sort.desc);
+    });
   }
 }
 
@@ -1177,78 +1508,112 @@ extension FavoritesQueryWhereDistinct
     on QueryBuilder<Favorites, Favorites, QDistinct> {
   QueryBuilder<Favorites, Favorites, QDistinct> distinctByBackdropPath(
       {bool caseSensitive = true}) {
-    return addDistinctByInternal('backdropPath', caseSensitive: caseSensitive);
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'backdropPath', caseSensitive: caseSensitive);
+    });
   }
 
-  QueryBuilder<Favorites, Favorites, QDistinct> distinctById() {
-    return addDistinctByInternal('id');
+  QueryBuilder<Favorites, Favorites, QDistinct> distinctByGenreIds() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'genreIds');
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QDistinct> distinctByOverview(
       {bool caseSensitive = true}) {
-    return addDistinctByInternal('overview', caseSensitive: caseSensitive);
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'overview', caseSensitive: caseSensitive);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QDistinct> distinctByPosterPath(
       {bool caseSensitive = true}) {
-    return addDistinctByInternal('posterPath', caseSensitive: caseSensitive);
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'posterPath', caseSensitive: caseSensitive);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QDistinct> distinctByReleaseDate(
       {bool caseSensitive = true}) {
-    return addDistinctByInternal('releaseDate', caseSensitive: caseSensitive);
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'releaseDate', caseSensitive: caseSensitive);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QDistinct> distinctByTitle(
       {bool caseSensitive = true}) {
-    return addDistinctByInternal('title', caseSensitive: caseSensitive);
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'title', caseSensitive: caseSensitive);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QDistinct> distinctByType(
       {bool caseSensitive = true}) {
-    return addDistinctByInternal('type', caseSensitive: caseSensitive);
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'type', caseSensitive: caseSensitive);
+    });
   }
 
   QueryBuilder<Favorites, Favorites, QDistinct> distinctByVoteAverage() {
-    return addDistinctByInternal('voteAverage');
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'voteAverage');
+    });
   }
 }
 
 extension FavoritesQueryProperty
     on QueryBuilder<Favorites, Favorites, QQueryProperty> {
+  QueryBuilder<Favorites, int, QQueryOperations> idProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'id');
+    });
+  }
+
   QueryBuilder<Favorites, String, QQueryOperations> backdropPathProperty() {
-    return addPropertyNameInternal('backdropPath');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'backdropPath');
+    });
   }
 
   QueryBuilder<Favorites, List<int>, QQueryOperations> genreIdsProperty() {
-    return addPropertyNameInternal('genreIds');
-  }
-
-  QueryBuilder<Favorites, int, QQueryOperations> idProperty() {
-    return addPropertyNameInternal('id');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'genreIds');
+    });
   }
 
   QueryBuilder<Favorites, String, QQueryOperations> overviewProperty() {
-    return addPropertyNameInternal('overview');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'overview');
+    });
   }
 
   QueryBuilder<Favorites, String, QQueryOperations> posterPathProperty() {
-    return addPropertyNameInternal('posterPath');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'posterPath');
+    });
   }
 
   QueryBuilder<Favorites, String, QQueryOperations> releaseDateProperty() {
-    return addPropertyNameInternal('releaseDate');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'releaseDate');
+    });
   }
 
   QueryBuilder<Favorites, String, QQueryOperations> titleProperty() {
-    return addPropertyNameInternal('title');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'title');
+    });
   }
 
   QueryBuilder<Favorites, String, QQueryOperations> typeProperty() {
-    return addPropertyNameInternal('type');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'type');
+    });
   }
 
   QueryBuilder<Favorites, double, QQueryOperations> voteAverageProperty() {
-    return addPropertyNameInternal('voteAverage');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'voteAverage');
+    });
   }
 }

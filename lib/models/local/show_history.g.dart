@@ -6,391 +6,344 @@ part of 'show_history.dart';
 // IsarCollectionGenerator
 // **************************************************************************
 
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, unused_local_variable
+// coverage:ignore-file
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters
 
 extension GetShowHistoryCollection on Isar {
-  IsarCollection<ShowHistory> get showHistorys => getCollection();
+  IsarCollection<ShowHistory> get showHistorys => this.collection();
 }
 
 const ShowHistorySchema = CollectionSchema(
-  name: 'ShowHistory',
-  schema:
-      '{"name":"ShowHistory","idName":"id","properties":[{"name":"lastUpdatedAt","type":"Long"},{"name":"show","type":"String"}],"indexes":[{"name":"lastUpdatedAt","unique":false,"properties":[{"name":"lastUpdatedAt","type":"Value","caseSensitive":false}]}],"links":[{"name":"seasons","target":"ShowHistorySeason"}]}',
-  idName: 'id',
-  propertyIds: {'lastUpdatedAt': 0, 'show': 1},
-  listProperties: {},
-  indexIds: {'lastUpdatedAt': 0},
-  indexValueTypes: {
-    'lastUpdatedAt': [
-      IndexValueType.long,
-    ]
+  name: r'ShowHistory',
+  id: -4118309659678317111,
+  properties: {
+    r'lastUpdatedAt': PropertySchema(
+      id: 0,
+      name: r'lastUpdatedAt',
+      type: IsarType.dateTime,
+    ),
+    r'seasons': PropertySchema(
+      id: 1,
+      name: r'seasons',
+      type: IsarType.objectList,
+      target: r'TraktShowHistorySeason',
+    ),
+    r'show': PropertySchema(
+      id: 2,
+      name: r'show',
+      type: IsarType.object,
+      target: r'Tv',
+    )
   },
-  linkIds: {'seasons': 0},
-  backlinkLinkNames: {},
+  estimateSize: _showHistoryEstimateSize,
+  serialize: _showHistorySerialize,
+  deserialize: _showHistoryDeserialize,
+  deserializeProp: _showHistoryDeserializeProp,
+  idName: r'id',
+  indexes: {},
+  links: {},
+  embeddedSchemas: {
+    r'Tv': TvSchema,
+    r'Genre': GenreSchema,
+    r'TvSeason': TvSeasonSchema,
+    r'TraktShowHistorySeason': TraktShowHistorySeasonSchema,
+    r'TraktShowHistorySeasonEp': TraktShowHistorySeasonEpSchema
+  },
   getId: _showHistoryGetId,
-  setId: _showHistorySetId,
   getLinks: _showHistoryGetLinks,
-  attachLinks: _showHistoryAttachLinks,
-  serializeNative: _showHistorySerializeNative,
-  deserializeNative: _showHistoryDeserializeNative,
-  deserializePropNative: _showHistoryDeserializePropNative,
-  serializeWeb: _showHistorySerializeWeb,
-  deserializeWeb: _showHistoryDeserializeWeb,
-  deserializePropWeb: _showHistoryDeserializePropWeb,
-  version: 3,
+  attach: _showHistoryAttach,
+  version: '3.0.0',
 );
 
-int? _showHistoryGetId(ShowHistory object) {
-  if (object.id == Isar.autoIncrement) {
-    return null;
-  } else {
-    return object.id;
+int _showHistoryEstimateSize(
+  ShowHistory object,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  var bytesCount = offsets.last;
+  {
+    final list = object.seasons;
+    if (list != null) {
+      bytesCount += 3 + list.length * 3;
+      {
+        final offsets = allOffsets[TraktShowHistorySeason]!;
+        for (var i = 0; i < list.length; i++) {
+          final value = list[i];
+          bytesCount += TraktShowHistorySeasonSchema.estimateSize(
+              value, offsets, allOffsets);
+        }
+      }
+    }
   }
-}
-
-void _showHistorySetId(ShowHistory object, int id) {
-  object.id = id;
-}
-
-List<IsarLinkBase> _showHistoryGetLinks(ShowHistory object) {
-  return [object.seasons];
-}
-
-const _showHistoryShowTypeConverter = ShowTypeConverter();
-
-void _showHistorySerializeNative(
-    IsarCollection<ShowHistory> collection,
-    IsarRawObject rawObj,
-    ShowHistory object,
-    int staticSize,
-    List<int> offsets,
-    AdapterAlloc alloc) {
-  var dynamicSize = 0;
-  final value0 = object.lastUpdatedAt;
-  final _lastUpdatedAt = value0;
-  final value1 = _showHistoryShowTypeConverter.toIsar(object.show);
-  IsarUint8List? _show;
-  if (value1 != null) {
-    _show = IsarBinaryWriter.utf8Encoder.convert(value1);
+  {
+    final value = object.show;
+    if (value != null) {
+      bytesCount +=
+          3 + TvSchema.estimateSize(value, allOffsets[Tv]!, allOffsets);
+    }
   }
-  dynamicSize += (_show?.length ?? 0) as int;
-  final size = staticSize + dynamicSize;
-
-  rawObj.buffer = alloc(size);
-  rawObj.buffer_length = size;
-  final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
-  final writer = IsarBinaryWriter(buffer, staticSize);
-  writer.writeDateTime(offsets[0], _lastUpdatedAt);
-  writer.writeBytes(offsets[1], _show);
+  return bytesCount;
 }
 
-ShowHistory _showHistoryDeserializeNative(
-    IsarCollection<ShowHistory> collection,
-    int id,
-    IsarBinaryReader reader,
-    List<int> offsets) {
+void _showHistorySerialize(
+  ShowHistory object,
+  IsarWriter writer,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  writer.writeDateTime(offsets[0], object.lastUpdatedAt);
+  writer.writeObjectList<TraktShowHistorySeason>(
+    offsets[1],
+    allOffsets,
+    TraktShowHistorySeasonSchema.serialize,
+    object.seasons,
+  );
+  writer.writeObject<Tv>(
+    offsets[2],
+    allOffsets,
+    TvSchema.serialize,
+    object.show,
+  );
+}
+
+ShowHistory _showHistoryDeserialize(
+  Id id,
+  IsarReader reader,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
   final object = ShowHistory();
   object.id = id;
   object.lastUpdatedAt = reader.readDateTimeOrNull(offsets[0]);
-  object.show = _showHistoryShowTypeConverter
-      .fromIsar(reader.readStringOrNull(offsets[1]));
-  _showHistoryAttachLinks(collection, id, object);
+  object.seasons = reader.readObjectList<TraktShowHistorySeason>(
+    offsets[1],
+    TraktShowHistorySeasonSchema.deserialize,
+    allOffsets,
+    TraktShowHistorySeason(),
+  );
+  object.show = reader.readObjectOrNull<Tv>(
+    offsets[2],
+    TvSchema.deserialize,
+    allOffsets,
+  );
   return object;
 }
 
-P _showHistoryDeserializePropNative<P>(
-    int id, IsarBinaryReader reader, int propertyIndex, int offset) {
-  switch (propertyIndex) {
-    case -1:
-      return id as P;
+P _showHistoryDeserializeProp<P>(
+  IsarReader reader,
+  int propertyId,
+  int offset,
+  Map<Type, List<int>> allOffsets,
+) {
+  switch (propertyId) {
     case 0:
       return (reader.readDateTimeOrNull(offset)) as P;
     case 1:
-      return (_showHistoryShowTypeConverter
-          .fromIsar(reader.readStringOrNull(offset))) as P;
+      return (reader.readObjectList<TraktShowHistorySeason>(
+        offset,
+        TraktShowHistorySeasonSchema.deserialize,
+        allOffsets,
+        TraktShowHistorySeason(),
+      )) as P;
+    case 2:
+      return (reader.readObjectOrNull<Tv>(
+        offset,
+        TvSchema.deserialize,
+        allOffsets,
+      )) as P;
     default:
-      throw 'Illegal propertyIndex';
+      throw IsarError('Unknown property with id $propertyId');
   }
 }
 
-dynamic _showHistorySerializeWeb(
-    IsarCollection<ShowHistory> collection, ShowHistory object) {
-  final jsObj = IsarNative.newJsObject();
-  IsarNative.jsObjectSet(jsObj, 'id', object.id);
-  IsarNative.jsObjectSet(jsObj, 'lastUpdatedAt',
-      object.lastUpdatedAt?.toUtc().millisecondsSinceEpoch);
-  IsarNative.jsObjectSet(
-      jsObj, 'show', _showHistoryShowTypeConverter.toIsar(object.show));
-  return jsObj;
+Id _showHistoryGetId(ShowHistory object) {
+  return object.id ?? Isar.autoIncrement;
 }
 
-ShowHistory _showHistoryDeserializeWeb(
-    IsarCollection<ShowHistory> collection, dynamic jsObj) {
-  final object = ShowHistory();
-  object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
-  object.lastUpdatedAt = IsarNative.jsObjectGet(jsObj, 'lastUpdatedAt') != null
-      ? DateTime.fromMillisecondsSinceEpoch(
-              IsarNative.jsObjectGet(jsObj, 'lastUpdatedAt'),
-              isUtc: true)
-          .toLocal()
-      : null;
-  object.show = _showHistoryShowTypeConverter
-      .fromIsar(IsarNative.jsObjectGet(jsObj, 'show'));
-  _showHistoryAttachLinks(collection,
-      IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity, object);
-  return object;
+List<IsarLinkBase<dynamic>> _showHistoryGetLinks(ShowHistory object) {
+  return [];
 }
 
-P _showHistoryDeserializePropWeb<P>(Object jsObj, String propertyName) {
-  switch (propertyName) {
-    case 'id':
-      return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
-          as P;
-    case 'lastUpdatedAt':
-      return (IsarNative.jsObjectGet(jsObj, 'lastUpdatedAt') != null
-          ? DateTime.fromMillisecondsSinceEpoch(
-                  IsarNative.jsObjectGet(jsObj, 'lastUpdatedAt'),
-                  isUtc: true)
-              .toLocal()
-          : null) as P;
-    case 'show':
-      return (_showHistoryShowTypeConverter
-          .fromIsar(IsarNative.jsObjectGet(jsObj, 'show'))) as P;
-    default:
-      throw 'Illegal propertyName';
-  }
-}
-
-void _showHistoryAttachLinks(IsarCollection col, int id, ShowHistory object) {
-  object.seasons.attach(col, col.isar.showHistorySeasons, 'seasons', id);
+void _showHistoryAttach(
+    IsarCollection<dynamic> col, Id id, ShowHistory object) {
+  object.id = id;
 }
 
 extension ShowHistoryQueryWhereSort
     on QueryBuilder<ShowHistory, ShowHistory, QWhere> {
   QueryBuilder<ShowHistory, ShowHistory, QAfterWhere> anyId() {
-    return addWhereClauseInternal(const IdWhereClause.any());
-  }
-
-  QueryBuilder<ShowHistory, ShowHistory, QAfterWhere> anyLastUpdatedAt() {
-    return addWhereClauseInternal(
-        const IndexWhereClause.any(indexName: 'lastUpdatedAt'));
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(const IdWhereClause.any());
+    });
   }
 }
 
 extension ShowHistoryQueryWhere
     on QueryBuilder<ShowHistory, ShowHistory, QWhereClause> {
-  QueryBuilder<ShowHistory, ShowHistory, QAfterWhereClause> idEqualTo(int id) {
-    return addWhereClauseInternal(IdWhereClause.between(
-      lower: id,
-      includeLower: true,
-      upper: id,
-      includeUpper: true,
-    ));
+  QueryBuilder<ShowHistory, ShowHistory, QAfterWhereClause> idEqualTo(Id id) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IdWhereClause.between(
+        lower: id,
+        upper: id,
+      ));
+    });
   }
 
   QueryBuilder<ShowHistory, ShowHistory, QAfterWhereClause> idNotEqualTo(
-      int id) {
-    if (whereSortInternal == Sort.asc) {
-      return addWhereClauseInternal(
-        IdWhereClause.lessThan(upper: id, includeUpper: false),
-      ).addWhereClauseInternal(
-        IdWhereClause.greaterThan(lower: id, includeLower: false),
-      );
-    } else {
-      return addWhereClauseInternal(
-        IdWhereClause.greaterThan(lower: id, includeLower: false),
-      ).addWhereClauseInternal(
-        IdWhereClause.lessThan(upper: id, includeUpper: false),
-      );
-    }
+      Id id) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            )
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            )
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            );
+      }
+    });
   }
 
-  QueryBuilder<ShowHistory, ShowHistory, QAfterWhereClause> idGreaterThan(
-      int id,
+  QueryBuilder<ShowHistory, ShowHistory, QAfterWhereClause> idGreaterThan(Id id,
       {bool include = false}) {
-    return addWhereClauseInternal(
-      IdWhereClause.greaterThan(lower: id, includeLower: include),
-    );
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.greaterThan(lower: id, includeLower: include),
+      );
+    });
   }
 
-  QueryBuilder<ShowHistory, ShowHistory, QAfterWhereClause> idLessThan(int id,
+  QueryBuilder<ShowHistory, ShowHistory, QAfterWhereClause> idLessThan(Id id,
       {bool include = false}) {
-    return addWhereClauseInternal(
-      IdWhereClause.lessThan(upper: id, includeUpper: include),
-    );
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.lessThan(upper: id, includeUpper: include),
+      );
+    });
   }
 
   QueryBuilder<ShowHistory, ShowHistory, QAfterWhereClause> idBetween(
-    int lowerId,
-    int upperId, {
+    Id lowerId,
+    Id upperId, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addWhereClauseInternal(IdWhereClause.between(
-      lower: lowerId,
-      includeLower: includeLower,
-      upper: upperId,
-      includeUpper: includeUpper,
-    ));
-  }
-
-  QueryBuilder<ShowHistory, ShowHistory, QAfterWhereClause>
-      lastUpdatedAtEqualTo(DateTime? lastUpdatedAt) {
-    return addWhereClauseInternal(IndexWhereClause.equalTo(
-      indexName: 'lastUpdatedAt',
-      value: [lastUpdatedAt],
-    ));
-  }
-
-  QueryBuilder<ShowHistory, ShowHistory, QAfterWhereClause>
-      lastUpdatedAtNotEqualTo(DateTime? lastUpdatedAt) {
-    if (whereSortInternal == Sort.asc) {
-      return addWhereClauseInternal(IndexWhereClause.lessThan(
-        indexName: 'lastUpdatedAt',
-        upper: [lastUpdatedAt],
-        includeUpper: false,
-      )).addWhereClauseInternal(IndexWhereClause.greaterThan(
-        indexName: 'lastUpdatedAt',
-        lower: [lastUpdatedAt],
-        includeLower: false,
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IdWhereClause.between(
+        lower: lowerId,
+        includeLower: includeLower,
+        upper: upperId,
+        includeUpper: includeUpper,
       ));
-    } else {
-      return addWhereClauseInternal(IndexWhereClause.greaterThan(
-        indexName: 'lastUpdatedAt',
-        lower: [lastUpdatedAt],
-        includeLower: false,
-      )).addWhereClauseInternal(IndexWhereClause.lessThan(
-        indexName: 'lastUpdatedAt',
-        upper: [lastUpdatedAt],
-        includeUpper: false,
-      ));
-    }
-  }
-
-  QueryBuilder<ShowHistory, ShowHistory, QAfterWhereClause>
-      lastUpdatedAtIsNull() {
-    return addWhereClauseInternal(const IndexWhereClause.equalTo(
-      indexName: 'lastUpdatedAt',
-      value: [null],
-    ));
-  }
-
-  QueryBuilder<ShowHistory, ShowHistory, QAfterWhereClause>
-      lastUpdatedAtIsNotNull() {
-    return addWhereClauseInternal(const IndexWhereClause.greaterThan(
-      indexName: 'lastUpdatedAt',
-      lower: [null],
-      includeLower: false,
-    ));
-  }
-
-  QueryBuilder<ShowHistory, ShowHistory, QAfterWhereClause>
-      lastUpdatedAtGreaterThan(
-    DateTime? lastUpdatedAt, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(IndexWhereClause.greaterThan(
-      indexName: 'lastUpdatedAt',
-      lower: [lastUpdatedAt],
-      includeLower: include,
-    ));
-  }
-
-  QueryBuilder<ShowHistory, ShowHistory, QAfterWhereClause>
-      lastUpdatedAtLessThan(
-    DateTime? lastUpdatedAt, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(IndexWhereClause.lessThan(
-      indexName: 'lastUpdatedAt',
-      upper: [lastUpdatedAt],
-      includeUpper: include,
-    ));
-  }
-
-  QueryBuilder<ShowHistory, ShowHistory, QAfterWhereClause>
-      lastUpdatedAtBetween(
-    DateTime? lowerLastUpdatedAt,
-    DateTime? upperLastUpdatedAt, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return addWhereClauseInternal(IndexWhereClause.between(
-      indexName: 'lastUpdatedAt',
-      lower: [lowerLastUpdatedAt],
-      includeLower: includeLower,
-      upper: [upperLastUpdatedAt],
-      includeUpper: includeUpper,
-    ));
+    });
   }
 }
 
 extension ShowHistoryQueryFilter
     on QueryBuilder<ShowHistory, ShowHistory, QFilterCondition> {
+  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition> idIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'id',
+      ));
+    });
+  }
+
+  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition> idIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'id',
+      ));
+    });
+  }
+
   QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition> idEqualTo(
-      int value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'id',
-      value: value,
-    ));
+      Id? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'id',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition> idGreaterThan(
-    int value, {
+    Id? value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'id',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'id',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition> idLessThan(
-    int value, {
+    Id? value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'id',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'id',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition> idBetween(
-    int lower,
-    int upper, {
+    Id? lower,
+    Id? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'id',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'id',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
   }
 
   QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition>
       lastUpdatedAtIsNull() {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.isNull,
-      property: 'lastUpdatedAt',
-      value: null,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'lastUpdatedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition>
+      lastUpdatedAtIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'lastUpdatedAt',
+      ));
+    });
   }
 
   QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition>
       lastUpdatedAtEqualTo(DateTime? value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'lastUpdatedAt',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'lastUpdatedAt',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition>
@@ -398,12 +351,13 @@ extension ShowHistoryQueryFilter
     DateTime? value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'lastUpdatedAt',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'lastUpdatedAt',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition>
@@ -411,12 +365,13 @@ extension ShowHistoryQueryFilter
     DateTime? value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'lastUpdatedAt',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'lastUpdatedAt',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition>
@@ -426,223 +381,240 @@ extension ShowHistoryQueryFilter
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'lastUpdatedAt',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'lastUpdatedAt',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
   }
 
-  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition> showIsNull() {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.isNull,
-      property: 'show',
-      value: null,
-    ));
+  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition>
+      seasonsIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'seasons',
+      ));
+    });
   }
 
-  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition> showEqualTo(
-    Tv? value, {
-    bool caseSensitive = true,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'show',
-      value: _showHistoryShowTypeConverter.toIsar(value),
-      caseSensitive: caseSensitive,
-    ));
+  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition>
+      seasonsIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'seasons',
+      ));
+    });
   }
 
-  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition> showGreaterThan(
-    Tv? value, {
-    bool caseSensitive = true,
+  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition>
+      seasonsLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'seasons',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition>
+      seasonsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'seasons',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition>
+      seasonsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'seasons',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition>
+      seasonsLengthLessThan(
+    int length, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'show',
-      value: _showHistoryShowTypeConverter.toIsar(value),
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'seasons',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
   }
 
-  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition> showLessThan(
-    Tv? value, {
-    bool caseSensitive = true,
+  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition>
+      seasonsLengthGreaterThan(
+    int length, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'show',
-      value: _showHistoryShowTypeConverter.toIsar(value),
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'seasons',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
   }
 
-  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition> showBetween(
-    Tv? lower,
-    Tv? upper, {
-    bool caseSensitive = true,
+  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition>
+      seasonsLengthBetween(
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'show',
-      lower: _showHistoryShowTypeConverter.toIsar(lower),
-      includeLower: includeLower,
-      upper: _showHistoryShowTypeConverter.toIsar(upper),
-      includeUpper: includeUpper,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'seasons',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
   }
 
-  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition> showStartsWith(
-    Tv value, {
-    bool caseSensitive = true,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.startsWith,
-      property: 'show',
-      value: _showHistoryShowTypeConverter.toIsar(value),
-      caseSensitive: caseSensitive,
-    ));
+  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition> showIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'show',
+      ));
+    });
   }
 
-  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition> showEndsWith(
-    Tv value, {
-    bool caseSensitive = true,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.endsWith,
-      property: 'show',
-      value: _showHistoryShowTypeConverter.toIsar(value),
-      caseSensitive: caseSensitive,
-    ));
+  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition>
+      showIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'show',
+      ));
+    });
+  }
+}
+
+extension ShowHistoryQueryObject
+    on QueryBuilder<ShowHistory, ShowHistory, QFilterCondition> {
+  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition> seasonsElement(
+      FilterQuery<TraktShowHistorySeason> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'seasons');
+    });
   }
 
-  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition> showContains(
-      Tv value,
-      {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.contains,
-      property: 'show',
-      value: _showHistoryShowTypeConverter.toIsar(value),
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition> showMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.matches,
-      property: 'show',
-      value: pattern,
-      caseSensitive: caseSensitive,
-    ));
+  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition> show(
+      FilterQuery<Tv> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'show');
+    });
   }
 }
 
 extension ShowHistoryQueryLinks
-    on QueryBuilder<ShowHistory, ShowHistory, QFilterCondition> {
-  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition> seasons(
-      FilterQuery<ShowHistorySeason> q) {
-    return linkInternal(
-      isar.showHistorySeasons,
-      q,
-      'seasons',
-    );
-  }
-}
+    on QueryBuilder<ShowHistory, ShowHistory, QFilterCondition> {}
 
-extension ShowHistoryQueryWhereSortBy
+extension ShowHistoryQuerySortBy
     on QueryBuilder<ShowHistory, ShowHistory, QSortBy> {
-  QueryBuilder<ShowHistory, ShowHistory, QAfterSortBy> sortById() {
-    return addSortByInternal('id', Sort.asc);
-  }
-
-  QueryBuilder<ShowHistory, ShowHistory, QAfterSortBy> sortByIdDesc() {
-    return addSortByInternal('id', Sort.desc);
-  }
-
   QueryBuilder<ShowHistory, ShowHistory, QAfterSortBy> sortByLastUpdatedAt() {
-    return addSortByInternal('lastUpdatedAt', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastUpdatedAt', Sort.asc);
+    });
   }
 
   QueryBuilder<ShowHistory, ShowHistory, QAfterSortBy>
       sortByLastUpdatedAtDesc() {
-    return addSortByInternal('lastUpdatedAt', Sort.desc);
-  }
-
-  QueryBuilder<ShowHistory, ShowHistory, QAfterSortBy> sortByShow() {
-    return addSortByInternal('show', Sort.asc);
-  }
-
-  QueryBuilder<ShowHistory, ShowHistory, QAfterSortBy> sortByShowDesc() {
-    return addSortByInternal('show', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastUpdatedAt', Sort.desc);
+    });
   }
 }
 
-extension ShowHistoryQueryWhereSortThenBy
+extension ShowHistoryQuerySortThenBy
     on QueryBuilder<ShowHistory, ShowHistory, QSortThenBy> {
   QueryBuilder<ShowHistory, ShowHistory, QAfterSortBy> thenById() {
-    return addSortByInternal('id', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.asc);
+    });
   }
 
   QueryBuilder<ShowHistory, ShowHistory, QAfterSortBy> thenByIdDesc() {
-    return addSortByInternal('id', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.desc);
+    });
   }
 
   QueryBuilder<ShowHistory, ShowHistory, QAfterSortBy> thenByLastUpdatedAt() {
-    return addSortByInternal('lastUpdatedAt', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastUpdatedAt', Sort.asc);
+    });
   }
 
   QueryBuilder<ShowHistory, ShowHistory, QAfterSortBy>
       thenByLastUpdatedAtDesc() {
-    return addSortByInternal('lastUpdatedAt', Sort.desc);
-  }
-
-  QueryBuilder<ShowHistory, ShowHistory, QAfterSortBy> thenByShow() {
-    return addSortByInternal('show', Sort.asc);
-  }
-
-  QueryBuilder<ShowHistory, ShowHistory, QAfterSortBy> thenByShowDesc() {
-    return addSortByInternal('show', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastUpdatedAt', Sort.desc);
+    });
   }
 }
 
 extension ShowHistoryQueryWhereDistinct
     on QueryBuilder<ShowHistory, ShowHistory, QDistinct> {
-  QueryBuilder<ShowHistory, ShowHistory, QDistinct> distinctById() {
-    return addDistinctByInternal('id');
-  }
-
   QueryBuilder<ShowHistory, ShowHistory, QDistinct> distinctByLastUpdatedAt() {
-    return addDistinctByInternal('lastUpdatedAt');
-  }
-
-  QueryBuilder<ShowHistory, ShowHistory, QDistinct> distinctByShow(
-      {bool caseSensitive = true}) {
-    return addDistinctByInternal('show', caseSensitive: caseSensitive);
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lastUpdatedAt');
+    });
   }
 }
 
 extension ShowHistoryQueryProperty
     on QueryBuilder<ShowHistory, ShowHistory, QQueryProperty> {
   QueryBuilder<ShowHistory, int, QQueryOperations> idProperty() {
-    return addPropertyNameInternal('id');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'id');
+    });
   }
 
   QueryBuilder<ShowHistory, DateTime?, QQueryOperations>
       lastUpdatedAtProperty() {
-    return addPropertyNameInternal('lastUpdatedAt');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lastUpdatedAt');
+    });
+  }
+
+  QueryBuilder<ShowHistory, List<TraktShowHistorySeason>?, QQueryOperations>
+      seasonsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'seasons');
+    });
   }
 
   QueryBuilder<ShowHistory, Tv?, QQueryOperations> showProperty() {
-    return addPropertyNameInternal('show');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'show');
+    });
   }
 }

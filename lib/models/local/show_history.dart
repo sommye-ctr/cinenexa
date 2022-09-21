@@ -2,11 +2,13 @@
 import 'dart:convert';
 
 import 'package:isar/isar.dart';
-
-import 'package:watrix/models/local/show_history_season.dart';
+import 'package:watrix/models/network/genre.dart';
+import 'package:watrix/models/network/trakt/trakt_show_history_season.dart';
 import 'package:watrix/models/network/tv.dart';
-import 'package:watrix/services/local/show_type_converter.dart';
 import 'package:watrix/utils/date_time_formatter.dart';
+
+import '../network/trakt/trakt_show_history_season_ep.dart';
+import '../network/tv_season.dart';
 
 part 'show_history.g.dart';
 
@@ -14,40 +16,35 @@ part 'show_history.g.dart';
 class ShowHistory {
   ShowHistory();
 
-  @Id()
-  late int id;
+  late Id? id;
 
-  @ShowTypeConverter()
   late Tv? show;
 
-  var seasons = IsarLinks<ShowHistorySeason>();
+  late List<TraktShowHistorySeason>? seasons;
 
-  @Index()
   late DateTime? lastUpdatedAt;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'show': show?.toMap(),
-      'seasons': seasons.map((x) => x.toMap()).toList(),
+      'seasons': seasons?.map((x) => x.toMap()).toList(),
       'lastUpdatedAt': lastUpdatedAt,
     };
   }
 
   factory ShowHistory.fromMap(Map<String, dynamic> map) {
     Tv show = Tv.fromMap(map['show'] as Map<String, dynamic>);
-    return ShowHistory()
+    ShowHistory history = ShowHistory()
       ..show = show
       ..lastUpdatedAt =
           DateTimeFormatter.parseDate(map['last_updated_at']) ?? null
       ..id = show.id
-      ..seasons = (IsarLinks()
-        ..addAll(
-          List<ShowHistorySeason>.from(
-            (map['seasons'] as List).map<ShowHistorySeason>(
-              (x) => ShowHistorySeason.fromMap(x as Map<String, dynamic>),
-            ),
-          ),
-        ));
+      ..seasons = List<TraktShowHistorySeason>.from(
+        (map['seasons'] as List).map<TraktShowHistorySeason>(
+          (x) => TraktShowHistorySeason.fromMap(x as Map<String, dynamic>),
+        ),
+      );
+    return history;
   }
 
   String toJson() => json.encode(toMap());

@@ -4,8 +4,7 @@ part 'last_activities.g.dart';
 
 @Collection()
 class LastActivities {
-  @Id()
-  int id = 0;
+  Id? id;
 
   late DateTime movieWatchedAt;
   late DateTime movieCollectedAt;
