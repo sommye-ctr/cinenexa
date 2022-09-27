@@ -109,13 +109,17 @@ class Database {
       await isar.progress.clear();
       await isar.progress.putAll(items);
     }).whenComplete(() async {
-      onChange(await getProgress());
+      onChange(await getAllProgress());
     });
   }
 
-  Future<List<TraktProgress>> getProgress() async {
+  Future<List<TraktProgress>> getAllProgress() async {
     List<Progress> list = await isar.progress.where().findAll();
     return list.map((e) => e.getTraktProgress()).toList();
+  }
+
+  Future<TraktProgress?> getProgress({required int id}) async {
+    return (await isar.progress.get(id))?.getTraktProgress();
   }
 
   void updateShowHistory({

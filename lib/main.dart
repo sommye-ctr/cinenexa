@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +17,8 @@ import 'package:watrix/screens/home_page.dart';
 import 'package:watrix/screens/profile_page.dart';
 import 'package:watrix/screens/search_page.dart';
 import 'package:watrix/components/home_bottom_nav_bar.dart';
+import 'package:watrix/screens/video_player_page.dart';
+import 'package:watrix/screens/vlc_video_player.dart';
 import 'package:watrix/store/favorites/favorites_store.dart';
 import 'package:watrix/store/user/user_store.dart';
 
@@ -32,7 +35,6 @@ void main() async {
       LastActivitiesSchema,
     ],
     directory: (await getApplicationSupportDirectory()).path,
-    inspector: true,
   );
 
   runApp(
@@ -75,13 +77,30 @@ class _MyAppState extends State<MyApp> {
           switch (settings.name) {
             case DetailsPage.routeName:
               final value = settings.arguments as BaseModel;
+              SystemChrome.setPreferredOrientations([
+                DeviceOrientation.portraitDown,
+                DeviceOrientation.portraitUp
+              ]);
               return MaterialPageRoute(
                 builder: (context) => DetailsPage(baseModel: value),
+                maintainState: true,
               );
             case ActorDetailsPage.routeName:
               final value = settings.arguments as BaseModel;
               return MaterialPageRoute(
                 builder: (context) => ActorDetailsPage(baseModel: value),
+              );
+            case VideoPlayerPage.routeName:
+              final value = settings.arguments as Map;
+              SystemChrome.setPreferredOrientations([
+                DeviceOrientation.landscapeLeft,
+                DeviceOrientation.landscapeRight
+              ]);
+              return MaterialPageRoute(
+                builder: (context) => VlcPlayerPage(
+                  url: value['url'],
+                  baseModel: value['model'],
+                ),
               );
             default:
           }

@@ -96,7 +96,7 @@ abstract class _UserStoreBase with Store {
   Future fetchUserProgress() async {
     progress
       ..clear()
-      ..addAll(await localDb.getProgress());
+      ..addAll(await localDb.getAllProgress());
     localDb.updateProgress(
         list: await repository.getUserProgress(),
         onChange: (list) {

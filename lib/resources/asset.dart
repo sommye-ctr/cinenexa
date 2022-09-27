@@ -8,4 +8,6 @@ class Asset {
   static const String star = "assets/images/star.png";
 
   static const String notFound = "assets/animations/not_found.json";
+  static const String settings = "assets/animations/settings.json";
+  static const String subtitles = "assets/animations/subtitles.json";
 }

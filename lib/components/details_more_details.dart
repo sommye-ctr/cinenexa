@@ -7,6 +7,7 @@ import 'package:lottie/lottie.dart';
 import 'package:mobx/mobx.dart';
 import 'package:watrix/components/details_review_tile.dart';
 import 'package:watrix/models/network/trakt/trakt_show_history_season_ep.dart';
+import 'package:watrix/screens/video_player_page.dart';
 import 'package:watrix/store/details/details_store.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
@@ -92,7 +93,21 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
     return Observer(
       builder: (context) {
         if (widget.detailsStore.baseModel.type == BaseModelType.movie) {
-          return Text("Streams will show up here...");
+          // return Text("Streams will show up here...");
+          return ElevatedButton(
+            onPressed: () {
+              Navigator.pushNamed(
+                context,
+                VideoPlayerPage.routeName,
+                arguments: {
+                  "url":
+                      "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
+                  "model": widget.detailsStore.baseModel,
+                },
+              );
+            },
+            child: Text("Play"),
+          );
         }
         return AnimatedSwitcher(
           duration: Duration(milliseconds: 500),

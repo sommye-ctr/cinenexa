@@ -74,4 +74,24 @@ class Strings {
   static const String watchedShows = "Shows\nWatched";
   static const String minSpentMovies = "Minutes spent\non movies";
   static const String minSpentShows = "Minutes spent\non shows";
+
+  //video player
+  static const String playBackSpeed = "Playback Speed";
+  static const String settings = "Settings";
+  static const playbackSpeeds = [
+    "1x",
+    "0.25x",
+    "0.5x",
+    "0.75x",
+    "1.25x",
+    "1.5x",
+    "1.75x",
+    "2x",
+  ];
+  static const String fit = "Fit";
+  static const fitTypes = [
+    "Best",
+    "Stretch",
+    "Cover",
+  ];
 }
