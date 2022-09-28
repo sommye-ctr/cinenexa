@@ -53,6 +53,7 @@ dependencies:
   audio_video_progress_bar: ^0.10.0
   awesome_dialog: ^3.0.2
   flutter_vlc_player: ^7.1.5
+  settings_ui: ^2.0.2
 
 
 dev_dependencies:

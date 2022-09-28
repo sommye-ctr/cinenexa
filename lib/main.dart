@@ -17,6 +17,7 @@ import 'package:watrix/screens/home_page.dart';
 import 'package:watrix/screens/profile_page.dart';
 import 'package:watrix/screens/search_page.dart';
 import 'package:watrix/components/home_bottom_nav_bar.dart';
+import 'package:watrix/screens/settings_page.dart';
 import 'package:watrix/screens/video_player_page.dart';
 import 'package:watrix/screens/vlc_video_player.dart';
 import 'package:watrix/store/favorites/favorites_store.dart';
@@ -89,6 +90,10 @@ class _MyAppState extends State<MyApp> {
               final value = settings.arguments as BaseModel;
               return MaterialPageRoute(
                 builder: (context) => ActorDetailsPage(baseModel: value),
+              );
+            case SettingsPage.routeName:
+              return MaterialPageRoute(
+                builder: (context) => SettingsPage(),
               );
             case VideoPlayerPage.routeName:
               final value = settings.arguments as Map;

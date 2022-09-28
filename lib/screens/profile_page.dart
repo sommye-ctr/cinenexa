@@ -4,6 +4,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:provider/provider.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
+import 'package:watrix/screens/settings_page.dart';
 import 'package:watrix/store/user/user_store.dart';
 import 'package:watrix/utils/screen_size.dart';
 
@@ -35,6 +36,8 @@ class _ProfilePageState extends State<ProfilePage> {
             _buildProfileTile(),
             Style.getVerticalHorizontalSpacing(context: context),
             _buildStatCardsTile(),
+            Style.getVerticalHorizontalSpacing(context: context),
+            SettingsPage(),
           ],
         ),
       ),
@@ -65,7 +68,12 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ],
           ),
-          Icon(Icons.settings),
+          IconButton(
+            onPressed: () {
+              Navigator.pushNamed(context, SettingsPage.routeName);
+            },
+            icon: Icon(Icons.settings),
+          ),
         ],
       );
     });

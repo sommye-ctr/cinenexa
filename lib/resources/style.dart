@@ -20,6 +20,7 @@ class Style {
     fontFamily: GoogleFonts.poppins().fontFamily,
     focusColor: Colors.black,
     scaffoldBackgroundColor: Color.fromARGB(255, 249, 246, 246),
+    backgroundColor: Color.fromARGB(255, 249, 246, 246),
   );
 
   static TextStyle headingStyle = TextStyle(

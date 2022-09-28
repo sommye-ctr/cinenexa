@@ -30,7 +30,7 @@ class TraktShowHistorySeason {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'number': number,
-      'episodes': episodes?.map((x) => x?.toMap()).toList(),
+      'episodes': episodes?.map((x) => x.toMap()).toList(),
     };
   }
 
