@@ -5,6 +5,7 @@ import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/screens/see_more_page.dart';
 import 'package:watrix/services/network/repository.dart';
+import 'package:watrix/widgets/custom_progress_indicator.dart';
 
 import '../models/network/base_model.dart';
 import '../models/network/enums/duration_type.dart';
@@ -75,13 +76,9 @@ class _HomeFeaturedState extends State<HomeFeatured>
                     child: Container(
                       width: ScreenSize.getPercentOfWidth(context, 0.3),
                       margin: EdgeInsets.all(4),
-                      child: ClipRRect(
-                        borderRadius:
-                            BorderRadius.circular(Style.largeRoundEdgeRadius),
-                        child: LinearProgressIndicator(
-                          value: item.progress! / 100,
-                          backgroundColor: Colors.transparent,
-                        ),
+                      child: CustomProgressIndicator(
+                        progress: item.progress! / 100,
+                        transparent: true,
                       ),
                     ),
                   ),

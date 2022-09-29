@@ -7,6 +7,7 @@ import '../../models/local/show_history.dart';
 import '../../models/network/base_model.dart';
 import '../../models/network/genre.dart';
 import '../../models/network/movie.dart';
+import '../../models/network/trakt/trakt_progress.dart';
 import '../../models/network/tv.dart';
 import '../../models/network/tv_episode.dart';
 import '../../models/network/video.dart';
@@ -71,6 +72,9 @@ abstract class _DetailsStore with Store {
 
   @observable
   ShowHistory? showHistory;
+
+  @observable
+  TraktProgress? progress;
 
   int reviewPage = 1;
   bool isReviewNextPageLoading = false;
@@ -163,8 +167,16 @@ abstract class _DetailsStore with Store {
 
   @action
   Future fetchWatchHistory() async {
-    Database database = Database();
     showHistory = await database.getShowHistory(id: baseModel.id!);
+    if (showHistory != null) {
+      onSeasonChanged(tv!.seasons!.indexWhere(
+          (element) => element.seasonNumber == showHistory!.lastWatchedSeason));
+    }
+  }
+
+  @action
+  Future _fetchProgress() async {
+    progress = await database.getProgress(id: baseModel.id!);
   }
 
   void _fetchDetails() async {
@@ -175,6 +187,7 @@ abstract class _DetailsStore with Store {
       credits.addAll(map['credits']);
       recommended.addAll(map['recommended']);
       video = map['video'];
+      _fetchProgress();
     } else if (baseModel.type == BaseModelType.tv) {
       Map map = await Repository.getTvDetailsWithExtras(id: baseModel.id!);
       tv = map['tv'];
@@ -182,6 +195,7 @@ abstract class _DetailsStore with Store {
       recommended.addAll(map['recommended']);
       video = map['video'];
       chosenSeason = 0;
+      _fetchProgress();
       _fetchEpisodes();
       fetchWatchHistory();
     }

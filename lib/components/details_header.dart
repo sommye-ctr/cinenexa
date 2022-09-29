@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:provider/provider.dart';
+import 'package:watrix/widgets/custom_progress_indicator.dart';
 import 'package:watrix/widgets/vote_indicator.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/services/constants.dart';
@@ -135,6 +136,8 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
           _buildOverView(context),
           Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
           _buildButtons(context),
+          Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
+          _buildProgressBar(context),
         ],
       ),
       shrinkOffset,
@@ -314,6 +317,23 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
     );
   }
 
+  Widget _buildProgressBar(context) {
+    if (detailsStore.progress == null) {
+      return Container();
+    }
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        CustomProgressIndicator(
+          progress: detailsStore.progress!.progress! / 100,
+        ),
+        Style.getVerticalSpacing(context: context),
+        if (detailsStore.baseModel.type == BaseModelType.movie)
+          Text(_getDurationLeft()),
+      ],
+    );
+  }
+
   Widget _buildButtons(context) {
     return Observer(builder: (_) {
       return Row(
@@ -324,7 +344,7 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
             onPressed: _onPlayPressed,
             child: Row(
               children: [
-                Text(Strings.play),
+                _getPlayButton(),
                 Icon(Icons.play_arrow_sharp),
               ],
             ),
@@ -387,6 +407,33 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
       duration: duration,
       curve: Curves.easeIn,
     );
+  }
+
+  Text _getPlayButton() {
+    if (detailsStore.progress != null) {
+      return Text(_getResumeText());
+    }
+    if (detailsStore.showHistory != null) {
+      return Text(
+          "${Strings.play} S${detailsStore.showHistory!.lastWatchedSeason!} EP${detailsStore.showHistory!.lastWatched!.number}");
+    }
+    return Text(Strings.resume);
+  }
+
+  String _getResumeText() {
+    String text = Strings.resume;
+    if (detailsStore.baseModel.type == BaseModelType.tv) {
+      text +=
+          " S${detailsStore.progress!.seasonNo!} EP${detailsStore.progress!.episodeNo!}";
+    }
+    return text;
+  }
+
+  String _getDurationLeft() {
+    int durationPlayed = (detailsStore.movie!.runtime! *
+            (detailsStore.progress!.progress! / 100))
+        .toInt();
+    return "${DateTimeFormatter.getTimeFromMin(detailsStore.movie!.runtime! - durationPlayed)} left";
   }
 
   String _getReleaseInfo() {

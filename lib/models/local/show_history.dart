@@ -24,11 +24,16 @@ class ShowHistory {
 
   late DateTime? lastUpdatedAt;
 
+  late TraktShowHistorySeasonEp? lastWatched;
+  late int? lastWatchedSeason;
+
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'show': show?.toMap(),
       'seasons': seasons?.map((x) => x.toMap()).toList(),
       'lastUpdatedAt': lastUpdatedAt,
+      'lastWatched': lastWatched,
+      'lastWatchedSeason': lastWatchedSeason,
     };
   }
 
@@ -39,6 +44,8 @@ class ShowHistory {
       ..lastUpdatedAt =
           DateTimeFormatter.parseDate(map['last_updated_at']) ?? null
       ..id = show.id
+      ..lastWatched = map['last_watched']
+      ..lastWatchedSeason = map['last_watched_season']
       ..seasons = List<TraktShowHistorySeason>.from(
         (map['seasons'] as List).map<TraktShowHistorySeason>(
           (x) => TraktShowHistorySeason.fromMap(x as Map<String, dynamic>),

@@ -5,6 +5,7 @@ import 'package:focused_menu/modals.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mobx/mobx.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:watrix/components/details_review_tile.dart';
 import 'package:watrix/models/network/trakt/trakt_show_history_season_ep.dart';
 import 'package:watrix/screens/video_player_page.dart';
@@ -42,9 +43,12 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
   YoutubePlayerController? videoController;
 
   late TabController tabController;
+  late ItemScrollController episodeController;
   @override
   void initState() {
     tabController = TabController(length: 3, vsync: this);
+    episodeController = ItemScrollController();
+
     super.initState();
   }
 
@@ -186,10 +190,11 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
       Observer(builder: (_) => _buildSeasonsHeading()),
       Style.getVerticalSpacing(context: context),
       Observer(
-        builder: (context1) => ListView.builder(
+        builder: (context1) => ScrollablePositionedList.builder(
           shrinkWrap: true,
-          physics: ClampingScrollPhysics(),
           itemCount: widget.detailsStore.episodes.length,
+          physics: ClampingScrollPhysics(),
+          itemScrollController: episodeController,
           itemBuilder: (context, index) {
             bool? watched = false;
 

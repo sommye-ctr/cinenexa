@@ -12,10 +12,12 @@ class EpisodeTile extends StatelessWidget {
   final TvEpisode episode;
   final VoidCallback? onTap;
   final bool watched;
+  final bool? overlay;
   const EpisodeTile({
     Key? key,
     required this.episode,
     this.onTap,
+    this.overlay,
     bool? watched,
   })  : this.watched = watched ?? false,
         super(key: key);

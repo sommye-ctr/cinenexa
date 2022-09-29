@@ -5,6 +5,9 @@ import 'package:watrix/models/local/progress.dart';
 import 'package:watrix/models/local/search_history.dart';
 import 'package:watrix/models/local/show_history.dart';
 import 'package:watrix/models/network/base_model.dart';
+import 'package:watrix/models/network/trakt/trakt_show_history_season.dart';
+import 'package:watrix/models/network/trakt/trakt_show_history_season_ep.dart';
+import 'package:watrix/utils/date_time_formatter.dart';
 
 import '../../models/network/trakt/trakt_progress.dart';
 
@@ -137,6 +140,13 @@ class Database {
       }).toList();
     }
 
+    for (var element in items) {
+      Map map = _calculateLastWatchedEp(element.seasons!);
+      element = element
+        ..lastWatched = map['ep']
+        ..lastWatchedSeason = map['seasonNo'];
+    }
+
     await isar.writeTxn(() async {
       await isar.showHistorys.putAll(items);
     }).whenComplete(() async {
@@ -150,5 +160,34 @@ class Database {
 
   Future<ShowHistory?> getShowHistory({required int id}) async {
     return await isar.showHistorys.get(id);
+  }
+
+  Map _calculateLastWatchedEp(List<TraktShowHistorySeason> items) {
+    Map<int, TraktShowHistorySeasonEp> latestEps = {};
+
+    for (var season in items) {
+      latestEps.putIfAbsent(
+          season.number!,
+          () => season.episodes!.reduce((value, element) {
+                return DateTimeFormatter.parseDate(value.lastWatchedAt)!
+                        .isAfter(
+                            DateTimeFormatter.parseDate(element.lastWatchedAt)!)
+                    ? value
+                    : element;
+              }));
+    }
+
+    TraktShowHistorySeasonEp t = latestEps.values.reduce((value, element) {
+      return DateTimeFormatter.parseDate(value.lastWatchedAt)!
+              .isAfter(DateTimeFormatter.parseDate(element.lastWatchedAt)!)
+          ? value
+          : element;
+    });
+
+    return {
+      "ep": t,
+      "seasonNo":
+          latestEps.keys.firstWhere((element) => latestEps[element] == t),
+    };
   }
 }

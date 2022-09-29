@@ -22,14 +22,25 @@ const ShowHistorySchema = CollectionSchema(
       name: r'lastUpdatedAt',
       type: IsarType.dateTime,
     ),
-    r'seasons': PropertySchema(
+    r'lastWatched': PropertySchema(
       id: 1,
+      name: r'lastWatched',
+      type: IsarType.object,
+      target: r'TraktShowHistorySeasonEp',
+    ),
+    r'lastWatchedSeason': PropertySchema(
+      id: 2,
+      name: r'lastWatchedSeason',
+      type: IsarType.long,
+    ),
+    r'seasons': PropertySchema(
+      id: 3,
       name: r'seasons',
       type: IsarType.objectList,
       target: r'TraktShowHistorySeason',
     ),
     r'show': PropertySchema(
-      id: 2,
+      id: 4,
       name: r'show',
       type: IsarType.object,
       target: r'Tv',
@@ -62,6 +73,14 @@ int _showHistoryEstimateSize(
 ) {
   var bytesCount = offsets.last;
   {
+    final value = object.lastWatched;
+    if (value != null) {
+      bytesCount += 3 +
+          TraktShowHistorySeasonEpSchema.estimateSize(
+              value, allOffsets[TraktShowHistorySeasonEp]!, allOffsets);
+    }
+  }
+  {
     final list = object.seasons;
     if (list != null) {
       bytesCount += 3 + list.length * 3;
@@ -92,14 +111,21 @@ void _showHistorySerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeDateTime(offsets[0], object.lastUpdatedAt);
-  writer.writeObjectList<TraktShowHistorySeason>(
+  writer.writeObject<TraktShowHistorySeasonEp>(
     offsets[1],
+    allOffsets,
+    TraktShowHistorySeasonEpSchema.serialize,
+    object.lastWatched,
+  );
+  writer.writeLong(offsets[2], object.lastWatchedSeason);
+  writer.writeObjectList<TraktShowHistorySeason>(
+    offsets[3],
     allOffsets,
     TraktShowHistorySeasonSchema.serialize,
     object.seasons,
   );
   writer.writeObject<Tv>(
-    offsets[2],
+    offsets[4],
     allOffsets,
     TvSchema.serialize,
     object.show,
@@ -115,14 +141,20 @@ ShowHistory _showHistoryDeserialize(
   final object = ShowHistory();
   object.id = id;
   object.lastUpdatedAt = reader.readDateTimeOrNull(offsets[0]);
-  object.seasons = reader.readObjectList<TraktShowHistorySeason>(
+  object.lastWatched = reader.readObjectOrNull<TraktShowHistorySeasonEp>(
     offsets[1],
+    TraktShowHistorySeasonEpSchema.deserialize,
+    allOffsets,
+  );
+  object.lastWatchedSeason = reader.readLongOrNull(offsets[2]);
+  object.seasons = reader.readObjectList<TraktShowHistorySeason>(
+    offsets[3],
     TraktShowHistorySeasonSchema.deserialize,
     allOffsets,
     TraktShowHistorySeason(),
   );
   object.show = reader.readObjectOrNull<Tv>(
-    offsets[2],
+    offsets[4],
     TvSchema.deserialize,
     allOffsets,
   );
@@ -139,13 +171,21 @@ P _showHistoryDeserializeProp<P>(
     case 0:
       return (reader.readDateTimeOrNull(offset)) as P;
     case 1:
+      return (reader.readObjectOrNull<TraktShowHistorySeasonEp>(
+        offset,
+        TraktShowHistorySeasonEpSchema.deserialize,
+        allOffsets,
+      )) as P;
+    case 2:
+      return (reader.readLongOrNull(offset)) as P;
+    case 3:
       return (reader.readObjectList<TraktShowHistorySeason>(
         offset,
         TraktShowHistorySeasonSchema.deserialize,
         allOffsets,
         TraktShowHistorySeason(),
       )) as P;
-    case 2:
+    case 4:
       return (reader.readObjectOrNull<Tv>(
         offset,
         TvSchema.deserialize,
@@ -393,6 +433,98 @@ extension ShowHistoryQueryFilter
   }
 
   QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition>
+      lastWatchedIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'lastWatched',
+      ));
+    });
+  }
+
+  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition>
+      lastWatchedIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'lastWatched',
+      ));
+    });
+  }
+
+  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition>
+      lastWatchedSeasonIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'lastWatchedSeason',
+      ));
+    });
+  }
+
+  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition>
+      lastWatchedSeasonIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'lastWatchedSeason',
+      ));
+    });
+  }
+
+  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition>
+      lastWatchedSeasonEqualTo(int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'lastWatchedSeason',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition>
+      lastWatchedSeasonGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'lastWatchedSeason',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition>
+      lastWatchedSeasonLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'lastWatchedSeason',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition>
+      lastWatchedSeasonBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'lastWatchedSeason',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition>
       seasonsIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -519,6 +651,13 @@ extension ShowHistoryQueryFilter
 
 extension ShowHistoryQueryObject
     on QueryBuilder<ShowHistory, ShowHistory, QFilterCondition> {
+  QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition> lastWatched(
+      FilterQuery<TraktShowHistorySeasonEp> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'lastWatched');
+    });
+  }
+
   QueryBuilder<ShowHistory, ShowHistory, QAfterFilterCondition> seasonsElement(
       FilterQuery<TraktShowHistorySeason> q) {
     return QueryBuilder.apply(this, (query) {
@@ -551,6 +690,20 @@ extension ShowHistoryQuerySortBy
       return query.addSortBy(r'lastUpdatedAt', Sort.desc);
     });
   }
+
+  QueryBuilder<ShowHistory, ShowHistory, QAfterSortBy>
+      sortByLastWatchedSeason() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastWatchedSeason', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ShowHistory, ShowHistory, QAfterSortBy>
+      sortByLastWatchedSeasonDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastWatchedSeason', Sort.desc);
+    });
+  }
 }
 
 extension ShowHistoryQuerySortThenBy
@@ -579,6 +732,20 @@ extension ShowHistoryQuerySortThenBy
       return query.addSortBy(r'lastUpdatedAt', Sort.desc);
     });
   }
+
+  QueryBuilder<ShowHistory, ShowHistory, QAfterSortBy>
+      thenByLastWatchedSeason() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastWatchedSeason', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ShowHistory, ShowHistory, QAfterSortBy>
+      thenByLastWatchedSeasonDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastWatchedSeason', Sort.desc);
+    });
+  }
 }
 
 extension ShowHistoryQueryWhereDistinct
@@ -586,6 +753,13 @@ extension ShowHistoryQueryWhereDistinct
   QueryBuilder<ShowHistory, ShowHistory, QDistinct> distinctByLastUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'lastUpdatedAt');
+    });
+  }
+
+  QueryBuilder<ShowHistory, ShowHistory, QDistinct>
+      distinctByLastWatchedSeason() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lastWatchedSeason');
     });
   }
 }
@@ -602,6 +776,20 @@ extension ShowHistoryQueryProperty
       lastUpdatedAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'lastUpdatedAt');
+    });
+  }
+
+  QueryBuilder<ShowHistory, TraktShowHistorySeasonEp?, QQueryOperations>
+      lastWatchedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lastWatched');
+    });
+  }
+
+  QueryBuilder<ShowHistory, int?, QQueryOperations>
+      lastWatchedSeasonProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lastWatchedSeason');
     });
   }
 

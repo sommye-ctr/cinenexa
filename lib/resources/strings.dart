@@ -55,6 +55,8 @@ class Strings {
   static const String addToFav = "Add to";
   static const String removeFromFav = "Remove from";
   static const String play = "Play";
+  static const String resume = "Resume";
+
   static const String cast = "Cast";
   static const String recommendedMovies = "Recommended Movies";
   static const String recommendedTv = "Recommended Tv Shows";

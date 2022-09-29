@@ -238,6 +238,22 @@ mixin _$DetailsStore on _DetailsStore, Store {
     });
   }
 
+  late final _$progressAtom =
+      Atom(name: '_DetailsStore.progress', context: context);
+
+  @override
+  TraktProgress? get progress {
+    _$progressAtom.reportRead();
+    return super.progress;
+  }
+
+  @override
+  set progress(TraktProgress? value) {
+    _$progressAtom.reportWrite(value, super.progress, () {
+      super.progress = value;
+    });
+  }
+
   late final _$fetchReviewsAsyncAction =
       AsyncAction('_DetailsStore.fetchReviews', context: context);
 
@@ -252,6 +268,14 @@ mixin _$DetailsStore on _DetailsStore, Store {
   @override
   Future<dynamic> fetchWatchHistory() {
     return _$fetchWatchHistoryAsyncAction.run(() => super.fetchWatchHistory());
+  }
+
+  late final _$_fetchProgressAsyncAction =
+      AsyncAction('_DetailsStore._fetchProgress', context: context);
+
+  @override
+  Future<dynamic> _fetchProgress() {
+    return _$_fetchProgressAsyncAction.run(() => super._fetchProgress());
   }
 
   late final _$_DetailsStoreActionController =
@@ -351,6 +375,7 @@ chosenEpisode: ${chosenEpisode},
 totalReviews: ${totalReviews},
 reviewList: ${reviewList},
 showHistory: ${showHistory},
+progress: ${progress},
 genres: ${genres}
     ''';
   }
