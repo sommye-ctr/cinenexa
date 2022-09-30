@@ -58,6 +58,23 @@ mixin _$FavoritesStore on _FavoritesStore, Store {
         .run(() => super.fetchFavorites(fromApi: fromApi));
   }
 
+  late final _$addFavoriteAsyncAction =
+      AsyncAction('_FavoritesStore.addFavorite', context: context);
+
+  @override
+  Future<dynamic> addFavorite(BaseModel baseModel) {
+    return _$addFavoriteAsyncAction.run(() => super.addFavorite(baseModel));
+  }
+
+  late final _$removeFavoriteAsyncAction =
+      AsyncAction('_FavoritesStore.removeFavorite', context: context);
+
+  @override
+  Future<dynamic> removeFavorite(BaseModel baseModel) {
+    return _$removeFavoriteAsyncAction
+        .run(() => super.removeFavorite(baseModel));
+  }
+
   late final _$_FavoritesStoreActionController =
       ActionController(name: '_FavoritesStore', context: context);
 
@@ -67,28 +84,6 @@ mixin _$FavoritesStore on _FavoritesStore, Store {
         name: '_FavoritesStore.changeFilter');
     try {
       return super.changeFilter(index);
-    } finally {
-      _$_FavoritesStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void addFavorite(BaseModel baseModel) {
-    final _$actionInfo = _$_FavoritesStoreActionController.startAction(
-        name: '_FavoritesStore.addFavorite');
-    try {
-      return super.addFavorite(baseModel);
-    } finally {
-      _$_FavoritesStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void removeFavorite(BaseModel baseModel) {
-    final _$actionInfo = _$_FavoritesStoreActionController.startAction(
-        name: '_FavoritesStore.removeFavorite');
-    try {
-      return super.removeFavorite(baseModel);
     } finally {
       _$_FavoritesStoreActionController.endAction(_$actionInfo);
     }

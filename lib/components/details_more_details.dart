@@ -335,8 +335,12 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
   }
 
   Widget _buildList(
-      String heading, context, List<BaseModel> items, String route,
-      {bool isCast = false}) {
+    String heading,
+    context,
+    List<BaseModel> items,
+    String route, {
+    bool isCast = false,
+  }) {
     if (items.isEmpty) {
       return Container();
     }

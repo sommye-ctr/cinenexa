@@ -64,20 +64,20 @@ abstract class _FavoritesStore with Store {
   }
 
   @action
-  void addFavorite(BaseModel baseModel) {
+  Future addFavorite(BaseModel baseModel) async {
     favorites.add(baseModel);
 
     localDb.addToFavorites(baseModel.toFavorite());
-    traktRepository.addFavorites(
+    await traktRepository.addFavorites(
         tmdbId: baseModel.id!, entityType: baseModel.type!.getEntityType());
   }
 
   @action
-  void removeFavorite(BaseModel baseModel) {
+  Future removeFavorite(BaseModel baseModel) async {
     favorites.remove(baseModel);
 
     localDb.removeFromFav(baseModel.id!);
-    traktRepository.removeFavorite(
+    await traktRepository.removeFavorite(
         tmdbId: baseModel.id!, entityType: baseModel.type!.getEntityType());
   }
 }

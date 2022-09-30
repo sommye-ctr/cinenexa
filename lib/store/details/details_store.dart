@@ -94,17 +94,13 @@ abstract class _DetailsStore with Store {
   }
 
   @action
-  void addToListClicked(FavoritesStore store) {
-    database.addToFavorites(baseModel.toFavorite());
-    isAddedToFav = true;
-    store.addFavorite(baseModel);
+  void addToListClicked(FavoritesStore store) async {
+    store.addFavorite(baseModel).whenComplete(() => isAddedToFav = true);
   }
 
   @action
   void removeFromListCLicked(FavoritesStore store) {
-    database.removeFromFav(baseModel.id!);
-    isAddedToFav = false;
-    store.removeFavorite(baseModel);
+    store.removeFavorite(baseModel).whenComplete(() => isAddedToFav = false);
   }
 
   @action

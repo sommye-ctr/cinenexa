@@ -1,3 +1,4 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -25,6 +26,8 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
 
   late double progress;
   late Duration duration;
+
+  bool isDialogShowing = false;
 
   DetailsHeader({
     required this.maxHeight,
@@ -336,6 +339,10 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
 
   Widget _buildButtons(context) {
     return Observer(builder: (_) {
+      if (isDialogShowing) {
+        Navigator.pop(context);
+        isDialogShowing = false;
+      }
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
@@ -355,8 +362,7 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
             duration: Duration(milliseconds: 500),
             sizeCurve: Curves.decelerate,
             firstChild: RoundedButton(
-              onPressed: () => detailsStore.addToListClicked(
-                  Provider.of<FavoritesStore>(context, listen: false)),
+              onPressed: () => _onAddRemFavoritesClicked(context),
               type: RoundedButtonType.filled,
               child: Row(
                 children: [
@@ -366,8 +372,10 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
               ),
             ),
             secondChild: RoundedButton(
-              onPressed: () => detailsStore.removeFromListCLicked(
-                  Provider.of<FavoritesStore>(context, listen: false)),
+              onPressed: () => _onAddRemFavoritesClicked(
+                context,
+                remove: true,
+              ),
               type: RoundedButtonType.outlined,
               child: Row(
                 children: [
@@ -401,6 +409,35 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
     });
   }
 
+  void _onAddRemFavoritesClicked(context, {bool remove = false}) {
+    if (remove) {
+      detailsStore.removeFromListCLicked(
+          Provider.of<FavoritesStore>(context, listen: false));
+      _showLoadingDialog(context);
+      return;
+    }
+    detailsStore
+        .addToListClicked(Provider.of<FavoritesStore>(context, listen: false));
+    _showLoadingDialog(context);
+  }
+
+  void _showLoadingDialog(context) {
+    AwesomeDialog(
+      context: context,
+      autoDismiss: false,
+      dismissOnBackKeyPress: false,
+      dialogType: DialogType.noHeader,
+      dialogBackgroundColor: Colors.transparent,
+      body: Center(
+        child: CircularProgressIndicator(),
+      ),
+      padding: EdgeInsets.all(8),
+      useRootNavigator: true,
+      onDismissCallback: (DismissType type) {},
+    )..show();
+    isDialogShowing = true;
+  }
+
   void _onPlayPressed() {
     scrollController.animateTo(
       maxExtent - minExtent,
@@ -417,7 +454,7 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
       return Text(
           "${Strings.play} S${detailsStore.showHistory!.lastWatchedSeason!} EP${detailsStore.showHistory!.lastWatched!.number}");
     }
-    return Text(Strings.resume);
+    return Text(Strings.play);
   }
 
   String _getResumeText() {
