@@ -190,56 +190,80 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
       Observer(builder: (_) => _buildSeasonsHeading()),
       Style.getVerticalSpacing(context: context),
       Observer(
-        builder: (context1) => ScrollablePositionedList.builder(
-          shrinkWrap: true,
-          itemCount: widget.detailsStore.episodes.length,
-          physics: ClampingScrollPhysics(),
-          itemScrollController: episodeController,
-          itemBuilder: (context, index) {
-            bool? watched = false;
+        builder: (context1) {
+          widget.detailsStore.showHistory;
 
-            Iterable<TraktShowHistorySeason>? iterable =
-                widget.detailsStore.showHistory?.seasons?.where(
-              (element) =>
-                  element.number ==
-                  widget.detailsStore.tv!
-                      .seasons![widget.detailsStore.chosenSeason!].seasonNumber,
-            );
-            if (iterable != null && iterable.isNotEmpty) {
-              TraktShowHistorySeason? historySeason = iterable.elementAt(0);
-              Iterable<TraktShowHistorySeasonEp>? list = historySeason.episodes
-                  ?.where((element) =>
-                      element.number ==
-                      widget.detailsStore.episodes[index].episodeNumber);
-              watched = list != null && list.isNotEmpty;
-            }
+          return ScrollablePositionedList.builder(
+            shrinkWrap: true,
+            itemCount: widget.detailsStore.episodes.length,
+            physics: ClampingScrollPhysics(),
+            itemScrollController: episodeController,
+            itemBuilder: _buildEpisodeTile,
+          );
+        },
+      ),
+      Style.getVerticalSpacing(context: context),
+    ];
+  }
 
-            return FocusedMenuHolder(
-              menuItems: [
-                FocusedMenuItem(
-                  title: Text("Mark as Watched"),
-                  trailingIcon: Icon(Icons.playlist_add_check_rounded),
-                  backgroundColor: Theme.of(context).backgroundColor,
-                  onPressed: () {},
-                ),
-              ],
-              onPressed: () {},
-              animateMenuItems: true,
-              blurSize: 5,
-              child: UnconstrainedBox(
-                child: EpisodeTile(
-                  episode: widget.detailsStore.episodes[index],
-                  watched: watched,
-                  onTap: () {
-                    widget.detailsStore.onEpiodeClicked(index);
-                  },
-                ),
-              ),
-            );
+  Widget _buildEpisodeTile(context, index) {
+    bool? watched = false;
+
+    Iterable<TraktShowHistorySeason>? iterable =
+        widget.detailsStore.showHistory?.seasons?.where(
+      (element) =>
+          element.number ==
+          widget.detailsStore.tv!.seasons![widget.detailsStore.chosenSeason!]
+              .seasonNumber,
+    );
+    if (iterable != null && iterable.isNotEmpty) {
+      TraktShowHistorySeason? historySeason = iterable.elementAt(0);
+      Iterable<TraktShowHistorySeasonEp>? list = historySeason.episodes?.where(
+          (element) =>
+              element.number ==
+              widget.detailsStore.episodes[index].episodeNumber);
+      watched = list != null && list.isNotEmpty;
+    }
+
+    return FocusedMenuHolder(
+      menuItems: _buildPopupItems(epWatched: watched, index: index),
+      onPressed: () {},
+      animateMenuItems: true,
+      blurSize: 5,
+      child: UnconstrainedBox(
+        child: EpisodeTile(
+          episode: widget.detailsStore.episodes[index],
+          watched: watched,
+          onTap: () {
+            widget.detailsStore.onEpiodeClicked(index);
           },
         ),
       ),
-      Style.getVerticalSpacing(context: context),
+    );
+  }
+
+  List<FocusedMenuItem> _buildPopupItems(
+      {required bool epWatched, required int index}) {
+    return [
+      FocusedMenuItem(
+        title: Text(epWatched ? Strings.markUnwatched : Strings.markWatched),
+        trailingIcon: Icon(
+          epWatched
+              ? Icons.playlist_remove_rounded
+              : Icons.playlist_add_check_rounded,
+        ),
+        backgroundColor: Theme.of(context).backgroundColor,
+        onPressed: () {
+          Style.showLoadingDialog(context: context);
+          epWatched
+              ? widget.detailsStore
+                  .markUnwatchedClicked(epIndex: index)
+                  .whenComplete(() => Navigator.pop(context))
+              : widget.detailsStore
+                  .markWatchedClicked(epIndex: index)
+                  .whenComplete(() => Navigator.pop(context));
+        },
+      ),
     ];
   }
 

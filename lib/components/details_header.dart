@@ -422,19 +422,7 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
   }
 
   void _showLoadingDialog(context) {
-    AwesomeDialog(
-      context: context,
-      autoDismiss: false,
-      dismissOnBackKeyPress: false,
-      dialogType: DialogType.noHeader,
-      dialogBackgroundColor: Colors.transparent,
-      body: Center(
-        child: CircularProgressIndicator(),
-      ),
-      padding: EdgeInsets.all(8),
-      useRootNavigator: true,
-      onDismissCallback: (DismissType type) {},
-    )..show();
+    Style.showLoadingDialog(context: context);
     isDialogShowing = true;
   }
 

@@ -35,7 +35,7 @@ class DateTimeFormatter {
 
   static DateTime? parseDate(String? string) {
     try {
-      return DateTime.parse(string!);
+      return DateTime.parse(string!).toUtc();
     } catch (e) {
       return null;
     }

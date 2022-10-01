@@ -113,7 +113,7 @@ abstract class _UserStoreBase with Store {
       bool fromApi = false}) async {
     showHistory.addAll(await localDb.getShowHistories());
     if (fromApi) {
-      localDb.updateShowHistory(
+      localDb.updateMultiShowHistory(
         items: await repository.getUserWatched(),
         localLastWatched: local?.epWatchedAt,
         apiLastWatched: api?.epWatchedAt,

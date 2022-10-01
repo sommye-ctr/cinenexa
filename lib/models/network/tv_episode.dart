@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 class TvEpisode {
+  final int id;
   final String name;
   final String overview;
   final String airDate;
@@ -17,6 +18,7 @@ class TvEpisode {
     required this.runtime,
     required this.stillPath,
     required this.voteAverage,
+    required this.id,
   });
 
   TvEpisode copyWith({
@@ -27,6 +29,7 @@ class TvEpisode {
     int? runtime,
     String? stillPath,
     double? voteAverage,
+    int? id,
   }) {
     return TvEpisode(
       name: name ?? this.name,
@@ -36,6 +39,7 @@ class TvEpisode {
       runtime: runtime ?? this.runtime,
       stillPath: stillPath ?? this.stillPath,
       voteAverage: voteAverage ?? this.voteAverage,
+      id: id ?? this.id,
     );
   }
 
@@ -48,19 +52,20 @@ class TvEpisode {
       'runtime': runtime,
       'still_path': stillPath,
       'vote_average': voteAverage,
+      'id': id,
     };
   }
 
   factory TvEpisode.fromMap(Map<String, dynamic> map) {
     return TvEpisode(
-      name: map['name'] ?? '',
-      overview: map['overview'] ?? '',
-      airDate: map['air_date'] ?? '',
-      episodeNumber: map['episode_number']?.toInt() ?? 0,
-      runtime: map['runtime']?.toInt() ?? 0,
-      stillPath: map['still_path'] ?? '',
-      voteAverage: map['vote_average']?.toDouble() ?? 0.0,
-    );
+        name: map['name'] ?? '',
+        overview: map['overview'] ?? '',
+        airDate: map['air_date'] ?? '',
+        episodeNumber: map['episode_number']?.toInt() ?? 0,
+        runtime: map['runtime']?.toInt() ?? 0,
+        stillPath: map['still_path'] ?? '',
+        voteAverage: map['vote_average']?.toDouble() ?? 0.0,
+        id: map['id']?.toInt() ?? 0);
   }
 
   String toJson() => json.encode(toMap());
@@ -84,7 +89,8 @@ class TvEpisode {
         other.episodeNumber == episodeNumber &&
         other.runtime == runtime &&
         other.stillPath == stillPath &&
-        other.voteAverage == voteAverage;
+        other.voteAverage == voteAverage &&
+        other.id == id;
   }
 
   @override
@@ -95,6 +101,7 @@ class TvEpisode {
         episodeNumber.hashCode ^
         runtime.hashCode ^
         stillPath.hashCode ^
-        voteAverage.hashCode;
+        voteAverage.hashCode ^
+        id.hashCode;
   }
 }

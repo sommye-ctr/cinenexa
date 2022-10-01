@@ -1,3 +1,4 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -116,5 +117,23 @@ class Style {
         ],
       ),
     );
+  }
+
+  static void showLoadingDialog({
+    required BuildContext context,
+  }) {
+    AwesomeDialog(
+      context: context,
+      autoDismiss: false,
+      dismissOnBackKeyPress: false,
+      dialogType: DialogType.noHeader,
+      dialogBackgroundColor: Colors.transparent,
+      body: Center(
+        child: CircularProgressIndicator(),
+      ),
+      padding: EdgeInsets.all(8),
+      useRootNavigator: true,
+      onDismissCallback: (DismissType type) {},
+    )..show();
   }
 }

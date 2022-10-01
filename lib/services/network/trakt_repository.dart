@@ -147,25 +147,6 @@ class TraktRepository {
     return respList;
   }
 
-  /* Future getShowHistory() async {
-    Response resp = await get("https://api.trakt.tv/sync/watched/shows");
-
-    List<Map> ids = (Utils.parseJson(resp.body) as List).map((e) {
-      e as Map;
-      return {
-        "trakt": e['show']['ids']['trakt'],
-        "tmdb": e['show']['ids']['tmdb'],
-      };
-    }).toList();
-
-    Future.forEach<Map>(ids, (element) async {
-      Future.wait([
-        Repository.getTvDetails(id: element['tmdb']),
-        get("https://api.trakt.tv/shows/${element['trakt']}/progress/watched"),
-      ]);
-    });
-  } */
-
   Future getRecommendations({
     required EntityType type,
     int page = 1,
@@ -195,6 +176,37 @@ class TraktRepository {
     });
 
     return respList;
+  }
+
+  Future addToWatched({required int tmdbEpId}) async {
+    Map ep = {
+      "watched_at": DateTime.now().toIso8601String(),
+      "ids": {
+        "tmdb": tmdbEpId,
+      }
+    };
+
+    Map body = {
+      "episodes": [ep]
+    };
+    await post("https://api.trakt.tv/sync/history",
+        data: Utils.encodeJson(body));
+  }
+
+  Future removeFromWatched({required int tmdbEpId}) async {
+    Map body = {
+      "episodes": [
+        {
+          "ids": {
+            "tmdb": tmdbEpId,
+          },
+        }
+      ],
+    };
+    await post(
+      "https://api.trakt.tv/sync/history/remove",
+      data: Utils.encodeJson(body),
+    );
   }
 
 //this adds to the "Collected" in trakt

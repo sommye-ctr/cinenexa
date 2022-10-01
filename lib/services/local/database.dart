@@ -18,13 +18,6 @@ class Database {
     isar = Isar.getInstance()!;
   }
 
-  void clear() async {
-    await isar.writeTxn(() async {
-      await isar.showHistorys.clear();
-      await isar.lastActivities.clear();
-    });
-  }
-
   Future<LastActivities?> getLastActivities() async {
     try {
       return (await isar.lastActivities.get(0));
@@ -125,7 +118,19 @@ class Database {
     return (await isar.progress.get(id))?.getTraktProgress();
   }
 
-  void updateShowHistory({
+  Future updateShowHistory({required ShowHistory item}) async {
+    item;
+    Map map = _calculateLastWatchedEp(item.seasons!);
+    item = item
+      ..lastWatched = map['ep']
+      ..lastWatchedSeason = map['seasonNo'];
+
+    await isar.writeTxn(() async {
+      await isar.showHistorys.put(item);
+    });
+  }
+
+  void updateMultiShowHistory({
     required List<ShowHistory> items,
     required DateTime? localLastWatched,
     required DateTime? apiLastWatched,
@@ -150,7 +155,7 @@ class Database {
     await isar.writeTxn(() async {
       await isar.showHistorys.putAll(items);
     }).whenComplete(() async {
-      await isar.showHistorys.where().findAll();
+      onChange(await isar.showHistorys.where().findAll());
     });
   }
 
@@ -169,13 +174,15 @@ class Database {
       latestEps.putIfAbsent(
           season.number!,
           () => season.episodes!.reduce((value, element) {
-                return DateTimeFormatter.parseDate(value.lastWatchedAt)!
-                        .isAfter(
-                            DateTimeFormatter.parseDate(element.lastWatchedAt)!)
-                    ? value
-                    : element;
+                DateTime valueDate =
+                    DateTimeFormatter.parseDate(value.lastWatchedAt)!;
+                DateTime elementDate =
+                    DateTimeFormatter.parseDate(element.lastWatchedAt)!;
+                return valueDate.compareTo(elementDate) > 0 ? value : element;
               }));
     }
+
+    latestEps;
 
     TraktShowHistorySeasonEp t = latestEps.values.reduce((value, element) {
       return DateTimeFormatter.parseDate(value.lastWatchedAt)!

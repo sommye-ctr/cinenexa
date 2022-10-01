@@ -44,6 +44,54 @@ class _HomeFeaturedState extends State<HomeFeatured>
   @override
   bool get wantKeepAlive => true;
 
+  Widget _buildProgress() {
+    return Observer(builder: (_) {
+      UserStore userStore = Provider.of<UserStore>(context);
+      userStore.progress.length;
+      return HorizontalList<TraktProgress>.fromInititalValues(
+        items: userStore.progress,
+        heading: Strings.pickupLeft,
+        buildWidget: (item) {
+          bool isMovie = item.type == "movie";
+
+          return Stack(
+            children: [
+              Positioned(
+                top: ScreenSize.getPercentOfWidth(context, 0.3) /
+                    Constants.posterAspectRatio,
+                child: Container(
+                  width: ScreenSize.getPercentOfWidth(context, 0.3),
+                  margin: EdgeInsets.all(4),
+                  child: CustomProgressIndicator(
+                    progress: item.progress! / 100,
+                    transparent: true,
+                  ),
+                ),
+              ),
+              MovieTile(
+                image: Utils.getPosterUrl(isMovie
+                    ? (item.movie?.posterPath ?? "")
+                    : (item.show?.posterPath ?? "")),
+                text: isMovie ? item.movie?.title ?? "" : item.show?.name ?? "",
+                width: ScreenSize.getPercentOfWidth(context, 0.3),
+                showTitle: true,
+                onClick: () {
+                  widget.onItemClicked(isMovie
+                      ? BaseModel.fromMovie(item.movie!)
+                      : BaseModel.fromTv(item.show!));
+                },
+              ),
+            ],
+          );
+        },
+        buildPlaceHolder: () =>
+            Style.getMovieTilePlaceHolder(context: context, widthPercent: 0.3),
+        height: Style.getMovieTileHeight(context: context, widthPercent: 0.3) +
+            ScreenSize.getPercentOfHeight(context, 0.05),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -59,54 +107,7 @@ class _HomeFeaturedState extends State<HomeFeatured>
           onClick: widget.onItemClicked,
         ),
         Style.getVerticalSpacing(context: context),
-        Observer(builder: (_) {
-          UserStore userStore = Provider.of<UserStore>(context);
-          userStore.progress.length;
-          return HorizontalList<TraktProgress>.fromInititalValues(
-            items: userStore.progress,
-            heading: Strings.pickupLeft,
-            buildWidget: (item) {
-              bool isMovie = item.type == "movie";
-
-              return Stack(
-                children: [
-                  Positioned(
-                    top: ScreenSize.getPercentOfWidth(context, 0.3) /
-                        Constants.posterAspectRatio,
-                    child: Container(
-                      width: ScreenSize.getPercentOfWidth(context, 0.3),
-                      margin: EdgeInsets.all(4),
-                      child: CustomProgressIndicator(
-                        progress: item.progress! / 100,
-                        transparent: true,
-                      ),
-                    ),
-                  ),
-                  MovieTile(
-                    image: Utils.getPosterUrl(isMovie
-                        ? (item.movie?.posterPath ?? "")
-                        : (item.show?.posterPath ?? "")),
-                    text: isMovie
-                        ? item.movie?.title ?? ""
-                        : item.show?.name ?? "",
-                    width: ScreenSize.getPercentOfWidth(context, 0.3),
-                    showTitle: true,
-                    onClick: () {
-                      widget.onItemClicked(isMovie
-                          ? BaseModel.fromMovie(item.movie!)
-                          : BaseModel.fromTv(item.show!));
-                    },
-                  ),
-                ],
-              );
-            },
-            buildPlaceHolder: () => Style.getMovieTilePlaceHolder(
-                context: context, widthPercent: 0.3),
-            height:
-                Style.getMovieTileHeight(context: context, widthPercent: 0.3) +
-                    ScreenSize.getPercentOfHeight(context, 0.05),
-          );
-        }),
+        _buildProgress(),
         Style.getVerticalSpacing(context: context),
         Observer(
           builder: (_) {

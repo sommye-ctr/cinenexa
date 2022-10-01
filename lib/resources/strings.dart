@@ -64,6 +64,11 @@ class Strings {
   static const String trailer = "Trailer";
   static const String chooseEp = "Choose Episode";
 
+  static const String markWatched = "Mark as watched";
+  static const String markUnwatched = "Mark as unwatched";
+  static const String markSeasonWatched = "Mark season as watched";
+  static const String markSeasonUnwatched = "Mark season as unwatched";
+
 //Actor Details
   static const String knownFor = "Known For";
   static const String birthPlace = "BirthPlace";
