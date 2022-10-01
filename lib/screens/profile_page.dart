@@ -9,7 +9,8 @@ import 'package:watrix/store/user/user_store.dart';
 import 'package:watrix/utils/screen_size.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  final Function()? onBack;
+  const ProfilePage({Key? key, this.onBack}) : super(key: key);
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -26,19 +27,28 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Style.getVerticalHorizontalSpacing(context: context),
-            _buildProfileTile(),
-            Style.getVerticalHorizontalSpacing(context: context),
-            _buildStatCardsTile(),
-            Style.getVerticalHorizontalSpacing(context: context),
-            SettingsPage(),
-          ],
+    return WillPopScope(
+      onWillPop: () async {
+        if (widget.onBack != null) {
+          widget.onBack!();
+          return false;
+        }
+        return true;
+      },
+      child: Material(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Style.getVerticalHorizontalSpacing(context: context),
+              _buildProfileTile(),
+              Style.getVerticalHorizontalSpacing(context: context),
+              _buildStatCardsTile(),
+              Style.getVerticalHorizontalSpacing(context: context),
+              SettingsPage(),
+            ],
+          ),
         ),
       ),
     );

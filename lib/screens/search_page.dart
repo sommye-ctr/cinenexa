@@ -19,7 +19,9 @@ import '../services/network/utils.dart';
 import 'details_page.dart';
 
 class SearchPage extends StatefulWidget {
-  SearchPage({Key? key}) : super(key: key);
+  final Function()? onBack;
+
+  SearchPage({Key? key, this.onBack}) : super(key: key);
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -65,13 +67,17 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     );
   }
 
-  Future<bool> _onBackClicked() {
+  Future<bool> _onBackClicked() async {
     if (searchStore.searchDone) {
       searchStore.backClicked();
       textEditingController.clear();
-      return Future(() => false);
+      return false;
     }
-    return Future(() => true);
+    if (widget.onBack != null) {
+      widget.onBack!();
+      return false;
+    }
+    return true;
   }
 
   Widget _buildSearchBar() {

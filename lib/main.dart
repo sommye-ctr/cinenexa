@@ -55,6 +55,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   int _pageIndex = 0;
+  GlobalKey bottomNavigationKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -121,8 +122,26 @@ class _MyAppState extends State<MyApp> {
                   index: _pageIndex,
                   children: [
                     HomePage(),
-                    SearchPage(),
-                    ProfilePage(),
+                    SearchPage(
+                      onBack: () {
+                        setState(() {
+                          _pageIndex = 0;
+                          (bottomNavigationKey.currentWidget
+                                  as BottomNavigationBar)
+                              .onTap!(0);
+                        });
+                      },
+                    ),
+                    ProfilePage(
+                      onBack: () {
+                        setState(() {
+                          _pageIndex = 0;
+                          (bottomNavigationKey.currentWidget
+                                  as BottomNavigationBar)
+                              .onTap!(0);
+                        });
+                      },
+                    ),
                   ],
                 ),
                 Align(
@@ -131,7 +150,7 @@ class _MyAppState extends State<MyApp> {
                     setState(() {
                       _pageIndex = index;
                     });
-                  }),
+                  }, bottomNavigationKey: bottomNavigationKey),
                 ),
               ],
             ),

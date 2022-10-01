@@ -9,7 +9,12 @@ class HomeBottomNavBar extends StatefulWidget {
   static const double bottomNavPadding = 8;
 
   final Function(int index) onChanged;
-  const HomeBottomNavBar(this.onChanged, {Key? key}) : super(key: key);
+  final Key? bottomNavigationKey;
+  const HomeBottomNavBar(
+    this.onChanged, {
+    Key? key,
+    this.bottomNavigationKey,
+  }) : super(key: key);
 
   @override
   State<HomeBottomNavBar> createState() => _HomeBottomNavBarState();
@@ -41,6 +46,7 @@ class _HomeBottomNavBarState extends State<HomeBottomNavBar> {
           child: Opacity(
             opacity: 0.5,
             child: BottomNavigationBar(
+              key: widget.bottomNavigationKey,
               elevation: 16,
               backgroundColor: Colors.blueGrey.shade100,
               currentIndex: _pageIndex,
