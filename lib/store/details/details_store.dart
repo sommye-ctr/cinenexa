@@ -149,6 +149,7 @@ abstract class _DetailsStore with Store {
       ..seasons = seasons;
     await Future.wait([
       repository.addToWatched(tmdbEpId: episodes[epIndex].id),
+      database.updateLastActivities(epWatchedAt: DateTime.now().toUtc()),
       database.updateShowHistory(item: showHistory!),
     ]);
   }
@@ -177,6 +178,7 @@ abstract class _DetailsStore with Store {
 
     await Future.wait([
       database.updateShowHistory(item: showHistory!),
+      database.updateLastActivities(epWatchedAt: DateTime.now().toUtc()),
       repository.removeFromWatched(tmdbEpId: episodes[epIndex].id),
     ]);
   }

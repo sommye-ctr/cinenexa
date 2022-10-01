@@ -32,6 +32,25 @@ class Database {
     });
   }
 
+  Future updateLastActivities({
+    DateTime? movieWatchedAt,
+    DateTime? movieCollectedAt,
+    DateTime? epWatchedAt,
+    DateTime? epCollectedAt,
+  }) async {
+    LastActivities? lastActivities = await isar.lastActivities.get(0);
+    LastActivities newLastActivities = LastActivities()
+      ..id = 0
+      ..epCollectedAt = epCollectedAt ?? lastActivities!.epCollectedAt
+      ..epWatchedAt = epWatchedAt ?? lastActivities!.epWatchedAt
+      ..movieCollectedAt = movieCollectedAt ?? lastActivities!.movieCollectedAt
+      ..movieWatchedAt = movieWatchedAt ?? lastActivities!.movieWatchedAt;
+
+    await isar.writeTxn(() async {
+      await isar.lastActivities.put(newLastActivities);
+    });
+  }
+
   Future<bool> addSearchHistory(String term) async {
     SearchHistory? prev = await isar.searchHistorys
         .filter()
@@ -71,8 +90,8 @@ class Database {
     return false;
   }
 
-  void addToFavorites(Favorites favorite) {
-    isar.writeTxn(() async {
+  Future addToFavorites(Favorites favorite) async {
+    await isar.writeTxn(() async {
       await isar.favorites.put(favorite);
     });
   }

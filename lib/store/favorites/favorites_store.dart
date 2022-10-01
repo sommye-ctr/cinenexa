@@ -67,9 +67,21 @@ abstract class _FavoritesStore with Store {
   Future addFavorite(BaseModel baseModel) async {
     favorites.add(baseModel);
 
-    localDb.addToFavorites(baseModel.toFavorite());
-    await traktRepository.addFavorites(
-        tmdbId: baseModel.id!, entityType: baseModel.type!.getEntityType());
+    await Future.wait([
+      localDb.addToFavorites(baseModel.toFavorite()),
+      localDb.updateLastActivities(
+        movieCollectedAt: baseModel.type == BaseModelType.movie
+            ? DateTime.now().toUtc()
+            : null,
+        epCollectedAt:
+            baseModel.type == BaseModelType.tv ? DateTime.now().toUtc() : null,
+      ),
+      traktRepository.addFavorites(
+        tmdbId: baseModel.id!,
+        entityType: baseModel.type!.getEntityType(),
+      ),
+    ]);
+    ;
   }
 
   @action
