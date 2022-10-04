@@ -152,6 +152,12 @@ class Database {
     });
   }
 
+  Future removeProgress({required int tmdbId}) async {
+    await isar.writeTxn(() async {
+      await isar.progress.delete(tmdbId);
+    });
+  }
+
   Future<List<TraktProgress>> getAllProgress() async {
     List<Progress> list =
         await isar.progress.where().sortByPausedAtDesc().findAll();

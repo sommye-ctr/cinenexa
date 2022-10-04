@@ -107,6 +107,16 @@ abstract class _UserStoreBase with Store {
   }
 
   @action
+  Future removeProgress(TraktProgress traktProgress) async {
+    progress.remove(traktProgress);
+    await Future.wait([
+      localDb.removeProgress(
+          tmdbId: traktProgress.movie?.id ?? traktProgress.show!.id!),
+      repository.removeProgress(progressId: traktProgress.playbackId!),
+    ]);
+  }
+
+  @action
   Future fetchUserWatchedShows(
       {LastActivities? local,
       LastActivities? api,

@@ -10,6 +10,7 @@ class Strings {
   static const String show = "Show";
   static const String actor = "Actor";
   static const String all = "All";
+  static const String moreInfo = "More Info";
 
 //Home
   static const String featured = "Featured";

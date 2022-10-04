@@ -33,24 +33,29 @@ const ProgressSchema = CollectionSchema(
       name: r'pausedAt',
       type: IsarType.dateTime,
     ),
-    r'progress': PropertySchema(
+    r'playbackId': PropertySchema(
       id: 3,
+      name: r'playbackId',
+      type: IsarType.long,
+    ),
+    r'progress': PropertySchema(
+      id: 4,
       name: r'progress',
       type: IsarType.double,
     ),
     r'seasonNo': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'seasonNo',
       type: IsarType.long,
     ),
     r'show': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'show',
       type: IsarType.object,
       target: r'Tv',
     ),
     r'type': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'type',
       type: IsarType.string,
     )
@@ -126,15 +131,16 @@ void _progressSerialize(
     object.movie,
   );
   writer.writeDateTime(offsets[2], object.pausedAt);
-  writer.writeDouble(offsets[3], object.progress);
-  writer.writeLong(offsets[4], object.seasonNo);
+  writer.writeLong(offsets[3], object.playbackId);
+  writer.writeDouble(offsets[4], object.progress);
+  writer.writeLong(offsets[5], object.seasonNo);
   writer.writeObject<Tv>(
-    offsets[5],
+    offsets[6],
     allOffsets,
     TvSchema.serialize,
     object.show,
   );
-  writer.writeString(offsets[6], object.type);
+  writer.writeString(offsets[7], object.type);
 }
 
 Progress _progressDeserialize(
@@ -152,14 +158,15 @@ Progress _progressDeserialize(
     allOffsets,
   );
   object.pausedAt = reader.readDateTimeOrNull(offsets[2]);
-  object.progress = reader.readDouble(offsets[3]);
-  object.seasonNo = reader.readLongOrNull(offsets[4]);
+  object.playbackId = reader.readLongOrNull(offsets[3]);
+  object.progress = reader.readDouble(offsets[4]);
+  object.seasonNo = reader.readLongOrNull(offsets[5]);
   object.show = reader.readObjectOrNull<Tv>(
-    offsets[5],
+    offsets[6],
     TvSchema.deserialize,
     allOffsets,
   );
-  object.type = reader.readString(offsets[6]);
+  object.type = reader.readString(offsets[7]);
   return object;
 }
 
@@ -181,16 +188,18 @@ P _progressDeserializeProp<P>(
     case 2:
       return (reader.readDateTimeOrNull(offset)) as P;
     case 3:
-      return (reader.readDouble(offset)) as P;
-    case 4:
       return (reader.readLongOrNull(offset)) as P;
+    case 4:
+      return (reader.readDouble(offset)) as P;
     case 5:
+      return (reader.readLongOrNull(offset)) as P;
+    case 6:
       return (reader.readObjectOrNull<Tv>(
         offset,
         TvSchema.deserialize,
         allOffsets,
       )) as P;
-    case 6:
+    case 7:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -626,6 +635,76 @@ extension ProgressQueryFilter
     });
   }
 
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> playbackIdIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'playbackId',
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterFilterCondition>
+      playbackIdIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'playbackId',
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> playbackIdEqualTo(
+      int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'playbackId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> playbackIdGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'playbackId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> playbackIdLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'playbackId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> playbackIdBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'playbackId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<Progress, Progress, QAfterFilterCondition> progressEqualTo(
     double value, {
     double epsilon = Query.epsilon,
@@ -949,6 +1028,18 @@ extension ProgressQuerySortBy on QueryBuilder<Progress, Progress, QSortBy> {
     });
   }
 
+  QueryBuilder<Progress, Progress, QAfterSortBy> sortByPlaybackId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'playbackId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterSortBy> sortByPlaybackIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'playbackId', Sort.desc);
+    });
+  }
+
   QueryBuilder<Progress, Progress, QAfterSortBy> sortByProgress() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'progress', Sort.asc);
@@ -1024,6 +1115,18 @@ extension ProgressQuerySortThenBy
     });
   }
 
+  QueryBuilder<Progress, Progress, QAfterSortBy> thenByPlaybackId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'playbackId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterSortBy> thenByPlaybackIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'playbackId', Sort.desc);
+    });
+  }
+
   QueryBuilder<Progress, Progress, QAfterSortBy> thenByProgress() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'progress', Sort.asc);
@@ -1075,6 +1178,12 @@ extension ProgressQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Progress, Progress, QDistinct> distinctByPlaybackId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'playbackId');
+    });
+  }
+
   QueryBuilder<Progress, Progress, QDistinct> distinctByProgress() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'progress');
@@ -1118,6 +1227,12 @@ extension ProgressQueryProperty
   QueryBuilder<Progress, DateTime?, QQueryOperations> pausedAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'pausedAt');
+    });
+  }
+
+  QueryBuilder<Progress, int?, QQueryOperations> playbackIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'playbackId');
     });
   }
 

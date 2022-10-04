@@ -16,6 +16,7 @@ class TraktProgress {
   int? seasonNo;
   int? episodeNo;
   DateTime? pausedAt;
+  int? playbackId;
   TraktProgress({
     this.progress,
     this.type,
@@ -24,6 +25,7 @@ class TraktProgress {
     this.seasonNo,
     this.episodeNo,
     this.pausedAt,
+    this.playbackId,
   });
 
   TraktProgress copyWith({
@@ -42,6 +44,7 @@ class TraktProgress {
       seasonNo: seasonNo ?? this.seasonNo,
       episodeNo: episodeNo ?? this.episodeNo,
       pausedAt: pausedAt ?? this.pausedAt,
+      playbackId: playbackId ?? this.playbackId,
     );
   }
 
@@ -54,6 +57,7 @@ class TraktProgress {
       'seasonNo': seasonNo,
       'episodeNo': episodeNo,
       'pausedAt': pausedAt,
+      'playbackId': playbackId,
     };
   }
 
@@ -69,6 +73,7 @@ class TraktProgress {
             : null,
         seasonNo: map['seasonNo'] != null ? map['seasonNo'] as int : null,
         episodeNo: map['episodeNo'] != null ? map['episodeNo'] as int : null,
+        playbackId: map['id'] != null ? map['id'] : null,
         pausedAt: map['paused_at'] != null
             ? DateTimeFormatter.parseDate(map['paused_at'])
             : null);
@@ -94,7 +99,8 @@ class TraktProgress {
         other.show == show &&
         other.seasonNo == seasonNo &&
         other.episodeNo == episodeNo &&
-        other.pausedAt == pausedAt;
+        other.pausedAt == pausedAt &&
+        other.playbackId == playbackId;
   }
 
   @override
@@ -105,7 +111,8 @@ class TraktProgress {
         show.hashCode ^
         seasonNo.hashCode ^
         episodeNo.hashCode ^
-        pausedAt.hashCode;
+        pausedAt.hashCode ^
+        playbackId.hashCode;
   }
 }
 
@@ -119,13 +126,15 @@ extension TraktProgressConverter on TraktProgress {
         ..type = this.type!
         ..show = this.show!
         ..id = this.show!.id
-        ..pausedAt = this.pausedAt;
+        ..pausedAt = this.pausedAt
+        ..playbackId = this.playbackId;
     }
     return Progress()
       ..progress = this.progress!
       ..type = this.type!
       ..movie = this.movie!
       ..id = this.movie!.id
-      ..pausedAt = this.pausedAt;
+      ..pausedAt = this.pausedAt
+      ..playbackId = this.playbackId;
   }
 }

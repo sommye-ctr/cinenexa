@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:focused_menu/focused_menu.dart';
+import 'package:focused_menu/modals.dart';
 import 'package:provider/provider.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
@@ -51,45 +53,75 @@ class _HomeFeaturedState extends State<HomeFeatured>
       return HorizontalList<TraktProgress>.fromInititalValues(
         items: userStore.progress,
         heading: Strings.pickupLeft,
-        buildWidget: (item) {
-          bool isMovie = item.type == "movie";
-
-          return Stack(
-            children: [
-              Positioned(
-                top: ScreenSize.getPercentOfWidth(context, 0.3) /
-                    Constants.posterAspectRatio,
-                child: Container(
-                  width: ScreenSize.getPercentOfWidth(context, 0.3),
-                  margin: EdgeInsets.all(4),
-                  child: CustomProgressIndicator(
-                    progress: item.progress! / 100,
-                    transparent: true,
-                  ),
-                ),
-              ),
-              MovieTile(
-                image: Utils.getPosterUrl(isMovie
-                    ? (item.movie?.posterPath ?? "")
-                    : (item.show?.posterPath ?? "")),
-                text: isMovie ? item.movie?.title ?? "" : item.show?.name ?? "",
-                width: ScreenSize.getPercentOfWidth(context, 0.3),
-                showTitle: true,
-                onClick: () {
-                  widget.onItemClicked(isMovie
-                      ? BaseModel.fromMovie(item.movie!)
-                      : BaseModel.fromTv(item.show!));
-                },
-              ),
-            ],
-          );
-        },
+        buildWidget: (value) => _buildProgressSingle(value, userStore),
         buildPlaceHolder: () =>
             Style.getMovieTilePlaceHolder(context: context, widthPercent: 0.3),
         height: Style.getMovieTileHeight(context: context, widthPercent: 0.3) +
             ScreenSize.getPercentOfHeight(context, 0.05),
       );
     });
+  }
+
+  Widget _buildProgressSingle(TraktProgress item, UserStore store) {
+    bool isMovie = item.type == "movie";
+
+    return FocusedMenuHolder(
+      animateMenuItems: true,
+      blurSize: 5,
+      menuItems: [
+        FocusedMenuItem(
+          title: Text(Strings.moreInfo),
+          trailingIcon: Icon(Icons.info_outline_rounded),
+          onPressed: () {
+            widget.onItemClicked(isMovie
+                ? BaseModel.fromMovie(item.movie!)
+                : BaseModel.fromTv(item.show!));
+          },
+          backgroundColor: Theme.of(context).backgroundColor,
+        ),
+        FocusedMenuItem(
+          title: Text(Strings.remove),
+          trailingIcon: Icon(Icons.close_rounded),
+          onPressed: () {
+            Style.showLoadingDialog(context: context);
+            store
+                .removeProgress(item)
+                .whenComplete(() => Navigator.pop(context));
+          },
+          backgroundColor: Theme.of(context).backgroundColor,
+        ),
+      ],
+      onPressed: () {},
+      child: Stack(
+        children: [
+          Positioned(
+            top: ScreenSize.getPercentOfWidth(context, 0.3) /
+                Constants.posterAspectRatio,
+            child: Container(
+              width: ScreenSize.getPercentOfWidth(context, 0.3),
+              margin: EdgeInsets.all(4),
+              child: CustomProgressIndicator(
+                progress: item.progress! / 100,
+                transparent: true,
+              ),
+            ),
+          ),
+          MovieTile(
+            image: Utils.getPosterUrl(isMovie
+                ? (item.movie?.posterPath ?? "")
+                : (item.show?.posterPath ?? "")),
+            text: isMovie ? item.movie?.title ?? "" : item.show?.name ?? "",
+            width: ScreenSize.getPercentOfWidth(context, 0.3),
+            showTitle: true,
+            onClick: () {
+              widget.onItemClicked(isMovie
+                  ? BaseModel.fromMovie(item.movie!)
+                  : BaseModel.fromTv(item.show!));
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   @override

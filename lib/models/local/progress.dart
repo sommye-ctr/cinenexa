@@ -19,6 +19,7 @@ class Progress {
 
   Movie? movie;
   Tv? show;
+  int? playbackId;
 
   @Index()
   DateTime? pausedAt;
@@ -34,6 +35,7 @@ extension ProgressConverter on Progress {
       seasonNo: this.seasonNo,
       show: this.show,
       pausedAt: this.pausedAt,
+      playbackId: this.playbackId,
     );
   }
 }

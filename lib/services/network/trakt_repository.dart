@@ -39,6 +39,10 @@ class TraktRepository {
     );
   }
 
+  Future delete(String url) {
+    return helper.delete(url, headers: Constants.traktRequestHeaders);
+  }
+
   Future<LastActivities> getUserLastActivity() async {
     Response resp = await get("https://api.trakt.tv/sync/last_activities");
     Map map = Utils.parseJson(resp.body) as Map;
@@ -108,6 +112,7 @@ class TraktRepository {
             type: element['type'],
             movie: movie,
             pausedAt: DateTimeFormatter.parseDate(element['paused_at']),
+            playbackId: element['id'],
           ),
         );
         return;
@@ -123,6 +128,7 @@ class TraktRepository {
           episodeNo: element['episode']['number'],
           seasonNo: element['episode']['season'],
           pausedAt: DateTimeFormatter.parseDate(element['paused_at']),
+          playbackId: element['id'],
         ),
       );
     });
@@ -209,6 +215,10 @@ class TraktRepository {
       "https://api.trakt.tv/sync/history/remove",
       data: Utils.encodeJson(body),
     );
+  }
+
+  Future removeProgress({required int progressId}) async {
+    await delete("https://api.trakt.tv/sync/playback/$progressId");
   }
 
 //this adds to the "Collected" in trakt
