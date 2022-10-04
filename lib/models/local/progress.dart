@@ -3,7 +3,8 @@ import 'package:watrix/models/network/genre.dart';
 import 'package:watrix/models/network/movie.dart';
 import 'package:watrix/models/network/trakt/trakt_progress.dart';
 import 'package:watrix/models/network/tv.dart';
-import 'package:watrix/models/network/tv_season.dart';
+
+import '../network/tv_season.dart';
 
 part 'progress.g.dart';
 
@@ -18,6 +19,9 @@ class Progress {
 
   Movie? movie;
   Tv? show;
+
+  @Index()
+  DateTime? pausedAt;
 }
 
 extension ProgressConverter on Progress {
@@ -29,6 +33,7 @@ extension ProgressConverter on Progress {
       progress: this.progress,
       seasonNo: this.seasonNo,
       show: this.show,
+      pausedAt: this.pausedAt,
     );
   }
 }

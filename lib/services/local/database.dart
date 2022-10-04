@@ -124,10 +124,28 @@ class Database {
     required List<TraktProgress> list,
     required Function(List<TraktProgress>) onChange,
   }) async {
-    List<Progress> items = list.map((e) => e.getProgress()).toList();
+    List<Progress> items = [];
+    List<int> ids = [];
+
+    for (var element in list) {
+      Progress progress = element.getProgress();
+
+      if (ids.contains(progress.id)) {
+        Progress addedProgress =
+            items.firstWhere((element1) => element1.id == progress.id);
+
+        if (element.pausedAt!.isAfter(addedProgress.pausedAt!)) {
+          items.remove(addedProgress);
+          items.add(progress);
+        }
+      } else {
+        ids.add(progress.id!);
+        items.add(progress);
+      }
+    }
 
     await isar.writeTxn(() async {
-      await isar.progress.clear();
+//      await isar.progress.clear();
       await isar.progress.putAll(items);
     }).whenComplete(() async {
       onChange(await getAllProgress());
@@ -135,7 +153,8 @@ class Database {
   }
 
   Future<List<TraktProgress>> getAllProgress() async {
-    List<Progress> list = await isar.progress.where().findAll();
+    List<Progress> list =
+        await isar.progress.where().sortByPausedAtDesc().findAll();
     return list.map((e) => e.getTraktProgress()).toList();
   }
 

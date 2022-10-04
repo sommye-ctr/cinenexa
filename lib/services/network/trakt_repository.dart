@@ -107,6 +107,7 @@ class TraktRepository {
             progress: element['progress'],
             type: element['type'],
             movie: movie,
+            pausedAt: DateTimeFormatter.parseDate(element['paused_at']),
           ),
         );
         return;
@@ -121,6 +122,7 @@ class TraktRepository {
           show: tv,
           episodeNo: element['episode']['number'],
           seasonNo: element['episode']['season'],
+          pausedAt: DateTimeFormatter.parseDate(element['paused_at']),
         ),
       );
     });

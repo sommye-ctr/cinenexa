@@ -28,24 +28,29 @@ const ProgressSchema = CollectionSchema(
       type: IsarType.object,
       target: r'Movie',
     ),
-    r'progress': PropertySchema(
+    r'pausedAt': PropertySchema(
       id: 2,
+      name: r'pausedAt',
+      type: IsarType.dateTime,
+    ),
+    r'progress': PropertySchema(
+      id: 3,
       name: r'progress',
       type: IsarType.double,
     ),
     r'seasonNo': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'seasonNo',
       type: IsarType.long,
     ),
     r'show': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'show',
       type: IsarType.object,
       target: r'Tv',
     ),
     r'type': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'type',
       type: IsarType.string,
     )
@@ -55,7 +60,21 @@ const ProgressSchema = CollectionSchema(
   deserialize: _progressDeserialize,
   deserializeProp: _progressDeserializeProp,
   idName: r'id',
-  indexes: {},
+  indexes: {
+    r'pausedAt': IndexSchema(
+      id: -3957613417905400958,
+      name: r'pausedAt',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'pausedAt',
+          type: IndexType.value,
+          caseSensitive: false,
+        )
+      ],
+    )
+  },
   links: {},
   embeddedSchemas: {
     r'Movie': MovieSchema,
@@ -106,15 +125,16 @@ void _progressSerialize(
     MovieSchema.serialize,
     object.movie,
   );
-  writer.writeDouble(offsets[2], object.progress);
-  writer.writeLong(offsets[3], object.seasonNo);
+  writer.writeDateTime(offsets[2], object.pausedAt);
+  writer.writeDouble(offsets[3], object.progress);
+  writer.writeLong(offsets[4], object.seasonNo);
   writer.writeObject<Tv>(
-    offsets[4],
+    offsets[5],
     allOffsets,
     TvSchema.serialize,
     object.show,
   );
-  writer.writeString(offsets[5], object.type);
+  writer.writeString(offsets[6], object.type);
 }
 
 Progress _progressDeserialize(
@@ -131,14 +151,15 @@ Progress _progressDeserialize(
     MovieSchema.deserialize,
     allOffsets,
   );
-  object.progress = reader.readDouble(offsets[2]);
-  object.seasonNo = reader.readLongOrNull(offsets[3]);
+  object.pausedAt = reader.readDateTimeOrNull(offsets[2]);
+  object.progress = reader.readDouble(offsets[3]);
+  object.seasonNo = reader.readLongOrNull(offsets[4]);
   object.show = reader.readObjectOrNull<Tv>(
-    offsets[4],
+    offsets[5],
     TvSchema.deserialize,
     allOffsets,
   );
-  object.type = reader.readString(offsets[5]);
+  object.type = reader.readString(offsets[6]);
   return object;
 }
 
@@ -158,16 +179,18 @@ P _progressDeserializeProp<P>(
         allOffsets,
       )) as P;
     case 2:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readDateTimeOrNull(offset)) as P;
     case 3:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 4:
+      return (reader.readLongOrNull(offset)) as P;
+    case 5:
       return (reader.readObjectOrNull<Tv>(
         offset,
         TvSchema.deserialize,
         allOffsets,
       )) as P;
-    case 5:
+    case 6:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -190,6 +213,14 @@ extension ProgressQueryWhereSort on QueryBuilder<Progress, Progress, QWhere> {
   QueryBuilder<Progress, Progress, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterWhere> anyPausedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'pausedAt'),
+      );
     });
   }
 }
@@ -255,6 +286,116 @@ extension ProgressQueryWhere on QueryBuilder<Progress, Progress, QWhereClause> {
         lower: lowerId,
         includeLower: includeLower,
         upper: upperId,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterWhereClause> pausedAtIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'pausedAt',
+        value: [null],
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterWhereClause> pausedAtIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'pausedAt',
+        lower: [null],
+        includeLower: false,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterWhereClause> pausedAtEqualTo(
+      DateTime? pausedAt) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'pausedAt',
+        value: [pausedAt],
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterWhereClause> pausedAtNotEqualTo(
+      DateTime? pausedAt) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'pausedAt',
+              lower: [],
+              upper: [pausedAt],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'pausedAt',
+              lower: [pausedAt],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'pausedAt',
+              lower: [pausedAt],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'pausedAt',
+              lower: [],
+              upper: [pausedAt],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterWhereClause> pausedAtGreaterThan(
+    DateTime? pausedAt, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'pausedAt',
+        lower: [pausedAt],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterWhereClause> pausedAtLessThan(
+    DateTime? pausedAt, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'pausedAt',
+        lower: [],
+        upper: [pausedAt],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterWhereClause> pausedAtBetween(
+    DateTime? lowerPausedAt,
+    DateTime? upperPausedAt, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'pausedAt',
+        lower: [lowerPausedAt],
+        includeLower: includeLower,
+        upper: [upperPausedAt],
         includeUpper: includeUpper,
       ));
     });
@@ -412,6 +553,75 @@ extension ProgressQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'movie',
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> pausedAtIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'pausedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> pausedAtIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'pausedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> pausedAtEqualTo(
+      DateTime? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'pausedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> pausedAtGreaterThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'pausedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> pausedAtLessThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'pausedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> pausedAtBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'pausedAt',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
       ));
     });
   }
@@ -727,6 +937,18 @@ extension ProgressQuerySortBy on QueryBuilder<Progress, Progress, QSortBy> {
     });
   }
 
+  QueryBuilder<Progress, Progress, QAfterSortBy> sortByPausedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'pausedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterSortBy> sortByPausedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'pausedAt', Sort.desc);
+    });
+  }
+
   QueryBuilder<Progress, Progress, QAfterSortBy> sortByProgress() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'progress', Sort.asc);
@@ -790,6 +1012,18 @@ extension ProgressQuerySortThenBy
     });
   }
 
+  QueryBuilder<Progress, Progress, QAfterSortBy> thenByPausedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'pausedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterSortBy> thenByPausedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'pausedAt', Sort.desc);
+    });
+  }
+
   QueryBuilder<Progress, Progress, QAfterSortBy> thenByProgress() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'progress', Sort.asc);
@@ -835,6 +1069,12 @@ extension ProgressQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Progress, Progress, QDistinct> distinctByPausedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'pausedAt');
+    });
+  }
+
   QueryBuilder<Progress, Progress, QDistinct> distinctByProgress() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'progress');
@@ -872,6 +1112,12 @@ extension ProgressQueryProperty
   QueryBuilder<Progress, Movie?, QQueryOperations> movieProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'movie');
+    });
+  }
+
+  QueryBuilder<Progress, DateTime?, QQueryOperations> pausedAtProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'pausedAt');
     });
   }
 

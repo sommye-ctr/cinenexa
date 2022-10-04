@@ -5,6 +5,8 @@ import 'package:watrix/models/local/progress.dart';
 import 'package:watrix/models/network/movie.dart';
 import 'package:watrix/models/network/tv.dart';
 
+import '../../../utils/date_time_formatter.dart';
+
 class TraktProgress {
   double? progress;
   String? type;
@@ -13,6 +15,7 @@ class TraktProgress {
   Tv? show;
   int? seasonNo;
   int? episodeNo;
+  DateTime? pausedAt;
   TraktProgress({
     this.progress,
     this.type,
@@ -20,6 +23,7 @@ class TraktProgress {
     this.show,
     this.seasonNo,
     this.episodeNo,
+    this.pausedAt,
   });
 
   TraktProgress copyWith({
@@ -37,6 +41,7 @@ class TraktProgress {
       show: show ?? this.show,
       seasonNo: seasonNo ?? this.seasonNo,
       episodeNo: episodeNo ?? this.episodeNo,
+      pausedAt: pausedAt ?? this.pausedAt,
     );
   }
 
@@ -48,22 +53,25 @@ class TraktProgress {
       'show': show?.toMap(),
       'seasonNo': seasonNo,
       'episodeNo': episodeNo,
+      'pausedAt': pausedAt,
     };
   }
 
   factory TraktProgress.fromMap(Map<String, dynamic> map) {
     return TraktProgress(
-      progress: map['progress'] != null ? map['progress'] as double : null,
-      type: map['type'] != null ? map['type'] as String : null,
-      movie: map['movie'] != null
-          ? Movie.fromMap(map['movie'] as Map<String, dynamic>)
-          : null,
-      show: map['show'] != null
-          ? Tv.fromMap(map['show'] as Map<String, dynamic>)
-          : null,
-      seasonNo: map['seasonNo'] != null ? map['seasonNo'] as int : null,
-      episodeNo: map['episodeNo'] != null ? map['episodeNo'] as int : null,
-    );
+        progress: map['progress'] != null ? map['progress'] as double : null,
+        type: map['type'] != null ? map['type'] as String : null,
+        movie: map['movie'] != null
+            ? Movie.fromMap(map['movie'] as Map<String, dynamic>)
+            : null,
+        show: map['show'] != null
+            ? Tv.fromMap(map['show'] as Map<String, dynamic>)
+            : null,
+        seasonNo: map['seasonNo'] != null ? map['seasonNo'] as int : null,
+        episodeNo: map['episodeNo'] != null ? map['episodeNo'] as int : null,
+        pausedAt: map['paused_at'] != null
+            ? DateTimeFormatter.parseDate(map['paused_at'])
+            : null);
   }
 
   String toJson() => json.encode(toMap());
@@ -85,7 +93,8 @@ class TraktProgress {
         other.movie == movie &&
         other.show == show &&
         other.seasonNo == seasonNo &&
-        other.episodeNo == episodeNo;
+        other.episodeNo == episodeNo &&
+        other.pausedAt == pausedAt;
   }
 
   @override
@@ -95,7 +104,8 @@ class TraktProgress {
         movie.hashCode ^
         show.hashCode ^
         seasonNo.hashCode ^
-        episodeNo.hashCode;
+        episodeNo.hashCode ^
+        pausedAt.hashCode;
   }
 }
 
@@ -108,12 +118,14 @@ extension TraktProgressConverter on TraktProgress {
         ..seasonNo = this.seasonNo!
         ..type = this.type!
         ..show = this.show!
-        ..id = this.show!.id;
+        ..id = this.show!.id
+        ..pausedAt = this.pausedAt;
     }
     return Progress()
       ..progress = this.progress!
       ..type = this.type!
       ..movie = this.movie!
-      ..id = this.movie!.id;
+      ..id = this.movie!.id
+      ..pausedAt = this.pausedAt;
   }
 }
