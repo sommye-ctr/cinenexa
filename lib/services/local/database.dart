@@ -114,6 +114,12 @@ class Database {
     });
   }
 
+  Future removeFavs({required List<int> ids}) async {
+    await isar.writeTxn(() async {
+      await isar.favorites.deleteAll(ids);
+    });
+  }
+
   void updateProgress({
     required List<TraktProgress> list,
     required Function(List<TraktProgress>) onChange,

@@ -8,8 +8,10 @@ class MovieTile extends StatelessWidget {
   final String image, text;
   final double width;
   final bool showTitle;
+  final bool darken;
 
-  final void Function()? onClick;
+  final VoidCallback? onClick;
+  final VoidCallback? onLongClick;
 
   MovieTile({
     required this.image,
@@ -17,6 +19,8 @@ class MovieTile extends StatelessWidget {
     required this.width,
     this.showTitle = false,
     this.onClick,
+    this.onLongClick,
+    this.darken = false,
     Key? key,
   }) : super(key: key);
 
@@ -24,18 +28,30 @@ class MovieTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onClick,
+      onLongPress: onLongClick,
       child: Container(
         width: width,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(
-                height: width / Constants.posterAspectRatio,
-                child: RoundedImage(
-                  image: image,
-                  width: width,
-                  ratio: Constants.posterAspectRatio,
-                )),
+            Stack(
+              children: [
+                Container(
+                  height: width / Constants.posterAspectRatio,
+                  child: RoundedImage(
+                    image: image,
+                    width: width,
+                    ratio: Constants.posterAspectRatio,
+                  ),
+                ),
+                if (darken)
+                  Container(
+                    color: Colors.black54,
+                    height: width / Constants.posterAspectRatio,
+                    width: width,
+                  ),
+              ],
+            ),
             ...getConditionedWidgets(context),
           ],
         ),

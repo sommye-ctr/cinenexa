@@ -32,6 +32,11 @@ class Strings {
   static const String weeklyTrendingMovies = "Movies of the week";
   static const String weeklyTrendingTv = "Shows of the week";
 
+  //Favorites
+  static const String cancel = "Cancel";
+  static const String remove = "Remove";
+  static const String noItemsSelected = "No items selected";
+
 //Search
   static const String searchHint = "You can search for";
   static const String moviesTvShows = "Movies, Shows...";

@@ -14,6 +14,17 @@ abstract class _FavoritesStore with Store {
   ObservableList<BaseModel> favorites = <BaseModel>[].asObservable();
 
   @observable
+  ObservableList<int> checkedFavoritesIds = <int>[].asObservable();
+
+  @observable
+  bool multiSelectEnabled = false;
+
+  @action
+  void setMultiSelectEnabled(bool newMultiSelectEnabled) {
+    multiSelectEnabled = newMultiSelectEnabled;
+  }
+
+  @observable
   int chosenFilter = 0;
 
   TraktRepository traktRepository = TraktRepository(client: TraktOAuthClient());
@@ -46,15 +57,15 @@ abstract class _FavoritesStore with Store {
     favorites.addAll(await Database().getFavorites());
 
     if (fromApi) {
-      localDb.updateFavorites(
-          favorites: (await traktRepository.getUserFavorites())
-              .map((e) => e.toFavorite())
-              .toList(),
-          onChange: (list) {
-            favorites
-              ..clear()
-              ..addAll(list);
-          });
+      traktRepository.getUserFavorites().then((value) {
+        localDb.updateFavorites(
+            favorites: value.map((e) => e.toFavorite()).toList(),
+            onChange: (list) {
+              favorites
+                ..clear()
+                ..addAll(list);
+            });
+      });
     }
   }
 
@@ -76,12 +87,36 @@ abstract class _FavoritesStore with Store {
         epCollectedAt:
             baseModel.type == BaseModelType.tv ? DateTime.now().toUtc() : null,
       ),
-      traktRepository.addFavorites(
+      traktRepository.addFavorite(
         tmdbId: baseModel.id!,
         entityType: baseModel.type!.getEntityType(),
       ),
     ]);
     ;
+  }
+
+  @action
+  Future removeFavorites() async {
+    List<int> movies = [];
+    List<int> shows = [];
+
+    for (var id in checkedFavoritesIds) {
+      BaseModel fav = favorites.firstWhere((element) => element.id == id);
+      if (fav.type == BaseModelType.movie) {
+        movies.add(fav.id!);
+      } else {
+        shows.add(fav.id!);
+      }
+      favorites.remove(fav);
+    }
+
+    await Future.wait([
+      traktRepository.removeFavorites(
+        movieTmdbIds: movies.isEmpty ? null : movies,
+        showTmdbIds: shows.isEmpty ? null : shows,
+      ),
+      localDb.removeFavs(ids: [...movies, ...shows]),
+    ]);
   }
 
   @action
@@ -91,5 +126,21 @@ abstract class _FavoritesStore with Store {
     localDb.removeFromFav(baseModel.id!);
     await traktRepository.removeFavorite(
         tmdbId: baseModel.id!, entityType: baseModel.type!.getEntityType());
+  }
+
+  @action
+  void addCheckedFav({required int id}) {
+    checkedFavoritesIds.add(id);
+  }
+
+  @action
+  void removeCheckedFav({required int id}) {
+    checkedFavoritesIds.remove(id);
+  }
+
+  @action
+  void resetMultiSelect() {
+    setMultiSelectEnabled(false);
+    checkedFavoritesIds.clear();
   }
 }

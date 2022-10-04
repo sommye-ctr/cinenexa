@@ -55,6 +55,7 @@ dependencies:
   flutter_vlc_player: ^7.1.5
   settings_ui: ^2.0.2
   scrollable_positioned_list: ^0.3.4
+  flutter_expandable_fab: ^1.5.2
 
 
 dev_dependencies:

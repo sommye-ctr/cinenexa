@@ -99,7 +99,7 @@ abstract class _DetailsStore with Store {
   }
 
   @action
-  void addToListClicked(FavoritesStore store) async {
+  Future addToListClicked(FavoritesStore store) async {
     store.addFavorite(baseModel).whenComplete(() => isAddedToFav = true);
   }
 

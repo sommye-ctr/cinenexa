@@ -254,6 +254,33 @@ mixin _$DetailsStore on _DetailsStore, Store {
     });
   }
 
+  late final _$addToListClickedAsyncAction =
+      AsyncAction('_DetailsStore.addToListClicked', context: context);
+
+  @override
+  Future<dynamic> addToListClicked(FavoritesStore store) {
+    return _$addToListClickedAsyncAction
+        .run(() => super.addToListClicked(store));
+  }
+
+  late final _$markWatchedClickedAsyncAction =
+      AsyncAction('_DetailsStore.markWatchedClicked', context: context);
+
+  @override
+  Future<dynamic> markWatchedClicked({required int epIndex}) {
+    return _$markWatchedClickedAsyncAction
+        .run(() => super.markWatchedClicked(epIndex: epIndex));
+  }
+
+  late final _$markUnwatchedClickedAsyncAction =
+      AsyncAction('_DetailsStore.markUnwatchedClicked', context: context);
+
+  @override
+  Future<dynamic> markUnwatchedClicked({required int epIndex}) {
+    return _$markUnwatchedClickedAsyncAction
+        .run(() => super.markUnwatchedClicked(epIndex: epIndex));
+  }
+
   late final _$fetchReviewsAsyncAction =
       AsyncAction('_DetailsStore.fetchReviews', context: context);
 
@@ -287,17 +314,6 @@ mixin _$DetailsStore on _DetailsStore, Store {
         name: '_DetailsStore.onPageChanged');
     try {
       return super.onPageChanged(index);
-    } finally {
-      _$_DetailsStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void addToListClicked(FavoritesStore store) {
-    final _$actionInfo = _$_DetailsStoreActionController.startAction(
-        name: '_DetailsStore.addToListClicked');
-    try {
-      return super.addToListClicked(store);
     } finally {
       _$_DetailsStoreActionController.endAction(_$actionInfo);
     }

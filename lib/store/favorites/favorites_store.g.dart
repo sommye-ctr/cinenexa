@@ -33,6 +33,38 @@ mixin _$FavoritesStore on _FavoritesStore, Store {
     });
   }
 
+  late final _$checkedFavoritesIdsAtom =
+      Atom(name: '_FavoritesStore.checkedFavoritesIds', context: context);
+
+  @override
+  ObservableList<int> get checkedFavoritesIds {
+    _$checkedFavoritesIdsAtom.reportRead();
+    return super.checkedFavoritesIds;
+  }
+
+  @override
+  set checkedFavoritesIds(ObservableList<int> value) {
+    _$checkedFavoritesIdsAtom.reportWrite(value, super.checkedFavoritesIds, () {
+      super.checkedFavoritesIds = value;
+    });
+  }
+
+  late final _$multiSelectEnabledAtom =
+      Atom(name: '_FavoritesStore.multiSelectEnabled', context: context);
+
+  @override
+  bool get multiSelectEnabled {
+    _$multiSelectEnabledAtom.reportRead();
+    return super.multiSelectEnabled;
+  }
+
+  @override
+  set multiSelectEnabled(bool value) {
+    _$multiSelectEnabledAtom.reportWrite(value, super.multiSelectEnabled, () {
+      super.multiSelectEnabled = value;
+    });
+  }
+
   late final _$chosenFilterAtom =
       Atom(name: '_FavoritesStore.chosenFilter', context: context);
 
@@ -66,6 +98,14 @@ mixin _$FavoritesStore on _FavoritesStore, Store {
     return _$addFavoriteAsyncAction.run(() => super.addFavorite(baseModel));
   }
 
+  late final _$removeFavoritesAsyncAction =
+      AsyncAction('_FavoritesStore.removeFavorites', context: context);
+
+  @override
+  Future<dynamic> removeFavorites() {
+    return _$removeFavoritesAsyncAction.run(() => super.removeFavorites());
+  }
+
   late final _$removeFavoriteAsyncAction =
       AsyncAction('_FavoritesStore.removeFavorite', context: context);
 
@@ -79,6 +119,17 @@ mixin _$FavoritesStore on _FavoritesStore, Store {
       ActionController(name: '_FavoritesStore', context: context);
 
   @override
+  void setMultiSelectEnabled(bool newMultiSelectEnabled) {
+    final _$actionInfo = _$_FavoritesStoreActionController.startAction(
+        name: '_FavoritesStore.setMultiSelectEnabled');
+    try {
+      return super.setMultiSelectEnabled(newMultiSelectEnabled);
+    } finally {
+      _$_FavoritesStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void changeFilter(int index) {
     final _$actionInfo = _$_FavoritesStoreActionController.startAction(
         name: '_FavoritesStore.changeFilter');
@@ -90,9 +141,44 @@ mixin _$FavoritesStore on _FavoritesStore, Store {
   }
 
   @override
+  void addCheckedFav({required int id}) {
+    final _$actionInfo = _$_FavoritesStoreActionController.startAction(
+        name: '_FavoritesStore.addCheckedFav');
+    try {
+      return super.addCheckedFav(id: id);
+    } finally {
+      _$_FavoritesStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void removeCheckedFav({required int id}) {
+    final _$actionInfo = _$_FavoritesStoreActionController.startAction(
+        name: '_FavoritesStore.removeCheckedFav');
+    try {
+      return super.removeCheckedFav(id: id);
+    } finally {
+      _$_FavoritesStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void resetMultiSelect() {
+    final _$actionInfo = _$_FavoritesStoreActionController.startAction(
+        name: '_FavoritesStore.resetMultiSelect');
+    try {
+      return super.resetMultiSelect();
+    } finally {
+      _$_FavoritesStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 favorites: ${favorites},
+checkedFavoritesIds: ${checkedFavoritesIds},
+multiSelectEnabled: ${multiSelectEnabled},
 chosenFilter: ${chosenFilter},
 currentFav: ${currentFav}
     ''';

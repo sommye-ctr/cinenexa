@@ -1,7 +1,9 @@
+import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:provider/provider.dart';
-import 'package:watrix/components/movie_tile.dart';
+import 'package:watrix/components/favorites_entity_tile.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/services/network/utils.dart';
@@ -10,6 +12,7 @@ import 'package:watrix/utils/screen_size.dart';
 
 import '../models/network/base_model.dart';
 import '../screens/details_page.dart';
+import 'home_bottom_nav_bar.dart';
 
 class HomeFavorites extends StatefulWidget {
   const HomeFavorites({Key? key}) : super(key: key);
@@ -21,6 +24,7 @@ class HomeFavorites extends StatefulWidget {
 class _HomeFavoritesState extends State<HomeFavorites>
     with AutomaticKeepAliveClientMixin {
   late FavoritesStore store;
+  final List<GlobalKey<FavoritesEntityTileState>> keys = [];
 
   @override
   void initState() {
@@ -31,6 +35,21 @@ class _HomeFavoritesState extends State<HomeFavorites>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+
+    return Scaffold(
+      body: _buildBody(),
+      floatingActionButton: Observer(builder: (context) => _buildFab()),
+      floatingActionButtonLocation: ExpandableFab.location,
+    );
+    return Stack(
+      children: [
+        _buildBody(),
+        _buildFab(),
+      ],
+    );
+  }
+
+  Widget _buildBody() {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -40,26 +59,47 @@ class _HomeFavoritesState extends State<HomeFavorites>
         }),
         Style.getVerticalSpacing(context: context),
         Observer(
-          builder: (_) => Expanded(
-            child: GridView.builder(
-              shrinkWrap: true,
-              physics: BouncingScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                childAspectRatio: Style.movieTileWithTitleRatio,
+          builder: (_) {
+            store.multiSelectEnabled;
+
+            return Expanded(
+              child: GridView.builder(
+                shrinkWrap: true,
+                physics: BouncingScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  childAspectRatio: Style.movieTileWithTitleRatio,
+                ),
+                itemCount: store.currentFav.length,
+                itemBuilder: (context, index) {
+                  keys.add(GlobalKey());
+
+                  return FavoritesEntityTile(
+                    key: keys[index],
+                    image:
+                        Utils.getPosterUrl(store.currentFav[index].posterPath!),
+                    width: ScreenSize.getPercentOfWidth(context, 0.3),
+                    showTitle: false,
+                    onClick: () =>
+                        itemClicked(context, store.currentFav[index]),
+                    checked: store.checkedFavoritesIds
+                        .contains(store.currentFav[index].id),
+                    showCheckIcon: store.multiSelectEnabled,
+                    onLongClick: () {
+                      store.multiSelectEnabled = true;
+                    },
+                    onCheckClick: (checked) {
+                      if (checked) {
+                        store.addCheckedFav(id: store.currentFav[index].id!);
+                        return;
+                      }
+                      store.removeCheckedFav(id: store.currentFav[index].id!);
+                    },
+                  );
+                },
               ),
-              itemCount: store.currentFav.length,
-              itemBuilder: (context, index) {
-                return MovieTile(
-                  image:
-                      Utils.getPosterUrl(store.currentFav[index].posterPath!),
-                  width: ScreenSize.getPercentOfWidth(context, 0.3),
-                  showTitle: false,
-                  onClick: () => itemClicked(context, store.currentFav[index]),
-                );
-              },
-            ),
-          ),
+            );
+          },
         ),
         Style.getVerticalSpacing(
           context: context,
@@ -127,6 +167,70 @@ class _HomeFavoritesState extends State<HomeFavorites>
         ),
       ],
     );
+  }
+
+  Widget _buildFab() {
+    Widget widget = Badge(
+      badgeContent: Text("${store.checkedFavoritesIds.length}"),
+      child: Icon(Icons.more_vert_rounded),
+    );
+    if (store.multiSelectEnabled) {
+      return Padding(
+        padding: const EdgeInsets.only(
+          bottom: HomeBottomNavBar.bottomNavHeight,
+        ),
+        child: ExpandableFab(
+          child: widget,
+          type: ExpandableFabType.fan,
+          closeButtonStyle: ExpandableFabCloseButtonStyle(
+            child: widget,
+          ),
+          children: [
+            FloatingActionButton.extended(
+              onPressed: _onRemoveClicked,
+              label: Text(Strings.remove),
+              icon: Icon(Icons.favorite_outline_outlined),
+            ),
+            FloatingActionButton.extended(
+              onPressed: _onCancelClicked,
+              label: Text(Strings.cancel),
+              icon: Icon(Icons.close),
+            )
+          ],
+        ),
+      );
+    }
+    return Container();
+  }
+
+  void _onCancelClicked() {
+    store.resetMultiSelect();
+  }
+
+  void _onRemoveClicked() {
+    if (store.checkedFavoritesIds.isNotEmpty) {
+      Style.showLoadingDialog(context: context);
+
+      List<int> indexes = [];
+      for (var id in store.checkedFavoritesIds) {
+        indexes.add(store.currentFav.indexWhere((element) => element.id == id));
+      }
+      for (var element in indexes) {
+        keys[element].currentState?.changeChecked();
+      }
+
+      store.removeFavorites().whenComplete(() {
+        store.resetMultiSelect();
+        Navigator.pop(context);
+      });
+      return;
+    }
+    final snack = SnackBar(
+      content: Text(Strings.noItemsSelected),
+      behavior: SnackBarBehavior.floating,
+      shape: StadiumBorder(),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snack);
   }
 
   @override

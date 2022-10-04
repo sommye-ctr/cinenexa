@@ -210,7 +210,7 @@ class TraktRepository {
   }
 
 //this adds to the "Collected" in trakt
-  Future addFavorites(
+  Future addFavorite(
       {required int tmdbId, required EntityType entityType}) async {
     Map body;
     if (entityType == EntityType.movie) {
@@ -236,6 +236,41 @@ class TraktRepository {
     }
     await post("https://api.trakt.tv/sync/collection",
         data: Utils.encodeJson(body));
+  }
+
+  Future removeFavorites({
+    required List<int>? movieTmdbIds,
+    required List<int>? showTmdbIds,
+  }) async {
+    Map body;
+    List<Map> movieBodies = [];
+    List<Map> showBodies = [];
+
+    if (movieTmdbIds != null) {
+      for (var tmdbId in movieTmdbIds) {
+        movieBodies.add({
+          "ids": {
+            "tmdb": tmdbId,
+          }
+        });
+      }
+    }
+    if (showTmdbIds != null) {
+      for (var tmdbId in showTmdbIds) {
+        showBodies.add({
+          "ids": {
+            "tmdb": tmdbId,
+          }
+        });
+      }
+    }
+
+    body = {"movies": movieBodies, "shows": showBodies};
+
+    await post(
+      "https://api.trakt.tv/sync/collection/remove",
+      data: Utils.encodeJson(body),
+    );
   }
 
   Future removeFavorite(
