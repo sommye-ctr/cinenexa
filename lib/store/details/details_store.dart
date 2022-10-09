@@ -251,7 +251,7 @@ abstract class _DetailsStore with Store {
   }
 
   @action
-  Future _fetchProgress() async {
+  Future fetchProgress() async {
     progress = await database.getProgress(id: baseModel.id!);
   }
 
@@ -263,7 +263,7 @@ abstract class _DetailsStore with Store {
       credits.addAll(map['credits']);
       recommended.addAll(map['recommended']);
       video = map['video'];
-      _fetchProgress();
+      fetchProgress();
     } else if (baseModel.type == BaseModelType.tv) {
       Map map = await Repository.getTvDetailsWithExtras(id: baseModel.id!);
       tv = map['tv'];
@@ -271,7 +271,7 @@ abstract class _DetailsStore with Store {
       recommended.addAll(map['recommended']);
       video = map['video'];
       chosenSeason = 0;
-      _fetchProgress();
+      fetchProgress();
       _fetchEpisodes();
       fetchWatchHistory();
     }

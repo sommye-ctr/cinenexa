@@ -6,13 +6,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
-import 'package:lottie/lottie.dart';
 import 'package:watrix/models/network/base_model.dart';
+import 'package:watrix/models/network/movie.dart';
+import 'package:watrix/models/network/tv.dart';
 import 'package:watrix/services/constants.dart';
+import 'package:watrix/services/local/scrobble_manager.dart';
 import 'package:watrix/services/network/utils.dart';
 import 'package:watrix/widgets/rounded_image.dart';
 
-import '../resources/asset.dart';
 import '../resources/strings.dart';
 import '../resources/style.dart';
 import '../utils/screen_size.dart';
@@ -21,10 +22,20 @@ import '../widgets/custom_checkbox_list.dart';
 class VlcControls extends StatefulWidget {
   final VlcPlayerController controller;
   final BaseModel? baseModel;
+  final Movie? movie;
+  final Tv? show;
+  final int? season, episode;
+  final double? progress;
+
   const VlcControls({
     Key? key,
     required this.controller,
     this.baseModel,
+    this.movie,
+    this.show,
+    this.episode,
+    this.season,
+    this.progress,
   }) : super(key: key);
 
   @override
@@ -49,9 +60,22 @@ class _VlcControlsState extends State<VlcControls> {
   int? selectedSubtitle, selectedTrack;
   Map<int, String>? subtitles, tracks;
 
+  late ScrobbleManager scrobbleManager;
+  int duration = 0;
+  bool initialCalled = false;
+
   @override
   void initState() {
     super.initState();
+
+    scrobbleManager = ScrobbleManager(
+      playerController: widget.controller,
+      item: widget.baseModel!,
+      episode: widget.episode,
+      movie: widget.movie,
+      season: widget.season,
+      show: widget.show,
+    );
 
     widget.controller.addOnInitListener(() async {
       subtitles = (await widget.controller.getSpuTracks());
@@ -60,19 +84,36 @@ class _VlcControlsState extends State<VlcControls> {
       tracks = await widget.controller.getAudioTracks();
       selectedTrack = await widget.controller.getAudioTrack();
     });
+
     widget.controller.addListener(() async {
       if (widget.controller.value.playingState == PlayingState.buffering) {
         buffering = true;
       } else {
         buffering = false;
       }
+
       if (widget.controller.value.isInitialized) {
+        duration = widget.controller.value.duration.inMilliseconds;
+      }
+
+      if (widget.controller.value.playingState == PlayingState.playing) {
+        if (!initialCalled) {
+          if (widget.progress != null) {
+            int seconds = (duration * widget.progress!) ~/ 100;
+
+            await widget.controller.pause();
+            await widget.controller.play();
+
+            await widget.controller.seekTo(Duration(milliseconds: seconds));
+          }
+          initialCalled = true;
+        }
+
         setState(() {
           position = widget.controller.value.position;
           buffered = Duration(
-              seconds: (widget.controller.value.bufferPercent *
-                      widget.controller.value.duration.inSeconds)
-                  .toInt());
+              seconds:
+                  (widget.controller.value.bufferPercent * duration) ~/ 100);
         });
       }
     });
@@ -144,10 +185,14 @@ class _VlcControlsState extends State<VlcControls> {
   }
 
   Future<bool> _onBack() async {
+    scrobbleManager.paused();
+    await Future.wait([
+      widget.controller.stopRendererScanning(),
+      widget.controller.dispose()
+    ]);
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
-    await widget.controller.stopRendererScanning();
-    await widget.controller.dispose();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     return true;
   }
 
@@ -205,7 +250,7 @@ class _VlcControlsState extends State<VlcControls> {
       ),
       child: ProgressBar(
         progress: position,
-        total: widget.controller.value.duration,
+        total: Duration(milliseconds: duration),
         barHeight: 3,
         timeLabelLocation: TimeLabelLocation.sides,
         buffered: buffered,
@@ -536,7 +581,7 @@ class _VlcControlsState extends State<VlcControls> {
                 : Icons.replay_10_rounded,
             onTap: () {
               Duration rewind = Duration(
-                seconds: position.inSeconds - 10,
+                seconds: position.inSeconds - rewindSeek,
               );
 
               widget.controller.seekTo(rewind);
@@ -560,10 +605,10 @@ class _VlcControlsState extends State<VlcControls> {
                 : Icons.forward_10_rounded,
             onTap: () {
               Duration forward = Duration(
-                seconds: position.inSeconds + 10,
+                seconds: position.inSeconds + forwardSeek,
               );
 
-              if (forward > widget.controller.value.duration) {
+              if (forward > Duration(milliseconds: duration)) {
                 widget.controller.seekTo(Duration(seconds: 0));
               } else {
                 widget.controller.seekTo(forward);

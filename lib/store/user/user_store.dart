@@ -38,6 +38,9 @@ abstract class _UserStoreBase with Store {
 
   _UserStoreBase({FavoritesStore? favoritesStore}) {
     init(favoritesStore: favoritesStore);
+    localDb.watchProgress().listen((event) {
+      fetchUserProgress(fromApi: false);
+    });
     //localDb.clear();
   }
 
@@ -93,17 +96,18 @@ abstract class _UserStoreBase with Store {
   }
 
   @action
-  Future fetchUserProgress() async {
+  Future fetchUserProgress({bool fromApi = true}) async {
     progress
       ..clear()
       ..addAll(await localDb.getAllProgress());
-    localDb.updateProgress(
-        list: await repository.getUserProgress(),
-        onChange: (list) {
-          progress
-            ..clear()
-            ..addAll(list);
-        });
+    if (fromApi)
+      localDb.updateProgress(
+          list: await repository.getUserProgress(),
+          onChange: (list) {
+            progress
+              ..clear()
+              ..addAll(list);
+          });
   }
 
   @action
@@ -112,8 +116,24 @@ abstract class _UserStoreBase with Store {
     await Future.wait([
       localDb.removeProgress(
           tmdbId: traktProgress.movie?.id ?? traktProgress.show!.id!),
-      repository.removeProgress(progressId: traktProgress.playbackId!),
+      _removeProgressFromApi(traktProgress),
     ]);
+  }
+
+  Future _removeProgressFromApi(TraktProgress traktProgress) async {
+    if (traktProgress.playbackId != null) {
+      return repository.removeProgress(progressId: traktProgress.playbackId!);
+    }
+
+    Iterable<TraktProgress> progresses =
+        (await repository.getUserProgress()).where((element) {
+      int id = element.movie?.id ?? element.show!.id!;
+      return id == (traktProgress.movie?.id ?? traktProgress.show!.id!);
+    });
+    if (progresses.isNotEmpty) {
+      return repository.removeProgress(
+          progressId: progresses.first.playbackId!);
+    }
   }
 
   @action

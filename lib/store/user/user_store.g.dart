@@ -134,8 +134,18 @@ mixin _$UserStore on _UserStoreBase, Store {
       AsyncAction('_UserStoreBase.fetchUserProgress', context: context);
 
   @override
-  Future<dynamic> fetchUserProgress() {
-    return _$fetchUserProgressAsyncAction.run(() => super.fetchUserProgress());
+  Future<dynamic> fetchUserProgress({bool fromApi = true}) {
+    return _$fetchUserProgressAsyncAction
+        .run(() => super.fetchUserProgress(fromApi: fromApi));
+  }
+
+  late final _$removeProgressAsyncAction =
+      AsyncAction('_UserStoreBase.removeProgress', context: context);
+
+  @override
+  Future<dynamic> removeProgress(TraktProgress traktProgress) {
+    return _$removeProgressAsyncAction
+        .run(() => super.removeProgress(traktProgress));
   }
 
   late final _$fetchUserWatchedShowsAsyncAction =

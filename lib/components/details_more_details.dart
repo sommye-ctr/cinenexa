@@ -100,15 +100,14 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
           // return Text("Streams will show up here...");
           return ElevatedButton(
             onPressed: () {
-              Navigator.pushNamed(
-                context,
-                VideoPlayerPage.routeName,
-                arguments: {
-                  "url":
-                      "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
-                  "model": widget.detailsStore.baseModel,
-                },
-              );
+              var ep = widget.detailsStore.chosenEpisode == null
+                  ? null
+                  : widget
+                      .detailsStore
+                      .episodes[widget.detailsStore.chosenEpisode!]
+                      .episodeNumber;
+
+              navigateToVideoPlayer(ep);
             },
             child: Text("Play"),
           );
@@ -136,6 +135,24 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
         );
       },
     );
+  }
+
+  void navigateToVideoPlayer(ep) async {
+    await Navigator.pushNamed(
+      context,
+      VideoPlayerPage.routeName,
+      arguments: {
+        "url":
+            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
+        "model": widget.detailsStore.baseModel,
+        "movie": widget.detailsStore.movie,
+        "tv": widget.detailsStore.tv,
+        "episode": ep,
+        "season": widget.detailsStore.chosenSeason,
+        "progress": widget.detailsStore.progress?.progress,
+      },
+    );
+    await widget.detailsStore.fetchProgress();
   }
 
   Widget _buildReviews() {

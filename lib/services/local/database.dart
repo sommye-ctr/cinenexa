@@ -1,3 +1,4 @@
+import 'package:flutter/scheduler.dart';
 import 'package:isar/isar.dart';
 import 'package:watrix/models/local/favorites.dart';
 import 'package:watrix/models/local/last_activities.dart';
@@ -145,10 +146,19 @@ class Database {
     }
 
     await isar.writeTxn(() async {
-//      await isar.progress.clear();
       await isar.progress.putAll(items);
     }).whenComplete(() async {
       onChange(await getAllProgress());
+    });
+  }
+
+  Stream watchProgress() {
+    return isar.progress.watchLazy(fireImmediately: true);
+  }
+
+  Future addProgress({required Progress progress}) async {
+    await isar.writeTxn(() async {
+      isar.progress.put(progress);
     });
   }
 

@@ -106,6 +106,11 @@ class _MyAppState extends State<MyApp> {
                 builder: (context) => VlcPlayerPage(
                   url: value['url'],
                   baseModel: value['model'],
+                  episode: value['episode'],
+                  movie: value['movie'],
+                  season: value['season'],
+                  show: value['tv'],
+                  progress: value['progress'],
                 ),
               );
             default:

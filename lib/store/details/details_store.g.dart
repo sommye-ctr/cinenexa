@@ -301,8 +301,8 @@ mixin _$DetailsStore on _DetailsStore, Store {
       AsyncAction('_DetailsStore._fetchProgress', context: context);
 
   @override
-  Future<dynamic> _fetchProgress() {
-    return _$_fetchProgressAsyncAction.run(() => super._fetchProgress());
+  Future<dynamic> fetchProgress() {
+    return _$_fetchProgressAsyncAction.run(() => super.fetchProgress());
   }
 
   late final _$_DetailsStoreActionController =

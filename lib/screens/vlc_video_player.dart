@@ -4,15 +4,27 @@ import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:watrix/components/vlc_controls.dart';
 import 'package:watrix/models/network/base_model.dart';
 
+import '../models/network/movie.dart';
+import '../models/network/tv.dart';
+
 class VlcPlayerPage extends StatefulWidget {
   static const routeName = "/videoPlayer";
 
   final String url;
   final BaseModel? baseModel;
+  final Movie? movie;
+  final Tv? show;
+  final int? season, episode;
+  final double? progress;
   const VlcPlayerPage({
     Key? key,
     required this.url,
     this.baseModel,
+    this.movie,
+    this.show,
+    this.episode,
+    this.season,
+    this.progress,
   }) : super(key: key);
 
   @override
@@ -62,6 +74,11 @@ class _VlcPlayerPageState extends State<VlcPlayerPage> {
             VlcControls(
               controller: controller,
               baseModel: widget.baseModel,
+              episode: widget.episode,
+              season: widget.season,
+              movie: widget.movie,
+              show: widget.show,
+              progress: widget.progress,
             ),
           ],
         ),

@@ -140,7 +140,12 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
           Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
           _buildButtons(context),
           Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
-          _buildProgressBar(context),
+          Observer(
+            builder: (_) {
+              detailsStore.progress;
+              return _buildProgressBar(context);
+            },
+          )
         ],
       ),
       shrinkOffset,

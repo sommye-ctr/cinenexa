@@ -312,4 +312,93 @@ class TraktRepository {
     await post("https://api.trakt.tv/sync/collection/remove",
         data: Utils.encodeJson(body));
   }
+
+  Future<int> scrobbleStart({
+    required BaseModelType type,
+    required int tmdbId,
+    required double progress,
+  }) async {
+    Map body;
+    if (type == BaseModelType.movie) {
+      body = {
+        "movie": {
+          "ids": {
+            "tmdb": tmdbId,
+          }
+        },
+        "progress": progress,
+      };
+    } else {
+      body = {
+        "episode": {
+          "ids": {
+            "tmdb": tmdbId,
+          }
+        },
+        "progress": progress,
+      };
+    }
+    Response resp = await post("https://api.trakt.tv/scrobble/start",
+        data: Utils.encodeJson(body));
+    return Utils.parseJson(resp.body)['id'];
+  }
+
+  Future<int> scrobblePause({
+    required BaseModelType type,
+    required int tmdbId,
+    required double progress,
+  }) async {
+    Map body;
+    if (type == BaseModelType.movie) {
+      body = {
+        "movie": {
+          "ids": {
+            "tmdb": tmdbId,
+          }
+        },
+        "progress": progress,
+      };
+    } else {
+      body = {
+        "episode": {
+          "ids": {
+            "tmdb": tmdbId,
+          }
+        },
+        "progress": progress,
+      };
+    }
+    Response resp = await post("https://api.trakt.tv/scrobble/pause",
+        data: Utils.encodeJson(body));
+    return Utils.parseJson(resp.body)['id'];
+  }
+
+  Future scrobbleStop({
+    required BaseModelType type,
+    required int tmdbId,
+    required double progress,
+  }) async {
+    Map body;
+    if (type == BaseModelType.movie) {
+      body = {
+        "movie": {
+          "ids": {
+            "tmdb": tmdbId,
+          }
+        },
+        "progress": progress,
+      };
+    } else {
+      body = {
+        "episode": {
+          "ids": {
+            "tmdb": tmdbId,
+          }
+        },
+        "progress": progress,
+      };
+    }
+    await post("https://api.trakt.tv/scrobble/stop",
+        data: Utils.encodeJson(body));
+  }
 }
