@@ -21,6 +21,7 @@ import '../widgets/custom_checkbox_list.dart';
 
 class VlcControls extends StatefulWidget {
   final VlcPlayerController controller;
+  final int? id;
   final BaseModel? baseModel;
   final Movie? movie;
   final Tv? show;
@@ -31,6 +32,7 @@ class VlcControls extends StatefulWidget {
     Key? key,
     required this.controller,
     this.baseModel,
+    this.id,
     this.movie,
     this.show,
     this.episode,
@@ -75,6 +77,7 @@ class _VlcControlsState extends State<VlcControls> {
       movie: widget.movie,
       season: widget.season,
       show: widget.show,
+      id: widget.id,
     );
 
     widget.controller.addOnInitListener(() async {

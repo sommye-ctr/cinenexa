@@ -12,7 +12,7 @@ class ScrobbleManager {
   final BaseModel item;
   final Movie? movie;
   final Tv? show;
-  final int? season, episode;
+  final int? season, episode, id;
 
   final TraktRepository traktRepository =
       TraktRepository(client: TraktOAuthClient());
@@ -25,6 +25,7 @@ class ScrobbleManager {
     required this.playerController,
     required this.item,
     this.show,
+    this.id,
     this.movie,
     this.season,
     this.episode,
@@ -56,7 +57,7 @@ class ScrobbleManager {
     traktRepository
         .scrobbleStart(
       type: item.type!,
-      tmdbId: item.id!,
+      tmdbId: id!,
       progress: _getProgress(),
     )
         .then(
@@ -77,7 +78,7 @@ class ScrobbleManager {
 
     traktRepository.scrobblePause(
       type: item.type!,
-      tmdbId: item.id!,
+      tmdbId: id!,
       progress: _getProgress(),
     );
   }
@@ -86,10 +87,10 @@ class ScrobbleManager {
     traktRepository
         .scrobbleStop(
           type: item.type!,
-          tmdbId: item.id!,
+          tmdbId: id!,
           progress: _getProgress(),
         )
-        .whenComplete(() => localDb.removeProgress(tmdbId: item.id!));
+        .whenComplete(() => localDb.removeProgress(tmdbId: id!));
   }
 
   Progress _getProgressObject() {

@@ -7,7 +7,9 @@ import 'package:lottie/lottie.dart';
 import 'package:mobx/mobx.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:watrix/components/details_review_tile.dart';
+import 'package:watrix/models/local/progress.dart';
 import 'package:watrix/models/network/trakt/trakt_show_history_season_ep.dart';
+import 'package:watrix/models/network/tv_episode.dart';
 import 'package:watrix/screens/video_player_page.dart';
 import 'package:watrix/store/details/details_store.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -107,7 +109,11 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
                       .episodes[widget.detailsStore.chosenEpisode!]
                       .episodeNumber;
 
-              navigateToVideoPlayer(ep);
+              navigateToVideoPlayer(
+                  ep,
+                  null,
+                  widget.detailsStore.progress?.progress,
+                  widget.detailsStore.baseModel.id!);
             },
             child: Text("Play"),
           );
@@ -137,19 +143,20 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
     );
   }
 
-  void navigateToVideoPlayer(ep) async {
+  void navigateToVideoPlayer(ep, int? season, double? progress, int id) async {
     await Navigator.pushNamed(
       context,
       VideoPlayerPage.routeName,
       arguments: {
         "url":
             "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
-        "model": widget.detailsStore.baseModel,
         "movie": widget.detailsStore.movie,
         "tv": widget.detailsStore.tv,
         "episode": ep,
-        "season": widget.detailsStore.chosenSeason,
-        "progress": widget.detailsStore.progress?.progress,
+        "season": season,
+        "progress": progress,
+        "id": id,
+        "model": widget.detailsStore.baseModel,
       },
     );
     await widget.detailsStore.fetchProgress();
@@ -302,7 +309,36 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
             ),
           ],
         ),
-        Center(child: Text("Streams will show up here...")),
+        Center(
+          child: ElevatedButton(
+            onPressed: () {
+              var ep = widget.detailsStore
+                  .episodes[widget.detailsStore.chosenEpisode!].episodeNumber;
+
+              double? progress;
+              TvEpisode episode = widget
+                  .detailsStore.episodes[widget.detailsStore.chosenEpisode!];
+
+              if (widget.detailsStore.progress?.episodeNo ==
+                      episode.episodeNumber &&
+                  widget.detailsStore.progress?.seasonNo ==
+                      widget
+                          .detailsStore
+                          .tv!
+                          .seasons![widget.detailsStore.chosenSeason!]
+                          .seasonNumber) {
+                progress = widget.detailsStore.progress!.progress!;
+              }
+              navigateToVideoPlayer(
+                  ep,
+                  widget.detailsStore.tv!
+                      .seasons![widget.detailsStore.chosenSeason!].seasonNumber,
+                  progress,
+                  episode.id);
+            },
+            child: Text("Play"),
+          ),
+        ),
       ],
     );
   }

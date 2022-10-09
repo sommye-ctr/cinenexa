@@ -111,6 +111,7 @@ class _MyAppState extends State<MyApp> {
                   season: value['season'],
                   show: value['tv'],
                   progress: value['progress'],
+                  id: value['id'],
                 ),
               );
             default:

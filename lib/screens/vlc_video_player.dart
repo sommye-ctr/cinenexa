@@ -11,6 +11,7 @@ class VlcPlayerPage extends StatefulWidget {
   static const routeName = "/videoPlayer";
 
   final String url;
+  final int? id;
   final BaseModel? baseModel;
   final Movie? movie;
   final Tv? show;
@@ -20,6 +21,7 @@ class VlcPlayerPage extends StatefulWidget {
     Key? key,
     required this.url,
     this.baseModel,
+    this.id,
     this.movie,
     this.show,
     this.episode,
@@ -79,6 +81,7 @@ class _VlcPlayerPageState extends State<VlcPlayerPage> {
               movie: widget.movie,
               show: widget.show,
               progress: widget.progress,
+              id: widget.id,
             ),
           ],
         ),
