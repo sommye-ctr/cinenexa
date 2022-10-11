@@ -5,6 +5,7 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:watrix/models/network/base_model.dart';
 import 'package:watrix/models/network/movie.dart';
@@ -12,6 +13,7 @@ import 'package:watrix/models/network/tv.dart';
 import 'package:watrix/services/constants.dart';
 import 'package:watrix/services/local/scrobble_manager.dart';
 import 'package:watrix/services/network/utils.dart';
+import 'package:watrix/store/player/player_store.dart';
 import 'package:watrix/widgets/rounded_image.dart';
 
 import '../resources/strings.dart';
@@ -51,18 +53,11 @@ class _VlcControlsState extends State<VlcControls> {
   int forwardSeek = 30;
   int rewindSeek = 30;
 
-  Duration position = Duration();
-  Duration buffered = Duration();
-  bool buffering = true;
-  bool locked = false;
-
   Timer? hideTimer;
-  bool showControls = true;
-  int speedIndex = 0, fitIndex = 0;
-  int? selectedSubtitle, selectedTrack;
-  Map<int, String>? subtitles, tracks;
 
   late ScrobbleManager scrobbleManager;
+  late PlayerStore playerStore;
+
   int duration = 0;
   bool initialCalled = false;
 
@@ -79,20 +74,13 @@ class _VlcControlsState extends State<VlcControls> {
       show: widget.show,
       id: widget.id,
     );
-
-    widget.controller.addOnInitListener(() async {
-      subtitles = (await widget.controller.getSpuTracks());
-      selectedSubtitle = (await widget.controller.getSpuTrack());
-
-      tracks = await widget.controller.getAudioTracks();
-      selectedTrack = await widget.controller.getAudioTrack();
-    });
+    playerStore = PlayerStore();
 
     widget.controller.addListener(() async {
       if (widget.controller.value.playingState == PlayingState.buffering) {
-        buffering = true;
+        playerStore.setBuffering(true);
       } else {
-        buffering = false;
+        playerStore.setBuffering(false);
       }
 
       if (widget.controller.value.isInitialized) {
@@ -106,18 +94,25 @@ class _VlcControlsState extends State<VlcControls> {
 
             await widget.controller.pause();
             await widget.controller.play();
-
             await widget.controller.seekTo(Duration(milliseconds: seconds));
           }
+
+          playerStore.setTracks(await widget.controller.getAudioTracks());
+          playerStore.setSelectedTrack(await widget.controller.getAudioTrack());
+
+          playerStore.setSubtitles(await widget.controller.getSpuTracks());
+          playerStore
+              .setSelectedSubtitle(await widget.controller.getSpuTrack());
+
           initialCalled = true;
         }
 
-        setState(() {
-          position = widget.controller.value.position;
-          buffered = Duration(
+        playerStore.setPosition(widget.controller.value.position);
+        playerStore.setBuffered(
+          Duration(
               seconds:
-                  (widget.controller.value.bufferPercent * duration) ~/ 100);
-        });
+                  (widget.controller.value.bufferPercent * duration) ~/ 100),
+        );
       }
     });
   }
@@ -127,64 +122,61 @@ class _VlcControlsState extends State<VlcControls> {
     return WillPopScope(
         onWillPop: _onBack,
         child: GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onTap: () {
-            showControls ? _hideControls() : _cancelAndRestartTimer();
-          },
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              if (buffering) {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-              if (showControls) {
-                if (locked) {
-                  return Align(
-                    alignment: Alignment.bottomCenter,
-                    child: _buildControlButton(
-                      icon: Icons.lock_outline_rounded,
-                      onTap: () {
-                        setState(() {
-                          locked = false;
-                        });
-                      },
-                      size: 25,
-                      overlay: true,
-                    ),
+            behavior: HitTestBehavior.translucent,
+            onTap: () {
+              playerStore.showControls
+                  ? _hideControls()
+                  : _cancelAndRestartTimer();
+            },
+            child: Observer(
+              builder: (_) {
+                if (playerStore.buffering) {
+                  return Center(
+                    child: CircularProgressIndicator(),
                   );
                 }
-                return Stack(
-                  children: [
-                    Container(
-                      height: double.infinity,
-                      width: double.infinity,
-                      color: Colors.black54,
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildTopPanel(),
-                        _buildMainControls(),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildProgressBar(),
-                            _buildBottomControls(),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                );
-              }
-              return Container();
-            },
-          ),
-        ));
+                if (playerStore.showControls) {
+                  if (playerStore.locked) {
+                    return Align(
+                      alignment: Alignment.bottomCenter,
+                      child: _buildControlButton(
+                        icon: Icons.lock_outline_rounded,
+                        onTap: () => playerStore.setLocked(false),
+                        size: 25,
+                        overlay: true,
+                      ),
+                    );
+                  }
+                  return Stack(
+                    children: [
+                      Container(
+                        height: double.infinity,
+                        width: double.infinity,
+                        color: Colors.black54,
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildTopPanel(),
+                          _buildMainControls(),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildProgressBar(),
+                              _buildBottomControls(),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                }
+                return Container();
+              },
+            )));
   }
 
   Future<bool> _onBack() async {
@@ -207,16 +199,12 @@ class _VlcControlsState extends State<VlcControls> {
 
   void _cancelAndRestartTimer() {
     hideTimer?.cancel();
-    setState(() {
-      showControls = true;
-    });
+    playerStore.setShowControls(true);
     hideTimer = Timer(hideDuration, () => _hideControls());
   }
 
   void _hideControls() {
-    setState(() {
-      showControls = false;
-    });
+    playerStore.setShowControls(false);
   }
 
   Widget _buildTopPanel() {
@@ -251,18 +239,20 @@ class _VlcControlsState extends State<VlcControls> {
         horizontal: 16,
         vertical: ScreenSize.getPercentOfHeight(context, 0.05),
       ),
-      child: ProgressBar(
-        progress: position,
-        total: Duration(milliseconds: duration),
-        barHeight: 3,
-        timeLabelLocation: TimeLabelLocation.sides,
-        buffered: buffered,
-        onSeek: (value) {
-          widget.controller.seekTo(value);
-        },
-        baseBarColor: Colors.white24,
-        bufferedBarColor: Colors.grey,
-      ),
+      child: Observer(builder: (_) {
+        return ProgressBar(
+          progress: playerStore.position,
+          total: Duration(milliseconds: duration),
+          barHeight: 3,
+          timeLabelLocation: TimeLabelLocation.sides,
+          buffered: playerStore.buffered,
+          onSeek: (value) {
+            widget.controller.seekTo(value);
+          },
+          baseBarColor: Colors.white24,
+          bufferedBarColor: Colors.grey,
+        );
+      }),
     );
   }
 
@@ -292,11 +282,7 @@ class _VlcControlsState extends State<VlcControls> {
             children: [
               _buildControlButton(
                 icon: Icons.lock_open_rounded,
-                onTap: () {
-                  setState(() {
-                    locked = !locked;
-                  });
-                },
+                onTap: () => playerStore.setLocked(!playerStore.locked),
                 size: 25,
                 overlay: true,
               ),
@@ -402,76 +388,81 @@ class _VlcControlsState extends State<VlcControls> {
   }
 
   Widget _buildTracksPopup() {
-    int? selected;
-    if (selectedTrack != null) {
-      var key = tracks!.keys.where((element) => element == selectedTrack!);
+    int selected = 0;
+    if (playerStore.selectedTrack != null) {
+      var key = playerStore.tracks!.keys
+          .where((element) => element == playerStore.selectedTrack!);
       if (key.isNotEmpty) {
-        selected = tracks!.keys.toList().indexOf(key.first);
+        selected = playerStore.tracks!.keys.toList().indexOf(key.first) + 1;
       }
     }
 
+    List<String> allTracks = [
+      Strings.none,
+      ...playerStore.tracks!.values.toList()
+    ];
+
     return CustomCheckBoxList(
-      children: tracks!.values.toList(),
-      selectedItems: selected == null ? null : [selected],
+      children: allTracks,
+      selectedItems: [selected],
       type: CheckBoxListType.grid,
       singleSelect: true,
+      alwaysEnabled: true,
       delegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 1,
         mainAxisExtent: 35,
       ),
       onSelectionAdded: (values) {
-        widget.controller.setAudioTrack(tracks!.keys
-            .where((element) => tracks![element] == values.first)
-            .first);
-      },
-      onSelectionRemoved: (values) {
-        int key;
-        if (values.isEmpty) {
-          key = -1;
-        } else {
-          key = tracks!.keys
-              .where((element) => tracks![element] == values.first)
-              .first;
+        if (values.first == Strings.none) {
+          playerStore.setSelectedTrack(null);
+          widget.controller.setAudioTrack(-1);
+          return;
         }
-        widget.controller.setAudioTrack(key);
+        int selectedT = playerStore.tracks!.keys
+            .where((element) => playerStore.tracks![element] == values.first)
+            .first;
+        playerStore.setSelectedTrack(selectedT);
+        widget.controller.setAudioTrack(selectedT);
       },
     );
   }
 
   Widget _buildSubtitlePopup() {
-    int? selected;
-    if (selectedSubtitle != null) {
-      var key =
-          subtitles!.keys.where((element) => element == selectedSubtitle!);
+    int selected = 0;
+    if (playerStore.selectedSubtitle != null) {
+      var key = playerStore.subtitles!.keys
+          .where((element) => element == playerStore.selectedSubtitle!);
       if (key.isNotEmpty) {
-        selected = subtitles!.keys.toList().indexOf(key.first);
+        selected = playerStore.subtitles!.keys.toList().indexOf(key.first) + 1;
       }
     }
 
+    List<String> allSubtitles = [
+      Strings.none,
+      ...playerStore.subtitles!.values.toList()
+    ];
+
     return CustomCheckBoxList(
-      children: subtitles!.values.toList(),
-      selectedItems: selected == null ? null : [selected],
+      children: allSubtitles,
+      selectedItems: [selected],
       type: CheckBoxListType.grid,
+      alwaysEnabled: true,
       singleSelect: true,
       delegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 1,
         mainAxisExtent: 35,
       ),
       onSelectionAdded: (values) {
-        widget.controller.setSpuTrack(subtitles!.keys
-            .where((element) => subtitles![element] == values.first)
-            .first);
-      },
-      onSelectionRemoved: (values) {
-        int key;
-        if (values.isEmpty) {
-          key = -1;
-        } else {
-          key = subtitles!.keys
-              .where((element) => subtitles![element] == values.first)
-              .first;
+        if (values.first == Strings.none) {
+          playerStore.setSelectedSubtitle(null);
+          widget.controller.setSpuTrack(-1);
+          return;
         }
-        widget.controller.setSpuTrack(key);
+        int selectedS = playerStore.subtitles!.keys
+            .where((element) => playerStore.subtitles![element] == values.first)
+            .first;
+        playerStore.setSelectedSubtitle(selectedS);
+        widget.controller.setSpuTrack(selectedS);
       },
     );
   }
@@ -494,7 +485,7 @@ class _VlcControlsState extends State<VlcControls> {
                 crossAxisCount: 8,
                 mainAxisExtent: 35,
               ),
-              selectedItems: [speedIndex],
+              selectedItems: [playerStore.speedIndex],
               alwaysEnabled: true,
               onSelectionAdded: (values) => _speedChanged(values.first),
             ),
@@ -514,7 +505,7 @@ class _VlcControlsState extends State<VlcControls> {
                 mainAxisExtent: 35,
               ),
               singleSelect: true,
-              selectedItems: [fitIndex],
+              selectedItems: [playerStore.fitIndex],
               alwaysEnabled: true,
               onSelectionAdded: (values) => _fitChanged(values.first),
             ),
@@ -528,13 +519,13 @@ class _VlcControlsState extends State<VlcControls> {
     BoxFit boxFit = BoxFit.contain;
     if (value == Strings.fitTypes[0]) {
       boxFit = BoxFit.contain;
-      fitIndex = 0;
+      playerStore.setFitIndex(0);
     } else if (value == Strings.fitTypes[1]) {
       boxFit = BoxFit.fill;
-      fitIndex = 1;
+      playerStore.setFitIndex(1);
     } else if (value == Strings.fitTypes[2]) {
       boxFit = BoxFit.cover;
-      fitIndex = 2;
+      playerStore.setFitIndex(2);
     }
     /*  widget.controller.pause();
     widget.controller.setOverriddenFit(boxFit);
@@ -545,28 +536,28 @@ class _VlcControlsState extends State<VlcControls> {
     double speed = 1;
     if (value == Strings.playbackSpeeds[1]) {
       speed = 0.25;
-      speedIndex = 1;
+      playerStore.setSpeedIndex(1);
     } else if (value == Strings.playbackSpeeds[2]) {
       speed = 0.5;
-      speedIndex = 2;
+      playerStore.setSpeedIndex(2);
     } else if (value == Strings.playbackSpeeds[3]) {
       speed = 0.75;
-      speedIndex = 3;
+      playerStore.setSpeedIndex(3);
     } else if (value == Strings.playbackSpeeds[4]) {
       speed = 1.25;
-      speedIndex = 4;
+      playerStore.setSpeedIndex(4);
     } else if (value == Strings.playbackSpeeds[5]) {
       speed = 1.5;
-      speedIndex = 5;
+      playerStore.setSpeedIndex(5);
     } else if (value == Strings.playbackSpeeds[6]) {
       speed = 2;
-      speedIndex = 6;
+      playerStore.setSpeedIndex(6);
     } else if (value == Strings.playbackSpeeds[0]) {
       speed = 1;
-      speedIndex = 0;
+      playerStore.setSpeedIndex(0);
     } else if (value == Strings.playbackSpeeds[7]) {
       speed = 1.75;
-      speedIndex = 7;
+      playerStore.setSpeedIndex(7);
     }
     widget.controller.setPlaybackSpeed(speed);
   }
@@ -584,7 +575,7 @@ class _VlcControlsState extends State<VlcControls> {
                 : Icons.replay_10_rounded,
             onTap: () {
               Duration rewind = Duration(
-                seconds: position.inSeconds - rewindSeek,
+                seconds: playerStore.position.inSeconds - rewindSeek,
               );
 
               widget.controller.seekTo(rewind);
@@ -608,7 +599,7 @@ class _VlcControlsState extends State<VlcControls> {
                 : Icons.forward_10_rounded,
             onTap: () {
               Duration forward = Duration(
-                seconds: position.inSeconds + forwardSeek,
+                seconds: playerStore.position.inSeconds + forwardSeek,
               );
 
               if (forward > Duration(milliseconds: duration)) {

@@ -94,6 +94,7 @@ class Strings {
   //video player
   static const String playBackSpeed = "Playback Speed";
   static const String settings = "Settings";
+  static const String none = "None";
   static const playbackSpeeds = [
     "1x",
     "0.25x",

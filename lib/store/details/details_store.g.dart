@@ -297,12 +297,12 @@ mixin _$DetailsStore on _DetailsStore, Store {
     return _$fetchWatchHistoryAsyncAction.run(() => super.fetchWatchHistory());
   }
 
-  late final _$_fetchProgressAsyncAction =
-      AsyncAction('_DetailsStore._fetchProgress', context: context);
+  late final _$fetchProgressAsyncAction =
+      AsyncAction('_DetailsStore.fetchProgress', context: context);
 
   @override
   Future<dynamic> fetchProgress() {
-    return _$_fetchProgressAsyncAction.run(() => super.fetchProgress());
+    return _$fetchProgressAsyncAction.run(() => super.fetchProgress());
   }
 
   late final _$_DetailsStoreActionController =

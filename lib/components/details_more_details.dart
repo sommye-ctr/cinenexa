@@ -7,7 +7,6 @@ import 'package:lottie/lottie.dart';
 import 'package:mobx/mobx.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:watrix/components/details_review_tile.dart';
-import 'package:watrix/models/local/progress.dart';
 import 'package:watrix/models/network/trakt/trakt_show_history_season_ep.dart';
 import 'package:watrix/models/network/tv_episode.dart';
 import 'package:watrix/screens/video_player_page.dart';
@@ -148,8 +147,7 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
       context,
       VideoPlayerPage.routeName,
       arguments: {
-        "url":
-            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
+        "url": "http://192.168.0.101:8080/video.mkv",
         "movie": widget.detailsStore.movie,
         "tv": widget.detailsStore.tv,
         "episode": ep,
