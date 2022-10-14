@@ -6,12 +6,19 @@ class Constants {
 
   static const String traktApi =
       "4cd822c6833df1369125d7c2f8266524993f460908af5381207e4c147059c3d4";
+  static const String openSubApi = "0fgcaUNKBiPRFgbWOPelMRF0kkfjDA7L";
   static String traktBase = "https://api.trakt.tv";
 
   static Map<String, String> traktRequestHeaders = {
     'Content-type': 'application/json',
     'trakt-api-key': '$traktApi',
     'trakt-api-version': "2",
+  };
+
+  static Map<String, String> openSubRequestHeaders = {
+    "Accept": "*/*",
+    "Api-Key": '$openSubApi',
+    "User-Agent": "Watrix",
   };
 
   static String posterSize = "/w300";

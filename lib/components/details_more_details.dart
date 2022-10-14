@@ -147,7 +147,8 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
       context,
       VideoPlayerPage.routeName,
       arguments: {
-        "url": "http://192.168.0.101:8080/video.mkv",
+        "url":
+            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
         "movie": widget.detailsStore.movie,
         "tv": widget.detailsStore.tv,
         "episode": ep,

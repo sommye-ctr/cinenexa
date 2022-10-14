@@ -46,16 +46,17 @@ dependencies:
   provider: ^6.0.3
   carousel_slider: ^4.1.1
   youtube_player_flutter: ^8.1.0
-  oauth2_client: ^2.4.0
+  oauth2_client: ^3.0.0
   lottie: ^1.4.3
   focused_menu: ^1.0.5
   better_player: ^0.0.83
-  audio_video_progress_bar: ^0.10.0
+  audio_video_progress_bar: ^0.11.0
   awesome_dialog: ^3.0.2
   flutter_vlc_player: ^7.1.5
   settings_ui: ^2.0.2
   scrollable_positioned_list: ^0.3.4
   flutter_expandable_fab: ^1.5.2
+  flutter_swipe_detector: ^2.0.0
 
 
 dev_dependencies:

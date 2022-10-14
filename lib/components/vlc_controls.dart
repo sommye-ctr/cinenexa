@@ -122,7 +122,7 @@ class _VlcControlsState extends State<VlcControls> {
     return WillPopScope(
         onWillPop: _onBack,
         child: GestureDetector(
-            behavior: HitTestBehavior.translucent,
+            behavior: HitTestBehavior.opaque,
             onTap: () {
               playerStore.showControls
                   ? _hideControls()
@@ -364,9 +364,9 @@ class _VlcControlsState extends State<VlcControls> {
         children: [
           Column(
             children: [
-              Text("More Info", textAlign: TextAlign.center),
+              Text(Strings.moreInfo, textAlign: TextAlign.center),
               Text(
-                "Tap to see",
+                Strings.tapToSee,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.grey,

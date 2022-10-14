@@ -23,7 +23,7 @@ class TraktRepository {
       : helper = OAuth2Helper(
           client,
           clientId: Constants.traktApi,
-          grantType: OAuth2Helper.AUTHORIZATION_CODE,
+          grantType: OAuth2Helper.authorizationCode,
           scopes: ['public'],
         );
 

@@ -29,6 +29,15 @@ class SettingsPage extends StatelessWidget {
             ),
           ],
         ),
+        SettingsSection(
+          title: Text("Integrations"),
+          tiles: [
+            SettingsTile.navigation(
+              title: Text("Trakt"),
+              onPressed: (context) {},
+            ),
+          ],
+        ),
       ],
     );
   }
