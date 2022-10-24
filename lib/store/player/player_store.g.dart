@@ -89,6 +89,22 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
     });
   }
 
+  late final _$subtitleDelayAtom =
+      Atom(name: '_PlayerStoreBase.subtitleDelay', context: context);
+
+  @override
+  int get subtitleDelay {
+    _$subtitleDelayAtom.reportRead();
+    return super.subtitleDelay;
+  }
+
+  @override
+  set subtitleDelay(int value) {
+    _$subtitleDelayAtom.reportWrite(value, super.subtitleDelay, () {
+      super.subtitleDelay = value;
+    });
+  }
+
   late final _$positionAtom =
       Atom(name: '_PlayerStoreBase.position', context: context);
 
@@ -187,6 +203,17 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
 
   late final _$_PlayerStoreBaseActionController =
       ActionController(name: '_PlayerStoreBase', context: context);
+
+  @override
+  void setSubtitleDelay(int delay) {
+    final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
+        name: '_PlayerStoreBase.setSubtitleDelay');
+    try {
+      return super.setSubtitleDelay(delay);
+    } finally {
+      _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
 
   @override
   void setSpeedIndex(int index) {
@@ -317,6 +344,7 @@ buffering: ${buffering},
 locked: ${locked},
 speedIndex: ${speedIndex},
 fitIndex: ${fitIndex},
+subtitleDelay: ${subtitleDelay},
 position: ${position},
 buffered: ${buffered},
 selectedSubtitle: ${selectedSubtitle},

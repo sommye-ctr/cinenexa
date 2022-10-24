@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
@@ -147,8 +148,7 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
       context,
       VideoPlayerPage.routeName,
       arguments: {
-        "url":
-            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
+        "url": "magnet:?xt=urn:btih:f762e22ad23af064979d54182336be9a1848c0cd",
         "movie": widget.detailsStore.movie,
         "tv": widget.detailsStore.tv,
         "episode": ep,

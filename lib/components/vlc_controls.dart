@@ -511,6 +511,28 @@ class _VlcControlsState extends State<VlcControls> {
             ),
           ],
         ),
+        Style.getVerticalSpacing(context: context, percent: 0.1),
+        Observer(builder: (_) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(Strings.subtitleDelay),
+              Style.getVerticalSpacing(context: context),
+              Slider(
+                value: playerStore.subtitleDelay.toDouble(),
+                divisions: 120,
+                max: 60,
+                min: -60,
+                onChanged: (value) {
+                  int seconds = (value).toInt();
+                  widget.controller.setSpuDelay(seconds);
+                  playerStore.setSubtitleDelay(seconds);
+                },
+              ),
+              Observer(builder: (_) => Text("${playerStore.subtitleDelay}s")),
+            ],
+          );
+        }),
       ],
     );
   }

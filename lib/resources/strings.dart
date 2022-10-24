@@ -107,6 +107,7 @@ class Strings {
     "2x",
   ];
   static const String fit = "Fit";
+  static const String subtitleDelay = "Subtitle Delay";
   static const fitTypes = [
     "Best",
     "Stretch",

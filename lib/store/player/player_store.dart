@@ -15,6 +15,8 @@ abstract class _PlayerStoreBase with Store {
   int speedIndex = 0;
   @observable
   int fitIndex = 0;
+  @observable
+  int subtitleDelay = 0;
 
   @observable
   Duration position = Duration();
@@ -30,6 +32,11 @@ abstract class _PlayerStoreBase with Store {
   ObservableMap<int, String>? subtitles;
   @observable
   ObservableMap<int, String>? tracks;
+
+  @action
+  void setSubtitleDelay(int delay) {
+    subtitleDelay = delay;
+  }
 
   @action
   void setSpeedIndex(int index) {
