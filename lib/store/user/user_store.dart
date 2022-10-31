@@ -3,10 +3,12 @@ import 'package:watrix/models/local/last_activities.dart';
 import 'package:watrix/models/local/show_history.dart';
 import 'package:watrix/models/network/base_model.dart';
 import 'package:watrix/models/network/enums/entity_type.dart';
+import 'package:watrix/models/network/extensions/extension.dart';
 import 'package:watrix/models/network/trakt/trakt_progress.dart';
 import 'package:watrix/models/network/user.dart';
 import 'package:watrix/models/network/user_stats.dart';
 import 'package:watrix/services/local/database.dart';
+import 'package:watrix/services/network/extensions_repository.dart';
 import 'package:watrix/services/network/trakt_oauth_client.dart';
 import 'package:watrix/services/network/trakt_repository.dart';
 import 'package:watrix/store/favorites/favorites_store.dart';
@@ -33,6 +35,9 @@ abstract class _UserStoreBase with Store {
   @observable
   ObservableList<ShowHistory> showHistory = <ShowHistory>[].asObservable();
 
+  @observable
+  ObservableList<Extension> extensions = <Extension>[].asObservable();
+
   TraktRepository repository = TraktRepository(client: TraktOAuthClient());
   Database localDb = Database();
 
@@ -50,6 +55,7 @@ abstract class _UserStoreBase with Store {
     fetchUserStats();
     fetchUserRecommendations();
     fetchUserProgress();
+    fetchUserExtensions();
     List futures = await Future.wait([
       repository.getUserLastActivity(),
       localDb.getLastActivities(),
@@ -83,6 +89,11 @@ abstract class _UserStoreBase with Store {
     }
     Future.wait(listFutures).whenComplete(
         () => localDb.addLastActivities(lastActivities: lastActivities));
+  }
+
+  @action
+  Future fetchUserExtensions() async {
+    extensions.addAll(await ExtensionsRepository.getUserExtensions());
   }
 
   @action

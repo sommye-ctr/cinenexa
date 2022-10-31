@@ -25,7 +25,8 @@ import '../favorites/favorites_store.dart';
 part 'details_store.g.dart';
 
 class DetailsStore extends _DetailsStore with _$DetailsStore {
-  DetailsStore({required BaseModel baseModel}) : super(baseModel: baseModel);
+  DetailsStore({required BaseModel baseModel, required int noOfExtensions})
+      : super(baseModel: baseModel, noOfExtensions: noOfExtensions);
 }
 
 abstract class _DetailsStore with Store {
@@ -34,11 +35,10 @@ abstract class _DetailsStore with Store {
 
   _DetailsStore({
     required this.baseModel,
+    required this.noOfExtensions,
   }) {
     _fetchDetails();
     fetchReviews();
-    ExtensionsRepository.getUserExtensions()
-        .then((value) => noOfExtensions = value.length);
   }
 
   @observable

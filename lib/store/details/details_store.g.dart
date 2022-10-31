@@ -159,6 +159,22 @@ mixin _$DetailsStore on _DetailsStore, Store {
     });
   }
 
+  late final _$isStreamLoadingAtom =
+      Atom(name: '_DetailsStore.isStreamLoading', context: context);
+
+  @override
+  bool get isStreamLoading {
+    _$isStreamLoadingAtom.reportRead();
+    return super.isStreamLoading;
+  }
+
+  @override
+  set isStreamLoading(bool value) {
+    _$isStreamLoadingAtom.reportWrite(value, super.isStreamLoading, () {
+      super.isStreamLoading = value;
+    });
+  }
+
   late final _$videoAtom = Atom(name: '_DetailsStore.video', context: context);
 
   @override
@@ -219,6 +235,22 @@ mixin _$DetailsStore on _DetailsStore, Store {
   set reviewList(ObservableList<Review> value) {
     _$reviewListAtom.reportWrite(value, super.reviewList, () {
       super.reviewList = value;
+    });
+  }
+
+  late final _$loadedStreamsAtom =
+      Atom(name: '_DetailsStore.loadedStreams', context: context);
+
+  @override
+  ObservableList<ExtensionStream> get loadedStreams {
+    _$loadedStreamsAtom.reportRead();
+    return super.loadedStreams;
+  }
+
+  @override
+  set loadedStreams(ObservableList<ExtensionStream> value) {
+    _$loadedStreamsAtom.reportWrite(value, super.loadedStreams, () {
+      super.loadedStreams = value;
     });
   }
 
@@ -375,6 +407,17 @@ mixin _$DetailsStore on _DetailsStore, Store {
   }
 
   @override
+  void fetchStreams() {
+    final _$actionInfo = _$_DetailsStoreActionController.startAction(
+        name: '_DetailsStore.fetchStreams');
+    try {
+      return super.fetchStreams();
+    } finally {
+      _$_DetailsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 pageIndex: ${pageIndex},
@@ -386,10 +429,12 @@ episodes: ${episodes},
 reviews: ${reviews},
 chosenSeason: ${chosenSeason},
 isAddedToFav: ${isAddedToFav},
+isStreamLoading: ${isStreamLoading},
 video: ${video},
 chosenEpisode: ${chosenEpisode},
 totalReviews: ${totalReviews},
 reviewList: ${reviewList},
+loadedStreams: ${loadedStreams},
 showHistory: ${showHistory},
 progress: ${progress},
 genres: ${genres}

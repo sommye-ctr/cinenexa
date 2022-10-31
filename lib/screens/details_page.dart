@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:watrix/components/details_header.dart';
 import 'package:watrix/components/details_more_details.dart';
 
 import 'package:watrix/services/constants.dart';
 import 'package:watrix/store/details/details_store.dart';
+import 'package:watrix/store/user/user_store.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '../models/network/base_model.dart';
@@ -36,7 +38,11 @@ class _DetailsPageState extends State<DetailsPage> {
 
   @override
   void initState() {
-    detailsStore = DetailsStore(baseModel: widget.baseModel);
+    detailsStore = DetailsStore(
+      baseModel: widget.baseModel,
+      noOfExtensions:
+          Provider.of<UserStore>(context, listen: false).extensions.length,
+    );
     super.initState();
   }
 
