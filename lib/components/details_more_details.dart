@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
@@ -8,6 +8,7 @@ import 'package:lottie/lottie.dart';
 import 'package:mobx/mobx.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:watrix/components/details_review_tile.dart';
+import 'package:watrix/components/details_stream_tile.dart';
 import 'package:watrix/models/network/trakt/trakt_show_history_season_ep.dart';
 import 'package:watrix/models/network/tv_episode.dart';
 import 'package:watrix/screens/video_player_page.dart';
@@ -50,7 +51,7 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
   void initState() {
     tabController = TabController(length: 3, vsync: this);
     episodeController = ItemScrollController();
-
+    widget.detailsStore.fetchStreams();
     super.initState();
   }
 
@@ -100,7 +101,7 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
       builder: (context) {
         if (widget.detailsStore.baseModel.type == BaseModelType.movie) {
           // return Text("Streams will show up here...");
-          return ElevatedButton(
+          /* return ElevatedButton(
             onPressed: () {
               var ep = widget.detailsStore.chosenEpisode == null
                   ? null
@@ -116,6 +117,38 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
                   widget.detailsStore.baseModel.id!);
             },
             child: Text("Play"),
+          ); */
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 5,
+              ),
+              Observer(builder: (_) {
+                if (widget.detailsStore.isStreamLoading)
+                  return CircularProgressIndicator();
+                return Container();
+              }),
+              Expanded(
+                child: MasonryGridView.builder(
+                  shrinkWrap: true,
+                  gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                  ),
+                  itemCount: widget.detailsStore.loadedStreams.length,
+                  physics: BouncingScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    return UnconstrainedBox(
+                      child: DetailsStreamTile(
+                        extensionStream:
+                            widget.detailsStore.loadedStreams[index],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           );
         }
         return AnimatedSwitcher(

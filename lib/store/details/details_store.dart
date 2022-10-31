@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:mobx/mobx.dart';
+import 'package:watrix/models/network/extensions/extension_stream.dart';
 import 'package:watrix/models/network/review.dart';
 import 'package:watrix/models/network/trakt/trakt_show_history_season.dart';
 import 'package:watrix/models/network/trakt/trakt_show_history_season_ep.dart';
@@ -15,6 +18,7 @@ import '../../models/network/trakt/trakt_progress.dart';
 import '../../models/network/tv.dart';
 import '../../models/network/tv_episode.dart';
 import '../../models/network/video.dart';
+import '../../services/network/extensions_repository.dart';
 import '../../services/network/repository.dart';
 import '../favorites/favorites_store.dart';
 
@@ -33,6 +37,8 @@ abstract class _DetailsStore with Store {
   }) {
     _fetchDetails();
     fetchReviews();
+    ExtensionsRepository.getUserExtensions()
+        .then((value) => noOfExtensions = value.length);
   }
 
   @observable
@@ -63,6 +69,9 @@ abstract class _DetailsStore with Store {
   bool isAddedToFav = false;
 
   @observable
+  bool isStreamLoading = true;
+
+  @observable
   Video? video;
 
   @observable
@@ -75,12 +84,17 @@ abstract class _DetailsStore with Store {
   ObservableList<Review> reviewList = <Review>[].asObservable();
 
   @observable
+  ObservableList<ExtensionStream> loadedStreams =
+      <ExtensionStream>[].asObservable();
+
+  @observable
   ShowHistory? showHistory;
 
   @observable
   TraktProgress? progress;
 
   int reviewPage = 1;
+  int noOfExtensions = 0;
   bool isReviewNextPageLoading = false;
   int traktId = -1;
   TraktRepository repository = TraktRepository(client: TraktOAuthClient());
@@ -215,6 +229,25 @@ abstract class _DetailsStore with Store {
     );
     episodes.clear();
     episodes.addAll(latest);
+  }
+
+  @action
+  void fetchStreams() {
+    StreamSubscription? streamSubscription;
+    streamSubscription =
+        ExtensionsRepository.loadStreams(baseModel: baseModel).listen((event) {
+      loadedStreams.addAll(event);
+
+      var seen = Set<String>();
+      List list = [...loadedStreams, ...event]
+          .where((element) => seen.add(element.extension!.id))
+          .toList();
+
+      if (list.length == noOfExtensions) {
+        isStreamLoading = false;
+        streamSubscription?.cancel();
+      }
+    });
   }
 
   @action
