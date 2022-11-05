@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:provider/provider.dart' as Provider;
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:watrix/models/local/favorites.dart';
 import 'package:watrix/models/local/last_activities.dart';
 import 'package:watrix/models/local/progress.dart';
@@ -27,6 +28,13 @@ import 'models/network/base_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Supabase.initialize(
+    url: "https://uaetifonbolamgpivtli.supabase.co",
+    anonKey:
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVhZXRpZm9uYm9sYW1ncGl2dGxpIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NjcyNDQ4NjcsImV4cCI6MTk4MjgyMDg2N30.t2N3e0eE5LobMLjYl_KEfghR8XHI0_cj0jPKedKLJ-Y",
+  );
+
   await Isar.open(
     [
       FavoritesSchema,
@@ -39,7 +47,7 @@ void main() async {
   );
 
   runApp(
-    ChangeNotifierProvider(
+    Provider.ChangeNotifierProvider(
       create: (_) => MyTheme()..changeTheme(true),
       child: MyApp(),
     ),
@@ -60,10 +68,10 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     FavoritesStore favoritesStore = FavoritesStore();
-    return MultiProvider(
+    return Provider.MultiProvider(
       providers: [
-        Provider(create: (_) => favoritesStore),
-        Provider(
+        Provider.Provider(create: (_) => favoritesStore),
+        Provider.Provider(
           create: (_) => UserStore(favoritesStore: favoritesStore),
         ),
       ],
@@ -72,7 +80,7 @@ class _MyAppState extends State<MyApp> {
         debugShowCheckedModeBanner: false,
         theme: Style.themeData,
         darkTheme: Style.darkThemeData(context),
-        themeMode: Provider.of<MyTheme>(context).darkMode
+        themeMode: Provider.Provider.of<MyTheme>(context).darkMode
             ? ThemeMode.dark
             : ThemeMode.light,
         onGenerateRoute: (settings) {
