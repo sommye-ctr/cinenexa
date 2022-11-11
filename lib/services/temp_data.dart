@@ -10,7 +10,9 @@ class TempData {
       icon:
           "https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/14-utorrent-512.png",
       endpoint: "",
-      provider: ExtensionProviderType.all,
+      provider: [ExtensionProviderType.all],
+      description:
+          "Find movies and shows for all hollywood and bollywood titles.",
     ),
     Extension(
       name: "Soap2day",
@@ -18,7 +20,13 @@ class TempData {
       icon:
           "https://i.pinimg.com/736x/97/39/af/9739afdcd7bea0686f7396182c85bea1.jpg",
       endpoint: "",
-      provider: ExtensionProviderType.movie,
+      provider: [
+        ExtensionProviderType.movie,
+        ExtensionProviderType.anime,
+        ExtensionProviderType.show
+      ],
+      description:
+          "Find movies and shows for all hollywood and bollywood titles.",
     ),
   ];
 

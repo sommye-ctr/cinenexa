@@ -3,6 +3,7 @@ class Strings {
 
 //Common
   static const String home = "Home";
+  static const String extensions = "Extensions";
   static const String search = "Search";
   static const String wishlist = "Wishlist";
   static const String profile = "Profile";
@@ -56,6 +57,11 @@ class Strings {
   static const String reset = "Reset";
   static const String languages = "Languages";
   static const String certificationSubtitle = "Long Press for description";
+
+  //Extensions
+  static const String installed = "Installed";
+  static const String discover = "Discover";
+  static const String install = "Install";
 
 //Details
   static const String addToFav = "Add to";

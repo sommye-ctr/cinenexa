@@ -14,6 +14,7 @@ import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/screens/actor_details_page.dart';
 import 'package:watrix/screens/details_page.dart';
+import 'package:watrix/screens/extensions_page.dart';
 import 'package:watrix/screens/home_page.dart';
 import 'package:watrix/screens/profile_page.dart';
 import 'package:watrix/screens/search_page.dart';
@@ -136,6 +137,7 @@ class _MyAppState extends State<MyApp> {
                   index: _pageIndex,
                   children: [
                     HomePage(),
+                    ExtensionsPage(),
                     SearchPage(
                       onBack: () {
                         setState(() {

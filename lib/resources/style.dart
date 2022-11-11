@@ -14,6 +14,7 @@ class Style {
   static double movieTileWithTitleRatio = 1 / 1.6;
   static double largeRoundEdgeRadius = 16;
   static double smallRoundEdgeRadius = 8;
+  static double cardElevation = 8;
 
   static ThemeData themeData = ThemeData(
     primarySwatch: Colors.orange,
@@ -41,6 +42,30 @@ class Style {
     return BottomNavigationBarItem(
       label: label,
       icon: Icon(icon),
+    );
+  }
+
+  static Widget getChip(context, String text) {
+    return Padding(
+      padding: EdgeInsets.only(
+        right: ScreenSize.getPercentOfWidth(context, 0.01),
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
+          color: Colors.grey.withOpacity(0.4),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(2),
+          child: Text(
+            text,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 12,
+            ),
+          ),
+        ),
+      ),
     );
   }
 

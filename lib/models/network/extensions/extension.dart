@@ -7,7 +7,7 @@ class Extension {
   final String id;
   final String icon;
   final String endpoint;
-  final ExtensionProviderType provider;
+  final List<ExtensionProviderType> provider;
   final String? description;
   final String? devEmail;
   final String? externalUrl;
@@ -32,7 +32,7 @@ class Extension {
     String? id,
     String? icon,
     String? endpoint,
-    ExtensionProviderType? provider,
+    List<ExtensionProviderType>? provider,
     String? description,
     String? devEmail,
     String? externalUrl,
@@ -59,7 +59,7 @@ class Extension {
       'id': id,
       'icon': icon,
       'endpoint': endpoint,
-      'provider': provider.getString(),
+      'provider': provider.map((e) => e.getString()).toString(),
       'description': description,
       'devEmail': devEmail,
       'externalUrl': externalUrl,
@@ -74,7 +74,9 @@ class Extension {
       id: map['id'] as String,
       icon: map['icon'] as String,
       endpoint: map['endpoint'] as String,
-      provider: (map['provider'] as String).getProviderType(),
+      provider: (map['provider'] as List)
+          .map((e) => (e as String).getProviderType())
+          .toList(),
       description:
           map['description'] != null ? map['description'] as String : null,
       devEmail: map['devEmail'] != null ? map['devEmail'] as String : null,

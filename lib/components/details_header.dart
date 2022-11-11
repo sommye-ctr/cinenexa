@@ -228,27 +228,7 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
     if (detailsStore.genres != null) {
       List<Widget> widgets = [];
       for (var item in detailsStore.genres!) {
-        widgets.add(Padding(
-          padding: EdgeInsets.only(
-            right: ScreenSize.getPercentOfWidth(context, 0.01),
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
-              color: Colors.grey.withOpacity(0.4),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(2),
-              child: Text(
-                "${item.name}",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 12,
-                ),
-              ),
-            ),
-          ),
-        ));
+        widgets.add(Style.getChip(context, item.name!));
       }
 
       return Center(

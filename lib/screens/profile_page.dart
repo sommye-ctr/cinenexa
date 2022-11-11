@@ -35,20 +35,18 @@ class _ProfilePageState extends State<ProfilePage> {
         }
         return true;
       },
-      child: Material(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Style.getVerticalHorizontalSpacing(context: context),
-              _buildProfileTile(),
-              Style.getVerticalHorizontalSpacing(context: context),
-              _buildStatCardsTile(),
-              Style.getVerticalHorizontalSpacing(context: context),
-              SettingsPage(),
-            ],
-          ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Style.getVerticalHorizontalSpacing(context: context),
+            _buildProfileTile(),
+            Style.getVerticalHorizontalSpacing(context: context),
+            _buildStatCardsTile(),
+            Style.getVerticalHorizontalSpacing(context: context),
+            SettingsPage(),
+          ],
         ),
       ),
     );
