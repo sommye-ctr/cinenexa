@@ -90,46 +90,54 @@ class _VlcPlayerPageState extends State<VlcPlayerPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.black,
-      child: Container(
-        child: Stack(
-          children: [
-            LayoutBuilder(
-              builder: (p0, p1) {
-                if (loading) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                return SizedBox.expand(
-                  child: FittedBox(
-                    fit: BoxFit.cover,
-                    child: SizedBox(
-                      width: p1.maxWidth * (16 / 9),
-                      height: p1.maxHeight,
-                      child: VlcPlayer(
-                        aspectRatio: 16 / 9,
-                        controller: controller,
-                        placeholder: Center(child: CircularProgressIndicator()),
+    return WillPopScope(
+      onWillPop: () async {
+        SystemChrome.setPreferredOrientations(
+            [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
+        return true;
+      },
+      child: Material(
+        color: Colors.black,
+        child: Container(
+          child: Stack(
+            children: [
+              LayoutBuilder(
+                builder: (p0, p1) {
+                  if (loading) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  return SizedBox.expand(
+                    child: FittedBox(
+                      fit: BoxFit.cover,
+                      child: SizedBox(
+                        width: p1.maxWidth * (16 / 9),
+                        height: p1.maxHeight,
+                        child: VlcPlayer(
+                          aspectRatio: 16 / 9,
+                          controller: controller,
+                          placeholder:
+                              Center(child: CircularProgressIndicator()),
+                        ),
                       ),
                     ),
-                  ),
-                );
-              },
-            ),
-            if (!loading)
-              VlcControls(
-                controller: controller,
-                baseModel: widget.baseModel,
-                episode: widget.episode,
-                season: widget.season,
-                movie: widget.movie,
-                show: widget.show,
-                progress: widget.progress,
-                id: widget.id,
+                  );
+                },
               ),
-          ],
+              if (!loading)
+                VlcControls(
+                  controller: controller,
+                  baseModel: widget.baseModel,
+                  episode: widget.episode,
+                  season: widget.season,
+                  movie: widget.movie,
+                  show: widget.show,
+                  progress: widget.progress,
+                  id: widget.id,
+                ),
+            ],
+          ),
         ),
       ),
     );

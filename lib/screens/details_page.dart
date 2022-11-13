@@ -34,8 +34,6 @@ class _DetailsPageState extends State<DetailsPage> {
   double get minHeight => (ScreenSize.getPercentOfWidth(context, 0.75) /
       Constants.backdropAspectRatio);
 
-  GlobalKey scrollKey = GlobalKey();
-
   @override
   void initState() {
     detailsStore = DetailsStore(
@@ -55,7 +53,7 @@ class _DetailsPageState extends State<DetailsPage> {
           return false;
         },
         child: CustomScrollView(
-          key: scrollKey,
+          key: PageStorageKey("scrollkey"),
           controller: _controller,
           physics: BouncingScrollPhysics(),
           slivers: [
