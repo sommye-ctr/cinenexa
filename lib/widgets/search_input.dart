@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:watrix/services/local/speech_recognizer.dart';
 
 import '../resources/strings.dart';
 import '../resources/style.dart';
@@ -10,6 +11,7 @@ class SearchInput extends StatefulWidget {
   final Function() onEditingComplete;
   final Function()? onCancelSearch;
   final Function()? onSearchFocused;
+  final Function()? onListening;
   final String? value, hint;
   late final FocusNode focusNode;
 
@@ -22,6 +24,7 @@ class SearchInput extends StatefulWidget {
     this.hint,
     this.onCancelSearch,
     this.onSearchFocused,
+    this.onListening,
     FocusNode? focus,
   }) {
     if (focus == null) {
@@ -36,11 +39,18 @@ class SearchInput extends StatefulWidget {
 }
 
 class _SearchInputState extends State<SearchInput> {
-  Widget? suffixWidget;
+  late Widget suffixWidget;
+  bool isListening = false;
 
   @override
   void initState() {
     super.initState();
+    suffixWidget = IconButton(
+      onPressed: () {
+        toggleRecording();
+      },
+      icon: Icon(isListening ? Icons.circle_rounded : Icons.mic_rounded),
+    );
     widget.focusNode.addListener(() {
       if (widget.focusNode.hasFocus) {
         widget.onSearchFocused?.call();
@@ -48,7 +58,13 @@ class _SearchInputState extends State<SearchInput> {
           suffixWidget = IconButton(
             onPressed: () {
               setState(() {
-                suffixWidget = null;
+                suffixWidget = IconButton(
+                  onPressed: () {
+                    toggleRecording();
+                  },
+                  icon: Icon(
+                      isListening ? Icons.circle_rounded : Icons.mic_rounded),
+                );
               });
               widget.focusNode.unfocus();
               widget.controller?.clear();
@@ -62,9 +78,30 @@ class _SearchInputState extends State<SearchInput> {
         });
         return;
       }
-      suffixWidget = null;
+      suffixWidget = IconButton(
+        onPressed: () {
+          toggleRecording();
+        },
+        icon: Icon(isListening ? Icons.circle_rounded : Icons.mic_rounded),
+      );
     });
   }
+
+  Future toggleRecording() =>
+      SpeechRecognizer.toggleRecording(onResult: (String text) {
+        setState(() {
+          widget.controller?.text = text;
+        });
+      }, onListening: (bool listen) {
+        widget.onListening?.call();
+        setState(() {
+          isListening = listen;
+        });
+      }, onDone: () {
+        widget.onEditingComplete();
+      }, onError: (err) {
+        Style.showSnackBar(context: context, text: err.errorMsg);
+      });
 
   @override
   Widget build(BuildContext context) {

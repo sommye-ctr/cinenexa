@@ -1,3 +1,4 @@
+import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
@@ -80,17 +81,24 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
 
   Widget _buildSearchBar() {
     return SearchInput(
-      onEditingComplete: () => searchStore.searchClicked(),
+      onEditingComplete: () =>
+          searchStore.searchClicked(textEditingController.text),
       controller: textEditingController,
       focus: focusNode,
       onChanged: searchStore.searchTermChanged,
       onSearchFocused: searchStore.searchBoxFocused,
       onCancelSearch: searchStore.searchCancelled,
+      onListening: () {
+        searchStore.speakToTextClicked(true);
+      },
     );
   }
 
   Widget _buildMainBody() {
     return Observer(builder: (_) {
+      if (searchStore.speaking) {
+        return _buildSpeakingOverlay();
+      }
       if (searchStore.searchDone) {
         return _buildSearchResults();
       }
@@ -98,6 +106,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         if (searchStore.searchTerm.isEmpty) return _buildSearchHistory();
         return _buildSearchAutocomplete();
       }
+
       return _buildSearchHint();
     });
   }
@@ -177,6 +186,21 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     Future.delayed(
       kThemeAnimationDuration,
       () => searchStore.historyDeleted(searchStore.history[index]),
+    );
+  }
+
+  Widget _buildSpeakingOverlay() {
+    return AvatarGlow(
+      endRadius: 80,
+      animate: searchStore.speaking,
+      glowColor: Colors.teal,
+      child: FloatingActionButton(
+        onPressed: () {},
+        child: Icon(
+          Icons.circle,
+          size: 35,
+        ),
+      ),
     );
   }
 
@@ -383,7 +407,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       default:
     }
 
-    searchStore.searchClicked();
+    searchStore.searchClicked(null);
   }
 
   void _onSearchTypeChanged(int index) {

@@ -60,6 +60,8 @@ dependencies:
   flag: ^6.0.0
   flutter_staggered_grid_view: ^0.6.2
   supabase_flutter: ^1.0.0
+  speech_to_text: ^6.1.0
+  avatar_glow: ^2.0.2
 
 
 dev_dependencies:

@@ -5,6 +5,18 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+
+    <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+    </queries>
+
     <application android:label="watrix" android:name="${applicationName}" android:icon="@mipmap/launcher_icon" android:usesCleartextTraffic="true" android:allowNativeHeapPointerTagging="false" tools:replace="android:label">
 
         <activity android:name="com.linusu.flutter_web_auth_2.CallbackActivity" android:exported="true">

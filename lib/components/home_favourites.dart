@@ -225,12 +225,7 @@ class _HomeFavoritesState extends State<HomeFavorites>
       });
       return;
     }
-    final snack = SnackBar(
-      content: Text(Strings.noItemsSelected),
-      behavior: SnackBarBehavior.floating,
-      shape: StadiumBorder(),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snack);
+    Style.showSnackBar(context: context, text: Strings.noItemsSelected);
   }
 
   @override

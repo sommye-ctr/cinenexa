@@ -38,6 +38,9 @@ abstract class _SearchStore with Store {
   @observable
   bool searchFocused = false;
 
+  @observable
+  bool speaking = false;
+
   Database database = Database();
 
   @observable
@@ -114,8 +117,15 @@ abstract class _SearchStore with Store {
   }
 
   @action
-  void searchClicked() {
+  void searchClicked(String? term) {
     page = 1;
+    if (speaking) {
+      speakToTextClicked(false);
+    }
+
+    if (term != null) {
+      searchTerm = term;
+    }
 
     _fetchItems(
       Repository.search(searchTerm, entityType),
@@ -161,6 +171,11 @@ abstract class _SearchStore with Store {
   }
 
   @action
+  void speakToTextClicked(bool value) {
+    speaking = value;
+  }
+
+  @action
   void searchCancelled() {
     backClicked();
   }
@@ -168,7 +183,7 @@ abstract class _SearchStore with Store {
   @action
   void searchHistoryTermClicked(String term) {
     searchTerm = term;
-    searchClicked();
+    searchClicked(null);
   }
 
   @action

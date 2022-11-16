@@ -45,6 +45,16 @@ class Style {
     );
   }
 
+  static void showSnackBar(
+      {required BuildContext context, required String text}) {
+    final snack = SnackBar(
+      content: Text(text),
+      behavior: SnackBarBehavior.floating,
+      shape: StadiumBorder(),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snack);
+  }
+
   static Widget getChip(context, String text) {
     return Padding(
       padding: EdgeInsets.only(

@@ -44,6 +44,7 @@ class Strings {
   static const String moviesTvShows = "Movies, Shows...";
   static const String actorsDirectors = "Actors, Directors...";
   static const String noResultsFound = "No results found!";
+  static const String startSpeaking = "Start Speaking...";
 //Filter
   static const String sortBy = "Sort By";
   static const String popularity = "Popularity";

@@ -103,6 +103,22 @@ mixin _$SearchStore on _SearchStore, Store {
     });
   }
 
+  late final _$speakingAtom =
+      Atom(name: '_SearchStore.speaking', context: context);
+
+  @override
+  bool get speaking {
+    _$speakingAtom.reportRead();
+    return super.speaking;
+  }
+
+  @override
+  set speaking(bool value) {
+    _$speakingAtom.reportWrite(value, super.speaking, () {
+      super.speaking = value;
+    });
+  }
+
   late final _$fetchItemsFutureAtom =
       Atom(name: '_SearchStore.fetchItemsFuture', context: context);
 
@@ -234,11 +250,11 @@ mixin _$SearchStore on _SearchStore, Store {
   }
 
   @override
-  void searchClicked() {
+  void searchClicked(String? term) {
     final _$actionInfo = _$_SearchStoreActionController.startAction(
         name: '_SearchStore.searchClicked');
     try {
-      return super.searchClicked();
+      return super.searchClicked(term);
     } finally {
       _$_SearchStoreActionController.endAction(_$actionInfo);
     }
@@ -261,6 +277,17 @@ mixin _$SearchStore on _SearchStore, Store {
         name: '_SearchStore.onEndOfPageReached');
     try {
       return super.onEndOfPageReached();
+    } finally {
+      _$_SearchStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void speakToTextClicked(bool value) {
+    final _$actionInfo = _$_SearchStoreActionController.startAction(
+        name: '_SearchStore.speakToTextClicked');
+    try {
+      return super.speakToTextClicked(value);
     } finally {
       _$_SearchStoreActionController.endAction(_$actionInfo);
     }
@@ -307,6 +334,7 @@ history: ${history},
 page: ${page},
 searchType: ${searchType},
 searchFocused: ${searchFocused},
+speaking: ${speaking},
 fetchItemsFuture: ${fetchItemsFuture},
 autoCompleteTerms: ${autoCompleteTerms},
 results: ${results},
