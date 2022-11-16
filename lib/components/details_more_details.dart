@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:focused_menu/focused_menu.dart';
@@ -46,11 +47,9 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
   YoutubePlayerController? videoController;
 
   late TabController tabController;
-  late ItemScrollController episodeController;
   @override
   void initState() {
     tabController = TabController(length: 3, vsync: this);
-    episodeController = ItemScrollController();
     widget.detailsStore.fetchStreams();
     super.initState();
   }
@@ -177,20 +176,29 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
   }
 
   void navigateToVideoPlayer(ep, int? season, double? progress, int id) async {
-    await Navigator.pushNamed(
-      context,
-      VideoPlayerPage.routeName,
-      arguments: {
-        "url": "magnet:?xt=urn:btih:f762e22ad23af064979d54182336be9a1848c0cd",
-        "movie": widget.detailsStore.movie,
-        "tv": widget.detailsStore.tv,
-        "episode": ep,
-        "season": season,
-        "progress": progress,
-        "id": id,
-        "model": widget.detailsStore.baseModel,
-      },
-    );
+    EventChannel channel = EventChannel("watrix/torrentStream");
+    channel.receiveBroadcastStream({
+      "url":
+          "magnet:?xt=urn:btih:08ada5a7a6183aae1e09d831df6748d566095a10&dn=Sintel&tr=udp%3A%2F%2Fexplodie.org%3A6969&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Ftracker.empire-js.us%3A1337&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=wss%3A%2F%2Ftracker.btorrent.xyz&tr=wss%3A%2F%2Ftracker.fastcast.nz&tr=wss%3A%2F%2Ftracker.openwebtorrent.com&ws=https%3A%2F%2Fwebtorrent.io%2Ftorrents%2F&xs=https%3A%2F%2Fwebtorrent.io%2Ftorrents%2Fsintel.torrent",
+    }).handleError((error) {
+      print("error in torrent : ${error}");
+    }).listen((event) {
+      print("received");
+      Navigator.pushNamed(
+        context,
+        VideoPlayerPage.routeName,
+        arguments: {
+          "url": event,
+          "movie": widget.detailsStore.movie,
+          "tv": widget.detailsStore.tv,
+          "episode": ep,
+          "season": season,
+          "progress": progress,
+          "id": id,
+          "model": widget.detailsStore.baseModel,
+        },
+      );
+    });
     await widget.detailsStore.fetchProgress();
   }
 
@@ -249,11 +257,10 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
         builder: (context1) {
           widget.detailsStore.showHistory;
 
-          return ScrollablePositionedList.builder(
+          return ListView.builder(
             shrinkWrap: true,
             itemCount: widget.detailsStore.episodes.length,
             physics: ClampingScrollPhysics(),
-            itemScrollController: episodeController,
             itemBuilder: _buildEpisodeTile,
           );
         },
