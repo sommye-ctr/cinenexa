@@ -193,7 +193,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     return AvatarGlow(
       endRadius: 80,
       animate: searchStore.speaking,
-      glowColor: Colors.teal,
+      glowColor: Theme.of(context).colorScheme.primary,
       child: FloatingActionButton(
         onPressed: () {},
         child: Icon(

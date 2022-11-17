@@ -23,6 +23,9 @@ class Style {
     focusColor: Colors.black,
     scaffoldBackgroundColor: Color.fromARGB(255, 249, 246, 246),
     backgroundColor: Color.fromARGB(255, 249, 246, 246),
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      backgroundColor: Colors.orange,
+    ),
   );
 
   static TextStyle headingStyle = TextStyle(
@@ -36,6 +39,9 @@ class Style {
         focusColor: Colors.white,
         scaffoldBackgroundColor: Color.fromARGB(255, 27, 27, 27),
         backgroundColor: Color.fromARGB(255, 27, 27, 27),
+        floatingActionButtonTheme: FloatingActionButtonThemeData(
+          backgroundColor: Colors.orange,
+        ),
       );
 
   static BottomNavigationBarItem getbottomNavItem(String label, IconData icon) {

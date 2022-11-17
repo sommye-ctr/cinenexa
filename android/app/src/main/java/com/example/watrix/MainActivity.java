@@ -2,6 +2,8 @@ package com.example.watrix;
 
 import androidx.annotation.NonNull;
 
+import java.util.Map;
+
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.plugin.common.EventChannel;
@@ -27,8 +29,7 @@ public class MainActivity extends FlutterActivity implements EventChannel.Stream
 
     @Override
     public void onListen(Object arguments, EventChannel.EventSink events) {
-        String url = "magnet:?xt=urn:btih:fb4b27d36048c10af9077c157b7f48ee407eb222";
-        torrentStreamHandler = new TorrentStreamHandler(url, events, getFilesDir(), this);
+        torrentStreamHandler = new TorrentStreamHandler((String) ((Map<String, Object>)arguments).get("url"), events, getFilesDir(), this);
     }
 
     @Override
