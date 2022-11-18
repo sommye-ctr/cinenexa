@@ -3,6 +3,8 @@ package com.example.watrix;
 import android.content.Context;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.github.se_bastiaan.torrentstream.StreamStatus;
@@ -27,6 +29,8 @@ public class TorrentStreamHandler implements TorrentServerListener {
     private final File fileDir;
     private final Context context;
 
+    private Handler handler = new Handler(Looper.getMainLooper());
+
     private TorrentStreamServer torrentStreamServer;
 
     public TorrentStreamHandler(String streamUrl, EventChannel.EventSink eventSink, File fileDir, Context context) {
@@ -45,7 +49,6 @@ public class TorrentStreamHandler implements TorrentServerListener {
     private void startStream() {
         TorrentOptions torrentOptions = new TorrentOptions.Builder()
                 .saveLocation(fileDir)
-                .removeFilesAfterStop(true)
                 .build();
 
         String ipAddress = "127.0.0.1";
@@ -67,19 +70,23 @@ public class TorrentStreamHandler implements TorrentServerListener {
 
         Log.d(TAG, "startStream: ");
 
-        try {
-            torrentStreamServer.startStream(streamUrl);
-        } catch (IOException | TorrentStreamNotInitializedException e) {
-            e.printStackTrace();
-            eventSink.error(e.getMessage(), e.getMessage(), e);
-        }
+        handler.post(() -> {
+            try {
+                torrentStreamServer.startStream(streamUrl);
+            } catch (IOException | TorrentStreamNotInitializedException e) {
+                e.printStackTrace();
+                eventSink.error(e.getMessage(), e.getMessage(), e);
+            }
+        });
+
     }
 
 
     @Override
     public void onServerReady(String url) {
         Log.d(TAG, "onServerReady: " + url);
-        eventSink.success(url);
+        handler.post(() -> eventSink.success(url));
+
     }
 
     @Override
@@ -94,8 +101,9 @@ public class TorrentStreamHandler implements TorrentServerListener {
 
     @Override
     public void onStreamError(Torrent torrent, Exception e) {
-        Log.d(TAG, "onStreamError: " + e);
-        eventSink.error(e.getMessage(), e.getMessage(), e);
+        Log.e(TAG, "onStreamError: " + e, e);
+       handler.post(() -> eventSink.error(e.getMessage(), e.getMessage(), e));
+
     }
 
     @Override

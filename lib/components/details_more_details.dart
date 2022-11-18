@@ -176,29 +176,21 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
   }
 
   void navigateToVideoPlayer(ep, int? season, double? progress, int id) async {
-    EventChannel channel = EventChannel("watrix/torrentStream");
-    channel.receiveBroadcastStream({
-      "url":
-          "magnet:?xt=urn:btih:08ada5a7a6183aae1e09d831df6748d566095a10&dn=Sintel&tr=udp%3A%2F%2Fexplodie.org%3A6969&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Ftracker.empire-js.us%3A1337&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=wss%3A%2F%2Ftracker.btorrent.xyz&tr=wss%3A%2F%2Ftracker.fastcast.nz&tr=wss%3A%2F%2Ftracker.openwebtorrent.com&ws=https%3A%2F%2Fwebtorrent.io%2Ftorrents%2F&xs=https%3A%2F%2Fwebtorrent.io%2Ftorrents%2Fsintel.torrent",
-    }).handleError((error) {
-      print("error in torrent : ${error}");
-    }).listen((event) {
-      print("received");
-      Navigator.pushNamed(
-        context,
-        VideoPlayerPage.routeName,
-        arguments: {
-          "url": event,
-          "movie": widget.detailsStore.movie,
-          "tv": widget.detailsStore.tv,
-          "episode": ep,
-          "season": season,
-          "progress": progress,
-          "id": id,
-          "model": widget.detailsStore.baseModel,
-        },
-      );
-    });
+    await Navigator.pushNamed(
+      context,
+      VideoPlayerPage.routeName,
+      arguments: {
+        "url":
+            "magnet:?xt=urn:btih:03C74F30EE2E837487E36352BA8163E0F85EA27B&tr=udp%3A%2F%2Ftracker.bitsearch.to%3A1337%2Fannounce&tr=udp%3A%2F%2Fwww.torrent.eu.org%3A451%2Fannounce&tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&tr=udp%3A%2F%2Ftracker2.dler.com%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&dn=%5BBitsearch.to%5D+%5BJudas%5D+Attack+on+Titan+-+S04E17.mkv",
+        "movie": widget.detailsStore.movie,
+        "tv": widget.detailsStore.tv,
+        "episode": ep,
+        "season": season,
+        "progress": progress,
+        "id": id,
+        "model": widget.detailsStore.baseModel,
+      },
+    );
     await widget.detailsStore.fetchProgress();
   }
 

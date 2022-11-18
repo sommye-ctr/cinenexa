@@ -54,7 +54,7 @@ class _VlcPlayerPageState extends State<VlcPlayerPage> {
   }
 
   void init() {
-    /*  if (widget.url.contains(magnetRegex)) {
+    if (widget.url.contains(magnetRegex)) {
       print("here url ${widget.url}");
       channel.receiveBroadcastStream({
         "url": widget.url,
@@ -75,7 +75,7 @@ class _VlcPlayerPageState extends State<VlcPlayerPage> {
         }
       });
       return;
-    } */
+    }
     print("here witout");
     controller = VlcPlayerController.network(
       widget.url,
