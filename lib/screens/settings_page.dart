@@ -15,11 +15,17 @@ class SettingsPage extends StatelessWidget {
       physics: BouncingScrollPhysics(),
       platform: DevicePlatform.iOS,
       shrinkWrap: true,
+      darkTheme: SettingsThemeData(
+        settingsListBackground: Theme.of(context).backgroundColor,
+      ),
+      lightTheme: SettingsThemeData(
+        settingsListBackground: Theme.of(context).backgroundColor,
+      ),
       sections: [
         SettingsSection(
-          title: Text(Strings.general),
           tiles: [
             SettingsTile.switchTile(
+              leading: Icon(Icons.dark_mode_rounded),
               initialValue:
                   Provider.of<MyTheme>(context, listen: false).darkMode,
               onToggle: (value) {
@@ -30,10 +36,30 @@ class SettingsPage extends StatelessWidget {
           ],
         ),
         SettingsSection(
-          title: Text("Integrations"),
           tiles: [
             SettingsTile.navigation(
-              title: Text("Trakt"),
+              leading: Icon(Icons.settings),
+              title: Text("General"),
+              onPressed: (context) {},
+            ),
+            SettingsTile.navigation(
+              leading: Icon(Icons.play_arrow_rounded),
+              title: Text("Player"),
+              onPressed: (context) {},
+            ),
+            SettingsTile.navigation(
+              leading: Icon(Icons.play_arrow_rounded),
+              title: Text("Extensions"),
+              onPressed: (context) {},
+            ),
+            SettingsTile.navigation(
+              leading: Icon(Icons.play_arrow_rounded),
+              title: Text("Account"),
+              onPressed: (context) {},
+            ),
+            SettingsTile.navigation(
+              leading: Icon(Icons.play_arrow_rounded),
+              title: Text("More"),
               onPressed: (context) {},
             ),
           ],
