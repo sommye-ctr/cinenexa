@@ -340,6 +340,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         repeat: true,
       );
     }
+    print(list.toString());
     return Expanded(
       child: LazyLoadScrollView(
         onEndOfPage: () => searchStore.onEndOfPageReached(),
@@ -359,8 +360,8 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                 arguments: list[index],
               ),
               context: context,
-              poster: list[index].title,
-              title: list[index].posterPath,
+              poster: list[index].posterPath,
+              title: list[index].title,
             );
           },
         ),
