@@ -1,70 +1,55 @@
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:watrix/resources/strings.dart';
 
-import '../resources/my_theme.dart';
-
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends StatefulWidget {
   static const String routeName = "/settings";
   const SettingsPage({Key? key}) : super(key: key);
 
   @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  @override
   Widget build(BuildContext context) {
-    return SettingsList(
-      physics: BouncingScrollPhysics(),
-      platform: DevicePlatform.iOS,
-      shrinkWrap: true,
-      darkTheme: SettingsThemeData(
-        settingsListBackground: Theme.of(context).backgroundColor,
-      ),
-      lightTheme: SettingsThemeData(
-        settingsListBackground: Theme.of(context).backgroundColor,
-      ),
-      sections: [
-        SettingsSection(
-          tiles: [
-            SettingsTile.switchTile(
-              leading: Icon(Icons.dark_mode_rounded),
-              initialValue:
-                  Provider.of<MyTheme>(context, listen: false).darkMode,
-              onToggle: (value) {
-                Provider.of<MyTheme>(context, listen: false).changeTheme(value);
-              },
-              title: Text(Strings.darkMode),
+    return ValueListenableBuilder<AdaptiveThemeMode>(
+      valueListenable: AdaptiveTheme.of(context).modeChangeNotifier,
+      builder: (context, value, child) {
+        return SettingsList(
+          physics: BouncingScrollPhysics(),
+          platform: DevicePlatform.iOS,
+          shrinkWrap: true,
+          sections: [
+            SettingsSection(
+              title: Text(Strings.general),
+              tiles: [
+                SettingsTile.switchTile(
+                  initialValue: value == AdaptiveThemeMode.dark,
+                  onToggle: (boolean) {
+                    if (boolean) {
+                      AdaptiveTheme.of(context).setDark();
+                      return;
+                    }
+                    AdaptiveTheme.of(context).setLight();
+                  },
+                  title: Text(Strings.darkMode),
+                ),
+              ],
+            ),
+            SettingsSection(
+              title: Text("Integrations"),
+              tiles: [
+                SettingsTile.navigation(
+                  title: Text("Trakt"),
+                  onPressed: (context) {},
+                ),
+              ],
             ),
           ],
-        ),
-        SettingsSection(
-          tiles: [
-            SettingsTile.navigation(
-              leading: Icon(Icons.settings),
-              title: Text("General"),
-              onPressed: (context) {},
-            ),
-            SettingsTile.navigation(
-              leading: Icon(Icons.play_arrow_rounded),
-              title: Text("Player"),
-              onPressed: (context) {},
-            ),
-            SettingsTile.navigation(
-              leading: Icon(Icons.play_arrow_rounded),
-              title: Text("Extensions"),
-              onPressed: (context) {},
-            ),
-            SettingsTile.navigation(
-              leading: Icon(Icons.play_arrow_rounded),
-              title: Text("Account"),
-              onPressed: (context) {},
-            ),
-            SettingsTile.navigation(
-              leading: Icon(Icons.play_arrow_rounded),
-              title: Text("More"),
-              onPressed: (context) {},
-            ),
-          ],
-        ),
-      ],
+        );
+      },
     );
   }
 }
