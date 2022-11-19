@@ -1,12 +1,11 @@
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mobx/mobx.dart';
-import 'package:provider/provider.dart';
 import 'package:watrix/resources/asset.dart';
-import 'package:watrix/resources/my_theme.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/screens/actor_details_page.dart';
@@ -213,22 +212,25 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
           style: Style.headingStyle,
         ),
         Style.getVerticalSpacing(context: context),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildIconHint(
-              Strings.moviesTvShows,
-              Provider.of<MyTheme>(context, listen: false).darkMode
-                  ? Asset.moviesTvLight
-                  : Asset.moviesTvDark,
-            ),
-            _buildIconHint(
-              Strings.actorsDirectors,
-              Provider.of<MyTheme>(context, listen: false).darkMode
-                  ? Asset.actorsLight
-                  : Asset.actorsDark,
-            ),
-          ],
+        ValueListenableBuilder<AdaptiveThemeMode>(
+          valueListenable: AdaptiveTheme.of(context).modeChangeNotifier,
+          builder: (context, value, child) {
+            bool isDarkMode = value == AdaptiveThemeMode.dark;
+
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildIconHint(
+                  Strings.moviesTvShows,
+                  isDarkMode ? Asset.moviesTvLight : Asset.moviesTvDark,
+                ),
+                _buildIconHint(
+                  Strings.actorsDirectors,
+                  isDarkMode ? Asset.actorsLight : Asset.actorsDark,
+                ),
+              ],
+            );
+          },
         ),
       ],
     );

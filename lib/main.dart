@@ -1,3 +1,4 @@
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:isar/isar.dart';
@@ -9,7 +10,6 @@ import 'package:watrix/models/local/last_activities.dart';
 import 'package:watrix/models/local/progress.dart';
 import 'package:watrix/models/local/search_history.dart';
 import 'package:watrix/models/local/show_history.dart';
-import 'package:watrix/resources/my_theme.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/screens/actor_details_page.dart';
@@ -47,12 +47,7 @@ void main() async {
     directory: (await getApplicationSupportDirectory()).path,
   );
 
-  runApp(
-    Provider.ChangeNotifierProvider(
-      create: (_) => MyTheme()..changeTheme(true),
-      child: MyApp(),
-    ),
-  );
+  runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -76,99 +71,101 @@ class _MyAppState extends State<MyApp> {
           create: (_) => UserStore(favoritesStore: favoritesStore),
         ),
       ],
-      child: MaterialApp(
-        title: Strings.appName,
-        debugShowCheckedModeBanner: false,
-        theme: Style.themeData,
-        darkTheme: Style.darkThemeData(context),
-        themeMode: Provider.Provider.of<MyTheme>(context).darkMode
-            ? ThemeMode.dark
-            : ThemeMode.light,
-        onGenerateRoute: (settings) {
-          switch (settings.name) {
-            case DetailsPage.routeName:
-              final value = settings.arguments as BaseModel;
-              SystemChrome.setPreferredOrientations([
-                DeviceOrientation.portraitDown,
-                DeviceOrientation.portraitUp
-              ]);
-              return MaterialPageRoute(
-                builder: (context) => DetailsPage(baseModel: value),
-                maintainState: true,
-              );
-            case ActorDetailsPage.routeName:
-              final value = settings.arguments as BaseModel;
-              return MaterialPageRoute(
-                builder: (context) => ActorDetailsPage(baseModel: value),
-              );
-            case SettingsPage.routeName:
-              return MaterialPageRoute(
-                builder: (context) => SettingsPage(),
-              );
-            case VideoPlayerPage.routeName:
-              final value = settings.arguments as Map;
-              SystemChrome.setPreferredOrientations([
-                DeviceOrientation.landscapeLeft,
-                DeviceOrientation.landscapeRight
-              ]);
-              return MaterialPageRoute(
-                builder: (context) => VlcPlayerPage(
-                  url: value['url'],
-                  baseModel: value['model'],
-                  episode: value['episode'],
-                  movie: value['movie'],
-                  season: value['season'],
-                  show: value['tv'],
-                  progress: value['progress'],
-                  id: value['id'],
-                ),
-              );
-            default:
-          }
-          return null;
-        },
-        home: Scaffold(
-          extendBody: true,
-          resizeToAvoidBottomInset: false,
-          body: SafeArea(
-            child: Stack(
-              children: [
-                IndexedStack(
-                  index: _pageIndex,
-                  children: [
-                    HomePage(),
-                    ExtensionsPage(),
-                    SearchPage(
-                      onBack: () {
-                        setState(() {
-                          _pageIndex = 0;
-                          (bottomNavigationKey.currentWidget
-                                  as BottomNavigationBar)
-                              .onTap!(0);
-                        });
-                      },
-                    ),
-                    ProfilePage(
-                      onBack: () {
-                        setState(() {
-                          _pageIndex = 0;
-                          (bottomNavigationKey.currentWidget
-                                  as BottomNavigationBar)
-                              .onTap!(0);
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: HomeBottomNavBar((index) {
-                    setState(() {
-                      _pageIndex = index;
-                    });
-                  }, bottomNavigationKey: bottomNavigationKey),
-                ),
-              ],
+      child: AdaptiveTheme(
+        light: Style.themeData,
+        dark: Style.darkThemeData(context),
+        initial: AdaptiveThemeMode.light,
+        builder: (light, dark) => MaterialApp(
+          title: Strings.appName,
+          debugShowCheckedModeBanner: false,
+          theme: light,
+          darkTheme: dark,
+          onGenerateRoute: (settings) {
+            switch (settings.name) {
+              case DetailsPage.routeName:
+                final value = settings.arguments as BaseModel;
+                SystemChrome.setPreferredOrientations([
+                  DeviceOrientation.portraitDown,
+                  DeviceOrientation.portraitUp
+                ]);
+                return MaterialPageRoute(
+                  builder: (context) => DetailsPage(baseModel: value),
+                  maintainState: true,
+                );
+              case ActorDetailsPage.routeName:
+                final value = settings.arguments as BaseModel;
+                return MaterialPageRoute(
+                  builder: (context) => ActorDetailsPage(baseModel: value),
+                );
+              case SettingsPage.routeName:
+                return MaterialPageRoute(
+                  builder: (context) => SettingsPage(),
+                );
+              case VideoPlayerPage.routeName:
+                final value = settings.arguments as Map;
+                SystemChrome.setPreferredOrientations([
+                  DeviceOrientation.landscapeLeft,
+                  DeviceOrientation.landscapeRight
+                ]);
+                return MaterialPageRoute(
+                  builder: (context) => VlcPlayerPage(
+                    url: value['url'],
+                    baseModel: value['model'],
+                    episode: value['episode'],
+                    movie: value['movie'],
+                    season: value['season'],
+                    show: value['tv'],
+                    progress: value['progress'],
+                    id: value['id'],
+                  ),
+                );
+              default:
+            }
+            return null;
+          },
+          home: Scaffold(
+            extendBody: true,
+            resizeToAvoidBottomInset: false,
+            body: SafeArea(
+              child: Stack(
+                children: [
+                  IndexedStack(
+                    index: _pageIndex,
+                    children: [
+                      HomePage(),
+                      ExtensionsPage(),
+                      SearchPage(
+                        onBack: () {
+                          setState(() {
+                            _pageIndex = 0;
+                            (bottomNavigationKey.currentWidget
+                                    as BottomNavigationBar)
+                                .onTap!(0);
+                          });
+                        },
+                      ),
+                      ProfilePage(
+                        onBack: () {
+                          setState(() {
+                            _pageIndex = 0;
+                            (bottomNavigationKey.currentWidget
+                                    as BottomNavigationBar)
+                                .onTap!(0);
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: HomeBottomNavBar((index) {
+                      setState(() {
+                        _pageIndex = index;
+                      });
+                    }, bottomNavigationKey: bottomNavigationKey),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
