@@ -75,7 +75,7 @@ class ScreenBackgroundImage extends StatelessWidget {
                   ),
                 ),
               ),
-              child!,
+              this.child,
             ],
           ),
         );
