@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:focused_menu/focused_menu.dart';
@@ -7,7 +6,6 @@ import 'package:focused_menu/modals.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mobx/mobx.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:watrix/components/details_review_tile.dart';
 import 'package:watrix/components/details_stream_tile.dart';
 import 'package:watrix/models/network/trakt/trakt_show_history_season_ep.dart';

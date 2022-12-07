@@ -27,7 +27,7 @@ class TraktRepository {
           scopes: ['public'],
         );
 
-  Future get(String url) {
+  Future get(String url) async {
     return helper.get(url, headers: Constants.traktRequestHeaders);
   }
 
@@ -62,11 +62,6 @@ class TraktRepository {
     Response resp = await get("https://api.trakt.tv/users/me/stats");
 
     return UserStats.fromJson(resp.body);
-  }
-
-  Future<User> getUserProfile() async {
-    Response resp = await get("https://api.trakt.tv/users/me?extended=full");
-    return User.fromJson(resp.body);
   }
 
   Future<List<BaseModel>> getUserFavorites() async {

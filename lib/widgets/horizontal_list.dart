@@ -59,6 +59,9 @@ class _HorizontalListState<T> extends State<HorizontalList<T>> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.future == null && items.isEmpty) {
+      return Container();
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
