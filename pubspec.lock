@@ -898,6 +898,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.1"
+  random_avatar:
+    dependency: "direct main"
+    description:
+      name: random_avatar
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.7"
   random_string:
     dependency: transitive
     description:
@@ -941,7 +948,7 @@ packages:
     source: hosted
     version: "2.0.2"
   shared_preferences:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: shared_preferences
       url: "https://pub.dartlang.org"

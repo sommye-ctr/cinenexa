@@ -1,5 +1,6 @@
-import 'package:flutter/scheduler.dart';
 import 'package:isar/isar.dart';
+import 'package:random_avatar/random_avatar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:watrix/models/local/favorites.dart';
 import 'package:watrix/models/local/last_activities.dart';
 import 'package:watrix/models/local/progress.dart';
@@ -13,10 +14,22 @@ import 'package:watrix/utils/date_time_formatter.dart';
 import '../../models/network/trakt/trakt_progress.dart';
 
 class Database {
+  static const String _TRAKT_LOGGED_IN = "TRAKT_LOGGED_IN";
+
   late Isar isar;
 
   Database() {
     isar = Isar.getInstance()!;
+  }
+
+  void addUserTraktStatus(bool status) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_TRAKT_LOGGED_IN, status);
+  }
+
+  Future<bool> getUserTraktStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    return (prefs.getBool(_TRAKT_LOGGED_IN) ?? false);
   }
 
   Future<LastActivities?> getLastActivities() async {
