@@ -181,7 +181,7 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
       VideoPlayerPage.routeName,
       arguments: {
         "url":
-            "magnet:?xt=urn:btih:03C74F30EE2E837487E36352BA8163E0F85EA27B&tr=udp%3A%2F%2Ftracker.bitsearch.to%3A1337%2Fannounce&tr=udp%3A%2F%2Fwww.torrent.eu.org%3A451%2Fannounce&tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&tr=udp%3A%2F%2Ftracker2.dler.com%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&dn=%5BBitsearch.to%5D+%5BJudas%5D+Attack+on+Titan+-+S04E17.mkv",
+            "magnet:?xt=urn:btih:AA6C8D8201FD572B233B3282DCC5BF9DCFA0F0EB&dn=Youkoso+Jitsuryoku+Shijou+Shugi+no+Kyoushitsu+e+%28Classroom+of+the+Elite%29+%28Season+2%29+%5B1080p%5D%5BHEVC+x265+10bit%5D%5BMulti-Subs%5D+-+Judas&tr=http%3A%2F%2Fnyaa.tracker.wf%3A7777%2Fannounce&tr=http%3A%2F%2Fanidex.moe%3A6969%2Fannounce&tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&tr=udp%3A%2F%2Fexodus.desync.com%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&tr=http%3A%2F%2Ftracker.openbittorrent.com%3A80%2Fannounce&tr=udp%3A%2F%2Fopentracker.i2p.rocks%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.internetwarriors.net%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969%2Fannounce&tr=udp%3A%2F%2Fcoppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.zer0day.to%3A1337%2Fannounce",
         "movie": widget.detailsStore.movie,
         "tv": widget.detailsStore.tv,
         "episode": ep,

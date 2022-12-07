@@ -14,11 +14,12 @@ import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/screens/actor_details_page.dart';
 import 'package:watrix/screens/details_page.dart';
-import 'package:watrix/screens/extensions_page.dart';
+import 'package:watrix/screens/forgot_pass_page.dart';
+import 'package:watrix/screens/home_first_screen.dart';
 import 'package:watrix/screens/home_page.dart';
-import 'package:watrix/screens/profile_page.dart';
-import 'package:watrix/screens/search_page.dart';
-import 'package:watrix/components/home_bottom_nav_bar.dart';
+import 'package:watrix/screens/intro_page.dart';
+import 'package:watrix/screens/login_page.dart';
+import 'package:watrix/screens/register_page.dart';
 import 'package:watrix/screens/settings_page.dart';
 import 'package:watrix/screens/video_player_page.dart';
 import 'package:watrix/screens/vlc_video_player.dart';
@@ -31,9 +32,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Supabase.initialize(
-    url: "https://uaetifonbolamgpivtli.supabase.co",
+    url: "https://lsmnsbwamwjgpgnbhfqf.supabase.co",
     anonKey:
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVhZXRpZm9uYm9sYW1ncGl2dGxpIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NjcyNDQ4NjcsImV4cCI6MTk4MjgyMDg2N30.t2N3e0eE5LobMLjYl_KEfghR8XHI0_cj0jPKedKLJ-Y",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzbW5zYndhbXdqZ3BnbmJoZnFmIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzAzNTAyNzIsImV4cCI6MTk4NTkyNjI3Mn0.mpkdOMhskj7ii0KRBRWjzZpnm-nVxw1rFlIJjH85hV4",
   );
 
   await Isar.open(
@@ -58,9 +59,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  int _pageIndex = 0;
-  GlobalKey bottomNavigationKey = GlobalKey();
-
   @override
   Widget build(BuildContext context) {
     FavoritesStore favoritesStore = FavoritesStore();
@@ -97,9 +95,33 @@ class _MyAppState extends State<MyApp> {
                 return MaterialPageRoute(
                   builder: (context) => ActorDetailsPage(baseModel: value),
                 );
+
+              case HomeFirstScreen.routeName:
+                return MaterialPageRoute(
+                  builder: (context) => HomeFirstScreen(),
+                );
+
               case SettingsPage.routeName:
                 return MaterialPageRoute(
                   builder: (context) => SettingsPage(),
+                );
+              case RegisterPage.routeName:
+                return MaterialPageRoute(
+                  builder: (context) {
+                    return RegisterPage();
+                  },
+                );
+              case LoginPage.routeName:
+                return MaterialPageRoute(
+                  builder: (context) {
+                    return LoginPage();
+                  },
+                );
+              case ForgotPassPage.routeName:
+                return MaterialPageRoute(
+                  builder: (context) {
+                    return ForgotPassPage();
+                  },
                 );
               case VideoPlayerPage.routeName:
                 final value = settings.arguments as Map;
@@ -123,7 +145,8 @@ class _MyAppState extends State<MyApp> {
             }
             return null;
           },
-          home: Scaffold(
+          home: IntroPage(),
+          /* home: Scaffold(
             extendBody: true,
             resizeToAvoidBottomInset: false,
             body: SafeArea(
@@ -167,7 +190,7 @@ class _MyAppState extends State<MyApp> {
                 ],
               ),
             ),
-          ),
+          ), */
         ),
       ),
     );

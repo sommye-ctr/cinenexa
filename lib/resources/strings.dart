@@ -12,6 +12,36 @@ class Strings {
   static const String actor = "Actor";
   static const String all = "All";
   static const String moreInfo = "More Info";
+  static const String unexpecedError = "Unexpected error occurred!";
+
+  //Intro
+  static const String tagline = "Track what You See\nResume where You Left";
+  static const String desc =
+      "Track your movies & show progress along with enjoying your favorite watch!";
+  static const String signIn = "Sign In";
+  static const String register = "Register";
+
+  //Login
+  static const String passwordError =
+      "Must contain atleast 8 characters with 1 number";
+  static const String emailError = "Enter Valid Email";
+  static const String forgotPass = "Forgot Password?";
+  static const String email = "Email";
+  static const String name = "Name";
+  static const String password = "Password";
+
+  //Register
+  static const String nameError = "Enter Valid Name";
+  static const String signUpPolicy = "By clicking Register, you agree to our ";
+  static const String termsConditions = "Terms & Conditions";
+  static const String privacyPolicy = "Privacy Policy";
+  static const String sucessful =
+      "Account Created! Verify your email and then login.";
+
+  //Forgot Pass
+  static const String continueSt = "Continue";
+  static const String forgotPassTagline =
+      "Don't worry! Enter the email address associated with your account.";
 
 //Home
   static const String featured = "Featured";
