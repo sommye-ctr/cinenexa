@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/screens/home_first_screen.dart';
+import 'package:watrix/screens/login_configure_page.dart';
 import 'package:watrix/widgets/custom_back_button.dart';
 import 'package:watrix/widgets/custom_text_form.dart';
 import 'package:watrix/widgets/rounded_button.dart';
@@ -137,7 +138,7 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.pop(context);
 
       if (resp.session != null && resp.user != null) {
-        Navigator.pushNamed(context, HomeFirstScreen.routeName);
+        Navigator.pushNamed(context, LoginConfigurePage.routeName);
       }
     } on AuthException catch (error) {
       Navigator.pop(context);

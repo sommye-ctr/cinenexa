@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:random_avatar/random_avatar.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
+import 'package:watrix/screens/login_configure_page.dart';
 import 'package:watrix/screens/settings_page.dart';
 import 'package:watrix/store/user/user_store.dart';
 import 'package:watrix/utils/screen_size.dart';
@@ -79,7 +80,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           IconButton(
             onPressed: () {
-              Navigator.pushNamed(context, SettingsPage.routeName);
+              Navigator.pushNamed(context, LoginConfigurePage.routeName);
             },
             icon: Icon(Icons.settings),
           ),

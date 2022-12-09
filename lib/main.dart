@@ -18,6 +18,7 @@ import 'package:watrix/screens/details_page.dart';
 import 'package:watrix/screens/forgot_pass_page.dart';
 import 'package:watrix/screens/home_first_screen.dart';
 import 'package:watrix/screens/intro_page.dart';
+import 'package:watrix/screens/login_configure_page.dart';
 import 'package:watrix/screens/login_page.dart';
 import 'package:watrix/screens/register_page.dart';
 import 'package:watrix/screens/settings_page.dart';
@@ -137,6 +138,12 @@ class _MyAppState extends State<MyApp> {
         return MaterialPageRoute(
           builder: (context) {
             return ForgotPassPage();
+          },
+        );
+      case LoginConfigurePage.routeName:
+        return MaterialPageRoute(
+          builder: (context) {
+            return LoginConfigurePage();
           },
         );
       case VideoPlayerPage.routeName:
