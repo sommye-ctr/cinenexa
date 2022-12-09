@@ -60,7 +60,6 @@ class TraktRepository {
 
   Future<UserStats> getUserStats() async {
     Response resp = await get("https://api.trakt.tv/users/me/stats");
-
     return UserStats.fromJson(resp.body);
   }
 

@@ -22,7 +22,7 @@ class Database {
     isar = Isar.getInstance()!;
   }
 
-  void addUserTraktStatus(bool status) async {
+  Future addUserTraktStatus(bool status) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_TRAKT_LOGGED_IN, status);
   }

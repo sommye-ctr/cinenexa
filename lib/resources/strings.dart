@@ -30,6 +30,17 @@ class Strings {
   static const String name = "Name";
   static const String password = "Password";
 
+  //LoginConfigure
+  static const String connect = "Connect";
+  static const String loginTrakt = "Login into Trakt";
+  static const String whatTrakt = "What is Trakt?";
+  static const String whyTrakt = "Why do I need to login to Trakt?";
+  static const String skip = "Skip";
+  static const String whyTaktAns =
+      "We only store data related to the extensions you install or rate. All your movie/show progress as well as your favorites are managed by Trakt.";
+  static const String whatTraktAns =
+      "Trakt is a platform that does many things, but primarily keeps track of TV shows and movies you watch.";
+
   //Register
   static const String nameError = "Enter Valid Name";
   static const String signUpPolicy = "By clicking Register, you agree to our ";

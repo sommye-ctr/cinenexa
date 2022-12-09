@@ -5,7 +5,7 @@ class Constants {
   static String tmdbImageBase = "https://image.tmdb.org/t/p";
 
   static const String traktApi =
-      "4cd822c6833df1369125d7c2f8266524993f460908af5381207e4c147059c3d4";
+      "28acc06d101c220710f591128cb8c79a1a86409e94bd777876f42905dc179b26";
   static const String openSubApi = "0fgcaUNKBiPRFgbWOPelMRF0kkfjDA7L";
   static String traktBase = "https://api.trakt.tv";
 

@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:watrix/screens/login_page.dart';
 import 'package:watrix/utils/form_validator.dart';
+import 'package:watrix/utils/link_opener.dart';
 
 import '../resources/asset.dart';
 import '../resources/strings.dart';
@@ -188,7 +189,7 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void _launchUrl(String url) async {
-    if (!await launchUrl(Uri.parse(url))) {
+    if (!await LinkOpener.openLink(url)) {
       Style.showSnackBar(context: context, text: Strings.unexpecedError);
     }
   }

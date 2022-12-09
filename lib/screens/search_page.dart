@@ -342,7 +342,6 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         repeat: true,
       );
     }
-    print(list.toString());
     return Expanded(
       child: LazyLoadScrollView(
         onEndOfPage: () => searchStore.onEndOfPageReached(),
