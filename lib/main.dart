@@ -71,7 +71,6 @@ class _MyAppState extends State<MyApp> {
     } else {
       homeWidget = HomeFirstScreen();
     }
-
     FlutterNativeSplash.remove();
 
     return Provider.MultiProvider(

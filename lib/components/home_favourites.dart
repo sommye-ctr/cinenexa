@@ -8,6 +8,7 @@ import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/services/network/utils.dart';
 import 'package:watrix/store/favorites/favorites_store.dart';
+import 'package:watrix/store/user/user_store.dart';
 import 'package:watrix/utils/screen_size.dart';
 
 import '../models/network/base_model.dart';
@@ -40,12 +41,6 @@ class _HomeFavoritesState extends State<HomeFavorites>
       body: _buildBody(),
       floatingActionButton: Observer(builder: (context) => _buildFab()),
       floatingActionButtonLocation: ExpandableFab.location,
-    );
-    return Stack(
-      children: [
-        _buildBody(),
-        _buildFab(),
-      ],
     );
   }
 
@@ -219,7 +214,9 @@ class _HomeFavoritesState extends State<HomeFavorites>
         keys[element].currentState?.changeChecked();
       }
 
-      store.removeFavorites().whenComplete(() {
+      store
+          .removeFavorites(Provider.of<UserStore>(context, listen: false))
+          .whenComplete(() {
         store.resetMultiSelect();
         Navigator.pop(context);
       });

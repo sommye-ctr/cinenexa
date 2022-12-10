@@ -94,25 +94,27 @@ mixin _$FavoritesStore on _FavoritesStore, Store {
       AsyncAction('_FavoritesStore.addFavorite', context: context);
 
   @override
-  Future<dynamic> addFavorite(BaseModel baseModel) {
-    return _$addFavoriteAsyncAction.run(() => super.addFavorite(baseModel));
+  Future<dynamic> addFavorite(BaseModel baseModel, UserStore userStore) {
+    return _$addFavoriteAsyncAction
+        .run(() => super.addFavorite(baseModel, userStore));
   }
 
   late final _$removeFavoritesAsyncAction =
       AsyncAction('_FavoritesStore.removeFavorites', context: context);
 
   @override
-  Future<dynamic> removeFavorites() {
-    return _$removeFavoritesAsyncAction.run(() => super.removeFavorites());
+  Future<dynamic> removeFavorites(UserStore userStore) {
+    return _$removeFavoritesAsyncAction
+        .run(() => super.removeFavorites(userStore));
   }
 
   late final _$removeFavoriteAsyncAction =
       AsyncAction('_FavoritesStore.removeFavorite', context: context);
 
   @override
-  Future<dynamic> removeFavorite(BaseModel baseModel) {
+  Future<dynamic> removeFavorite(BaseModel baseModel, UserStore userStore) {
     return _$removeFavoriteAsyncAction
-        .run(() => super.removeFavorite(baseModel));
+        .run(() => super.removeFavorite(baseModel, userStore));
   }
 
   late final _$_FavoritesStoreActionController =
