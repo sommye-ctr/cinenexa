@@ -67,7 +67,7 @@ dependencies:
   flutter_svg: any
   url_launcher: ^6.1.7
   shared_preferences: ^2.0.15
-  random_avatar: any
+  random_avatar: ^0.0.7
 
 
 dev_dependencies:
