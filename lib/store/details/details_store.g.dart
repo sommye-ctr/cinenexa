@@ -290,9 +290,9 @@ mixin _$DetailsStore on _DetailsStore, Store {
       AsyncAction('_DetailsStore.addToListClicked', context: context);
 
   @override
-  Future<dynamic> addToListClicked(FavoritesStore store) {
+  Future<dynamic> addToListClicked(FavoritesStore store, UserStore userStore) {
     return _$addToListClickedAsyncAction
-        .run(() => super.addToListClicked(store));
+        .run(() => super.addToListClicked(store, userStore));
   }
 
   late final _$markWatchedClickedAsyncAction =
@@ -352,11 +352,11 @@ mixin _$DetailsStore on _DetailsStore, Store {
   }
 
   @override
-  void removeFromListCLicked(FavoritesStore store) {
+  void removeFromListCLicked(FavoritesStore store, UserStore userStore) {
     final _$actionInfo = _$_DetailsStoreActionController.startAction(
         name: '_DetailsStore.removeFromListCLicked');
     try {
-      return super.removeFromListCLicked(store);
+      return super.removeFromListCLicked(store, userStore);
     } finally {
       _$_DetailsStoreActionController.endAction(_$actionInfo);
     }

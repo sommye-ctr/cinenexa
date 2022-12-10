@@ -21,6 +21,7 @@ import '../../models/network/video.dart';
 import '../../services/network/extensions_repository.dart';
 import '../../services/network/repository.dart';
 import '../favorites/favorites_store.dart';
+import '../user/user_store.dart';
 
 part 'details_store.g.dart';
 
@@ -113,13 +114,17 @@ abstract class _DetailsStore with Store {
   }
 
   @action
-  Future addToListClicked(FavoritesStore store) async {
-    store.addFavorite(baseModel).whenComplete(() => isAddedToFav = true);
+  Future addToListClicked(FavoritesStore store, UserStore userStore) async {
+    store
+        .addFavorite(baseModel, userStore)
+        .whenComplete(() => isAddedToFav = true);
   }
 
   @action
-  void removeFromListCLicked(FavoritesStore store) {
-    store.removeFavorite(baseModel).whenComplete(() => isAddedToFav = false);
+  void removeFromListCLicked(FavoritesStore store, UserStore userStore) {
+    store
+        .removeFavorite(baseModel, userStore)
+        .whenComplete(() => isAddedToFav = false);
   }
 
   @action
