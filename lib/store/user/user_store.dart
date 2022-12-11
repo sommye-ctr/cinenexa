@@ -65,12 +65,13 @@ abstract class _UserStoreBase with Store {
         email: supabaseClient.auth.currentUser!.email!,
       );
     }
+    fetchUserExtensions();
 
     if (isTraktLogged) {
       fetchUserStats();
       fetchUserRecommendations();
       fetchUserProgress();
-      fetchUserExtensions();
+
       List futures = await Future.wait([
         repository.getUserLastActivity(),
         localDb.getLastActivities(),

@@ -114,16 +114,20 @@ class Repository {
 
   static Future<Map> getMovieDetailsWithExtras({required int id}) async {
     final response = await api.getRequest(
-      "${Constants.movie}/${id}?append_to_response=credits,recommendations,videos",
+      "${Constants.movie}/${id}?append_to_response=credits,recommendations,videos,watch/providers",
       haveQueries: true,
     );
     Video? vid = Utils.convertToVideo(response['videos']['results'] as List);
+    var providerList =
+        response?['watch/providers']?['results']?['US']?['flatrate'] ?? [];
     return {
       "movie": Movie.fromMap(response),
       "credits": Utils.convertToBaseModelList(response['credits']['cast']),
       "recommended":
           Utils.convertToBaseModelList(response['recommendations']['results']),
       "video": vid,
+      "providers":
+          Utils.convertToWatchProviderList(providerList), //TODO CHANGE HERE
     };
   }
 
@@ -143,16 +147,20 @@ class Repository {
 
   static Future<Map> getTvDetailsWithExtras({required int id}) async {
     final response = await api.getRequest(
-      "${Constants.tv}/${id}?append_to_response=credits,recommendations,videos",
+      "${Constants.tv}/${id}?append_to_response=credits,recommendations,videos,watch/providers",
       haveQueries: true,
     );
     Video? vid = Utils.convertToVideo(response['videos']['results'] as List);
+    var providerList =
+        response?['watch/providers']?['results']?['US']?['flatrate'] ?? [];
+
     return {
       "tv": Tv.fromMap(response),
       "credits": Utils.convertToBaseModelList(response['credits']['cast']),
       "recommended":
           Utils.convertToBaseModelList(response['recommendations']['results']),
       "video": vid,
+      "providers": Utils.convertToWatchProviderList(providerList),
     };
   }
 

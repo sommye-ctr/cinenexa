@@ -25,6 +25,7 @@ class Constants {
   static String backdropSize = "/w780";
   static String stillSize = "/w300";
   static String profileSize = "/w92";
+  static String watchProviderSize = "/original";
 
   static String hdPosterSize = "/w500";
 

@@ -5,6 +5,7 @@ import 'package:watrix/models/network/extensions/extension_stream.dart';
 import 'package:watrix/models/network/review.dart';
 import 'package:watrix/models/network/trakt/trakt_show_history_season.dart';
 import 'package:watrix/models/network/trakt/trakt_show_history_season_ep.dart';
+import 'package:watrix/models/network/watch_provider.dart';
 import 'package:watrix/services/local/database.dart';
 import 'package:watrix/services/network/requests.dart';
 import 'package:watrix/services/network/trakt_oauth_client.dart';
@@ -64,6 +65,10 @@ abstract class _DetailsStore with Store {
   ObservableFuture<Map> reviews = ObservableFuture.value({});
 
   @observable
+  ObservableList<WatchProvider> watchProviders =
+      <WatchProvider>[].asObservable();
+
+  @observable
   int? chosenSeason;
 
   @observable
@@ -95,7 +100,7 @@ abstract class _DetailsStore with Store {
   TraktProgress? progress;
 
   int reviewPage = 1;
-  int noOfExtensions = 0;
+  int noOfExtensions;
   bool isReviewNextPageLoading = false;
   int traktId = -1;
   TraktRepository repository = TraktRepository(client: TraktOAuthClient());
@@ -244,9 +249,11 @@ abstract class _DetailsStore with Store {
       loadedStreams.addAll(event);
 
       var seen = Set<String>();
-      List list = [...loadedStreams, ...event]
+      List list = loadedStreams
           .where((element) => seen.add(element.extension!.id))
           .toList();
+
+      print("list length ${list.length} & no is $noOfExtensions");
 
       if (list.length == noOfExtensions) {
         isStreamLoading = false;
@@ -301,6 +308,7 @@ abstract class _DetailsStore with Store {
       credits.addAll(map['credits']);
       recommended.addAll(map['recommended']);
       video = map['video'];
+      watchProviders.addAll(map['providers'] as List<WatchProvider>);
       fetchProgress();
     } else if (baseModel.type == BaseModelType.tv) {
       Map map = await Repository.getTvDetailsWithExtras(id: baseModel.id!);
@@ -309,6 +317,7 @@ abstract class _DetailsStore with Store {
       recommended.addAll(map['recommended']);
       video = map['video'];
       chosenSeason = 0;
+      watchProviders.addAll(map['providers'] as List<WatchProvider>);
       fetchProgress();
       _fetchEpisodes();
       fetchWatchHistory();
