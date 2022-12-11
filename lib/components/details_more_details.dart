@@ -10,8 +10,10 @@ import 'package:watrix/components/details_review_tile.dart';
 import 'package:watrix/components/details_stream_tile.dart';
 import 'package:watrix/models/network/trakt/trakt_show_history_season_ep.dart';
 import 'package:watrix/models/network/tv_episode.dart';
+import 'package:watrix/models/network/watch_provider.dart';
 import 'package:watrix/screens/video_player_page.dart';
 import 'package:watrix/store/details/details_store.dart';
+import 'package:watrix/widgets/rounded_image_placeholder.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '../models/network/base_model.dart';
@@ -79,13 +81,20 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
             ],
           ),
           Expanded(
-            child: TabBarView(
-              controller: tabController,
-              children: [
-                _buildStreams(),
-                _buildOtherInfo(),
-                _buildReviews(),
-              ],
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                  horizontal: ScreenSize.getPercentOfWidth(
+                context,
+                0.01,
+              )),
+              child: TabBarView(
+                controller: tabController,
+                children: [
+                  _buildStreams(),
+                  _buildOtherInfo(),
+                  _buildReviews(),
+                ],
+              ),
             ),
           ),
         ],
@@ -97,6 +106,7 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
     return Observer(
       builder: (context) {
         if (widget.detailsStore.baseModel.type == BaseModelType.movie) {
+          widget.detailsStore.watchProviders;
           // return Text("Streams will show up here...");
           /* return ElevatedButton(
             onPressed: () {
@@ -116,34 +126,45 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
             child: Text("Play"),
           ); */
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+          return ListView(
+            physics: BouncingScrollPhysics(),
             children: [
-              SizedBox(
-                height: 5,
+              HorizontalList<WatchProvider>.fromInititalValues(
+                items: widget.detailsStore.watchProviders,
+                heading: "Available at",
+                buildWidget: (item) {
+                  return UnconstrainedBox(
+                    child: DetailsStreamTile(
+                      provider: item,
+                      hidePlayButton: true,
+                    ),
+                  );
+                },
+                buildPlaceHolder: () => Container(),
+                height: ScreenSize.getPercentOfHeight(context, 0.1),
               ),
-              Observer(builder: (_) {
+              if (widget.detailsStore.watchProviders.isNotEmpty)
+                Style.getVerticalSpacing(context: context),
+              Builder(builder: (context) {
                 if (widget.detailsStore.isStreamLoading)
-                  return CircularProgressIndicator();
+                  return Center(child: CircularProgressIndicator());
                 return Container();
               }),
-              Expanded(
-                child: MasonryGridView.builder(
-                  shrinkWrap: true,
-                  gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                  ),
-                  itemCount: widget.detailsStore.loadedStreams.length,
-                  physics: BouncingScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    return UnconstrainedBox(
-                      child: DetailsStreamTile(
-                        extensionStream:
-                            widget.detailsStore.loadedStreams[index],
-                      ),
-                    );
-                  },
+              Style.getVerticalSpacing(context: context),
+              MasonryGridView.builder(
+                shrinkWrap: true,
+                gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
                 ),
+                itemCount: widget.detailsStore.loadedStreams.length,
+                physics: BouncingScrollPhysics(),
+                itemBuilder: (context, index) {
+                  return UnconstrainedBox(
+                    child: DetailsStreamTile(
+                      extensionStream: widget.detailsStore.loadedStreams[index],
+                    ),
+                  );
+                },
               ),
             ],
           );

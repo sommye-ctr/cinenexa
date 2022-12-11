@@ -127,6 +127,22 @@ mixin _$DetailsStore on _DetailsStore, Store {
     });
   }
 
+  late final _$watchProvidersAtom =
+      Atom(name: '_DetailsStore.watchProviders', context: context);
+
+  @override
+  ObservableList<WatchProvider> get watchProviders {
+    _$watchProvidersAtom.reportRead();
+    return super.watchProviders;
+  }
+
+  @override
+  set watchProviders(ObservableList<WatchProvider> value) {
+    _$watchProvidersAtom.reportWrite(value, super.watchProviders, () {
+      super.watchProviders = value;
+    });
+  }
+
   late final _$chosenSeasonAtom =
       Atom(name: '_DetailsStore.chosenSeason', context: context);
 
@@ -427,6 +443,7 @@ credits: ${credits},
 recommended: ${recommended},
 episodes: ${episodes},
 reviews: ${reviews},
+watchProviders: ${watchProviders},
 chosenSeason: ${chosenSeason},
 isAddedToFav: ${isAddedToFav},
 isStreamLoading: ${isStreamLoading},

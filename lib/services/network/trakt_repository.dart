@@ -7,7 +7,6 @@ import 'package:watrix/models/local/show_history.dart';
 import 'package:watrix/models/network/base_model.dart';
 import 'package:watrix/models/network/movie.dart';
 import 'package:watrix/models/network/trakt/trakt_progress.dart';
-import 'package:watrix/models/network/user.dart';
 import 'package:watrix/models/network/user_stats.dart';
 import 'package:watrix/services/network/repository.dart';
 import 'package:watrix/services/network/utils.dart';
