@@ -253,8 +253,6 @@ abstract class _DetailsStore with Store {
           .where((element) => seen.add(element.extension!.id))
           .toList();
 
-      print("list length ${list.length} & no is $noOfExtensions");
-
       if (list.length == noOfExtensions) {
         isStreamLoading = false;
         streamSubscription?.cancel();

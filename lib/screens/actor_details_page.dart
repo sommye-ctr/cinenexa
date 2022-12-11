@@ -1,7 +1,6 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:provider/provider.dart';
 import 'package:watrix/components/actor_details_header.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/screens/see_more_page.dart';

@@ -304,14 +304,12 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
       onPressed: () {},
       animateMenuItems: true,
       blurSize: 5,
-      child: UnconstrainedBox(
-        child: EpisodeTile(
-          episode: widget.detailsStore.episodes[index],
-          watched: watched,
-          onTap: () {
-            widget.detailsStore.onEpiodeClicked(index);
-          },
-        ),
+      child: EpisodeTile(
+        episode: widget.detailsStore.episodes[index],
+        watched: watched,
+        onTap: () {
+          widget.detailsStore.onEpiodeClicked(index);
+        },
       ),
     );
   }
