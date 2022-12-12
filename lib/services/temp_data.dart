@@ -40,14 +40,14 @@ class TempData {
       quality: 720,
       seeds: 130,
     )..extension = TempData().extensions[0],
-    ExtensionStream.url(
+    ExtensionStream.externalUrl(
       id: 48843932827,
-      url: "url",
       dubbed: true,
       name: "TOrrent stream 240p",
       quality: 720,
       size: 40000,
       seeds: 130,
+      externalUrl: 'https://www.google.com',
     )..extension = TempData().extensions[0],
     ExtensionStream.url(
       id: 48843932827,

@@ -123,6 +123,11 @@ class Strings {
   static const String markSeasonWatched = "Mark season as watched";
   static const String markSeasonUnwatched = "Mark season as unwatched";
 
+  static const String availableAt = "Available at";
+  static const String streams = "Streams";
+  static const String reviews = "Reviews";
+  static const String otherInfo = "Other Info";
+
 //Actor Details
   static const String knownFor = "Known For";
   static const String birthPlace = "BirthPlace";

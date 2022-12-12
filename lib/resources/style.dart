@@ -1,8 +1,10 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:watrix/models/network/base_model.dart';
+import 'package:watrix/utils/link_opener.dart';
 import 'package:watrix/utils/screen_size.dart';
 
 import '../components/movie_tile.dart';
@@ -176,5 +178,36 @@ class Style {
       useRootNavigator: true,
       onDismissCallback: (DismissType type) {},
     )..show();
+  }
+
+  static void showExternalLinkOpenWarning({
+    required BuildContext context,
+    required String extensionName,
+    required String url,
+  }) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return CupertinoAlertDialog(
+          title: Text("Warning"),
+          content:
+              Text("$extensionName is trying to open an external url:\n$url"),
+          actions: [
+            CupertinoDialogAction(
+              child: Text("Open"),
+              onPressed: () {
+                LinkOpener.openLink(url);
+              },
+            ),
+            CupertinoDialogAction(
+              child: Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
