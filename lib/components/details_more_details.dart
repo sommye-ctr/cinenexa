@@ -1,33 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:focused_menu/focused_menu.dart';
-import 'package:focused_menu/modals.dart';
-import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
-import 'package:lottie/lottie.dart';
-import 'package:mobx/mobx.dart';
-import 'package:watrix/components/details_review_tile.dart';
-import 'package:watrix/components/details_stream_tile.dart';
-import 'package:watrix/models/network/trakt/trakt_show_history_season_ep.dart';
-import 'package:watrix/models/network/tv_episode.dart';
-import 'package:watrix/models/network/watch_provider.dart';
-import 'package:watrix/screens/video_player_page.dart';
+import 'package:watrix/components/details_more_details_info.dart';
+import 'package:watrix/components/details_more_details_reviews.dart';
+import 'package:watrix/components/details_more_details_streams.dart';
+import 'package:watrix/models/network/base_model.dart';
+import 'package:watrix/resources/strings.dart';
 import 'package:watrix/store/details/details_store.dart';
-import 'package:watrix/widgets/rounded_image_placeholder.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-import '../models/network/base_model.dart';
-import '../models/network/trakt/trakt_show_history_season.dart';
-import '../models/network/tv_season.dart';
-import '../resources/asset.dart';
-import '../resources/strings.dart';
 import '../resources/style.dart';
-import '../screens/actor_details_page.dart';
-import '../screens/details_page.dart';
-import '../screens/see_more_page.dart';
 import '../utils/screen_size.dart';
-import '../widgets/horizontal_list.dart';
-import 'details_episode_tile.dart';
 
 class DetailsMoreDetails extends StatefulWidget {
   final DetailsStore detailsStore;
@@ -44,13 +24,15 @@ class DetailsMoreDetails extends StatefulWidget {
 
 class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
     with TickerProviderStateMixin {
-  YoutubePlayerController? videoController;
+  // YoutubePlayerController? videoController;
 
   late TabController tabController;
   @override
   void initState() {
     tabController = TabController(length: 3, vsync: this);
-    widget.detailsStore.fetchStreams();
+    if (widget.detailsStore.baseModel.type == BaseModelType.movie) {
+      widget.detailsStore.fetchStreams();
+    }
     super.initState();
   }
 
@@ -75,9 +57,9 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
             splashBorderRadius: BorderRadius.circular(40),
             isScrollable: true,
             tabs: [
-              Tab(text: "Streams"),
-              Tab(text: "Other Info"),
-              Tab(text: "Reviews"),
+              Tab(text: Strings.streams),
+              Tab(text: Strings.otherInfo),
+              Tab(text: Strings.reviews),
             ],
           ),
           Expanded(
@@ -90,9 +72,9 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
               child: TabBarView(
                 controller: tabController,
                 children: [
-                  _buildStreams(),
-                  _buildOtherInfo(),
-                  _buildReviews(),
+                  DetailsMoreDetailsStreams(detailsStore: widget.detailsStore),
+                  DetailsMoreDetailsInfo(detailsStore: widget.detailsStore),
+                  DetailsMoreDetailsReviews(detailsStore: widget.detailsStore),
                 ],
               ),
             ),
@@ -102,7 +84,7 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
     );
   }
 
-  Widget _buildStreams() {
+/*   Widget _buildStreams() {
     return Observer(
       builder: (context) {
         if (widget.detailsStore.baseModel.type == BaseModelType.movie) {
@@ -592,5 +574,5 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
   void dispose() {
     disposeVideoController();
     super.dispose();
-  }
+  } */
 }

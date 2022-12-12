@@ -104,6 +104,7 @@ abstract class _DetailsStore with Store {
   bool isReviewNextPageLoading = false;
   int traktId = -1;
   TraktRepository repository = TraktRepository(client: TraktOAuthClient());
+  StreamSubscription? streamSubscription;
 
   @computed
   List<Genre>? get genres {
@@ -221,6 +222,9 @@ abstract class _DetailsStore with Store {
   @action
   void onEpBackClicked() {
     chosenEpisode = null;
+    streamSubscription?.cancel();
+    loadedStreams.clear();
+    isStreamLoading = true;
   }
 
   @action
@@ -243,9 +247,15 @@ abstract class _DetailsStore with Store {
 
   @action
   void fetchStreams() {
-    StreamSubscription? streamSubscription;
-    streamSubscription =
-        ExtensionsRepository.loadStreams(baseModel: baseModel).listen((event) {
+    streamSubscription = ExtensionsRepository.loadStreams(
+      baseModel: baseModel,
+      episode: chosenEpisode != null
+          ? (episodes[chosenEpisode!].episodeNumber)
+          : null,
+      season: chosenSeason != null
+          ? (tv?.seasons?[chosenSeason!].seasonNumber)
+          : null,
+    ).listen((event) {
       loadedStreams.addAll(event);
 
       var seen = Set<String>();

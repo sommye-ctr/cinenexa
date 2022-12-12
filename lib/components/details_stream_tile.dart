@@ -10,7 +10,8 @@ import '../resources/style.dart';
 class DetailsStreamTile extends StatelessWidget {
   final ExtensionStream? extensionStream;
   final WatchProvider? provider;
-  final Function(ExtensionStream? extensionStream)? onClick;
+  final Function(
+      ExtensionStream? extensionStream, WatchProvider? watchProvider)? onClick;
   final bool? hidePlayButton;
   const DetailsStreamTile({
     Key? key,
@@ -23,7 +24,7 @@ class DetailsStreamTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => onClick?.call(extensionStream),
+      onTap: () => onClick?.call(extensionStream, provider),
       child: Container(
         width: ScreenSize.getPercentOfWidth(context, 0.45),
         child: Stack(
@@ -71,7 +72,7 @@ class DetailsStreamTile extends StatelessWidget {
               Align(
                 alignment: Alignment.topRight,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () => onClick?.call(extensionStream, provider),
                   child: Icon(Icons.play_arrow),
                   style: ElevatedButton.styleFrom(
                     shape: CircleBorder(),
