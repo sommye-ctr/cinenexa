@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:watrix/utils/screen_size.dart';
 
 class CustomBackButton extends StatelessWidget {
-  const CustomBackButton({Key? key}) : super(key: key);
+  const CustomBackButton({
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,8 +17,8 @@ class CustomBackButton extends StatelessWidget {
           onTap: () => Navigator.maybePop(context),
           child: Container(
             color: Colors.white.withOpacity(0.5),
-            height: ScreenSize.getPercentOfHeight(context, 0.06),
-            width: ScreenSize.getPercentOfHeight(context, 0.06),
+            height: 50,
+            width: 50,
             child: Icon(Icons.arrow_back_rounded),
           ),
         ),
