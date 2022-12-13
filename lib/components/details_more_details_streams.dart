@@ -4,6 +4,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
 import 'package:watrix/models/network/extensions/extension_stream.dart';
+import 'package:watrix/screens/youtube_video_player.dart';
 import 'package:watrix/store/details/details_store.dart';
 
 import '../models/network/base_model.dart';
@@ -200,6 +201,8 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
         progress: widget.detailsStore.progress?.progress,
       );
     } else if (extensionStream.ytId != null) {
+      Navigator.pushNamed(context, YoutubeVideoPlayer.routeName,
+          arguments: extensionStream.ytId);
     } else if (extensionStream.magnet != null) {
       navigateToVideoPlayer(
         url: "",

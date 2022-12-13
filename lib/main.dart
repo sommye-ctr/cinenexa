@@ -24,6 +24,7 @@ import 'package:watrix/screens/register_page.dart';
 import 'package:watrix/screens/settings_page.dart';
 import 'package:watrix/screens/video_player_page.dart';
 import 'package:watrix/screens/vlc_video_player.dart';
+import 'package:watrix/screens/youtube_video_player.dart';
 import 'package:watrix/store/favorites/favorites_store.dart';
 import 'package:watrix/store/user/user_store.dart';
 
@@ -111,7 +112,6 @@ class _MyAppState extends State<MyApp> {
         return MaterialPageRoute(
           builder: (context) => ActorDetailsPage(baseModel: value),
         );
-
       case HomeFirstScreen.routeName:
         return MaterialPageRoute(
           builder: (context) => HomeFirstScreen(),
@@ -133,6 +133,7 @@ class _MyAppState extends State<MyApp> {
             return LoginPage();
           },
         );
+
       case ForgotPassPage.routeName:
         return MaterialPageRoute(
           builder: (context) {
@@ -143,6 +144,13 @@ class _MyAppState extends State<MyApp> {
         return MaterialPageRoute(
           builder: (context) {
             return LoginConfigurePage();
+          },
+        );
+      case YoutubeVideoPlayer.routeName:
+        final value = settings.arguments as String;
+        return MaterialPageRoute(
+          builder: (context) {
+            return YoutubeVideoPlayer(ytId: value);
           },
         );
       case VideoPlayerPage.routeName:

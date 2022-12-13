@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:watrix/screens/youtube_video_player.dart';
 import 'package:watrix/store/details/details_store.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:watrix/widgets/rounded_image.dart';
+import 'package:youtube/youtube_thumbnail.dart';
 
 import '../models/network/base_model.dart';
 import '../resources/strings.dart';
@@ -24,8 +26,6 @@ class DetailsMoreDetailsInfo extends StatefulWidget {
 }
 
 class _DetailsMoreDetailsInfoState extends State<DetailsMoreDetailsInfo> {
-  YoutubePlayerController? videoController;
-
   @override
   Widget build(BuildContext context) {
     return _build();
@@ -66,13 +66,6 @@ class _DetailsMoreDetailsInfoState extends State<DetailsMoreDetailsInfo> {
   Widget _buildTrailer() {
     return Observer(builder: (_) {
       if (widget.detailsStore.video != null) {
-        videoController = YoutubePlayerController(
-          initialVideoId: widget.detailsStore.video!.key,
-          flags: YoutubePlayerFlags(
-            autoPlay: false,
-            showLiveFullscreenButton: false,
-          ),
-        );
         return Padding(
           padding: EdgeInsets.symmetric(horizontal: 8),
           child: Column(
@@ -85,10 +78,26 @@ class _DetailsMoreDetailsInfoState extends State<DetailsMoreDetailsInfo> {
               Container(
                 height: 4,
               ),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
-                child: YoutubePlayer(
-                  controller: videoController!,
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, YoutubeVideoPlayer.routeName,
+                      arguments: widget.detailsStore.video!.key);
+                },
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Center(
+                      child: RoundedImage(
+                        image: YoutubeThumbnail(
+                          youtubeId: widget.detailsStore.video!.key,
+                        ).hd(),
+                        width: ScreenSize.getPercentOfWidth(context, 0.9),
+                        ratio: 16 / 9,
+                      ),
+                    ),
+                    Icon(Icons.play_arrow,
+                        size: ScreenSize.getPercentOfWidth(context, 0.2)),
+                  ],
                 ),
               ),
             ],
@@ -123,7 +132,6 @@ class _DetailsMoreDetailsInfoState extends State<DetailsMoreDetailsInfo> {
               poster: item.posterPath,
               title: item.title,
               callback: () {
-                videoController?.pause();
                 Navigator.pushNamed(
                   context,
                   route,
@@ -138,7 +146,6 @@ class _DetailsMoreDetailsInfoState extends State<DetailsMoreDetailsInfo> {
             showTitle: true,
             context: context,
             onClick: (item) {
-              videoController?.pause();
               Navigator.pushNamed(
                 context,
                 route,
@@ -171,11 +178,5 @@ class _DetailsMoreDetailsInfoState extends State<DetailsMoreDetailsInfo> {
         },
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    videoController?.dispose();
-    super.dispose();
   }
 }
