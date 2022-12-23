@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart' as Provider;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:watrix/models/local/favorites.dart';
+import 'package:watrix/models/local/installed_extensions.dart';
 import 'package:watrix/models/local/last_activities.dart';
 import 'package:watrix/models/local/progress.dart';
 import 'package:watrix/models/local/search_history.dart';
@@ -25,6 +26,7 @@ import 'package:watrix/screens/settings_page.dart';
 import 'package:watrix/screens/video_player_page.dart';
 import 'package:watrix/screens/vlc_video_player.dart';
 import 'package:watrix/screens/youtube_video_player.dart';
+import 'package:watrix/store/extensions/extensions_store.dart';
 import 'package:watrix/store/favorites/favorites_store.dart';
 import 'package:watrix/store/user/user_store.dart';
 
@@ -47,6 +49,7 @@ void main() async {
       ProgressSchema,
       ShowHistorySchema,
       LastActivitiesSchema,
+      InstalledExtensionsSchema,
     ],
     directory: (await getApplicationSupportDirectory()).path,
   );
@@ -79,6 +82,9 @@ class _MyAppState extends State<MyApp> {
         Provider.Provider(create: (_) => favoritesStore),
         Provider.Provider(
           create: (_) => UserStore(favoritesStore: favoritesStore),
+        ),
+        Provider.Provider(
+          create: (_) => ExtensionsStore(),
         ),
       ],
       child: AdaptiveTheme(

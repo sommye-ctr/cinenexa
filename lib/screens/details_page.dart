@@ -5,6 +5,7 @@ import 'package:watrix/components/details_more_details.dart';
 
 import 'package:watrix/services/constants.dart';
 import 'package:watrix/store/details/details_store.dart';
+import 'package:watrix/store/extensions/extensions_store.dart';
 import 'package:watrix/store/user/user_store.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
@@ -38,8 +39,9 @@ class _DetailsPageState extends State<DetailsPage> {
   void initState() {
     detailsStore = DetailsStore(
       baseModel: widget.baseModel,
-      noOfExtensions:
-          Provider.of<UserStore>(context, listen: false).extensions.length,
+      noOfExtensions: Provider.of<ExtensionsStore>(context, listen: false)
+          .installedExtensions
+          .length,
     );
     super.initState();
   }

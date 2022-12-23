@@ -13,6 +13,8 @@ class Strings {
   static const String all = "All";
   static const String moreInfo = "More Info";
   static const String unexpecedError = "Unexpected error occurred!";
+  static const String installExtensionHelp =
+      "Install Extensions from Discover tab to start binging your favorite content!";
 
   //Intro
   static const String tagline = "Track what You See\nResume where You Left";
@@ -104,6 +106,13 @@ class Strings {
   static const String installed = "Installed";
   static const String discover = "Discover";
   static const String install = "Install";
+  static const String anime = "Anime";
+  static const String rate = "Rate";
+  static const String uninstall = "Uninstall";
+
+  static const String successfulyRated = "Succefully Rated!";
+  static const String noRating = "No Rating Provided!";
+  static const String youRated = "You Rated";
 
 //Details
   static const String addToFav = "Add to";

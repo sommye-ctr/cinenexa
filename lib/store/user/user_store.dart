@@ -9,7 +9,6 @@ import 'package:watrix/models/network/trakt/trakt_progress.dart';
 import 'package:watrix/models/network/user.dart';
 import 'package:watrix/models/network/user_stats.dart';
 import 'package:watrix/services/local/database.dart';
-import 'package:watrix/services/network/extensions_repository.dart';
 import 'package:watrix/services/network/trakt_oauth_client.dart';
 import 'package:watrix/services/network/trakt_repository.dart';
 import 'package:watrix/store/favorites/favorites_store.dart';
@@ -36,9 +35,6 @@ abstract class _UserStoreBase with Store {
   @observable
   ObservableList<ShowHistory> showHistory = <ShowHistory>[].asObservable();
 
-  @observable
-  ObservableList<Extension> extensions = <Extension>[].asObservable();
-
   bool get isTraktLogged => traktStatus;
 
   TraktRepository repository = TraktRepository(client: TraktOAuthClient());
@@ -61,11 +57,9 @@ abstract class _UserStoreBase with Store {
       user = CineNexaUser(
         id: supabaseClient.auth.currentUser!.id,
         name: supabaseClient.auth.currentUser!.userMetadata?['name'],
-        avatar: "",
         email: supabaseClient.auth.currentUser!.email!,
       );
     }
-    fetchUserExtensions();
 
     if (isTraktLogged) {
       fetchUserStats();
@@ -107,11 +101,6 @@ abstract class _UserStoreBase with Store {
       Future.wait(listFutures).whenComplete(
           () => localDb.addLastActivities(lastActivities: lastActivities));
     }
-  }
-
-  @action
-  Future fetchUserExtensions() async {
-    extensions.addAll(await ExtensionsRepository.getUserExtensions());
   }
 
   @action

@@ -1,13 +1,46 @@
 import 'package:flutter/material.dart';
-import 'package:watrix/components/extensions_extension_tile.dart';
-import 'package:watrix/services/temp_data.dart';
-import 'package:watrix/utils/screen_size.dart';
+import 'package:mobx/mobx.dart';
+import 'package:provider/provider.dart';
+import 'package:watrix/components/extensions_discover.dart';
+import 'package:watrix/components/extensions_installed.dart';
+import 'package:watrix/store/extensions/extensions_store.dart';
 
 import '../resources/strings.dart';
 import '../resources/style.dart';
 
-class ExtensionsPage extends StatelessWidget {
+class ExtensionsPage extends StatefulWidget {
   const ExtensionsPage({Key? key}) : super(key: key);
+
+  @override
+  State<ExtensionsPage> createState() => _ExtensionsPageState();
+}
+
+class _ExtensionsPageState extends State<ExtensionsPage> {
+  late ExtensionsStore extensionsStore;
+  late ReactionDisposer disposer;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    extensionsStore = Provider.of<ExtensionsStore>(context);
+    disposer = autorun(
+      (_) {
+        extensionsStore.installedExtensions.toString();
+        setState(() {});
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    disposer();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,33 +74,13 @@ class ExtensionsPage extends StatelessWidget {
               child: TabBarView(
                 physics: NeverScrollableScrollPhysics(),
                 children: [
-                  _buildDiscover(context),
-                  Text("Installed"),
+                  ExtensionsDiscover(extensionsStore: extensionsStore),
+                  ExtensionsInstalled(extensionsStore: extensionsStore),
                 ],
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildDiscover(context) {
-    return Padding(
-      padding:
-          EdgeInsets.only(top: ScreenSize.getPercentOfHeight(context, 0.02)),
-      child: GridView(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-        ),
-        children: [
-          ExtensionTile(
-            extension: TempData().extensions[0],
-          ),
-          ExtensionTile(
-            extension: TempData().extensions[1],
-          ),
-        ],
       ),
     );
   }
