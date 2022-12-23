@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:watrix/models/network/extensions/extension.dart';
+import 'package:watrix/models/network/extensions/subtitle.dart';
 
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 class ExtensionStream {
-  final double id;
+  final double id = Random().nextInt(9000000) + 100000;
 
   final String? url;
   final String? ytId;
@@ -21,11 +23,11 @@ class ExtensionStream {
   final double? size;
   final int? seeds;
   final String? streamGroup;
+  final List<Subtitle>? subtitles;
 
   Extension? extension;
 
   ExtensionStream.url({
-    required this.id,
     required this.url,
     this.ytId,
     this.magnet,
@@ -40,10 +42,10 @@ class ExtensionStream {
     this.size,
     this.seeds,
     this.streamGroup,
+    this.subtitles,
   });
 
   ExtensionStream.ytId({
-    required this.id,
     this.url,
     required this.ytId,
     this.magnet,
@@ -58,10 +60,10 @@ class ExtensionStream {
     this.size,
     this.seeds,
     this.streamGroup,
+    this.subtitles,
   });
 
   ExtensionStream.magnet({
-    required this.id,
     this.url,
     this.ytId,
     required this.magnet,
@@ -76,10 +78,10 @@ class ExtensionStream {
     this.size,
     this.seeds,
     this.streamGroup,
+    this.subtitles,
   });
 
   ExtensionStream.externalUrl({
-    required this.id,
     this.url,
     this.ytId,
     this.magnet,
@@ -94,6 +96,7 @@ class ExtensionStream {
     this.size,
     this.seeds,
     this.streamGroup,
+    this.subtitles,
   });
 
   Map<String, dynamic> toMap() {
@@ -113,13 +116,13 @@ class ExtensionStream {
       'size': size,
       'seeds': seeds,
       'streamGroup': streamGroup,
+      'subtitles': subtitles,
     };
   }
 
   factory ExtensionStream.fromMap(Map<String, dynamic> map) {
     if (map['url'] != null) {
       return ExtensionStream.url(
-        id: map['id'] as double,
         url: map['url'],
         name: map['name'] != null ? map['name'] as String : null,
         quality: map['quality'] != null ? map['quality'] as int : null,
@@ -131,10 +134,13 @@ class ExtensionStream {
         seeds: map['seeds'] != null ? map['seeds'] as int : null,
         streamGroup:
             map['streamGroup'] != null ? map['streamGroup'] as String : null,
+        subtitles: map['subtitles'] != null
+            ? List<Subtitle>.from(
+                map['subtitles']?.map((x) => Subtitle.fromMap(x)))
+            : null,
       );
     } else if (map['ytId'] != null) {
       return ExtensionStream.ytId(
-        id: map['id'] as double,
         ytId: map['ytId'],
         name: map['name'] != null ? map['name'] as String : null,
         quality: map['quality'] != null ? map['quality'] as int : null,
@@ -146,10 +152,13 @@ class ExtensionStream {
         seeds: map['seeds'] != null ? map['seeds'] as int : null,
         streamGroup:
             map['streamGroup'] != null ? map['streamGroup'] as String : null,
+        subtitles: map['subtitles'] != null
+            ? List<Subtitle>.from(
+                map['subtitles']?.map((x) => Subtitle.fromMap(x)))
+            : null,
       );
     } else if (map['magnet'] != null) {
       return ExtensionStream.magnet(
-        id: map['id'] as double,
         magnet: map['magnet'],
         name: map['name'] != null ? map['name'] as String : null,
         quality: map['quality'] != null ? map['quality'] as int : null,
@@ -162,10 +171,13 @@ class ExtensionStream {
         seeds: map['seeds'] != null ? map['seeds'] as int : null,
         streamGroup:
             map['streamGroup'] != null ? map['streamGroup'] as String : null,
+        subtitles: map['subtitles'] != null
+            ? List<Subtitle>.from(
+                map['subtitles']?.map((x) => Subtitle.fromMap(x)))
+            : null,
       );
     } else if (map['externalUrl'] != null) {
       return ExtensionStream.externalUrl(
-        id: map['id'] as double,
         externalUrl: map['externalUrl'],
         name: map['name'] != null ? map['name'] as String : null,
         quality: map['quality'] != null ? map['quality'] as int : null,
@@ -177,6 +189,10 @@ class ExtensionStream {
         seeds: map['seeds'] != null ? map['seeds'] as int : null,
         streamGroup:
             map['streamGroup'] != null ? map['streamGroup'] as String : null,
+        subtitles: map['subtitles'] != null
+            ? List<Subtitle>.from(
+                map['subtitles']?.map((x) => Subtitle.fromMap(x)))
+            : null,
       );
     } else {
       throw UnsupportedError(

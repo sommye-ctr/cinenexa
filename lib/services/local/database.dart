@@ -1,12 +1,13 @@
 import 'package:isar/isar.dart';
-import 'package:random_avatar/random_avatar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:watrix/models/local/favorites.dart';
+import 'package:watrix/models/local/installed_extensions.dart';
 import 'package:watrix/models/local/last_activities.dart';
 import 'package:watrix/models/local/progress.dart';
 import 'package:watrix/models/local/search_history.dart';
 import 'package:watrix/models/local/show_history.dart';
 import 'package:watrix/models/network/base_model.dart';
+import 'package:watrix/models/network/extensions/extension.dart';
 import 'package:watrix/models/network/trakt/trakt_show_history_season.dart';
 import 'package:watrix/models/network/trakt/trakt_show_history_season_ep.dart';
 import 'package:watrix/utils/date_time_formatter.dart';
@@ -51,6 +52,7 @@ class Database {
     DateTime? movieCollectedAt,
     DateTime? epWatchedAt,
     DateTime? epCollectedAt,
+    DateTime? extensionSyncedAt,
   }) async {
     LastActivities? lastActivities = await isar.lastActivities.get(0);
     LastActivities newLastActivities = LastActivities()
@@ -58,11 +60,78 @@ class Database {
       ..epCollectedAt = epCollectedAt ?? lastActivities!.epCollectedAt
       ..epWatchedAt = epWatchedAt ?? lastActivities!.epWatchedAt
       ..movieCollectedAt = movieCollectedAt ?? lastActivities!.movieCollectedAt
-      ..movieWatchedAt = movieWatchedAt ?? lastActivities!.movieWatchedAt;
+      ..movieWatchedAt = movieWatchedAt ?? lastActivities!.movieWatchedAt
+      ..extensionsSyncedAt =
+          extensionSyncedAt ?? lastActivities!.extensionsSyncedAt;
 
     await isar.writeTxn(() async {
       await isar.lastActivities.put(newLastActivities);
     });
+  }
+
+  Future addInstalledExtension(Extension extension) {
+    return isar.writeTxn(() async {
+      await isar.installedExtensions.put(extension.getInstalled());
+    });
+  }
+
+  Future updateInstalledExtensions(List<Extension> extensions) async {
+    List<InstalledExtensions> installed =
+        (await isar.installedExtensions.where().findAll());
+
+    List<InstalledExtensions> newExt = installed
+        .where((element) => extensions
+            .where((element1) => element1.id == element.stId)
+            .isNotEmpty)
+        .toList();
+
+    for (var i = 0; i < newExt.length; i++) {
+      Extension ext =
+          extensions.singleWhere((element) => element.id == newExt[i].stId);
+
+      int? id = newExt[i].id;
+      int? providedRating = newExt[i].providedRating;
+      newExt[i] = ext.getInstalled()
+        ..id = id
+        ..providedRating = providedRating;
+    }
+
+    return isar.writeTxn(() async {
+      isar.installedExtensions.putAll(newExt);
+    });
+  }
+
+  Future removeInstalledExtension(Extension extension) {
+    return isar.writeTxn(() async {
+      await isar.installedExtensions
+          .where()
+          .stIdEqualTo(extension.id)
+          .deleteFirst();
+    });
+  }
+
+  Future<InstalledExtensions?> rateExtension(Extension extension, int rating) {
+    return isar.writeTxn(() async {
+      InstalledExtensions? ext = await isar.installedExtensions
+          .where()
+          .stIdEqualTo(extension.id)
+          .findFirst();
+
+      if (ext != null) {
+        ext.providedRating = rating;
+        int id = await isar.installedExtensions.put(ext);
+        return isar.installedExtensions.get(id);
+      }
+    });
+  }
+
+  Stream watchInstalledExtensions() {
+    return isar.installedExtensions.watchLazy(fireImmediately: true);
+  }
+
+  Future<List<InstalledExtensions>> getInstalledExtensions() async {
+    var list = await isar.installedExtensions.where().findAll();
+    return list;
   }
 
   Future<bool> addSearchHistory(String term) async {
