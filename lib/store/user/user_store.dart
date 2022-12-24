@@ -1,4 +1,5 @@
 import 'package:mobx/mobx.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:watrix/models/local/last_activities.dart';
 import 'package:watrix/models/local/show_history.dart';
 import 'package:watrix/models/network/base_model.dart';
@@ -8,7 +9,6 @@ import 'package:watrix/models/network/trakt/trakt_progress.dart';
 import 'package:watrix/models/network/user.dart';
 import 'package:watrix/models/network/user_stats.dart';
 import 'package:watrix/services/local/database.dart';
-import 'package:watrix/services/network/extensions_repository.dart';
 import 'package:watrix/services/network/trakt_oauth_client.dart';
 import 'package:watrix/services/network/trakt_repository.dart';
 import 'package:watrix/store/favorites/favorites_store.dart';
@@ -21,7 +21,7 @@ abstract class _UserStoreBase with Store {
   UserStats? userStats;
 
   @observable
-  User? user;
+  CineNexaUser? user;
 
   @observable
   ObservableList<TraktProgress> progress = <TraktProgress>[].asObservable();
@@ -35,70 +35,74 @@ abstract class _UserStoreBase with Store {
   @observable
   ObservableList<ShowHistory> showHistory = <ShowHistory>[].asObservable();
 
-  @observable
-  ObservableList<Extension> extensions = <Extension>[].asObservable();
+  bool get isTraktLogged => traktStatus;
 
   TraktRepository repository = TraktRepository(client: TraktOAuthClient());
   Database localDb = Database();
+  SupabaseClient supabaseClient = Supabase.instance.client;
+  bool traktStatus = false;
 
   _UserStoreBase({FavoritesStore? favoritesStore}) {
     init(favoritesStore: favoritesStore);
     localDb.watchProgress().listen((event) {
       fetchUserProgress(fromApi: false);
     });
-    //localDb.clear();
   }
 
   @action
   Future init({FavoritesStore? favoritesStore}) async {
-    fetchUserProfile();
-    fetchUserStats();
-    fetchUserRecommendations();
-    fetchUserProgress();
-    fetchUserExtensions();
-    List futures = await Future.wait([
-      repository.getUserLastActivity(),
-      localDb.getLastActivities(),
-    ]);
-    LastActivities lastActivities = futures[0];
-    LastActivities? localLast = futures[1];
+    traktStatus = await localDb.getUserTraktStatus();
 
-    List<Future> listFutures = [];
-
-    if (localLast != null) {
-      if (lastActivities.epWatchedAt.isAfter(localLast.epWatchedAt)) {
-        listFutures.add(fetchUserWatchedShows(
-            api: lastActivities, local: localLast, fromApi: true));
-      } else {
-        listFutures
-            .add(fetchUserWatchedShows(api: lastActivities, local: localLast));
-      }
-      if (lastActivities.movieCollectedAt.isAfter(localLast.movieCollectedAt) ||
-          lastActivities.epCollectedAt.isAfter(localLast.epCollectedAt)) {
-        listFutures.add(
-            favoritesStore?.fetchFavorites(fromApi: true) ?? Future.value());
-      } else {
-        listFutures.add(favoritesStore?.fetchFavorites() ?? Future.value());
-      }
-    } else {
-      futures.addAll([
-        fetchUserWatchedShows(
-            api: lastActivities, local: localLast, fromApi: true),
-        favoritesStore?.fetchFavorites(fromApi: true),
-      ]);
+    if (supabaseClient.auth.currentUser != null) {
+      user = CineNexaUser(
+        id: supabaseClient.auth.currentUser!.id,
+        name: supabaseClient.auth.currentUser!.userMetadata?['name'],
+        email: supabaseClient.auth.currentUser!.email!,
+      );
     }
-    Future.wait(listFutures).whenComplete(
-        () => localDb.addLastActivities(lastActivities: lastActivities));
-  }
 
-  @action
-  Future fetchUserExtensions() async {
-    extensions.addAll(await ExtensionsRepository.getUserExtensions());
-  }
+    if (isTraktLogged) {
+      fetchUserStats();
+      fetchUserRecommendations();
+      fetchUserProgress();
 
-  @action
-  Future fetchUserProfile() async {
-    user = await repository.getUserProfile();
+      List futures = await Future.wait([
+        repository.getUserLastActivity(),
+        localDb.getLastActivities(),
+      ]);
+      LastActivities lastActivities = futures[0];
+      LastActivities? localLast = futures[1];
+
+      List<Future> listFutures = [];
+
+      if (localLast != null) {
+        if (lastActivities.epWatchedAt.isAfter(localLast.epWatchedAt)) {
+          listFutures.add(fetchUserWatchedShows(
+              api: lastActivities, local: localLast, fromApi: true));
+        } else {
+          listFutures.add(
+              fetchUserWatchedShows(api: lastActivities, local: localLast));
+        }
+        if (lastActivities.movieCollectedAt
+                .isAfter(localLast.movieCollectedAt) ||
+            lastActivities.epCollectedAt.isAfter(localLast.epCollectedAt)) {
+          listFutures.add(
+              favoritesStore?.fetchFavorites(fromApi: true) ?? Future.value());
+        } else {
+          listFutures.add(favoritesStore?.fetchFavorites() ?? Future.value());
+        }
+      } else {
+        futures.addAll([
+          fetchUserWatchedShows(
+              api: lastActivities, local: localLast, fromApi: true),
+          favoritesStore?.fetchFavorites(fromApi: true),
+        ]);
+      }
+      Future.wait(listFutures).whenComplete(() => localDb.addLastActivities(
+          lastActivities: lastActivities
+            ..extensionsSyncedAt =
+                localLast?.extensionsSyncedAt ?? DateTime.now()));
+    }
   }
 
   @action

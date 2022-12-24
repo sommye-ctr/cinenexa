@@ -12,6 +12,49 @@ class Strings {
   static const String actor = "Actor";
   static const String all = "All";
   static const String moreInfo = "More Info";
+  static const String unexpecedError = "Unexpected error occurred!";
+  static const String installExtensionHelp =
+      "Install Extensions from Discover tab to start binging your favorite content!";
+
+  //Intro
+  static const String tagline = "Track what You See\nResume where You Left";
+  static const String desc =
+      "Track your movies & show progress along with enjoying your favorite watch!";
+  static const String signIn = "Sign In";
+  static const String register = "Register";
+
+  //Login
+  static const String passwordError =
+      "Must contain atleast 8 characters with 1 number";
+  static const String emailError = "Enter Valid Email";
+  static const String forgotPass = "Forgot Password?";
+  static const String email = "Email";
+  static const String name = "Name";
+  static const String password = "Password";
+
+  //LoginConfigure
+  static const String connect = "Connect";
+  static const String loginTrakt = "Login into Trakt";
+  static const String whatTrakt = "What is Trakt?";
+  static const String whyTrakt = "Why do I need to login to Trakt?";
+  static const String skip = "Skip";
+  static const String whyTaktAns =
+      "We only store data related to the extensions you install or rate. All your movie/show progress as well as your favorites are managed by Trakt.";
+  static const String whatTraktAns =
+      "Trakt is a platform that does many things, but primarily keeps track of TV shows and movies you watch.";
+
+  //Register
+  static const String nameError = "Enter Valid Name";
+  static const String signUpPolicy = "By clicking Register, you agree to our ";
+  static const String termsConditions = "Terms & Conditions";
+  static const String privacyPolicy = "Privacy Policy";
+  static const String sucessful =
+      "Account Created! Verify your email and then login.";
+
+  //Forgot Pass
+  static const String continueSt = "Continue";
+  static const String forgotPassTagline =
+      "Don't worry! Enter the email address associated with your account.";
 
 //Home
   static const String featured = "Featured";
@@ -63,6 +106,13 @@ class Strings {
   static const String installed = "Installed";
   static const String discover = "Discover";
   static const String install = "Install";
+  static const String anime = "Anime";
+  static const String rate = "Rate";
+  static const String uninstall = "Uninstall";
+
+  static const String successfulyRated = "Succefully Rated!";
+  static const String noRating = "No Rating Provided!";
+  static const String youRated = "You Rated";
 
 //Details
   static const String addToFav = "Add to";
@@ -81,6 +131,11 @@ class Strings {
   static const String markUnwatched = "Mark as unwatched";
   static const String markSeasonWatched = "Mark season as watched";
   static const String markSeasonUnwatched = "Mark season as unwatched";
+
+  static const String availableAt = "Available at";
+  static const String streams = "Streams";
+  static const String reviews = "Reviews";
+  static const String otherInfo = "Other Info";
 
 //Actor Details
   static const String knownFor = "Known For";

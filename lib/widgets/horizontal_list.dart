@@ -54,14 +54,18 @@ class _HorizontalListState<T> extends State<HorizontalList<T>> {
 
   void _fetchItems() async {
     items.addAll(await widget.future!);
-    setState(() {});
+    if (mounted) setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
+    if (widget.future == null && items.isEmpty) {
+      return Container();
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

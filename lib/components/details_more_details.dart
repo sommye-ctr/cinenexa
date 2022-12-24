@@ -1,33 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:focused_menu/focused_menu.dart';
-import 'package:focused_menu/modals.dart';
-import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
-import 'package:lottie/lottie.dart';
-import 'package:mobx/mobx.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:watrix/components/details_review_tile.dart';
-import 'package:watrix/components/details_stream_tile.dart';
-import 'package:watrix/models/network/trakt/trakt_show_history_season_ep.dart';
-import 'package:watrix/models/network/tv_episode.dart';
-import 'package:watrix/screens/video_player_page.dart';
+import 'package:watrix/components/details_more_details_info.dart';
+import 'package:watrix/components/details_more_details_reviews.dart';
+import 'package:watrix/components/details_more_details_streams.dart';
+import 'package:watrix/models/network/base_model.dart';
+import 'package:watrix/resources/strings.dart';
 import 'package:watrix/store/details/details_store.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-import '../models/network/base_model.dart';
-import '../models/network/trakt/trakt_show_history_season.dart';
-import '../models/network/tv_season.dart';
-import '../resources/asset.dart';
-import '../resources/strings.dart';
 import '../resources/style.dart';
-import '../screens/actor_details_page.dart';
-import '../screens/details_page.dart';
-import '../screens/see_more_page.dart';
 import '../utils/screen_size.dart';
-import '../widgets/horizontal_list.dart';
-import 'details_episode_tile.dart';
 
 class DetailsMoreDetails extends StatefulWidget {
   final DetailsStore detailsStore;
@@ -44,13 +24,15 @@ class DetailsMoreDetails extends StatefulWidget {
 
 class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
     with TickerProviderStateMixin {
-  YoutubePlayerController? videoController;
+  // YoutubePlayerController? videoController;
 
   late TabController tabController;
   @override
   void initState() {
     tabController = TabController(length: 3, vsync: this);
-    widget.detailsStore.fetchStreams();
+    if (widget.detailsStore.baseModel.type == BaseModelType.movie) {
+      widget.detailsStore.fetchStreams();
+    }
     super.initState();
   }
 
@@ -75,19 +57,26 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
             splashBorderRadius: BorderRadius.circular(40),
             isScrollable: true,
             tabs: [
-              Tab(text: "Streams"),
-              Tab(text: "Other Info"),
-              Tab(text: "Reviews"),
+              Tab(text: Strings.streams),
+              Tab(text: Strings.otherInfo),
+              Tab(text: Strings.reviews),
             ],
           ),
           Expanded(
-            child: TabBarView(
-              controller: tabController,
-              children: [
-                _buildStreams(),
-                _buildOtherInfo(),
-                _buildReviews(),
-              ],
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                  horizontal: ScreenSize.getPercentOfWidth(
+                context,
+                0.01,
+              )),
+              child: TabBarView(
+                controller: tabController,
+                children: [
+                  DetailsMoreDetailsStreams(detailsStore: widget.detailsStore),
+                  DetailsMoreDetailsInfo(detailsStore: widget.detailsStore),
+                  DetailsMoreDetailsReviews(detailsStore: widget.detailsStore),
+                ],
+              ),
             ),
           ),
         ],
@@ -95,10 +84,11 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
     );
   }
 
-  Widget _buildStreams() {
+/*   Widget _buildStreams() {
     return Observer(
       builder: (context) {
         if (widget.detailsStore.baseModel.type == BaseModelType.movie) {
+          widget.detailsStore.watchProviders;
           // return Text("Streams will show up here...");
           /* return ElevatedButton(
             onPressed: () {
@@ -118,34 +108,45 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
             child: Text("Play"),
           ); */
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+          return ListView(
+            physics: BouncingScrollPhysics(),
             children: [
-              SizedBox(
-                height: 5,
+              HorizontalList<WatchProvider>.fromInititalValues(
+                items: widget.detailsStore.watchProviders,
+                heading: "Available at",
+                buildWidget: (item) {
+                  return UnconstrainedBox(
+                    child: DetailsStreamTile(
+                      provider: item,
+                      hidePlayButton: true,
+                    ),
+                  );
+                },
+                buildPlaceHolder: () => Container(),
+                height: ScreenSize.getPercentOfHeight(context, 0.1),
               ),
-              Observer(builder: (_) {
+              if (widget.detailsStore.watchProviders.isNotEmpty)
+                Style.getVerticalSpacing(context: context),
+              Builder(builder: (context) {
                 if (widget.detailsStore.isStreamLoading)
-                  return CircularProgressIndicator();
+                  return Center(child: CircularProgressIndicator());
                 return Container();
               }),
-              Expanded(
-                child: MasonryGridView.builder(
-                  shrinkWrap: true,
-                  gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                  ),
-                  itemCount: widget.detailsStore.loadedStreams.length,
-                  physics: BouncingScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    return UnconstrainedBox(
-                      child: DetailsStreamTile(
-                        extensionStream:
-                            widget.detailsStore.loadedStreams[index],
-                      ),
-                    );
-                  },
+              Style.getVerticalSpacing(context: context),
+              MasonryGridView.builder(
+                shrinkWrap: true,
+                gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
                 ),
+                itemCount: widget.detailsStore.loadedStreams.length,
+                physics: BouncingScrollPhysics(),
+                itemBuilder: (context, index) {
+                  return UnconstrainedBox(
+                    child: DetailsStreamTile(
+                      extensionStream: widget.detailsStore.loadedStreams[index],
+                    ),
+                  );
+                },
               ),
             ],
           );
@@ -181,7 +182,7 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
       VideoPlayerPage.routeName,
       arguments: {
         "url":
-            "magnet:?xt=urn:btih:03C74F30EE2E837487E36352BA8163E0F85EA27B&tr=udp%3A%2F%2Ftracker.bitsearch.to%3A1337%2Fannounce&tr=udp%3A%2F%2Fwww.torrent.eu.org%3A451%2Fannounce&tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&tr=udp%3A%2F%2Ftracker2.dler.com%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&dn=%5BBitsearch.to%5D+%5BJudas%5D+Attack+on+Titan+-+S04E17.mkv",
+            "magnet:?xt=urn:btih:AA6C8D8201FD572B233B3282DCC5BF9DCFA0F0EB&dn=Youkoso+Jitsuryoku+Shijou+Shugi+no+Kyoushitsu+e+%28Classroom+of+the+Elite%29+%28Season+2%29+%5B1080p%5D%5BHEVC+x265+10bit%5D%5BMulti-Subs%5D+-+Judas&tr=http%3A%2F%2Fnyaa.tracker.wf%3A7777%2Fannounce&tr=http%3A%2F%2Fanidex.moe%3A6969%2Fannounce&tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&tr=udp%3A%2F%2Fexodus.desync.com%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&tr=http%3A%2F%2Ftracker.openbittorrent.com%3A80%2Fannounce&tr=udp%3A%2F%2Fopentracker.i2p.rocks%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.internetwarriors.net%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969%2Fannounce&tr=udp%3A%2F%2Fcoppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.zer0day.to%3A1337%2Fannounce",
         "movie": widget.detailsStore.movie,
         "tv": widget.detailsStore.tv,
         "episode": ep,
@@ -285,14 +286,12 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
       onPressed: () {},
       animateMenuItems: true,
       blurSize: 5,
-      child: UnconstrainedBox(
-        child: EpisodeTile(
-          episode: widget.detailsStore.episodes[index],
-          watched: watched,
-          onTap: () {
-            widget.detailsStore.onEpiodeClicked(index);
-          },
-        ),
+      child: EpisodeTile(
+        episode: widget.detailsStore.episodes[index],
+        watched: watched,
+        onTap: () {
+          widget.detailsStore.onEpiodeClicked(index);
+        },
       ),
     );
   }
@@ -575,5 +574,5 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
   void dispose() {
     disposeVideoController();
     super.dispose();
-  }
+  } */
 }

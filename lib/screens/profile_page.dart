@@ -1,9 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:provider/provider.dart';
+import 'package:random_avatar/random_avatar.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
+import 'package:watrix/screens/login_configure_page.dart';
 import 'package:watrix/screens/settings_page.dart';
 import 'package:watrix/store/user/user_store.dart';
 import 'package:watrix/utils/screen_size.dart';
@@ -60,11 +61,12 @@ class _ProfilePageState extends State<ProfilePage> {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CircleAvatar(
-                radius: ScreenSize.getPercentOfWidth(context, 0.075),
-                backgroundImage:
-                    CachedNetworkImageProvider(userStore.user?.avatar ?? ""),
-              ),
+              if (userStore.user?.id != null)
+                randomAvatar(
+                  userStore.user!.id,
+                  width: ScreenSize.getPercentOfWidth(context, 0.1),
+                  height: ScreenSize.getPercentOfWidth(context, 0.1),
+                ),
               SizedBox(
                 width: 8,
               ),
@@ -78,7 +80,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           IconButton(
             onPressed: () {
-              Navigator.pushNamed(context, SettingsPage.routeName);
+              Navigator.pushNamed(context, LoginConfigurePage.routeName);
             },
             icon: Icon(Icons.settings),
           ),

@@ -4,6 +4,7 @@ import 'package:watrix/models/network/enums/entity_type.dart';
 import 'package:watrix/services/local/database.dart';
 import 'package:watrix/services/network/trakt_oauth_client.dart';
 import 'package:watrix/services/network/trakt_repository.dart';
+import 'package:watrix/store/user/user_store.dart';
 
 part 'favorites_store.g.dart';
 
@@ -75,28 +76,31 @@ abstract class _FavoritesStore with Store {
   }
 
   @action
-  Future addFavorite(BaseModel baseModel) async {
+  Future addFavorite(BaseModel baseModel, UserStore userStore) async {
     favorites.add(baseModel);
 
     await Future.wait([
       localDb.addToFavorites(baseModel.toFavorite()),
-      localDb.updateLastActivities(
-        movieCollectedAt: baseModel.type == BaseModelType.movie
-            ? DateTime.now().toUtc()
-            : null,
-        epCollectedAt:
-            baseModel.type == BaseModelType.tv ? DateTime.now().toUtc() : null,
-      ),
-      traktRepository.addFavorite(
-        tmdbId: baseModel.id!,
-        entityType: baseModel.type!.getEntityType(),
-      ),
+      if (userStore.isTraktLogged) ...[
+        localDb.updateLastActivities(
+          movieCollectedAt: baseModel.type == BaseModelType.movie
+              ? DateTime.now().toUtc()
+              : null,
+          epCollectedAt: baseModel.type == BaseModelType.tv
+              ? DateTime.now().toUtc()
+              : null,
+        ),
+        traktRepository.addFavorite(
+          tmdbId: baseModel.id!,
+          entityType: baseModel.type!.getEntityType(),
+        ),
+      ],
     ]);
     ;
   }
 
   @action
-  Future removeFavorites() async {
+  Future removeFavorites(UserStore userStore) async {
     List<int> movies = [];
     List<int> shows = [];
 
@@ -111,21 +115,24 @@ abstract class _FavoritesStore with Store {
     }
 
     await Future.wait([
-      traktRepository.removeFavorites(
-        movieTmdbIds: movies.isEmpty ? null : movies,
-        showTmdbIds: shows.isEmpty ? null : shows,
-      ),
+      if (userStore.isTraktLogged)
+        traktRepository.removeFavorites(
+          movieTmdbIds: movies.isEmpty ? null : movies,
+          showTmdbIds: shows.isEmpty ? null : shows,
+        ),
       localDb.removeFavs(ids: [...movies, ...shows]),
     ]);
   }
 
   @action
-  Future removeFavorite(BaseModel baseModel) async {
+  Future removeFavorite(BaseModel baseModel, UserStore userStore) async {
     favorites.remove(baseModel);
 
     localDb.removeFromFav(baseModel.id!);
-    await traktRepository.removeFavorite(
-        tmdbId: baseModel.id!, entityType: baseModel.type!.getEntityType());
+    if (userStore.isTraktLogged) {
+      await traktRepository.removeFavorite(
+          tmdbId: baseModel.id!, entityType: baseModel.type!.getEntityType());
+    }
   }
 
   @action

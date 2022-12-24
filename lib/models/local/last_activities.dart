@@ -11,4 +11,6 @@ class LastActivities {
 
   late DateTime epWatchedAt;
   late DateTime epCollectedAt;
+
+  late DateTime extensionsSyncedAt;
 }

@@ -28,13 +28,13 @@ mixin _$UserStore on _UserStoreBase, Store {
   late final _$userAtom = Atom(name: '_UserStoreBase.user', context: context);
 
   @override
-  User? get user {
+  CineNexaUser? get user {
     _$userAtom.reportRead();
     return super.user;
   }
 
   @override
-  set user(User? value) {
+  set user(CineNexaUser? value) {
     _$userAtom.reportWrite(value, super.user, () {
       super.user = value;
     });
@@ -105,22 +105,6 @@ mixin _$UserStore on _UserStoreBase, Store {
     });
   }
 
-  late final _$extensionsAtom =
-      Atom(name: '_UserStoreBase.extensions', context: context);
-
-  @override
-  ObservableList<Extension> get extensions {
-    _$extensionsAtom.reportRead();
-    return super.extensions;
-  }
-
-  @override
-  set extensions(ObservableList<Extension> value) {
-    _$extensionsAtom.reportWrite(value, super.extensions, () {
-      super.extensions = value;
-    });
-  }
-
   late final _$initAsyncAction =
       AsyncAction('_UserStoreBase.init', context: context);
 
@@ -128,23 +112,6 @@ mixin _$UserStore on _UserStoreBase, Store {
   Future<dynamic> init({FavoritesStore? favoritesStore}) {
     return _$initAsyncAction
         .run(() => super.init(favoritesStore: favoritesStore));
-  }
-
-  late final _$fetchUserExtensionsAsyncAction =
-      AsyncAction('_UserStoreBase.fetchUserExtensions', context: context);
-
-  @override
-  Future<dynamic> fetchUserExtensions() {
-    return _$fetchUserExtensionsAsyncAction
-        .run(() => super.fetchUserExtensions());
-  }
-
-  late final _$fetchUserProfileAsyncAction =
-      AsyncAction('_UserStoreBase.fetchUserProfile', context: context);
-
-  @override
-  Future<dynamic> fetchUserProfile() {
-    return _$fetchUserProfileAsyncAction.run(() => super.fetchUserProfile());
   }
 
   late final _$fetchUserStatsAsyncAction =
@@ -200,8 +167,7 @@ user: ${user},
 progress: ${progress},
 movieRecommendations: ${movieRecommendations},
 showRecommendations: ${showRecommendations},
-showHistory: ${showHistory},
-extensions: ${extensions}
+showHistory: ${showHistory}
     ''';
   }
 }

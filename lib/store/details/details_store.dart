@@ -5,6 +5,7 @@ import 'package:watrix/models/network/extensions/extension_stream.dart';
 import 'package:watrix/models/network/review.dart';
 import 'package:watrix/models/network/trakt/trakt_show_history_season.dart';
 import 'package:watrix/models/network/trakt/trakt_show_history_season_ep.dart';
+import 'package:watrix/models/network/watch_provider.dart';
 import 'package:watrix/services/local/database.dart';
 import 'package:watrix/services/network/requests.dart';
 import 'package:watrix/services/network/trakt_oauth_client.dart';
@@ -21,6 +22,7 @@ import '../../models/network/video.dart';
 import '../../services/network/extensions_repository.dart';
 import '../../services/network/repository.dart';
 import '../favorites/favorites_store.dart';
+import '../user/user_store.dart';
 
 part 'details_store.g.dart';
 
@@ -63,6 +65,10 @@ abstract class _DetailsStore with Store {
   ObservableFuture<Map> reviews = ObservableFuture.value({});
 
   @observable
+  ObservableList<WatchProvider> watchProviders =
+      <WatchProvider>[].asObservable();
+
+  @observable
   int? chosenSeason;
 
   @observable
@@ -94,10 +100,11 @@ abstract class _DetailsStore with Store {
   TraktProgress? progress;
 
   int reviewPage = 1;
-  int noOfExtensions = 0;
+  int noOfExtensions;
   bool isReviewNextPageLoading = false;
   int traktId = -1;
   TraktRepository repository = TraktRepository(client: TraktOAuthClient());
+  StreamSubscription? streamSubscription;
 
   @computed
   List<Genre>? get genres {
@@ -113,13 +120,17 @@ abstract class _DetailsStore with Store {
   }
 
   @action
-  Future addToListClicked(FavoritesStore store) async {
-    store.addFavorite(baseModel).whenComplete(() => isAddedToFav = true);
+  Future addToListClicked(FavoritesStore store, UserStore userStore) async {
+    store
+        .addFavorite(baseModel, userStore)
+        .whenComplete(() => isAddedToFav = true);
   }
 
   @action
-  void removeFromListCLicked(FavoritesStore store) {
-    store.removeFavorite(baseModel).whenComplete(() => isAddedToFav = false);
+  void removeFromListCLicked(FavoritesStore store, UserStore userStore) {
+    store
+        .removeFavorite(baseModel, userStore)
+        .whenComplete(() => isAddedToFav = false);
   }
 
   @action
@@ -211,6 +222,9 @@ abstract class _DetailsStore with Store {
   @action
   void onEpBackClicked() {
     chosenEpisode = null;
+    streamSubscription?.cancel();
+    loadedStreams.clear();
+    isStreamLoading = true;
   }
 
   @action
@@ -233,13 +247,19 @@ abstract class _DetailsStore with Store {
 
   @action
   void fetchStreams() {
-    StreamSubscription? streamSubscription;
-    streamSubscription =
-        ExtensionsRepository.loadStreams(baseModel: baseModel).listen((event) {
+    streamSubscription = ExtensionsRepository.loadStreams(
+      baseModel: baseModel,
+      episode: chosenEpisode != null
+          ? (episodes[chosenEpisode!].episodeNumber)
+          : null,
+      season: chosenSeason != null
+          ? (tv?.seasons?[chosenSeason!].seasonNumber)
+          : null,
+    ).listen((event) {
       loadedStreams.addAll(event);
 
       var seen = Set<String>();
-      List list = [...loadedStreams, ...event]
+      List list = loadedStreams
           .where((element) => seen.add(element.extension!.id))
           .toList();
 
@@ -296,6 +316,7 @@ abstract class _DetailsStore with Store {
       credits.addAll(map['credits']);
       recommended.addAll(map['recommended']);
       video = map['video'];
+      watchProviders.addAll(map['providers'] as List<WatchProvider>);
       fetchProgress();
     } else if (baseModel.type == BaseModelType.tv) {
       Map map = await Repository.getTvDetailsWithExtras(id: baseModel.id!);
@@ -304,6 +325,7 @@ abstract class _DetailsStore with Store {
       recommended.addAll(map['recommended']);
       video = map['video'];
       chosenSeason = 0;
+      watchProviders.addAll(map['providers'] as List<WatchProvider>);
       fetchProgress();
       _fetchEpisodes();
       fetchWatchHistory();

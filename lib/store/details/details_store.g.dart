@@ -127,6 +127,22 @@ mixin _$DetailsStore on _DetailsStore, Store {
     });
   }
 
+  late final _$watchProvidersAtom =
+      Atom(name: '_DetailsStore.watchProviders', context: context);
+
+  @override
+  ObservableList<WatchProvider> get watchProviders {
+    _$watchProvidersAtom.reportRead();
+    return super.watchProviders;
+  }
+
+  @override
+  set watchProviders(ObservableList<WatchProvider> value) {
+    _$watchProvidersAtom.reportWrite(value, super.watchProviders, () {
+      super.watchProviders = value;
+    });
+  }
+
   late final _$chosenSeasonAtom =
       Atom(name: '_DetailsStore.chosenSeason', context: context);
 
@@ -290,9 +306,9 @@ mixin _$DetailsStore on _DetailsStore, Store {
       AsyncAction('_DetailsStore.addToListClicked', context: context);
 
   @override
-  Future<dynamic> addToListClicked(FavoritesStore store) {
+  Future<dynamic> addToListClicked(FavoritesStore store, UserStore userStore) {
     return _$addToListClickedAsyncAction
-        .run(() => super.addToListClicked(store));
+        .run(() => super.addToListClicked(store, userStore));
   }
 
   late final _$markWatchedClickedAsyncAction =
@@ -352,11 +368,11 @@ mixin _$DetailsStore on _DetailsStore, Store {
   }
 
   @override
-  void removeFromListCLicked(FavoritesStore store) {
+  void removeFromListCLicked(FavoritesStore store, UserStore userStore) {
     final _$actionInfo = _$_DetailsStoreActionController.startAction(
         name: '_DetailsStore.removeFromListCLicked');
     try {
-      return super.removeFromListCLicked(store);
+      return super.removeFromListCLicked(store, userStore);
     } finally {
       _$_DetailsStoreActionController.endAction(_$actionInfo);
     }
@@ -427,6 +443,7 @@ credits: ${credits},
 recommended: ${recommended},
 episodes: ${episodes},
 reviews: ${reviews},
+watchProviders: ${watchProviders},
 chosenSeason: ${chosenSeason},
 isAddedToFav: ${isAddedToFav},
 isStreamLoading: ${isStreamLoading},

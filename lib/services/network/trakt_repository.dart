@@ -7,7 +7,6 @@ import 'package:watrix/models/local/show_history.dart';
 import 'package:watrix/models/network/base_model.dart';
 import 'package:watrix/models/network/movie.dart';
 import 'package:watrix/models/network/trakt/trakt_progress.dart';
-import 'package:watrix/models/network/user.dart';
 import 'package:watrix/models/network/user_stats.dart';
 import 'package:watrix/services/network/repository.dart';
 import 'package:watrix/services/network/utils.dart';
@@ -27,7 +26,7 @@ class TraktRepository {
           scopes: ['public'],
         );
 
-  Future get(String url) {
+  Future get(String url) async {
     return helper.get(url, headers: Constants.traktRequestHeaders);
   }
 
@@ -60,13 +59,7 @@ class TraktRepository {
 
   Future<UserStats> getUserStats() async {
     Response resp = await get("https://api.trakt.tv/users/me/stats");
-
     return UserStats.fromJson(resp.body);
-  }
-
-  Future<User> getUserProfile() async {
-    Response resp = await get("https://api.trakt.tv/users/me?extended=full");
-    return User.fromJson(resp.body);
   }
 
   Future<List<BaseModel>> getUserFavorites() async {

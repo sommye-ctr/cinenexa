@@ -1,8 +1,8 @@
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:provider/provider.dart';
+import 'package:watrix/store/user/user_store.dart';
 import 'package:watrix/widgets/custom_progress_indicator.dart';
 import 'package:watrix/widgets/vote_indicator.dart';
 import 'package:watrix/resources/style.dart';
@@ -397,12 +397,16 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
   void _onAddRemFavoritesClicked(context, {bool remove = false}) {
     if (remove) {
       detailsStore.removeFromListCLicked(
-          Provider.of<FavoritesStore>(context, listen: false));
+        Provider.of<FavoritesStore>(context, listen: false),
+        Provider.of<UserStore>(context, listen: false),
+      );
       _showLoadingDialog(context);
       return;
     }
-    detailsStore
-        .addToListClicked(Provider.of<FavoritesStore>(context, listen: false));
+    detailsStore.addToListClicked(
+      Provider.of<FavoritesStore>(context, listen: false),
+      Provider.of<UserStore>(context, listen: false),
+    );
     _showLoadingDialog(context);
   }
 

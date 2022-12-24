@@ -9,6 +9,7 @@ import '../../models/local/enums/sort_movies.dart';
 import '../../models/local/enums/sort_tv.dart';
 import '../../models/network/base_model.dart';
 import '../../models/network/enums/entity_type.dart';
+import '../../models/network/watch_provider.dart';
 
 class Utils {
   static String getPosterUrl(String url, {String? posterSize}) {
@@ -25,6 +26,10 @@ class Utils {
 
   static String getProfileUrl(String url) {
     return "${Constants.tmdbImageBase}${Constants.profileSize}$url";
+  }
+
+  static String getWatchProviderUrl(String url) {
+    return "${Constants.tmdbImageBase}${Constants.watchProviderSize}$url";
   }
 
   static String getSortMoviesBy(SortMoviesBy sortMoviesBy) {
@@ -86,6 +91,10 @@ class Utils {
 
   static List<BaseModel> convertToBaseModelList(var parsedList) {
     return (parsedList as List).map((e) => BaseModel.fromMap(e)).toList();
+  }
+
+  static List<WatchProvider> convertToWatchProviderList(var parsedList) {
+    return (parsedList as List).map((e) => WatchProvider.fromMap(e)).toList();
   }
 
   static dynamic parseJson(dynamic object) {
