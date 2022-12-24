@@ -122,7 +122,7 @@ class _ExtensionTileState extends State<ExtensionTile> {
         RoundedButton(
           child: Text(Strings.uninstall),
           onPressed: () => _onUninstallExtension(context),
-          type: RoundedButtonType.filled,
+          type: RoundedButtonType.outlined,
         ),
         Style.getVerticalHorizontalSpacing(context: context),
         IconButton(

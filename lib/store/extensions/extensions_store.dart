@@ -57,6 +57,15 @@ abstract class _ExtensionsStoreBase with Store {
   }
 
   @action
+  Future syncInstalledExtensions() async {
+    final list = await SupabaseRepository.getUserExtensions();
+    return Future.wait([
+      database.updateAllInstalledExtensions(list),
+      database.updateLastActivities(extensionSyncedAt: DateTime.now()),
+    ]);
+  }
+
+  @action
   Future rateExtension(int rating, Extension extension) async {
     //await SupabaseRepository.rateExtension(
     //  extension: extension, rating: rating);

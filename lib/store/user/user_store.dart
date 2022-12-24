@@ -98,8 +98,10 @@ abstract class _UserStoreBase with Store {
           favoritesStore?.fetchFavorites(fromApi: true),
         ]);
       }
-      Future.wait(listFutures).whenComplete(
-          () => localDb.addLastActivities(lastActivities: lastActivities));
+      Future.wait(listFutures).whenComplete(() => localDb.addLastActivities(
+          lastActivities: lastActivities
+            ..extensionsSyncedAt =
+                localLast?.extensionsSyncedAt ?? DateTime.now()));
     }
   }
 

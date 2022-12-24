@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/store/extensions/extensions_store.dart';
@@ -38,18 +39,25 @@ class _ExtensionsInstalledState extends State<ExtensionsInstalled>
       );
     }
 
-    return GridView.builder(
-      itemCount: widget.extensionsStore.installedExtensions.length,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 3 / 4,
-      ),
-      itemBuilder: (context, index) {
-        return ExtensionTile.installed(
-          installedExtension: widget.extensionsStore.installedExtensions[index],
-          installed: true,
-        );
+    return RefreshIndicator(
+      onRefresh: () {
+        return widget.extensionsStore.syncInstalledExtensions();
       },
+      child: GridView.builder(
+        physics: AlwaysScrollableScrollPhysics(),
+        itemCount: widget.extensionsStore.installedExtensions.length,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 3 / 4,
+        ),
+        itemBuilder: (context, index) {
+          return ExtensionTile.installed(
+            installedExtension:
+                widget.extensionsStore.installedExtensions[index],
+            installed: true,
+          );
+        },
+      ),
     );
   }
 
