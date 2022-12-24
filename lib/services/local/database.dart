@@ -75,6 +75,15 @@ class Database {
     });
   }
 
+  //adds all the extensions assuming that this is to be called when all the extensions provided are installed
+  Future updateAllInstalledExtensions(List<Extension> extensions) async {
+    return isar.writeTxn(() async {
+      await isar.installedExtensions.clear();
+      await isar.installedExtensions
+          .putAll(extensions.map((e) => e.getInstalled()).toList());
+    });
+  }
+
   Future updateInstalledExtensions(List<Extension> extensions) async {
     List<InstalledExtensions> installed =
         (await isar.installedExtensions.where().findAll());
