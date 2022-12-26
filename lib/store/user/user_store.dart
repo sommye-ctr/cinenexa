@@ -4,9 +4,9 @@ import 'package:watrix/models/local/last_activities.dart';
 import 'package:watrix/models/local/show_history.dart';
 import 'package:watrix/models/network/base_model.dart';
 import 'package:watrix/models/network/enums/entity_type.dart';
-import 'package:watrix/models/network/extensions/extension.dart';
 import 'package:watrix/models/network/trakt/trakt_progress.dart';
-import 'package:watrix/models/network/user.dart';
+import 'package:watrix/models/network/cinenexa_user.dart';
+import 'package:watrix/models/network/trakt_user.dart';
 import 'package:watrix/models/network/user_stats.dart';
 import 'package:watrix/services/local/database.dart';
 import 'package:watrix/services/network/trakt_oauth_client.dart';
@@ -172,6 +172,19 @@ abstract class _UserStoreBase with Store {
   }
 
   @action
+  Future<TraktUser> fetchUserTraktProfile() async {
+    return repository.getUserProfile();
+  }
+
+  @action
+  Future logout() async {
+    return Future.wait([
+      supabaseClient.auth.signOut(),
+      localDb.clearAll(),
+    ]);
+  }
+
+  @action
   Future fetchUserRecommendations() async {
     List list = await Future.wait([
       repository.getRecommendations(type: EntityType.movie),
@@ -179,5 +192,11 @@ abstract class _UserStoreBase with Store {
     ]);
     movieRecommendations.addAll(list[0]);
     showRecommendations.addAll(list[1]);
+  }
+
+  @action
+  Future disconnectTrakt() async {
+    traktStatus = false;
+    return Database().addUserTraktStatus(false);
   }
 }

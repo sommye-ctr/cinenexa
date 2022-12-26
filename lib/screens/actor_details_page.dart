@@ -45,7 +45,7 @@ class _ActorDetailsPageState extends State<ActorDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AdaptiveTheme.of(context).theme == AdaptiveThemeMode.dark
+      backgroundColor: AdaptiveTheme.of(context).mode == AdaptiveThemeMode.dark
           ? Colors.black
           : Colors.white,
       body: CustomScrollView(

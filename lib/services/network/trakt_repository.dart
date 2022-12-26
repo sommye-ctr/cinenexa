@@ -7,6 +7,8 @@ import 'package:watrix/models/local/show_history.dart';
 import 'package:watrix/models/network/base_model.dart';
 import 'package:watrix/models/network/movie.dart';
 import 'package:watrix/models/network/trakt/trakt_progress.dart';
+import 'package:watrix/models/network/cinenexa_user.dart';
+import 'package:watrix/models/network/trakt_user.dart';
 import 'package:watrix/models/network/user_stats.dart';
 import 'package:watrix/services/network/repository.dart';
 import 'package:watrix/services/network/utils.dart';
@@ -241,6 +243,11 @@ class TraktRepository {
     }
     await post("https://api.trakt.tv/sync/collection",
         data: Utils.encodeJson(body));
+  }
+
+  Future<TraktUser> getUserProfile() async {
+    Response resp = await get("https://api.trakt.tv/users/me?extended=full");
+    return TraktUser.fromJson(resp.body);
   }
 
   Future removeFavorites({

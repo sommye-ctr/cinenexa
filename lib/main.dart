@@ -12,6 +12,7 @@ import 'package:watrix/models/local/last_activities.dart';
 import 'package:watrix/models/local/progress.dart';
 import 'package:watrix/models/local/search_history.dart';
 import 'package:watrix/models/local/show_history.dart';
+import 'package:watrix/resources/scroll_modified.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/screens/actor_details_page.dart';
@@ -54,11 +55,19 @@ void main() async {
     directory: (await getApplicationSupportDirectory()).path,
   );
 
-  runApp(MyApp());
+  final savedThemeMode = await AdaptiveTheme.getThemeMode();
+
+  runApp(MyApp(
+    savedThemeMode: savedThemeMode,
+  ));
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  final AdaptiveThemeMode? savedThemeMode;
+  const MyApp({
+    Key? key,
+    this.savedThemeMode,
+  }) : super(key: key);
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -90,12 +99,13 @@ class _MyAppState extends State<MyApp> {
       child: AdaptiveTheme(
         light: Style.themeData,
         dark: Style.darkThemeData(context),
-        initial: AdaptiveThemeMode.light,
+        initial: widget.savedThemeMode ?? AdaptiveThemeMode.light,
         builder: (light, dark) => MaterialApp(
           title: Strings.appName,
           debugShowCheckedModeBanner: false,
           theme: light,
           darkTheme: dark,
+          scrollBehavior: ScrollBehaviorModified(),
           onGenerateRoute: _handleRoutes,
           home: homeWidget,
         ),
@@ -125,7 +135,9 @@ class _MyAppState extends State<MyApp> {
 
       case SettingsPage.routeName:
         return MaterialPageRoute(
-          builder: (context) => SettingsPage(),
+          builder: (context) => SettingsPage(
+            type: settings.arguments as int,
+          ),
         );
       case RegisterPage.routeName:
         return MaterialPageRoute(
@@ -139,7 +151,12 @@ class _MyAppState extends State<MyApp> {
             return LoginPage();
           },
         );
-
+      case IntroPage.routeName:
+        return MaterialPageRoute(
+          builder: (context) {
+            return IntroPage();
+          },
+        );
       case ForgotPassPage.routeName:
         return MaterialPageRoute(
           builder: (context) {
@@ -149,7 +166,9 @@ class _MyAppState extends State<MyApp> {
       case LoginConfigurePage.routeName:
         return MaterialPageRoute(
           builder: (context) {
-            return LoginConfigurePage();
+            return LoginConfigurePage(
+              showSkip: settings.arguments,
+            );
           },
         );
       case YoutubeVideoPlayer.routeName:

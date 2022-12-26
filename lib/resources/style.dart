@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:watrix/models/network/base_model.dart';
+import 'package:watrix/resources/strings.dart';
 import 'package:watrix/utils/link_opener.dart';
 import 'package:watrix/utils/screen_size.dart';
 
@@ -102,6 +103,32 @@ class Style {
     );
   }
 
+  static Widget getListTile({
+    required BuildContext context,
+    required String title,
+    String? subtitle,
+    Widget? leading,
+    Widget? trailing,
+    VoidCallback? onTap,
+  }) {
+    return Container(
+      width: ScreenSize.getPercentOfWidth(context, 0.95),
+      margin:
+          EdgeInsets.only(bottom: ScreenSize.getPercentOfHeight(context, 0.01)),
+      child: ListTile(
+        title: Text(title),
+        subtitle: subtitle != null ? Text(subtitle) : null,
+        leading: leading,
+        trailing: trailing,
+        tileColor: Theme.of(context).cardColor,
+        onTap: onTap,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
+        ),
+      ),
+    );
+  }
+
   static Widget getMovieTile({
     required BaseModel item,
     required double widhtPercent,
@@ -178,6 +205,34 @@ class Style {
       useRootNavigator: true,
       onDismissCallback: (DismissType type) {},
     )..show();
+  }
+
+  static void showConfirmationDialog({
+    required BuildContext context,
+    required String text,
+    required VoidCallback onPressed,
+  }) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return CupertinoAlertDialog(
+          title: Text("Confirm"),
+          content: Text(text),
+          actions: [
+            CupertinoDialogAction(
+              child: Text("Okay"),
+              onPressed: onPressed,
+            ),
+            CupertinoDialogAction(
+              child: Text(Strings.cancel),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   static void showExternalLinkOpenWarning({

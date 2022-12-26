@@ -1,3 +1,4 @@
+import 'package:country_picker/country_picker.dart';
 import 'package:isar/isar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:watrix/models/local/favorites.dart';
@@ -16,6 +17,10 @@ import '../../models/network/trakt/trakt_progress.dart';
 
 class Database {
   static const String _TRAKT_LOGGED_IN = "TRAKT_LOGGED_IN";
+  static const String _PROVIDER_COUNTRY = "PROVIDER_COUNTRY";
+  static const String _ALWAYS_EXTERNAL_PLAYER = "ALWAYS_EXTERNAL_PLAYER";
+  static const String _AUTO_SUBTITLE = "AUTO_SUBTITLE";
+  static const String _SEEK_DURATION = "SEEK_DURATION";
 
   late Isar isar;
 
@@ -23,14 +28,64 @@ class Database {
     isar = Isar.getInstance()!;
   }
 
+  Future clearAll() async {
+    final prefs = await SharedPreferences.getInstance();
+    isar.writeTxn(() {
+      return Future.wait([
+        isar.clear(),
+        prefs.clear(),
+      ]);
+    });
+  }
+
   Future addUserTraktStatus(bool status) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_TRAKT_LOGGED_IN, status);
   }
 
+  Future addAlwaysExternalPlayer(bool status) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_ALWAYS_EXTERNAL_PLAYER, status);
+  }
+
+  Future addAutoSelectSubtitle(bool status) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_AUTO_SUBTITLE, status);
+  }
+
+  Future addSeekDuration(int seconds) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_SEEK_DURATION, seconds);
+  }
+
   Future<bool> getUserTraktStatus() async {
     final prefs = await SharedPreferences.getInstance();
     return (prefs.getBool(_TRAKT_LOGGED_IN) ?? false);
+  }
+
+  Future<bool> getAlwaysExternalPlayer() async {
+    final prefs = await SharedPreferences.getInstance();
+    return (prefs.getBool(_ALWAYS_EXTERNAL_PLAYER) ?? false);
+  }
+
+  Future<bool> getAutoSelectSubtitle() async {
+    final prefs = await SharedPreferences.getInstance();
+    return (prefs.getBool(_AUTO_SUBTITLE) ?? false);
+  }
+
+  Future<int> getSeekDuration() async {
+    final prefs = await SharedPreferences.getInstance();
+    return (prefs.getInt(_SEEK_DURATION) ?? 30);
+  }
+
+  Future addProviderCountry(Country country) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_PROVIDER_COUNTRY, country.countryCode);
+  }
+
+  Future<Country?> getProviderCountry() async {
+    final prefs = await SharedPreferences.getInstance();
+    return Country.tryParse(prefs.getString(_PROVIDER_COUNTRY) ?? "");
   }
 
   Future<LastActivities?> getLastActivities() async {

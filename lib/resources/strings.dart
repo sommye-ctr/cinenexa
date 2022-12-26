@@ -15,6 +15,7 @@ class Strings {
   static const String unexpecedError = "Unexpected error occurred!";
   static const String installExtensionHelp =
       "Install Extensions from Discover tab to start binging your favorite content!";
+  static const String trakt = "Trakt";
 
   //Intro
   static const String tagline = "Track what You See\nResume where You Left";
@@ -148,10 +149,36 @@ class Strings {
   static const String watchedShows = "Shows\nWatched";
   static const String minSpentMovies = "Minutes spent\non movies";
   static const String minSpentShows = "Minutes spent\non shows";
+  static const String logoutConfirm = "You are going to logout. Are you sure?";
 
   //Settings
-  static const String darkMode = "Dark Mode";
   static const String general = "General";
+  static const String integrations = "Integrations";
+  static const String player = "Player";
+  static const String more = "More";
+
+  static const String website = "Website";
+  static const String extensionDoc = "Extensions Documentation";
+  static const String telegram = "Telegram";
+
+  static const String autoSelectSubtitle = "Auto Select Subtitle";
+  static const String alwaysExternalPlayer = "Always Open External Player";
+  static const String seekDuration = "Seek Duration";
+
+  static const String traktStatus = "Trakt Status";
+  static const String connected = "Connected";
+  static const String disconnected = "Disconnected";
+  static const String traktProfile = "Trakt Profile";
+  static const String connectTrakt = "Connect Trakt";
+  static const String disconnectTrakt = "Disconnect Trakt";
+
+  static const String syncInstalledExt = "Sync Installed Extensions";
+
+  static const String darkMode = "Dark Mode";
+  static const String countryProviders = "Country for Providers";
+  static const String countryProvidersSub =
+      "This is used to fetch the streaming services available in the specific country";
+  static const String chooseCountry = "Choose Country";
 
   //video player
   static const String playBackSpeed = "Playback Speed";
