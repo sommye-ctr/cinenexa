@@ -92,8 +92,8 @@ class DetailsStreamTile extends StatelessWidget {
   }
 
   List<Widget> _buildFlag(context) {
-    if (extensionStream?.langCountry == null) return [Container()];
-    List<String>? strings = extensionStream?.langCountry?.split('|');
+    if (extensionStream?.country == null) return [Container()];
+    List<String>? strings = extensionStream?.country?.split('|');
     return [
       Style.getVerticalSpacing(context: context),
       SingleChildScrollView(

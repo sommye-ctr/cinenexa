@@ -196,7 +196,8 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
   void _handleExtensionClick(ExtensionStream extensionStream) {
     if (extensionStream.url != null) {
       navigateToVideoPlayer(
-        url: "",
+        url:
+            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
         id: widget.detailsStore.baseModel.id!,
         progress: widget.detailsStore.progress?.progress,
       );
@@ -209,11 +210,11 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
         id: widget.detailsStore.baseModel.id!,
         progress: widget.detailsStore.progress?.progress,
       );
-    } else if (extensionStream.externalUrl != null) {
+    } else if (extensionStream.external != null) {
       Style.showExternalLinkOpenWarning(
         context: context,
         extensionName: extensionStream.extension?.name ?? "",
-        url: extensionStream.externalUrl!,
+        url: extensionStream.external!,
       );
     }
   }

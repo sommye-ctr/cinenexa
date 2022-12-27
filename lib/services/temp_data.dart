@@ -14,7 +14,8 @@ class TempData {
           "Find movies and shows for all hollywood and bollywood titles.",
       createdAt: DateTime.now(),
       domainId: "",
-    ),
+    )..icon =
+        "https://pbs.twimg.com/profile_images/768615067608768512/xn4YILrz_400x400.jpg",
     Extension(
       name: "Soap2day",
       id: "com.soap2day",
@@ -26,7 +27,8 @@ class TempData {
           "Find movies and shows for all hollywood and bollywood titles.",
       createdAt: DateTime.now(),
       domainId: "",
-    ),
+    )..icon =
+        "https://bucketeer-d402f3d7-4567-4b00-b26c-5f2a1706bc6c.s3.amazonaws.com/public/pictures/soap-2-day.jpg?VersionId=7bfnr6k6QwciKzIAC4oEN2PxeBkhhe.J",
   ];
 
   static final List<ExtensionStream> streams = [
@@ -34,23 +36,23 @@ class TempData {
       url: "url",
       dubbed: true,
       name: "TOrrent stream 240p",
-      langCountry: "US|FR",
+      country: "US|FR",
       quality: 720,
       seeds: 130,
     )..extension = TempData().extensions[0],
-    ExtensionStream.externalUrl(
+    ExtensionStream.external(
       dubbed: true,
       name: "TOrrent stream 240p",
       quality: 720,
       size: 40000,
       seeds: 130,
-      externalUrl: 'https://www.google.com',
+      external: 'https://www.google.com',
     )..extension = TempData().extensions[0],
     ExtensionStream.url(
       url: "url",
       dubbed: true,
       name: "TOrrent stream 240p",
-      langCountry: "US|FR|AM",
+      country: "US|FR|AM",
       quality: 720,
       size: 40000,
       seeds: 130,
@@ -71,7 +73,7 @@ class TempData {
       url: "url",
       dubbed: true,
       name: "TOrrent stream 240p",
-      langCountry: "US|FR|AM",
+      country: "US|FR|AM",
       quality: 720,
       seeds: 130,
     )..extension = TempData().extensions[1],

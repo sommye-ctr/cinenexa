@@ -73,15 +73,15 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                 title: Strings.seekDuration,
                 trailing: seekDuration != null
                     ? CustomCheckBoxList(
-                        children: ["15s", "30s"],
+                        children: ["10s", "30s"],
                         type: CheckBoxListType.list,
                         selectedItems: [_getSelectedIndex()],
                         alwaysEnabled: true,
                         singleSelect: true,
                         onSelectionAdded: (values) async {
                           String value = values.first;
-                          if (value == "15s") {
-                            await database.addSeekDuration(15);
+                          if (value == "10s") {
+                            await database.addSeekDuration(10);
                           } else {
                             await database.addSeekDuration(30);
                           }

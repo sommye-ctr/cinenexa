@@ -72,6 +72,7 @@ dependencies:
   flutter_rating_bar: ^4.0.1
   country_picker: ^2.0.19
   restart_app: ^1.1.1
+  fluttertoast: ^8.1.2
 
 
 dev_dependencies:

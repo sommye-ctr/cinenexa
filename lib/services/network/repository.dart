@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:watrix/models/network/review.dart';
+import 'package:watrix/services/local/database.dart';
 import 'package:watrix/services/network/api.dart';
 import 'package:watrix/services/network/utils.dart';
 
@@ -117,9 +118,12 @@ class Repository {
       "${Constants.movie}/${id}?append_to_response=credits,recommendations,videos,watch/providers",
       haveQueries: true,
     );
+    final selectedCountryName = await Database().getProviderCountry();
+
     Video? vid = Utils.convertToVideo(response['videos']['results'] as List);
-    var providerList =
-        response?['watch/providers']?['results']?['US']?['flatrate'] ?? [];
+    var providerList = response?['watch/providers']?['results']
+            ?[selectedCountryName?.countryCode ?? "US"]?['flatrate'] ??
+        [];
     return {
       "movie": Movie.fromMap(response),
       "credits": Utils.convertToBaseModelList(response['credits']['cast']),

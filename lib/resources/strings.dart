@@ -185,6 +185,9 @@ class Strings {
   static const String settings = "Settings";
   static const String none = "None";
   static const String tapToSee = "Tap to see";
+  static const String castDevices = "Cast Devices";
+  static const String noDeviceFound = "No Devices Found for casting!";
+  static const String disconnect = "Disconnect";
   static const playbackSpeeds = [
     "1x",
     "0.25x",

@@ -6,15 +6,6 @@ import 'package:watrix/models/network/extensions/extension_stream.dart';
 import 'package:watrix/services/temp_data.dart';
 
 class ExtensionsRepository {
-  static Future<List<Extension>> getUserExtensions() async {
-    return Future.delayed(
-      Duration(seconds: 1),
-      () {
-        return TempData().extensions;
-      },
-    );
-  }
-
   static Future<List<ExtensionStream>> getSampleExtension(
       int index, int start) async {
     await Future.delayed(Duration(seconds: 2));

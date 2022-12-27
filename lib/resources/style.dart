@@ -2,6 +2,7 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:watrix/models/network/base_model.dart';
 import 'package:watrix/resources/strings.dart';
@@ -52,6 +53,10 @@ class Style {
       label: label,
       icon: Icon(icon),
     );
+  }
+
+  static void showToast({required String text}) {
+    Fluttertoast.showToast(msg: text);
   }
 
   static void showSnackBar(

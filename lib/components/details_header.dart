@@ -436,7 +436,9 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
 
   String _getResumeText() {
     String text = Strings.resume;
-    if (detailsStore.baseModel.type == BaseModelType.tv) {
+    if (detailsStore.baseModel.type == BaseModelType.tv &&
+        detailsStore.progress?.seasonNo != null &&
+        detailsStore.progress?.episodeNo != null) {
       text +=
           " S${detailsStore.progress!.seasonNo!} EP${detailsStore.progress!.episodeNo!}";
     }

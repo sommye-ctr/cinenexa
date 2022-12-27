@@ -1,4 +1,6 @@
+import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:mobx/mobx.dart';
+import 'package:watrix/services/local/database.dart';
 part 'player_store.g.dart';
 
 class PlayerStore = _PlayerStoreBase with _$PlayerStore;
@@ -10,6 +12,8 @@ abstract class _PlayerStoreBase with Store {
   bool buffering = true;
   @observable
   bool locked = false;
+  @observable
+  bool casting = false;
 
   @observable
   int speedIndex = 0;
@@ -33,9 +37,79 @@ abstract class _PlayerStoreBase with Store {
   @observable
   ObservableMap<int, String>? tracks;
 
+  @observable
+  int seekDuration = 30;
+
+  int duration = 0;
+  bool initialCalled = false;
+  String? castingDevice;
+
+  final VlcPlayerController controller;
+  final double? progress;
+
+  _PlayerStoreBase({
+    required this.controller,
+    this.progress,
+  }) {
+    init();
+  }
+
+  @action
+  void init() async {
+    seekDuration = await Database().getSeekDuration();
+
+    controller.addOnRendererEventListener((event, p1, p2) {
+      if (event == VlcRendererEventType.detached) {
+        setCasting(false);
+      }
+    });
+
+    controller.addListener(() async {
+      if (controller.value.playingState == PlayingState.buffering) {
+        setBuffering(true);
+      } else {
+        setBuffering(false);
+      }
+
+      if (controller.value.isInitialized) {
+        duration = controller.value.duration.inMilliseconds;
+        controller.startRendererScanning();
+      }
+
+      if (controller.value.playingState == PlayingState.playing) {
+        if (!initialCalled) {
+          if (progress != null) {
+            int seconds = (duration * progress!) ~/ 100;
+
+            await controller.pause();
+            await controller.play();
+            await controller.seekTo(Duration(milliseconds: seconds));
+          }
+
+          setTracks(await controller.getAudioTracks());
+          setSelectedTrack(await controller.getAudioTrack());
+
+          setSubtitles(await controller.getSpuTracks());
+          setSelectedSubtitle(await controller.getSpuTrack());
+
+          initialCalled = true;
+        }
+
+        setPosition(controller.value.position);
+        setBuffered(
+          Duration(seconds: (controller.value.bufferPercent * duration) ~/ 100),
+        );
+      }
+    });
+  }
+
   @action
   void setSubtitleDelay(int delay) {
     subtitleDelay = delay;
+  }
+
+  void setCastingDevice(String device) {
+    castingDevice = device;
   }
 
   @action
@@ -91,5 +165,10 @@ abstract class _PlayerStoreBase with Store {
   @action
   void setSelectedSubtitle(int? subtitle) {
     selectedSubtitle = subtitle;
+  }
+
+  @action
+  void setCasting(bool status) {
+    casting = status;
   }
 }

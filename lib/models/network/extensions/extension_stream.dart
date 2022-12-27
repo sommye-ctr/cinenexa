@@ -12,11 +12,11 @@ class ExtensionStream {
   final String? ytId;
   final String? magnet;
   final int? fileIndex;
-  final String? externalUrl;
+  final String? external;
 
   final String? name;
   final int? quality;
-  final String? langCountry;
+  final String? country;
   final bool? dubbed;
   final bool? subbed;
   final bool? torrent;
@@ -32,10 +32,10 @@ class ExtensionStream {
     this.ytId,
     this.magnet,
     this.fileIndex,
-    this.externalUrl,
+    this.external,
     this.name,
     this.quality,
-    this.langCountry,
+    this.country,
     this.dubbed,
     this.subbed,
     this.torrent,
@@ -50,10 +50,10 @@ class ExtensionStream {
     required this.ytId,
     this.magnet,
     this.fileIndex,
-    this.externalUrl,
+    this.external,
     this.name,
     this.quality,
-    this.langCountry,
+    this.country,
     this.dubbed,
     this.subbed,
     this.torrent,
@@ -68,10 +68,10 @@ class ExtensionStream {
     this.ytId,
     required this.magnet,
     this.fileIndex,
-    this.externalUrl,
+    this.external,
     this.name,
     this.quality,
-    this.langCountry,
+    this.country,
     this.dubbed,
     this.subbed,
     this.torrent,
@@ -81,15 +81,15 @@ class ExtensionStream {
     this.subtitles,
   });
 
-  ExtensionStream.externalUrl({
+  ExtensionStream.external({
     this.url,
     this.ytId,
     this.magnet,
     this.fileIndex,
-    required this.externalUrl,
+    required this.external,
     this.name,
     this.quality,
-    this.langCountry,
+    this.country,
     this.dubbed,
     this.subbed,
     this.torrent,
@@ -106,10 +106,10 @@ class ExtensionStream {
       'ytId': ytId,
       'magnet': magnet,
       'fileIndex': fileIndex,
-      'externalUrl': externalUrl,
+      'externalUrl': external,
       'name': name,
       'quality': quality,
-      'lang': langCountry,
+      'lang': country,
       'dubbed': dubbed,
       'subbed': subbed,
       'torrent': torrent,
@@ -126,7 +126,7 @@ class ExtensionStream {
         url: map['url'],
         name: map['name'] != null ? map['name'] as String : null,
         quality: map['quality'] != null ? map['quality'] as int : null,
-        langCountry: map['lang'] != null ? map['lang'] as String : null,
+        country: map['lang'] != null ? map['lang'] as String : null,
         dubbed: map['dubbed'] != null ? map['dubbed'] as bool : null,
         subbed: map['subbed'] != null ? map['subbed'] as bool : null,
         torrent: map['torrent'] != null ? map['torrent'] as bool : null,
@@ -144,7 +144,7 @@ class ExtensionStream {
         ytId: map['ytId'],
         name: map['name'] != null ? map['name'] as String : null,
         quality: map['quality'] != null ? map['quality'] as int : null,
-        langCountry: map['lang'] != null ? map['lang'] as String : null,
+        country: map['lang'] != null ? map['lang'] as String : null,
         dubbed: map['dubbed'] != null ? map['dubbed'] as bool : null,
         subbed: map['subbed'] != null ? map['subbed'] as bool : null,
         torrent: map['torrent'] != null ? map['torrent'] as bool : null,
@@ -162,7 +162,7 @@ class ExtensionStream {
         magnet: map['magnet'],
         name: map['name'] != null ? map['name'] as String : null,
         quality: map['quality'] != null ? map['quality'] as int : null,
-        langCountry: map['lang'] != null ? map['lang'] as String : null,
+        country: map['lang'] != null ? map['lang'] as String : null,
         fileIndex: map['fileIndex'],
         dubbed: map['dubbed'] != null ? map['dubbed'] as bool : null,
         subbed: map['subbed'] != null ? map['subbed'] as bool : null,
@@ -177,11 +177,11 @@ class ExtensionStream {
             : null,
       );
     } else if (map['externalUrl'] != null) {
-      return ExtensionStream.externalUrl(
-        externalUrl: map['externalUrl'],
+      return ExtensionStream.external(
+        external: map['externalUrl'],
         name: map['name'] != null ? map['name'] as String : null,
         quality: map['quality'] != null ? map['quality'] as int : null,
-        langCountry: map['lang'] != null ? map['lang'] as String : null,
+        country: map['lang'] != null ? map['lang'] as String : null,
         dubbed: map['dubbed'] != null ? map['dubbed'] as bool : null,
         subbed: map['subbed'] != null ? map['subbed'] as bool : null,
         torrent: map['torrent'] != null ? map['torrent'] as bool : null,
