@@ -138,6 +138,9 @@ class Strings {
   static const String reviews = "Reviews";
   static const String otherInfo = "Other Info";
 
+  static const String installExtensionsHelp =
+      "Looks like you have not installed any extensions!\nInstall extensions from Home Page in \"Extensions\" to start watching your favorite movies!";
+
 //Actor Details
   static const String knownFor = "Known For";
   static const String birthPlace = "BirthPlace";

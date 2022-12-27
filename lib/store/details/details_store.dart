@@ -247,6 +247,11 @@ abstract class _DetailsStore with Store {
 
   @action
   void fetchStreams() {
+    if (noOfExtensions == 0) {
+      isStreamLoading = false;
+      return;
+    }
+
     streamSubscription = ExtensionsRepository.loadStreams(
       baseModel: baseModel,
       episode: chosenEpisode != null

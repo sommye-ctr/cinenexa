@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
 import 'package:watrix/models/network/extensions/extension_stream.dart';
+import 'package:watrix/resources/asset.dart';
 import 'package:watrix/screens/youtube_video_player.dart';
 import 'package:watrix/store/details/details_store.dart';
 
@@ -109,7 +111,27 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
     );
   }
 
+  Widget _buildInstallExtensionsText() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SvgPicture.asset(
+          Asset.installExtensions,
+          width: ScreenSize.getPercentOfWidth(context, 0.75),
+        ),
+        Style.getVerticalSpacing(context: context),
+        Text(
+          Strings.installExtensionsHelp,
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+
   Widget _buildExtensionStreams() {
+    if (widget.detailsStore.noOfExtensions == 0)
+      return _buildInstallExtensionsText();
     return MasonryGridView.builder(
       shrinkWrap: true,
       gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
