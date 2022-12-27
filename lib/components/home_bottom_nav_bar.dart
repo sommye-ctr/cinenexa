@@ -50,9 +50,10 @@ class _HomeBottomNavBarState extends State<HomeBottomNavBar> {
               elevation: 16,
               backgroundColor: Colors.blueGrey.shade100,
               currentIndex: _pageIndex,
-              showUnselectedLabels: false,
+              showUnselectedLabels: true,
               type: BottomNavigationBarType.shifting,
               selectedItemColor: Theme.of(context).colorScheme.primary,
+              unselectedItemColor: Theme.of(context).focusColor,
               selectedIconTheme: IconThemeData(
                 color: Theme.of(context).colorScheme.primary,
               ),
