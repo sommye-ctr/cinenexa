@@ -1,5 +1,7 @@
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:mobx/mobx.dart';
+import 'package:watrix/models/network/extensions/extension_stream.dart';
+import 'package:watrix/models/network/extensions/subtitle.dart';
 import 'package:watrix/services/local/database.dart';
 part 'player_store.g.dart';
 
@@ -45,10 +47,12 @@ abstract class _PlayerStoreBase with Store {
   String? castingDevice;
 
   final VlcPlayerController controller;
+  final ExtensionStream extensionStream;
   final double? progress;
 
   _PlayerStoreBase({
     required this.controller,
+    required this.extensionStream,
     this.progress,
   }) {
     init();
@@ -57,7 +61,6 @@ abstract class _PlayerStoreBase with Store {
   @action
   void init() async {
     seekDuration = await Database().getSeekDuration();
-
     controller.addOnRendererEventListener((event, p1, p2) {
       if (event == VlcRendererEventType.detached) {
         setCasting(false);
@@ -84,6 +87,14 @@ abstract class _PlayerStoreBase with Store {
             await controller.pause();
             await controller.play();
             await controller.seekTo(Duration(milliseconds: seconds));
+          }
+
+          if (extensionStream.subtitles != null &&
+              extensionStream.subtitles!.isNotEmpty) {
+            await Future.forEach<Subtitle>(extensionStream.subtitles!,
+                (element) async {
+              await controller.addSubtitleFromNetwork(element.url);
+            });
           }
 
           setTracks(await controller.getAudioTracks());

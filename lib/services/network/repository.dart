@@ -130,8 +130,7 @@ class Repository {
       "recommended":
           Utils.convertToBaseModelList(response['recommendations']['results']),
       "video": vid,
-      "providers":
-          Utils.convertToWatchProviderList(providerList), //TODO CHANGE HERE
+      "providers": Utils.convertToWatchProviderList(providerList),
     };
   }
 
@@ -154,9 +153,12 @@ class Repository {
       "${Constants.tv}/${id}?append_to_response=credits,recommendations,videos,watch/providers",
       haveQueries: true,
     );
+    final selectedCountryName = await Database().getProviderCountry();
+
     Video? vid = Utils.convertToVideo(response['videos']['results'] as List);
-    var providerList =
-        response?['watch/providers']?['results']?['US']?['flatrate'] ?? [];
+    var providerList = response?['watch/providers']?['results']
+            ?[selectedCountryName?.countryCode ?? "US"]?['flatrate'] ??
+        [];
 
     return {
       "tv": Tv.fromMap(response),

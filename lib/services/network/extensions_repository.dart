@@ -1,24 +1,27 @@
 import 'dart:async';
-
 import 'package:watrix/models/network/base_model.dart';
-import 'package:watrix/models/network/extensions/extension.dart';
 import 'package:watrix/models/network/extensions/extension_stream.dart';
-import 'package:watrix/services/temp_data.dart';
+import 'package:watrix/services/network/utils.dart';
+
+import 'package:http/http.dart' as http;
+import 'package:watrix/utils/date_time_formatter.dart';
+
+import '../../models/network/extensions/extension.dart';
 
 class ExtensionsRepository {
-  static Future<List<ExtensionStream>> getSampleExtension(
-      int index, int start) async {
-    await Future.delayed(Duration(seconds: 2));
-    return TempData.streams.sublist(start, index);
-  }
+  final List<Extension> installedExtensions;
 
-  static Stream<List<ExtensionStream>> loadStreams(
+  ExtensionsRepository({required this.installedExtensions});
+
+  Stream<List<ExtensionStream>> loadStreams(
       {required BaseModel baseModel, int? season, int? episode}) {
     late StreamController<List<ExtensionStream>> streamController;
 
     void fetch() async {
-      streamController.add(await getSampleExtension(3, 0));
-      streamController.add(await getSampleExtension(6, 3));
+      for (var element in installedExtensions) {
+        var stream = await _getStream(baseModel: baseModel, extension: element);
+        if (stream.isNotEmpty) streamController.add(stream);
+      }
     }
 
     streamController = StreamController(onListen: fetch);
@@ -39,5 +42,44 @@ class ExtensionsRepository {
     }
 
     yield* streamController.stream; */
+  }
+
+  Future<List<ExtensionStream>> _getStream({
+    required BaseModel baseModel,
+    required Extension extension,
+    int? season,
+    int? episode,
+  }) async {
+    final query = {
+      "type": baseModel.type!.getString(),
+      "name": baseModel.title,
+      "releaseYear":
+          DateTimeFormatter.getYearFromString(baseModel.releaseDate!),
+      "tmdbId": baseModel.id,
+      "season": season,
+      "episode": episode,
+    };
+
+    final Uri uri = Uri.https(extension.endpoint, '', query);
+
+    try {
+      final response = await http.get(uri);
+      return _handleResponse(response);
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  List<ExtensionStream> _handleResponse(http.Response response) {
+    if (response.body.isNotEmpty) {
+      try {
+        List sources = Utils.parseJson(response.body)['sources'];
+
+        return sources.map((e) => ExtensionStream.fromJson(e)).toList();
+      } catch (e) {
+        throw e;
+      }
+    }
+    return [];
   }
 }

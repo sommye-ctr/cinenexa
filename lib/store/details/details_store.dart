@@ -13,6 +13,7 @@ import 'package:watrix/services/network/trakt_repository.dart';
 
 import '../../models/local/show_history.dart';
 import '../../models/network/base_model.dart';
+import '../../models/network/extensions/extension.dart';
 import '../../models/network/genre.dart';
 import '../../models/network/movie.dart';
 import '../../models/network/trakt/trakt_progress.dart';
@@ -27,8 +28,14 @@ import '../user/user_store.dart';
 part 'details_store.g.dart';
 
 class DetailsStore extends _DetailsStore with _$DetailsStore {
-  DetailsStore({required BaseModel baseModel, required int noOfExtensions})
-      : super(baseModel: baseModel, noOfExtensions: noOfExtensions);
+  DetailsStore(
+      {required BaseModel baseModel,
+      required int noOfExtensions,
+      required List<Extension> installedExtensions})
+      : super(
+            baseModel: baseModel,
+            noOfExtensions: noOfExtensions,
+            installedExtensions: installedExtensions);
 }
 
 abstract class _DetailsStore with Store {
@@ -38,6 +45,7 @@ abstract class _DetailsStore with Store {
   _DetailsStore({
     required this.baseModel,
     required this.noOfExtensions,
+    required this.installedExtensions,
   }) {
     _fetchDetails();
     fetchReviews();
@@ -105,6 +113,7 @@ abstract class _DetailsStore with Store {
   int traktId = -1;
   TraktRepository repository = TraktRepository(client: TraktOAuthClient());
   StreamSubscription? streamSubscription;
+  List<Extension> installedExtensions;
 
   @computed
   List<Genre>? get genres {
@@ -252,7 +261,11 @@ abstract class _DetailsStore with Store {
       return;
     }
 
-    streamSubscription = ExtensionsRepository.loadStreams(
+    ExtensionsRepository extensionsRepository =
+        ExtensionsRepository(installedExtensions: installedExtensions);
+
+    streamSubscription = extensionsRepository
+        .loadStreams(
       baseModel: baseModel,
       episode: chosenEpisode != null
           ? (episodes[chosenEpisode!].episodeNumber)
@@ -260,7 +273,8 @@ abstract class _DetailsStore with Store {
       season: chosenSeason != null
           ? (tv?.seasons?[chosenSeason!].seasonNumber)
           : null,
-    ).listen((event) {
+    )
+        .listen((event) {
       loadedStreams.addAll(event);
 
       var seen = Set<String>();

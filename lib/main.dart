@@ -186,7 +186,7 @@ class _MyAppState extends State<MyApp> {
         ]);
         return MaterialPageRoute(
           builder: (context) => VlcPlayerPage(
-            url: value['url'],
+            extensionStream: value['stream'],
             baseModel: value['model'],
             episode: value['episode'],
             movie: value['movie'],

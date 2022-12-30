@@ -201,3 +201,16 @@ enum BaseModelType {
   tv,
   people,
 }
+
+extension BaseConverter on BaseModelType {
+  String getString() {
+    switch (this) {
+      case BaseModelType.movie:
+        return "movie";
+      case BaseModelType.tv:
+        return "show";
+      case BaseModelType.people:
+        return "people";
+    }
+  }
+}

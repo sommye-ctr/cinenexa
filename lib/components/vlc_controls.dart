@@ -13,6 +13,7 @@ import 'package:watrix/services/local/scrobble_manager.dart';
 import 'package:watrix/store/player/player_store.dart';
 import 'package:watrix/widgets/rounded_button.dart';
 
+import '../models/network/extensions/extension_stream.dart';
 import '../resources/strings.dart';
 import '../resources/style.dart';
 import '../utils/screen_size.dart';
@@ -27,9 +28,12 @@ class VlcControls extends StatefulWidget {
   final int? season, episode;
   final double? progress;
 
+  final ExtensionStream stream;
+
   const VlcControls({
     Key? key,
     required this.controller,
+    required this.stream,
     this.baseModel,
     this.id,
     this.movie,
@@ -66,6 +70,7 @@ class _VlcControlsState extends State<VlcControls> {
     );
     playerStore = PlayerStore(
       controller: widget.controller,
+      extensionStream: widget.stream,
       progress: widget.progress,
     );
   }
