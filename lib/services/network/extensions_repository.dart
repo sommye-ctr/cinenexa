@@ -14,12 +14,21 @@ class ExtensionsRepository {
   ExtensionsRepository({required this.installedExtensions});
 
   Stream<List<ExtensionStream>> loadStreams(
-      {required BaseModel baseModel, int? season, int? episode}) {
+      {required BaseModel baseModel,
+      required int traktId,
+      required String imdbId,
+      int? season,
+      int? episode}) {
     late StreamController<List<ExtensionStream>> streamController;
 
     void fetch() async {
       for (var element in installedExtensions) {
-        var stream = await _getStream(baseModel: baseModel, extension: element);
+        var stream = await _getStream(
+          baseModel: baseModel,
+          extension: element,
+          imdbId: imdbId,
+          traktId: traktId,
+        );
         if (stream.isNotEmpty) streamController.add(stream);
       }
     }
@@ -47,6 +56,8 @@ class ExtensionsRepository {
   Future<List<ExtensionStream>> _getStream({
     required BaseModel baseModel,
     required Extension extension,
+    required int traktId,
+    required String imdbId,
     int? season,
     int? episode,
   }) async {
@@ -58,6 +69,8 @@ class ExtensionsRepository {
       "tmdbId": baseModel.id,
       "season": season,
       "episode": episode,
+      "traktId": traktId,
+      "imdbId": imdbId,
     };
 
     final Uri uri = Uri.https(extension.endpoint, '', query);

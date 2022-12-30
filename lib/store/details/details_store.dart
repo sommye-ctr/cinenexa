@@ -111,6 +111,7 @@ abstract class _DetailsStore with Store {
   int noOfExtensions;
   bool isReviewNextPageLoading = false;
   int traktId = -1;
+  String imdbId = "";
   TraktRepository repository = TraktRepository(client: TraktOAuthClient());
   StreamSubscription? streamSubscription;
   List<Extension> installedExtensions;
@@ -273,6 +274,8 @@ abstract class _DetailsStore with Store {
       season: chosenSeason != null
           ? (tv?.seasons?[chosenSeason!].seasonNumber)
           : null,
+      imdbId: imdbId,
+      traktId: traktId,
     )
         .listen((event) {
       loadedStreams.addAll(event);
@@ -291,13 +294,6 @@ abstract class _DetailsStore with Store {
 
   @action
   Future fetchReviews() async {
-    if (traktId == -1) {
-      traktId = await Repository.getTraktIdFromTmdb(
-        tmdbId: baseModel.id!,
-        type: baseModel.type! == BaseModelType.movie ? "movie" : "show",
-      );
-    }
-
     reviews = ObservableFuture(Repository.getReviews(
       query: Requests.reviews(baseModel.type!, traktId),
       page: reviewPage,
@@ -329,6 +325,16 @@ abstract class _DetailsStore with Store {
 
   void _fetchDetails() async {
     isAddedToFav = await database.isAddedInFav(baseModel.id!);
+
+    if (traktId == -1) {
+      var map = await Repository.getTraktIdFromTmdb(
+        tmdbId: baseModel.id!,
+        type: baseModel.type!.getString(),
+      );
+      traktId = map['trakt'];
+      imdbId = map['imdb'];
+    }
+
     if (baseModel.type == BaseModelType.movie) {
       Map map = await Repository.getMovieDetailsWithExtras(id: baseModel.id!);
       movie = map['movie'];

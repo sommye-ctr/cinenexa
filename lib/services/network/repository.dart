@@ -105,12 +105,15 @@ class Repository {
     };
   }
 
-  static Future<int> getTraktIdFromTmdb(
+  static Future<Map> getTraktIdFromTmdb(
       {required int tmdbId, required String type}) async {
     String req = "${Constants.search}/tmdb/$tmdbId?type=$type";
     Response response = await api.getTraktRequest(req);
     List list = Utils.parseJson(response.body);
-    return list.first[type]['ids']['trakt'];
+    return {
+      "trakt": list.first[type]['ids']['trakt'],
+      "imdb": list.first[type]['ids']['imdb'],
+    };
   }
 
   static Future<Map> getMovieDetailsWithExtras({required int id}) async {
