@@ -74,24 +74,21 @@ class ExtensionsRepository {
     };
 
     final Uri uri = Uri.https(extension.endpoint, '', query);
+    //final Uri uri = Uri.https("3f05-1-23-68-172.in.ngrok.io", '',
+    //query.map((key, value) => MapEntry(key, value.toString())));
 
-    try {
-      final response = await http.get(uri);
-      return _handleResponse(response);
-    } catch (e) {
-      throw e;
-    }
+    final response = await http.get(uri);
+    return _handleResponse(response, extension);
   }
 
-  List<ExtensionStream> _handleResponse(http.Response response) {
+  List<ExtensionStream> _handleResponse(
+      http.Response response, Extension extension) {
     if (response.body.isNotEmpty) {
-      try {
-        List sources = Utils.parseJson(response.body)['sources'];
+      List sources = Utils.parseJson(response.body);
 
-        return sources.map((e) => ExtensionStream.fromJson(e)).toList();
-      } catch (e) {
-        throw e;
-      }
+      return sources
+          .map((e) => ExtensionStream.fromMap(e)..extension = extension)
+          .toList();
     }
     return [];
   }

@@ -15,7 +15,7 @@ class ExtensionStream {
   final String? external;
 
   final String? name;
-  final int? quality;
+  final String? quality;
   final String? country;
   final bool? dubbed;
   final bool? subbed;
@@ -125,7 +125,7 @@ class ExtensionStream {
       return ExtensionStream.url(
         url: map['url'],
         name: map['name'] != null ? map['name'] as String : null,
-        quality: map['quality'] != null ? map['quality'] as int : null,
+        quality: map['quality'] != null ? map['quality'] as String : null,
         country: map['lang'] != null ? map['lang'] as String : null,
         dubbed: map['dubbed'] != null ? map['dubbed'] as bool : null,
         subbed: map['subbed'] != null ? map['subbed'] as bool : null,
@@ -143,7 +143,7 @@ class ExtensionStream {
       return ExtensionStream.ytId(
         ytId: map['ytId'],
         name: map['name'] != null ? map['name'] as String : null,
-        quality: map['quality'] != null ? map['quality'] as int : null,
+        quality: map['quality'] != null ? map['quality'] as String : null,
         country: map['lang'] != null ? map['lang'] as String : null,
         dubbed: map['dubbed'] != null ? map['dubbed'] as bool : null,
         subbed: map['subbed'] != null ? map['subbed'] as bool : null,
@@ -161,7 +161,7 @@ class ExtensionStream {
       return ExtensionStream.magnet(
         magnet: map['magnet'],
         name: map['name'] != null ? map['name'] as String : null,
-        quality: map['quality'] != null ? map['quality'] as int : null,
+        quality: map['quality'] != null ? map['quality'] as String : null,
         country: map['lang'] != null ? map['lang'] as String : null,
         fileIndex: map['fileIndex'],
         dubbed: map['dubbed'] != null ? map['dubbed'] as bool : null,
@@ -180,7 +180,7 @@ class ExtensionStream {
       return ExtensionStream.external(
         external: map['externalUrl'],
         name: map['name'] != null ? map['name'] as String : null,
-        quality: map['quality'] != null ? map['quality'] as int : null,
+        quality: map['quality'] != null ? map['quality'] as String : null,
         country: map['lang'] != null ? map['lang'] as String : null,
         dubbed: map['dubbed'] != null ? map['dubbed'] as bool : null,
         subbed: map['subbed'] != null ? map['subbed'] as bool : null,
@@ -202,6 +202,11 @@ class ExtensionStream {
 
   String toJson() => json.encode(toMap());
 
-  factory ExtensionStream.fromJson(String source) =>
-      ExtensionStream.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory ExtensionStream.fromJson(String source) {
+    return ExtensionStream.fromMap(json.decode(source) as Map<String, dynamic>);
+  }
+
+  factory ExtensionStream.fromString(String source) {
+    return ExtensionStream.fromMap(source as Map<String, dynamic>);
+  }
 }
