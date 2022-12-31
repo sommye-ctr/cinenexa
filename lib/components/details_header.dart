@@ -416,6 +416,13 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
   }
 
   void _onPlayPressed() {
+    if (detailsStore.progress != null &&
+        detailsStore.progress?.seasonNo != null &&
+        detailsStore.progress?.episodeNo != null) {
+      detailsStore.chosenEpisode = (detailsStore.progress!.episodeNo!) - 1;
+      detailsStore.chosenSeason = (detailsStore.progress!.seasonNo!) - 1;
+      detailsStore.fetchStreams();
+    }
     scrollController.animateTo(
       maxExtent - minExtent,
       duration: duration,
@@ -436,7 +443,9 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
 
   String _getResumeText() {
     String text = Strings.resume;
-    if (detailsStore.baseModel.type == BaseModelType.tv) {
+    if (detailsStore.baseModel.type == BaseModelType.tv &&
+        detailsStore.progress?.seasonNo != null &&
+        detailsStore.progress?.episodeNo != null) {
       text +=
           " S${detailsStore.progress!.seasonNo!} EP${detailsStore.progress!.episodeNo!}";
     }

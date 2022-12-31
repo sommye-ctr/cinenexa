@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:oauth2_client/oauth2_helper.dart';
+import 'package:restart_app/restart_app.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/screens/home_first_screen.dart';
@@ -16,7 +16,9 @@ import '../utils/screen_size.dart';
 
 class LoginConfigurePage extends StatelessWidget {
   static const String routeName = "/login_configure";
-  const LoginConfigurePage({Key? key}) : super(key: key);
+
+  final bool showSkip;
+  const LoginConfigurePage({Key? key, this.showSkip = true}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -91,16 +93,17 @@ class LoginConfigurePage extends StatelessWidget {
                     }),
               ],
             ),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: TextButton(
-                onPressed: () {
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, HomeFirstScreen.routeName, (route) => false);
-                },
-                child: Text(Strings.skip),
-              ),
-            )
+            if (showSkip)
+              Align(
+                alignment: Alignment.bottomRight,
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, HomeFirstScreen.routeName, (route) => false);
+                  },
+                  child: Text(Strings.skip),
+                ),
+              )
           ],
         ),
       ),
@@ -145,7 +148,6 @@ class LoginConfigurePage extends StatelessWidget {
     await Database().addUserTraktStatus(true);
     Navigator.pop(context);
 
-    Navigator.pushNamedAndRemoveUntil(
-        context, HomeFirstScreen.routeName, (route) => false);
+    await Restart.restartApp();
   }
 }

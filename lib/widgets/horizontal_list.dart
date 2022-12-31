@@ -54,7 +54,7 @@ class _HorizontalListState<T> extends State<HorizontalList<T>> {
 
   void _fetchItems() async {
     items.addAll(await widget.future!);
-    setState(() {});
+    if (mounted) setState(() {});
   }
 
   @override

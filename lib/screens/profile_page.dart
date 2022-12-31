@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:random_avatar/random_avatar.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
+import 'package:watrix/screens/intro_page.dart';
 import 'package:watrix/screens/login_configure_page.dart';
 import 'package:watrix/screens/settings_page.dart';
 import 'package:watrix/store/user/user_store.dart';
@@ -36,25 +37,88 @@ class _ProfilePageState extends State<ProfilePage> {
         }
         return true;
       },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Style.getVerticalHorizontalSpacing(context: context),
-            _buildProfileTile(),
-            Style.getVerticalHorizontalSpacing(context: context),
-            _buildStatCardsTile(),
-            Style.getVerticalHorizontalSpacing(context: context),
-            SettingsPage(),
-          ],
+      child: Scaffold(
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Style.getVerticalHorizontalSpacing(context: context),
+              _buildProfileTile(),
+              Style.getVerticalHorizontalSpacing(context: context),
+              _buildStatCardsTile(),
+              Style.getVerticalHorizontalSpacing(context: context),
+              _buildSettingsTabs(),
+            ],
+          ),
         ),
       ),
     );
   }
 
+  Widget _buildSettingsTabs() {
+    return Expanded(
+      child: ListView(
+        physics: BouncingScrollPhysics(),
+        padding: EdgeInsets.only(bottom: kBottomNavigationBarHeight),
+        children: [
+          ListTile(
+            title: Text(Strings.general),
+            leading: Icon(Icons.settings),
+            trailing: Icon(Icons.arrow_right_outlined),
+            tileColor: Theme.of(context).cardColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
+            ),
+            onTap: () => _navigateToSettings(SettingsPage.GENERAL),
+          ),
+          Style.getVerticalSpacing(context: context, percent: 0.01),
+          ListTile(
+            title: Text(Strings.integrations),
+            leading: Icon(Icons.merge),
+            trailing: Icon(Icons.arrow_right_outlined),
+            tileColor: Theme.of(context).cardColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
+            ),
+            onTap: () => _navigateToSettings(SettingsPage.INTEGRATIONS),
+          ),
+          Style.getVerticalSpacing(context: context, percent: 0.01),
+          ListTile(
+            title: Text(Strings.player),
+            leading: Icon(Icons.play_arrow_rounded),
+            trailing: Icon(Icons.arrow_right_outlined),
+            tileColor: Theme.of(context).cardColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
+            ),
+            onTap: () => _navigateToSettings(SettingsPage.PLAYER),
+          ),
+          Style.getVerticalSpacing(context: context, percent: 0.01),
+          ListTile(
+            title: Text(Strings.more),
+            leading: Icon(Icons.more_horiz),
+            trailing: Icon(Icons.arrow_right_outlined),
+            tileColor: Theme.of(context).cardColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
+            ),
+            onTap: () => _navigateToSettings(SettingsPage.MORE),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _navigateToSettings(int type) {
+    Navigator.pushNamed(context, SettingsPage.routeName, arguments: type);
+  }
+
   Widget _buildProfileTile() {
     return Observer(builder: (_) {
+      bool traktConnected =
+          Provider.of<UserStore>(context, listen: false).traktStatus;
+
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -70,19 +134,50 @@ class _ProfilePageState extends State<ProfilePage> {
               SizedBox(
                 width: 8,
               ),
-              Text(
-                userStore.user?.name ?? Strings.unknown,
-                style: TextStyle(
-                  fontSize: 16,
-                ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    userStore.user?.name ?? Strings.unknown,
+                    style: TextStyle(
+                      fontSize: 20,
+                    ),
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(Strings.trakt),
+                      Padding(padding: EdgeInsets.all(2)),
+                      Icon(
+                        Icons.circle,
+                        color: traktConnected ? Colors.green : Colors.red,
+                        size: 12,
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ],
           ),
           IconButton(
             onPressed: () {
-              Navigator.pushNamed(context, LoginConfigurePage.routeName);
+              Style.showConfirmationDialog(
+                context: context,
+                text: Strings.logoutConfirm,
+                onPressed: () async {
+                  Style.showLoadingDialog(context: context);
+                  await Provider.of<UserStore>(context, listen: false).logout();
+                  Navigator.pop(context);
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    IntroPage.routeName,
+                    (route) => false,
+                  );
+                },
+              );
             },
-            icon: Icon(Icons.settings),
+            icon: Icon(Icons.logout_rounded),
           ),
         ],
       );

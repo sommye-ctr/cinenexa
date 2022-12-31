@@ -1,8 +1,12 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:watrix/models/network/base_model.dart';
+import 'package:watrix/resources/strings.dart';
+import 'package:watrix/utils/link_opener.dart';
 import 'package:watrix/utils/screen_size.dart';
 
 import '../components/movie_tile.dart';
@@ -51,6 +55,10 @@ class Style {
     );
   }
 
+  static void showToast({required String text}) {
+    Fluttertoast.showToast(msg: text);
+  }
+
   static void showSnackBar(
       {required BuildContext context, required String text}) {
     final snack = SnackBar(
@@ -97,6 +105,32 @@ class Style {
     return SizedBox(
       height: ScreenSize.getPercentOfHeight(context, percent ?? 0.02),
       width: ScreenSize.getPercentOfWidth(context, percent ?? 0.02),
+    );
+  }
+
+  static Widget getListTile({
+    required BuildContext context,
+    required String title,
+    String? subtitle,
+    Widget? leading,
+    Widget? trailing,
+    VoidCallback? onTap,
+  }) {
+    return Container(
+      width: ScreenSize.getPercentOfWidth(context, 0.95),
+      margin:
+          EdgeInsets.only(bottom: ScreenSize.getPercentOfHeight(context, 0.01)),
+      child: ListTile(
+        title: Text(title),
+        subtitle: subtitle != null ? Text(subtitle) : null,
+        leading: leading,
+        trailing: trailing,
+        tileColor: Theme.of(context).cardColor,
+        onTap: onTap,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
+        ),
+      ),
     );
   }
 
@@ -176,5 +210,64 @@ class Style {
       useRootNavigator: true,
       onDismissCallback: (DismissType type) {},
     )..show();
+  }
+
+  static void showConfirmationDialog({
+    required BuildContext context,
+    required String text,
+    required VoidCallback onPressed,
+  }) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return CupertinoAlertDialog(
+          title: Text("Confirm"),
+          content: Text(text),
+          actions: [
+            CupertinoDialogAction(
+              child: Text("Okay"),
+              onPressed: onPressed,
+            ),
+            CupertinoDialogAction(
+              child: Text(Strings.cancel),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  static void showExternalLinkOpenWarning({
+    required BuildContext context,
+    required String extensionName,
+    required String url,
+  }) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return CupertinoAlertDialog(
+          title: Text("Warning"),
+          content:
+              Text("$extensionName is trying to open an external url:\n$url"),
+          actions: [
+            CupertinoDialogAction(
+              child: Text("Open"),
+              onPressed: () {
+                LinkOpener.openLink(url);
+              },
+            ),
+            CupertinoDialogAction(
+              child: Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

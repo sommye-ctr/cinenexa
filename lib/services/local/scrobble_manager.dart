@@ -51,6 +51,7 @@ class ScrobbleManager {
   }
 
   void start() {
+    print("scrobble start");
     scrobbleStarted = true;
     double progress = _getProgress();
     progress;
@@ -69,11 +70,16 @@ class ScrobbleManager {
 
   void paused() {
     double progress = _getProgress();
-    progress;
+    print("scrobble progress $progress");
+    if (playerController.value.isEnded) {
+      stopped();
+      return;
+    }
     if (progress >= 90) {
       stopped();
       return;
     }
+    print("scrobble paused");
     localDb.addProgress(progress: _getProgressObject());
 
     traktRepository.scrobblePause(
@@ -84,6 +90,7 @@ class ScrobbleManager {
   }
 
   void stopped() {
+    print("scrobble stopped");
     traktRepository
         .scrobbleStop(
           type: item.type!,

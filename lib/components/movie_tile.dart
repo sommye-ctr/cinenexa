@@ -46,9 +46,14 @@ class MovieTile extends StatelessWidget {
                 ),
                 if (darken)
                   Container(
-                    color: Colors.black54,
                     height: width / Constants.posterAspectRatio,
                     width: width,
+                    decoration: BoxDecoration(
+                      color: Colors.black54,
+                      borderRadius: BorderRadius.circular(
+                        Style.largeRoundEdgeRadius,
+                      ),
+                    ),
                   ),
               ],
             ),

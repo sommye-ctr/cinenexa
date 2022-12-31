@@ -9,6 +9,7 @@ import 'package:watrix/utils/screen_size.dart';
 import 'package:watrix/widgets/rounded_button.dart';
 
 class IntroPage extends StatefulWidget {
+  static const String routeName = "/intro";
   const IntroPage({Key? key}) : super(key: key);
 
   @override

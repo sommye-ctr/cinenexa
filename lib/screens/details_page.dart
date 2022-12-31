@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:watrix/components/details_header.dart';
 import 'package:watrix/components/details_more_details.dart';
+import 'package:watrix/models/network/extensions/extension.dart';
 
 import 'package:watrix/services/constants.dart';
 import 'package:watrix/store/details/details_store.dart';
+import 'package:watrix/store/extensions/extensions_store.dart';
 import 'package:watrix/store/user/user_store.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
@@ -36,11 +38,13 @@ class _DetailsPageState extends State<DetailsPage> {
 
   @override
   void initState() {
+    var list = Provider.of<ExtensionsStore>(context, listen: false)
+        .installedExtensions;
     detailsStore = DetailsStore(
-      baseModel: widget.baseModel,
-      noOfExtensions:
-          Provider.of<UserStore>(context, listen: false).extensions.length,
-    );
+        baseModel: widget.baseModel,
+        noOfExtensions: list.length,
+        installedExtensions:
+            list.map((element) => element.getExtension()).toList());
     super.initState();
   }
 

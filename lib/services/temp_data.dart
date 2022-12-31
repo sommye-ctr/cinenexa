@@ -1,4 +1,3 @@
-import 'package:watrix/models/network/enums/extension_provider_type.dart';
 import 'package:watrix/models/network/extensions/extension.dart';
 import 'package:watrix/models/network/extensions/extension_stream.dart';
 
@@ -7,66 +6,63 @@ class TempData {
     Extension(
       name: "FMovies",
       id: "com.fmovies",
-      icon:
-          "https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/14-utorrent-512.png",
       endpoint: "",
-      provider: [ExtensionProviderType.all],
+      providesMovie: true,
+      providesAnime: false,
+      providesShow: true,
       description:
           "Find movies and shows for all hollywood and bollywood titles.",
-    ),
+      createdAt: DateTime.now(),
+      domainId: "",
+    )..icon =
+        "https://pbs.twimg.com/profile_images/768615067608768512/xn4YILrz_400x400.jpg",
     Extension(
       name: "Soap2day",
       id: "com.soap2day",
-      icon:
-          "https://i.pinimg.com/736x/97/39/af/9739afdcd7bea0686f7396182c85bea1.jpg",
       endpoint: "",
-      provider: [
-        ExtensionProviderType.movie,
-        ExtensionProviderType.anime,
-        ExtensionProviderType.show
-      ],
+      providesMovie: true,
+      providesAnime: false,
+      providesShow: true,
       description:
           "Find movies and shows for all hollywood and bollywood titles.",
-    ),
+      createdAt: DateTime.now(),
+      domainId: "",
+    )..icon =
+        "https://bucketeer-d402f3d7-4567-4b00-b26c-5f2a1706bc6c.s3.amazonaws.com/public/pictures/soap-2-day.jpg?VersionId=7bfnr6k6QwciKzIAC4oEN2PxeBkhhe.J",
   ];
 
   static final List<ExtensionStream> streams = [
     ExtensionStream.url(
-      id: 48843932827,
       url: "url",
       dubbed: true,
       name: "TOrrent stream 240p",
-      langCountry: "US|FR",
-      quality: 720,
+      country: "US|FR",
+      quality: "720",
       seeds: 130,
     )..extension = TempData().extensions[0],
+    ExtensionStream.external(
+      dubbed: true,
+      name: "TOrrent stream 240p",
+      quality: "720",
+      size: 40000,
+      seeds: 130,
+      external: 'https://www.google.com',
+    )..extension = TempData().extensions[0],
     ExtensionStream.url(
-      id: 48843932827,
       url: "url",
       dubbed: true,
       name: "TOrrent stream 240p",
-      quality: 720,
+      country: "US|FR|AM",
+      quality: "720",
       size: 40000,
       seeds: 130,
     )..extension = TempData().extensions[0],
     ExtensionStream.url(
-      id: 48843932827,
-      url: "url",
-      dubbed: true,
-      name: "TOrrent stream 240p",
-      langCountry: "US|FR|AM",
-      quality: 720,
-      size: 40000,
-      seeds: 130,
-    )..extension = TempData().extensions[0],
-    ExtensionStream.url(
-      id: 48843932827,
       url: "url",
       dubbed: true,
       name: "TOrrent stream 240p",
     )..extension = TempData().extensions[1],
     ExtensionStream.url(
-      id: 48843932827,
       url: "url",
       dubbed: true,
       name: "TOrrent stream 240p",
@@ -74,12 +70,11 @@ class TempData {
       seeds: 130,
     )..extension = TempData().extensions[1],
     ExtensionStream.url(
-      id: 48843932827,
       url: "url",
       dubbed: true,
       name: "TOrrent stream 240p",
-      langCountry: "US|FR|AM",
-      quality: 720,
+      country: "US|FR|AM",
+      quality: "720",
       seeds: 130,
     )..extension = TempData().extensions[1],
   ];

@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:watrix/components/vlc_controls.dart';
 import 'package:watrix/models/network/base_model.dart';
+import 'package:watrix/models/network/extensions/extension_stream.dart';
+import 'package:watrix/resources/style.dart';
 
 import '../models/network/movie.dart';
 import '../models/network/tv.dart';
@@ -10,16 +12,17 @@ import '../models/network/tv.dart';
 class VlcPlayerPage extends StatefulWidget {
   static const routeName = "/videoPlayer";
 
-  final String url;
   final int? id;
   final BaseModel? baseModel;
   final Movie? movie;
   final Tv? show;
   final int? season, episode;
   final double? progress;
+  final ExtensionStream extensionStream;
+
   const VlcPlayerPage({
     Key? key,
-    required this.url,
+    required this.extensionStream,
     this.baseModel,
     this.id,
     this.movie,
@@ -54,14 +57,12 @@ class _VlcPlayerPageState extends State<VlcPlayerPage> {
   }
 
   void init() {
-    if (widget.url.contains(magnetRegex)) {
-      print("here url ${widget.url}");
+    if (widget.extensionStream.magnet != null) {
       channel.receiveBroadcastStream({
-        "url": widget.url,
+        "url": widget.extensionStream.magnet,
       }).handleError((error) {
-        print("error in torrent : ${error}");
+        Style.showToast(text: "Error: ${error}");
       }).listen((event) {
-        print("received $event");
         if (event is String) {
           controller = VlcPlayerController.network(
             event,
@@ -76,9 +77,8 @@ class _VlcPlayerPageState extends State<VlcPlayerPage> {
       });
       return;
     }
-    print("here witout");
     controller = VlcPlayerController.network(
-      widget.url,
+      widget.extensionStream.url!,
       autoInitialize: true,
       autoPlay: true,
       options: VlcPlayerOptions(),
@@ -128,6 +128,7 @@ class _VlcPlayerPageState extends State<VlcPlayerPage> {
               if (!loading)
                 VlcControls(
                   controller: controller,
+                  stream: widget.extensionStream,
                   baseModel: widget.baseModel,
                   episode: widget.episode,
                   season: widget.season,

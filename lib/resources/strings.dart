@@ -13,6 +13,9 @@ class Strings {
   static const String all = "All";
   static const String moreInfo = "More Info";
   static const String unexpecedError = "Unexpected error occurred!";
+  static const String installExtensionHelp =
+      "Install Extensions from Discover tab to start binging your favorite content!";
+  static const String trakt = "Trakt";
 
   //Intro
   static const String tagline = "Track what You See\nResume where You Left";
@@ -104,6 +107,13 @@ class Strings {
   static const String installed = "Installed";
   static const String discover = "Discover";
   static const String install = "Install";
+  static const String anime = "Anime";
+  static const String rate = "Rate";
+  static const String uninstall = "Uninstall";
+
+  static const String successfulyRated = "Succefully Rated!";
+  static const String noRating = "No Rating Provided!";
+  static const String youRated = "You Rated";
 
 //Details
   static const String addToFav = "Add to";
@@ -123,6 +133,14 @@ class Strings {
   static const String markSeasonWatched = "Mark season as watched";
   static const String markSeasonUnwatched = "Mark season as unwatched";
 
+  static const String availableAt = "Available at";
+  static const String streams = "Streams";
+  static const String reviews = "Reviews";
+  static const String otherInfo = "Other Info";
+
+  static const String installExtensionsHelp =
+      "Looks like you have not installed any extensions!\nInstall extensions from Home Page in \"Extensions\" to start watching your favorite movies!";
+
 //Actor Details
   static const String knownFor = "Known For";
   static const String birthPlace = "BirthPlace";
@@ -134,16 +152,45 @@ class Strings {
   static const String watchedShows = "Shows\nWatched";
   static const String minSpentMovies = "Minutes spent\non movies";
   static const String minSpentShows = "Minutes spent\non shows";
+  static const String logoutConfirm = "You are going to logout. Are you sure?";
 
   //Settings
-  static const String darkMode = "Dark Mode";
   static const String general = "General";
+  static const String integrations = "Integrations";
+  static const String player = "Player";
+  static const String more = "More";
+
+  static const String website = "Website";
+  static const String extensionDoc = "Extensions Documentation";
+  static const String telegram = "Telegram";
+
+  static const String autoSelectSubtitle = "Auto Select Subtitle";
+  static const String alwaysExternalPlayer = "Always Open External Player";
+  static const String seekDuration = "Seek Duration";
+
+  static const String traktStatus = "Trakt Status";
+  static const String connected = "Connected";
+  static const String disconnected = "Disconnected";
+  static const String traktProfile = "Trakt Profile";
+  static const String connectTrakt = "Connect Trakt";
+  static const String disconnectTrakt = "Disconnect Trakt";
+
+  static const String syncInstalledExt = "Sync Installed Extensions";
+
+  static const String darkMode = "Dark Mode";
+  static const String countryProviders = "Country for Providers";
+  static const String countryProvidersSub =
+      "This is used to fetch the streaming services available in the specific country";
+  static const String chooseCountry = "Choose Country";
 
   //video player
   static const String playBackSpeed = "Playback Speed";
   static const String settings = "Settings";
   static const String none = "None";
   static const String tapToSee = "Tap to see";
+  static const String castDevices = "Cast Devices";
+  static const String noDeviceFound = "No Devices Found for casting!";
+  static const String disconnect = "Disconnect";
   static const playbackSpeeds = [
     "1x",
     "0.25x",

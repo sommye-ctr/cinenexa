@@ -7,10 +7,12 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart' as Provider;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:watrix/models/local/favorites.dart';
+import 'package:watrix/models/local/installed_extensions.dart';
 import 'package:watrix/models/local/last_activities.dart';
 import 'package:watrix/models/local/progress.dart';
 import 'package:watrix/models/local/search_history.dart';
 import 'package:watrix/models/local/show_history.dart';
+import 'package:watrix/resources/scroll_modified.dart';
 import 'package:watrix/resources/strings.dart';
 import 'package:watrix/resources/style.dart';
 import 'package:watrix/screens/actor_details_page.dart';
@@ -24,6 +26,8 @@ import 'package:watrix/screens/register_page.dart';
 import 'package:watrix/screens/settings_page.dart';
 import 'package:watrix/screens/video_player_page.dart';
 import 'package:watrix/screens/vlc_video_player.dart';
+import 'package:watrix/screens/youtube_video_player.dart';
+import 'package:watrix/store/extensions/extensions_store.dart';
 import 'package:watrix/store/favorites/favorites_store.dart';
 import 'package:watrix/store/user/user_store.dart';
 
@@ -46,15 +50,24 @@ void main() async {
       ProgressSchema,
       ShowHistorySchema,
       LastActivitiesSchema,
+      InstalledExtensionsSchema,
     ],
     directory: (await getApplicationSupportDirectory()).path,
   );
 
-  runApp(MyApp());
+  final savedThemeMode = await AdaptiveTheme.getThemeMode();
+
+  runApp(MyApp(
+    savedThemeMode: savedThemeMode,
+  ));
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  final AdaptiveThemeMode? savedThemeMode;
+  const MyApp({
+    Key? key,
+    this.savedThemeMode,
+  }) : super(key: key);
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -79,16 +92,20 @@ class _MyAppState extends State<MyApp> {
         Provider.Provider(
           create: (_) => UserStore(favoritesStore: favoritesStore),
         ),
+        Provider.Provider(
+          create: (_) => ExtensionsStore(),
+        ),
       ],
       child: AdaptiveTheme(
         light: Style.themeData,
         dark: Style.darkThemeData(context),
-        initial: AdaptiveThemeMode.light,
+        initial: widget.savedThemeMode ?? AdaptiveThemeMode.light,
         builder: (light, dark) => MaterialApp(
           title: Strings.appName,
           debugShowCheckedModeBanner: false,
           theme: light,
           darkTheme: dark,
+          scrollBehavior: ScrollBehaviorModified(),
           onGenerateRoute: _handleRoutes,
           home: homeWidget,
         ),
@@ -111,7 +128,6 @@ class _MyAppState extends State<MyApp> {
         return MaterialPageRoute(
           builder: (context) => ActorDetailsPage(baseModel: value),
         );
-
       case HomeFirstScreen.routeName:
         return MaterialPageRoute(
           builder: (context) => HomeFirstScreen(),
@@ -119,7 +135,9 @@ class _MyAppState extends State<MyApp> {
 
       case SettingsPage.routeName:
         return MaterialPageRoute(
-          builder: (context) => SettingsPage(),
+          builder: (context) => SettingsPage(
+            type: settings.arguments as int,
+          ),
         );
       case RegisterPage.routeName:
         return MaterialPageRoute(
@@ -133,6 +151,12 @@ class _MyAppState extends State<MyApp> {
             return LoginPage();
           },
         );
+      case IntroPage.routeName:
+        return MaterialPageRoute(
+          builder: (context) {
+            return IntroPage();
+          },
+        );
       case ForgotPassPage.routeName:
         return MaterialPageRoute(
           builder: (context) {
@@ -142,7 +166,16 @@ class _MyAppState extends State<MyApp> {
       case LoginConfigurePage.routeName:
         return MaterialPageRoute(
           builder: (context) {
-            return LoginConfigurePage();
+            return LoginConfigurePage(
+              showSkip: settings.arguments,
+            );
+          },
+        );
+      case YoutubeVideoPlayer.routeName:
+        final value = settings.arguments as String;
+        return MaterialPageRoute(
+          builder: (context) {
+            return YoutubeVideoPlayer(ytId: value);
           },
         );
       case VideoPlayerPage.routeName:
@@ -153,7 +186,7 @@ class _MyAppState extends State<MyApp> {
         ]);
         return MaterialPageRoute(
           builder: (context) => VlcPlayerPage(
-            url: value['url'],
+            extensionStream: value['stream'],
             baseModel: value['model'],
             episode: value['episode'],
             movie: value['movie'],
