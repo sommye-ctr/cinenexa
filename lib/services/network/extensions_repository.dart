@@ -28,6 +28,8 @@ class ExtensionsRepository {
           extension: element,
           imdbId: imdbId,
           traktId: traktId,
+          season: season,
+          episode: episode,
         );
         if (stream.isNotEmpty) streamController.add(stream);
       }
@@ -73,9 +75,9 @@ class ExtensionsRepository {
       "imdbId": imdbId,
     };
 
-    final Uri uri = Uri.https(extension.endpoint, '', query);
-    //final Uri uri = Uri.https("3f05-1-23-68-172.in.ngrok.io", '',
-    //query.map((key, value) => MapEntry(key, value.toString())));
+    //final Uri uri = Uri.https(extension.endpoint, '', query);
+    final Uri uri = Uri.https("a6a3-1-23-68-126.in.ngrok.io", '',
+        query.map((key, value) => MapEntry(key, value.toString())));
 
     final response = await http.get(uri);
     return _handleResponse(response, extension);

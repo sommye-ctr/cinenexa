@@ -75,6 +75,16 @@ mixin _$ExtensionsStore on _ExtensionsStoreBase, Store {
         .run(() => super.installExtension(extension));
   }
 
+  late final _$syncInstalledExtensionsAsyncAction = AsyncAction(
+      '_ExtensionsStoreBase.syncInstalledExtensions',
+      context: context);
+
+  @override
+  Future<dynamic> syncInstalledExtensions() {
+    return _$syncInstalledExtensionsAsyncAction
+        .run(() => super.syncInstalledExtensions());
+  }
+
   late final _$rateExtensionAsyncAction =
       AsyncAction('_ExtensionsStoreBase.rateExtension', context: context);
 

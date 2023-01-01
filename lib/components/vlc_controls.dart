@@ -427,16 +427,16 @@ class _VlcControlsState extends State<VlcControls> {
   Widget _buildSubtitlePopup() {
     int selected = 0;
     if (playerStore.selectedSubtitle != null) {
-      var key = playerStore.subtitles!.keys
-          .where((element) => element == playerStore.selectedSubtitle!);
-      if (key.isNotEmpty) {
-        selected = playerStore.subtitles!.keys.toList().indexOf(key.first) + 1;
+      int index = playerStore.subs
+          .indexWhere((element) => element.id == playerStore.selectedSubtitle);
+      if (index >= 0) {
+        selected = index + 1;
       }
     }
 
     List<String> allSubtitles = [
       Strings.none,
-      ...playerStore.subtitles!.values.toList()
+      ...playerStore.subs.map((element) => element.name.toString()).toList(),
     ];
 
     return CustomCheckBoxList(
@@ -451,15 +451,15 @@ class _VlcControlsState extends State<VlcControls> {
       ),
       onSelectionAdded: (values) {
         if (values.first == Strings.none) {
-          playerStore.setSelectedSubtitle(null);
-          widget.controller.setSpuTrack(-1);
+          playerStore.changeSubtitle(-1);
           return;
         }
-        int selectedS = playerStore.subtitles!.keys
-            .where((element) => playerStore.subtitles![element] == values.first)
-            .first;
-        playerStore.setSelectedSubtitle(selectedS);
-        widget.controller.setSpuTrack(selectedS);
+        int selectedIndex = playerStore.subs
+            .indexWhere((element) => element.name == values.first);
+
+        playerStore.changeSubtitle(selectedIndex);
+
+        Navigator.pop(context);
       },
     );
   }

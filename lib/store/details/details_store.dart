@@ -116,6 +116,8 @@ abstract class _DetailsStore with Store {
   StreamSubscription? streamSubscription;
   List<Extension> installedExtensions;
 
+  bool isStreamLoadingDelayed = false;
+
   @computed
   List<Genre>? get genres {
     if (baseModel.type == BaseModelType.movie) {
@@ -262,6 +264,11 @@ abstract class _DetailsStore with Store {
       return;
     }
 
+    if (traktId == -1 || imdbId.isEmpty) {
+      isStreamLoadingDelayed = true;
+      return;
+    }
+
     ExtensionsRepository extensionsRepository =
         ExtensionsRepository(installedExtensions: installedExtensions);
 
@@ -333,6 +340,10 @@ abstract class _DetailsStore with Store {
       );
       traktId = map['trakt'];
       imdbId = map['imdb'];
+      if (isStreamLoadingDelayed) {
+        fetchStreams();
+        isStreamLoadingDelayed = false;
+      }
     }
 
     if (baseModel.type == BaseModelType.movie) {

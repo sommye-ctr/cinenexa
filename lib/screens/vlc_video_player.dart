@@ -77,11 +77,13 @@ class _VlcPlayerPageState extends State<VlcPlayerPage> {
       });
       return;
     }
+    print(widget.extensionStream.url!);
     controller = VlcPlayerController.network(
       widget.extensionStream.url!,
       autoInitialize: true,
       autoPlay: true,
       options: VlcPlayerOptions(),
+      hwAcc: HwAcc.full,
     );
     setState(() {
       loading = false;

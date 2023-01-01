@@ -1,7 +1,7 @@
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:mobx/mobx.dart';
+import 'package:watrix/models/local/vlc_player_subtitles.dart';
 import 'package:watrix/models/network/extensions/extension_stream.dart';
-import 'package:watrix/models/network/extensions/subtitle.dart';
 import 'package:watrix/services/local/database.dart';
 part 'player_store.g.dart';
 
@@ -34,8 +34,12 @@ abstract class _PlayerStoreBase with Store {
   @observable
   int? selectedTrack;
 
+  //@observable
+  //ObservableMap<int, String>? subtitles;
+
   @observable
-  ObservableMap<int, String>? subtitles;
+  ObservableList<VlcPlayerSubtitle> subs = <VlcPlayerSubtitle>[].asObservable();
+
   @observable
   ObservableMap<int, String>? tracks;
 
@@ -59,13 +63,23 @@ abstract class _PlayerStoreBase with Store {
   }
 
   @action
-  void init() async {
+  Future init() async {
     seekDuration = await Database().getSeekDuration();
     controller.addOnRendererEventListener((event, p1, p2) {
       if (event == VlcRendererEventType.detached) {
         setCasting(false);
       }
     });
+
+    if (extensionStream.subtitles != null &&
+        extensionStream.subtitles!.isNotEmpty) {
+      for (var element in extensionStream.subtitles!) {
+        subs.add(VlcPlayerSubtitle(
+          name: element.title,
+          source: element.url,
+        ));
+      }
+    }
 
     controller.addListener(() async {
       if (controller.value.playingState == PlayingState.buffering) {
@@ -89,18 +103,18 @@ abstract class _PlayerStoreBase with Store {
             await controller.seekTo(Duration(milliseconds: seconds));
           }
 
-          if (extensionStream.subtitles != null &&
-              extensionStream.subtitles!.isNotEmpty) {
-            await Future.forEach<Subtitle>(extensionStream.subtitles!,
-                (element) async {
-              await controller.addSubtitleFromNetwork(element.url);
-            });
-          }
-
           setTracks(await controller.getAudioTracks());
           setSelectedTrack(await controller.getAudioTrack());
 
-          setSubtitles(await controller.getSpuTracks());
+          var list = await controller.getSpuTracks();
+          list.forEach(
+            (key, value) {
+              subs.add(VlcPlayerSubtitle(
+                name: value,
+                vlcId: key,
+              ));
+            },
+          );
           setSelectedSubtitle(await controller.getSpuTrack());
 
           initialCalled = true;
@@ -159,8 +173,22 @@ abstract class _PlayerStoreBase with Store {
   }
 
   @action
-  void setSubtitles(Map<int, String> sub) {
-    subtitles = sub.asObservable();
+  void changeSubtitle(int index) {
+    if (index == -1) {
+      controller.setSpuTrack(-1);
+      setSelectedSubtitle(null);
+      return;
+    }
+
+    VlcPlayerSubtitle subtitle = subs[index];
+    if (subtitle.vlcId != null) {
+      controller.setSpuTrack(subtitle.vlcId!);
+      setSelectedSubtitle(subtitle.id);
+      return;
+    }
+
+    controller.addSubtitleFromNetwork(subtitle.source!, isSelected: true);
+    setSelectedSubtitle(subtitle.id);
   }
 
   @action

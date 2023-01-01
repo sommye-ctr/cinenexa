@@ -150,6 +150,23 @@ mixin _$UserStore on _UserStoreBase, Store {
         super.fetchUserWatchedShows(local: local, api: api, fromApi: fromApi));
   }
 
+  late final _$fetchUserTraktProfileAsyncAction =
+      AsyncAction('_UserStoreBase.fetchUserTraktProfile', context: context);
+
+  @override
+  Future<TraktUser> fetchUserTraktProfile() {
+    return _$fetchUserTraktProfileAsyncAction
+        .run(() => super.fetchUserTraktProfile());
+  }
+
+  late final _$logoutAsyncAction =
+      AsyncAction('_UserStoreBase.logout', context: context);
+
+  @override
+  Future<dynamic> logout() {
+    return _$logoutAsyncAction.run(() => super.logout());
+  }
+
   late final _$fetchUserRecommendationsAsyncAction =
       AsyncAction('_UserStoreBase.fetchUserRecommendations', context: context);
 
@@ -157,6 +174,14 @@ mixin _$UserStore on _UserStoreBase, Store {
   Future<dynamic> fetchUserRecommendations() {
     return _$fetchUserRecommendationsAsyncAction
         .run(() => super.fetchUserRecommendations());
+  }
+
+  late final _$disconnectTraktAsyncAction =
+      AsyncAction('_UserStoreBase.disconnectTrakt', context: context);
+
+  @override
+  Future<dynamic> disconnectTrakt() {
+    return _$disconnectTraktAsyncAction.run(() => super.disconnectTrakt());
   }
 
   @override
