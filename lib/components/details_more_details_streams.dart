@@ -96,7 +96,7 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
                 width: ScreenSize.getPercentOfWidth(context, 0.75),
               ),
               Text(
-                Strings.noResultsFound,
+                Strings.noStreamsReturnedHelp,
                 textAlign: TextAlign.center,
               ),
             ],
