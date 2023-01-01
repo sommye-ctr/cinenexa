@@ -4,6 +4,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
+import 'package:lottie/lottie.dart';
 import 'package:watrix/models/network/extensions/extension_stream.dart';
 import 'package:watrix/resources/asset.dart';
 import 'package:watrix/screens/youtube_video_player.dart';
@@ -83,10 +84,23 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
         _buildWatchProviders(),
         if (widget.detailsStore.watchProviders.isNotEmpty)
           Style.getVerticalSpacing(context: context),
-        Builder(builder: (context) {
+        Observer(builder: (context) {
           if (widget.detailsStore.isStreamLoading)
             return Center(child: CircularProgressIndicator());
-          return Container();
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              LottieBuilder.asset(
+                Asset.notFound,
+                width: ScreenSize.getPercentOfWidth(context, 0.75),
+              ),
+              Text(
+                Strings.noResultsFound,
+                textAlign: TextAlign.center,
+              ),
+            ],
+          );
         }),
         Style.getVerticalSpacing(context: context),
         _buildExtensionStreams(),

@@ -140,6 +140,8 @@ class Strings {
 
   static const String installExtensionsHelp =
       "Looks like you have not installed any extensions!\nInstall extensions from Home Page in \"Extensions\" to start watching your favorite movies!";
+  static const String noStreamsReturnedHelp =
+      "No Streams available. You can install more extensions from Extensions tab to get more content!";
 
 //Actor Details
   static const String knownFor = "Known For";

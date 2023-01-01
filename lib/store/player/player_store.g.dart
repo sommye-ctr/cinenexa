@@ -236,7 +236,7 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
       AsyncAction('_PlayerStoreBase.init', context: context);
 
   @override
-  Future init() {
+  Future<dynamic> init() {
     return _$initAsyncAction.run(() => super.init());
   }
 

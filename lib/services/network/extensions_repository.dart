@@ -22,16 +22,19 @@ class ExtensionsRepository {
     late StreamController<List<ExtensionStream>> streamController;
 
     void fetch() async {
-      for (var element in installedExtensions) {
+      for (int i = 0; i < installedExtensions.length; i++) {
         var stream = await _getStream(
           baseModel: baseModel,
-          extension: element,
+          extension: installedExtensions[i],
           imdbId: imdbId,
           traktId: traktId,
           season: season,
           episode: episode,
         );
-        if (stream.isNotEmpty) streamController.add(stream);
+        streamController.add(stream);
+        if (i == installedExtensions.length - 1) {
+          streamController.close();
+        }
       }
     }
 
@@ -86,11 +89,15 @@ class ExtensionsRepository {
   List<ExtensionStream> _handleResponse(
       http.Response response, Extension extension) {
     if (response.body.isNotEmpty) {
-      List sources = Utils.parseJson(response.body);
+      try {
+        List sources = Utils.parseJson(response.body);
 
-      return sources
-          .map((e) => ExtensionStream.fromMap(e)..extension = extension)
-          .toList();
+        return sources
+            .map((e) => ExtensionStream.fromMap(e)..extension = extension)
+            .toList();
+      } catch (e) {
+        return [];
+      }
     }
     return [];
   }

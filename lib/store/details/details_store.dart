@@ -284,19 +284,26 @@ abstract class _DetailsStore with Store {
       imdbId: imdbId,
       traktId: traktId,
     )
-        .listen((event) {
-      loadedStreams.addAll(event);
+        .listen(
+      (event) {
+        loadedStreams.addAll(event);
 
-      var seen = Set<String>();
-      List list = loadedStreams
-          .where((element) => seen.add(element.extension!.id))
-          .toList();
+        var seen = Set<String>();
+        List list = loadedStreams
+            .where((element) => seen.add(element.extension!.id))
+            .toList();
 
-      if (list.length == noOfExtensions) {
+        if (list.length == noOfExtensions) {
+          isStreamLoading = false;
+          streamSubscription?.cancel();
+        }
+      },
+      onDone: () {
+        print("done");
         isStreamLoading = false;
         streamSubscription?.cancel();
-      }
-    });
+      },
+    );
   }
 
   @action
