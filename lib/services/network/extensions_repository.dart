@@ -82,8 +82,12 @@ class ExtensionsRepository {
     final Uri uri = Uri.https("a6a3-1-23-68-126.in.ngrok.io", '',
         query.map((key, value) => MapEntry(key, value.toString())));
 
-    final response = await http.get(uri);
-    return _handleResponse(response, extension);
+    try {
+      final response = await http.get(uri).timeout(Duration(seconds: 30));
+      return _handleResponse(response, extension);
+    } on TimeoutException {
+      return [];
+    }
   }
 
   List<ExtensionStream> _handleResponse(

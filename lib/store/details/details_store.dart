@@ -299,7 +299,6 @@ abstract class _DetailsStore with Store {
         }
       },
       onDone: () {
-        print("done");
         isStreamLoading = false;
         streamSubscription?.cancel();
       },
