@@ -105,6 +105,7 @@ class Strings {
 
   //Extensions
   static const String installed = "Installed";
+  static const String uninstalled = "Uninstalled";
   static const String discover = "Discover";
   static const String install = "Install";
   static const String anime = "Anime";

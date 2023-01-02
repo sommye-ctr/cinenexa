@@ -267,6 +267,7 @@ class _ExtensionTileState extends State<ExtensionTile> {
         .installExtension(widget.extension)
         .whenComplete(() {
       Navigator.pop(context);
+      Style.showSnackBar(context: context, text: Strings.installed);
       widget.onInstall?.call();
     });
   }
@@ -277,6 +278,8 @@ class _ExtensionTileState extends State<ExtensionTile> {
         .uninstallExtension(widget.extension)
         .whenComplete(() {
       Navigator.pop(context);
+      Style.showSnackBar(context: context, text: Strings.uninstalled);
+
       widget.onUninstall?.call();
     });
   }
