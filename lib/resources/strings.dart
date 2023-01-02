@@ -184,6 +184,8 @@ class Strings {
   static const String countryProvidersSub =
       "This is used to fetch the streaming services available in the specific country";
   static const String chooseCountry = "Choose Country";
+  static const String disconnectTraktConfirm =
+      "You are going to disconnect CineNexa from your Trakt account. Are you sure?";
 
   //video player
   static const String playBackSpeed = "Playback Speed";

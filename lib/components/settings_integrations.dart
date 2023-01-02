@@ -97,10 +97,15 @@ class _SettingsIntegrationsState extends State<SettingsIntegrations> {
                   context: context,
                   title: Strings.disconnectTrakt,
                   onTap: () async {
-                    await Provider.of<UserStore>(context, listen: false)
-                        .disconnectTrakt();
-
-                    Restart.restartApp();
+                    Style.showConfirmationDialog(
+                      context: context,
+                      text: Strings.disconnectTraktConfirm,
+                      onPressed: () async {
+                        await Provider.of<UserStore>(context, listen: false)
+                            .disconnectTrakt();
+                        Restart.restartApp();
+                      },
+                    );
                   },
                 ),
             ],
