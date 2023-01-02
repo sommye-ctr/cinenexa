@@ -137,11 +137,12 @@ class Strings {
   static const String streams = "Streams";
   static const String reviews = "Reviews";
   static const String otherInfo = "Other Info";
+  static const String installExtensions = "Install Extensions";
 
   static const String installExtensionsHelp =
-      "Looks like you have not installed any extensions!\nInstall extensions from Home Page in \"Extensions\" to start watching your favorite movies!";
+      "Looks like you have not installed any extensions!\nInstall extensions to start watching your favorite movies!";
   static const String noStreamsReturnedHelp =
-      "No Streams available. You can install more extensions from Extensions tab to get more content!";
+      "No Streams available. Install more extensions to get more content to binge!";
 
 //Actor Details
   static const String knownFor = "Known For";

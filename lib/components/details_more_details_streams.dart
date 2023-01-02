@@ -9,6 +9,7 @@ import 'package:watrix/models/network/extensions/extension_stream.dart';
 import 'package:watrix/resources/asset.dart';
 import 'package:watrix/screens/youtube_video_player.dart';
 import 'package:watrix/store/details/details_store.dart';
+import 'package:watrix/widgets/rounded_button.dart';
 
 import '../models/network/base_model.dart';
 import '../models/network/trakt/trakt_show_history_season.dart';
@@ -85,25 +86,36 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
         if (widget.detailsStore.watchProviders.isNotEmpty)
           Style.getVerticalSpacing(context: context),
         Observer(builder: (context) {
-          if (widget.detailsStore.isStreamLoading)
+          if (widget.detailsStore.noOfExtensions == 0) {
+            return _buildInstallExtensionsHelp();
+          }
+          if (widget.detailsStore.isStreamLoading) {
             return Center(child: CircularProgressIndicator());
+          } else if (widget.detailsStore.loadedStreams.isEmpty) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                LottieBuilder.asset(
+                  Asset.notFound,
+                  width: ScreenSize.getPercentOfWidth(context, 0.75),
+                ),
+                Text(
+                  Strings.noStreamsReturnedHelp,
+                  textAlign: TextAlign.center,
+                ),
+                Style.getVerticalSpacing(context: context),
+                _buildInstallExtensionsButton(),
+              ],
+            );
+          }
           return Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              LottieBuilder.asset(
-                Asset.notFound,
-                width: ScreenSize.getPercentOfWidth(context, 0.75),
-              ),
-              Text(
-                Strings.noStreamsReturnedHelp,
-                textAlign: TextAlign.center,
-              ),
+              Style.getVerticalSpacing(context: context),
+              _buildExtensionStreams(),
             ],
           );
         }),
-        Style.getVerticalSpacing(context: context),
-        _buildExtensionStreams(),
       ],
     );
   }
@@ -125,7 +137,7 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
     );
   }
 
-  Widget _buildInstallExtensionsText() {
+  Widget _buildInstallExtensionsHelp() {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -139,13 +151,21 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
           Strings.installExtensionsHelp,
           textAlign: TextAlign.center,
         ),
+        Style.getVerticalSpacing(context: context),
+        _buildInstallExtensionsButton(),
       ],
     );
   }
 
+  Widget _buildInstallExtensionsButton() {
+    return RoundedButton(
+      type: RoundedButtonType.outlined,
+      onPressed: () => Navigator.pop(context, true),
+      child: Text(Strings.installExtensions),
+    );
+  }
+
   Widget _buildExtensionStreams() {
-    if (widget.detailsStore.noOfExtensions == 0)
-      return _buildInstallExtensionsText();
     return MasonryGridView.builder(
       shrinkWrap: true,
       gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(

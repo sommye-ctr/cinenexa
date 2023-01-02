@@ -31,26 +31,21 @@ class _HomeFirstScreenState extends State<HomeFirstScreen> {
               IndexedStack(
                 index: _pageIndex,
                 children: [
-                  HomePage(),
+                  HomePage(
+                    onBack: () async {
+                      await Future.delayed(Duration(milliseconds: 500));
+                      _changeBottomNavIndex(1);
+                    },
+                  ),
                   ExtensionsPage(),
                   SearchPage(
                     onBack: () {
-                      setState(() {
-                        _pageIndex = 0;
-                        (bottomNavigationKey.currentWidget
-                                as BottomNavigationBar)
-                            .onTap!(0);
-                      });
+                      _changeBottomNavIndex(0);
                     },
                   ),
                   ProfilePage(
                     onBack: () {
-                      setState(() {
-                        _pageIndex = 0;
-                        (bottomNavigationKey.currentWidget
-                                as BottomNavigationBar)
-                            .onTap!(0);
-                      });
+                      _changeBottomNavIndex(0);
                     },
                   ),
                 ],
@@ -68,5 +63,12 @@ class _HomeFirstScreenState extends State<HomeFirstScreen> {
         ),
       ),
     );
+  }
+
+  void _changeBottomNavIndex(int index) {
+    setState(() {
+      _pageIndex = index;
+      (bottomNavigationKey.currentWidget as BottomNavigationBar).onTap!(index);
+    });
   }
 }
