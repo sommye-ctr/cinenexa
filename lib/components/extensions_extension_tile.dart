@@ -253,7 +253,6 @@ class _ExtensionTileState extends State<ExtensionTile> {
           .whenComplete(() {
         Navigator.pop(context);
         moreInfoDialog.dismiss();
-        Style.showSnackBar(context: context, text: Strings.successfulyRated);
       });
     } else {
       moreInfoDialog.dismiss();
@@ -267,7 +266,6 @@ class _ExtensionTileState extends State<ExtensionTile> {
         .installExtension(widget.extension)
         .whenComplete(() {
       Navigator.pop(context);
-      Style.showSnackBar(context: context, text: Strings.installed);
       widget.onInstall?.call();
     });
   }
@@ -278,8 +276,6 @@ class _ExtensionTileState extends State<ExtensionTile> {
         .uninstallExtension(widget.extension)
         .whenComplete(() {
       Navigator.pop(context);
-      Style.showSnackBar(context: context, text: Strings.uninstalled);
-
       widget.onUninstall?.call();
     });
   }

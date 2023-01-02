@@ -3,6 +3,8 @@ import 'package:watrix/models/local/installed_extensions.dart';
 import 'package:watrix/models/network/extensions/extension.dart';
 import 'package:watrix/services/local/database.dart';
 import 'package:watrix/services/network/supabase_repository.dart';
+
+import '../../resources/strings.dart';
 part 'extensions_store.g.dart';
 
 class ExtensionsStore = _ExtensionsStoreBase with _$ExtensionsStore;
@@ -14,6 +16,12 @@ abstract class _ExtensionsStoreBase with Store {
 
   @observable
   ObservableList<Extension>? discoverExtensions;
+
+  @observable
+  String? error;
+
+  @observable
+  String? successMessage;
 
   Database database = Database();
 
@@ -35,34 +43,63 @@ abstract class _ExtensionsStoreBase with Store {
   Future fetch() async {
     if (discoverExtensions == null) {
       discoverExtensions = <Extension>[].asObservable();
-      discoverExtensions!.addAll(await SupabaseRepository.getExtensions());
-      await database.updateInstalledExtensions(discoverExtensions!);
+      var result = await SupabaseRepository.getExtensions();
+
+      return result.when(
+        (success) async {
+          discoverExtensions!.addAll(success);
+          await database.updateInstalledExtensions(discoverExtensions!);
+        },
+        (err) {
+          error = err;
+        },
+      );
     }
   }
 
   @action
   Future uninstallExtension(Extension extension) async {
-    await Future.wait([
-      SupabaseRepository.uninstallExtension(extension: extension),
-      database.removeInstalledExtension(extension),
-    ]);
+    var result =
+        await SupabaseRepository.uninstallExtension(extension: extension);
+
+    result.when(
+      (success) {
+        successMessage = Strings.uninstalled;
+        return database.removeInstalledExtension(extension);
+      },
+      (err) => error = err,
+    );
   }
 
   @action
   Future installExtension(Extension extension) async {
-    await Future.wait([
-      SupabaseRepository.installExtension(extension: extension),
-      database.addInstalledExtension(extension),
-    ]);
+    var result =
+        await SupabaseRepository.installExtension(extension: extension);
+
+    result.when(
+      (success) {
+        successMessage = Strings.installed;
+
+        return database.addInstalledExtension(extension);
+      },
+      (err) {
+        error = err;
+      },
+    );
   }
 
   @action
   Future syncInstalledExtensions() async {
     final list = await SupabaseRepository.getUserExtensions();
-    return Future.wait([
-      database.updateAllInstalledExtensions(list),
-      database.updateLastActivities(extensionSyncedAt: DateTime.now()),
-    ]);
+    return list.when(
+      (success) => Future.wait([
+        database.updateAllInstalledExtensions(success),
+        database.updateLastActivities(extensionSyncedAt: DateTime.now()),
+      ]),
+      (err) {
+        error = err;
+      },
+    );
   }
 
   @action
@@ -82,14 +119,20 @@ abstract class _ExtensionsStoreBase with Store {
     );
     installedExtensions[index] = temp; */
 
-    await Future.wait([
-      SupabaseRepository.rateExtension(
-        extension: extension,
-        rating: rating,
-      ),
-      database.rateExtension(extension, rating)
-    ]);
+    var result = await SupabaseRepository.rateExtension(
+      extension: extension,
+      rating: rating,
+    );
 
-    await _init();
+    return result.when(
+      (success) {
+        successMessage = Strings.successfulyRated;
+        return Future.wait([
+          database.rateExtension(extension, rating),
+          _init(),
+        ]);
+      },
+      (err) => error = err,
+    );
   }
 }

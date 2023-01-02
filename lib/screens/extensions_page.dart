@@ -17,7 +17,9 @@ class ExtensionsPage extends StatefulWidget {
 
 class _ExtensionsPageState extends State<ExtensionsPage> {
   late ExtensionsStore extensionsStore;
-  late ReactionDisposer disposer;
+  late ReactionDisposer disposer1;
+  late ReactionDisposer disposer2;
+  late ReactionDisposer disposer3;
 
   @override
   void initState() {
@@ -28,17 +30,29 @@ class _ExtensionsPageState extends State<ExtensionsPage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     extensionsStore = Provider.of<ExtensionsStore>(context);
-    disposer = autorun(
-      (_) {
-        extensionsStore.installedExtensions.toString();
-        setState(() {});
-      },
-    );
+
+    disposer1 = autorun((_) {
+      extensionsStore.installedExtensions.toString();
+      setState(() {});
+    });
+    disposer2 = autorun((_) {
+      if (extensionsStore.error != null) {
+        Style.showSnackBar(context: context, text: extensionsStore.error!);
+      }
+    });
+    disposer3 = autorun((_) {
+      if (extensionsStore.successMessage != null) {
+        Style.showSnackBar(
+            context: context, text: extensionsStore.successMessage!);
+      }
+    });
   }
 
   @override
   void dispose() {
-    disposer();
+    disposer1();
+    disposer2();
+    disposer3();
     super.dispose();
   }
 

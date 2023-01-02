@@ -79,7 +79,7 @@ class ExtensionsRepository {
     };
 
     //final Uri uri = Uri.https(extension.endpoint, '', query);
-    final Uri uri = Uri.https("a6a3-1-23-68-126.in.ngrok.io", '',
+    final Uri uri = Uri.https("63f6-1-23-34-8.in.ngrok.io", '',
         query.map((key, value) => MapEntry(key, value.toString())));
 
     try {

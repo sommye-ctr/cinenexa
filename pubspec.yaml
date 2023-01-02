@@ -73,6 +73,7 @@ dependencies:
   country_picker: ^2.0.19
   restart_app: ^1.1.1
   fluttertoast: ^8.1.2
+  multiple_result: ^4.0.0
 
 
 dev_dependencies:

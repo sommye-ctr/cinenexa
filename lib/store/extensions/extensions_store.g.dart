@@ -41,6 +41,38 @@ mixin _$ExtensionsStore on _ExtensionsStoreBase, Store {
     });
   }
 
+  late final _$errorAtom =
+      Atom(name: '_ExtensionsStoreBase.error', context: context);
+
+  @override
+  String? get error {
+    _$errorAtom.reportRead();
+    return super.error;
+  }
+
+  @override
+  set error(String? value) {
+    _$errorAtom.reportWrite(value, super.error, () {
+      super.error = value;
+    });
+  }
+
+  late final _$successMessageAtom =
+      Atom(name: '_ExtensionsStoreBase.successMessage', context: context);
+
+  @override
+  String? get successMessage {
+    _$successMessageAtom.reportRead();
+    return super.successMessage;
+  }
+
+  @override
+  set successMessage(String? value) {
+    _$successMessageAtom.reportWrite(value, super.successMessage, () {
+      super.successMessage = value;
+    });
+  }
+
   late final _$_initAsyncAction =
       AsyncAction('_ExtensionsStoreBase._init', context: context);
 
@@ -98,7 +130,9 @@ mixin _$ExtensionsStore on _ExtensionsStoreBase, Store {
   String toString() {
     return '''
 installedExtensions: ${installedExtensions},
-discoverExtensions: ${discoverExtensions}
+discoverExtensions: ${discoverExtensions},
+error: ${error},
+successMessage: ${successMessage}
     ''';
   }
 }
