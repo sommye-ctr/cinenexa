@@ -112,12 +112,12 @@ class Database {
     LastActivities? lastActivities = await isar.lastActivities.get(0);
     LastActivities newLastActivities = LastActivities()
       ..id = 0
-      ..epCollectedAt = epCollectedAt ?? lastActivities!.epCollectedAt
-      ..epWatchedAt = epWatchedAt ?? lastActivities!.epWatchedAt
-      ..movieCollectedAt = movieCollectedAt ?? lastActivities!.movieCollectedAt
-      ..movieWatchedAt = movieWatchedAt ?? lastActivities!.movieWatchedAt
+      ..epCollectedAt = epCollectedAt ?? lastActivities?.epCollectedAt
+      ..epWatchedAt = epWatchedAt ?? lastActivities?.epWatchedAt
+      ..movieCollectedAt = movieCollectedAt ?? lastActivities?.movieCollectedAt
+      ..movieWatchedAt = movieWatchedAt ?? lastActivities?.movieWatchedAt
       ..extensionsSyncedAt =
-          extensionSyncedAt ?? lastActivities!.extensionsSyncedAt;
+          extensionSyncedAt ?? lastActivities?.extensionsSyncedAt;
 
     await isar.writeTxn(() async {
       await isar.lastActivities.put(newLastActivities);

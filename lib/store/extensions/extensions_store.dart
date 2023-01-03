@@ -1,5 +1,6 @@
 import 'package:mobx/mobx.dart';
 import 'package:watrix/models/local/installed_extensions.dart';
+import 'package:watrix/models/local/last_activities.dart';
 import 'package:watrix/models/network/extensions/extension.dart';
 import 'package:watrix/services/local/database.dart';
 import 'package:watrix/services/network/supabase_repository.dart';
@@ -31,7 +32,12 @@ abstract class _ExtensionsStoreBase with Store {
 
   @action
   Future _init() async {
-    installedExtensions.addAll(await database.getInstalledExtensions());
+    LastActivities? lastActivities = await database.getLastActivities();
+    if (lastActivities == null || lastActivities.extensionsSyncedAt == null) {
+      return syncInstalledExtensions();
+    } else {
+      installedExtensions.addAll(await database.getInstalledExtensions());
+    }
 
     database.watchInstalledExtensions().listen((event) async {
       installedExtensions.clear();
@@ -92,10 +98,14 @@ abstract class _ExtensionsStoreBase with Store {
   Future syncInstalledExtensions() async {
     final list = await SupabaseRepository.getUserExtensions();
     return list.when(
-      (success) => Future.wait([
-        database.updateAllInstalledExtensions(success),
-        database.updateLastActivities(extensionSyncedAt: DateTime.now()),
-      ]),
+      (success) {
+        installedExtensions.clear();
+        installedExtensions.addAll(success.map((e) => e.getInstalled()));
+        Future.wait([
+          database.updateAllInstalledExtensions(success),
+          database.updateLastActivities(extensionSyncedAt: DateTime.now()),
+        ]);
+      },
       (err) {
         error = err;
       },

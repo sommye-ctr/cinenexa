@@ -76,16 +76,16 @@ abstract class _UserStoreBase with Store {
       List<Future> listFutures = [];
 
       if (localLast != null) {
-        if (lastActivities.epWatchedAt.isAfter(localLast.epWatchedAt)) {
+        if (lastActivities.epWatchedAt!.isAfter(localLast.epWatchedAt!)) {
           listFutures.add(fetchUserWatchedShows(
               api: lastActivities, local: localLast, fromApi: true));
         } else {
           listFutures.add(
               fetchUserWatchedShows(api: lastActivities, local: localLast));
         }
-        if (lastActivities.movieCollectedAt
-                .isAfter(localLast.movieCollectedAt) ||
-            lastActivities.epCollectedAt.isAfter(localLast.epCollectedAt)) {
+        if (lastActivities.movieCollectedAt!
+                .isAfter(localLast.movieCollectedAt!) ||
+            lastActivities.epCollectedAt!.isAfter(localLast.epCollectedAt!)) {
           listFutures.add(
               favoritesStore?.fetchFavorites(fromApi: true) ?? Future.value());
         } else {
@@ -98,10 +98,8 @@ abstract class _UserStoreBase with Store {
           favoritesStore?.fetchFavorites(fromApi: true),
         ]);
       }
-      Future.wait(listFutures).whenComplete(() => localDb.addLastActivities(
-          lastActivities: lastActivities
-            ..extensionsSyncedAt =
-                localLast?.extensionsSyncedAt ?? DateTime.now()));
+      Future.wait(listFutures).whenComplete(
+          () => localDb.addLastActivities(lastActivities: lastActivities));
     }
   }
 

@@ -98,8 +98,7 @@ class LoginConfigurePage extends StatelessWidget {
                 alignment: Alignment.bottomRight,
                 child: TextButton(
                   onPressed: () {
-                    Navigator.pushNamedAndRemoveUntil(
-                        context, HomeFirstScreen.routeName, (route) => false);
+                    Restart.restartApp();
                   },
                   child: Text(Strings.skip),
                 ),
