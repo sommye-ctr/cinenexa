@@ -115,6 +115,8 @@ class Strings {
   static const String successfulyRated = "Succefully Rated!";
   static const String noRating = "No Rating Provided!";
   static const String youRated = "You Rated";
+  static const String installExtensionsWarning =
+      "Usage of third party extensions are subjected to your responsibility and governing laws of respective jurisdiction.";
 
 //Details
   static const String addToFav = "Add to";

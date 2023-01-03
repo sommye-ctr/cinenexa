@@ -261,13 +261,19 @@ class _ExtensionTileState extends State<ExtensionTile> {
   }
 
   void _onInstallExtension(context) async {
-    Style.showLoadingDialog(context: context);
-    Provider.of<ExtensionsStore>(context, listen: false)
-        .installExtension(widget.extension)
-        .whenComplete(() {
-      Navigator.pop(context);
-      widget.onInstall?.call();
-    });
+    Style.showConfirmationDialog(
+      context: context,
+      text: Strings.installExtensionsWarning,
+      onPressed: () {
+        Style.showLoadingDialog(context: context);
+        Provider.of<ExtensionsStore>(context, listen: false)
+            .installExtension(widget.extension)
+            .whenComplete(() {
+          Navigator.pop(context);
+          widget.onInstall?.call();
+        });
+      },
+    );
   }
 
   void _onUninstallExtension(context) async {
