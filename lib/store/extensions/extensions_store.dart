@@ -57,7 +57,7 @@ abstract class _ExtensionsStoreBase with Store {
           await database.updateInstalledExtensions(discoverExtensions!);
         },
         (err) {
-          error = err;
+          error = err.message;
         },
       );
     }
@@ -73,7 +73,7 @@ abstract class _ExtensionsStoreBase with Store {
         successMessage = Strings.uninstalled;
         return database.removeInstalledExtension(extension);
       },
-      (err) => error = err,
+      (err) => error = err.message,
     );
   }
 
@@ -89,7 +89,12 @@ abstract class _ExtensionsStoreBase with Store {
         return database.addInstalledExtension(extension);
       },
       (err) {
-        error = err;
+        if (err.code == "23505") {
+          error = Strings.alreadyInstalled;
+          syncInstalledExtensions();
+          return;
+        }
+        error = err.message;
       },
     );
   }
@@ -107,7 +112,7 @@ abstract class _ExtensionsStoreBase with Store {
         ]);
       },
       (err) {
-        error = err;
+        error = err.message;
       },
     );
   }
@@ -142,7 +147,13 @@ abstract class _ExtensionsStoreBase with Store {
           _init(),
         ]);
       },
-      (err) => error = err,
+      (err) {
+        if (err.code == "23505") {
+          error = Strings.alreadyRated;
+          return;
+        }
+        error = err.message;
+      },
     );
   }
 }

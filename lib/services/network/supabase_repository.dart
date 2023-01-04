@@ -5,7 +5,8 @@ import 'package:watrix/models/network/extensions/extension.dart';
 class SupabaseRepository {
   static final SupabaseClient client = Supabase.instance.client;
 
-  static Future<Result<List<Extension>, String>> getExtensions() async {
+  static Future<Result<List<Extension>, PostgrestException>>
+      getExtensions() async {
     try {
       final resp = await client
           .from('extensions')
@@ -13,11 +14,12 @@ class SupabaseRepository {
           .order('rating', ascending: false);
       return Success((resp as List).map((e) => Extension.fromMap(e)).toList());
     } catch (e) {
-      return Error(e.toString());
+      return Error(e as PostgrestException);
     }
   }
 
-  static Future<Result<List<Extension>, String>> getUserExtensions() async {
+  static Future<Result<List<Extension>, PostgrestException>>
+      getUserExtensions() async {
     try {
       final resp = await client
           .from('user_extensions')
@@ -30,11 +32,11 @@ class SupabaseRepository {
           )
           .toList());
     } catch (e) {
-      return Error(e.toString());
+      return Error(e as PostgrestException);
     }
   }
 
-  static Future<Result<Unit, String>> installExtension(
+  static Future<Result<Unit, PostgrestException>> installExtension(
       {required Extension extension}) async {
     try {
       await client.from('user_extensions').insert({
@@ -43,11 +45,11 @@ class SupabaseRepository {
       });
       return Success(unit);
     } catch (e) {
-      return Error(e.toString());
+      return Error(e as PostgrestException);
     }
   }
 
-  static Future<Result<Unit, String>> uninstallExtension(
+  static Future<Result<Unit, PostgrestException>> uninstallExtension(
       {required Extension extension}) async {
     try {
       await client
@@ -56,11 +58,11 @@ class SupabaseRepository {
           .eq('extension_id', extension.id);
       return Success(unit);
     } catch (e) {
-      return Error(e.toString());
+      return Error(e as PostgrestException);
     }
   }
 
-  static Future<Result<Unit, String>> rateExtension(
+  static Future<Result<Unit, PostgrestException>> rateExtension(
       {required Extension extension, required int rating}) async {
     try {
       await client.from('extension_ratings').insert({
@@ -70,7 +72,7 @@ class SupabaseRepository {
       });
       return Success(unit);
     } catch (e) {
-      return Error(e.toString());
+      return Error(e as PostgrestException);
     }
   }
 }

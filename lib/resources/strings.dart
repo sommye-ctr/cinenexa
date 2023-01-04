@@ -118,6 +118,11 @@ class Strings {
   static const String installExtensionsWarning =
       "Usage of third party extensions are subjected to your responsibility and governing laws of respective jurisdiction.";
 
+  static const String alreadyInstalled =
+      "You have already installed this extension. Syncing your extensions...";
+  static const String alreadyRated =
+      "You have already rated this extension. Restart the app to sync.";
+
 //Details
   static const String addToFav = "Add to";
   static const String removeFromFav = "Remove from";
