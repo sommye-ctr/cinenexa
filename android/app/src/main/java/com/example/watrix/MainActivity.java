@@ -31,9 +31,13 @@ public class MainActivity extends FlutterActivity implements EventChannel.Stream
 
     @Override
     public void onListen(Object arguments, EventChannel.EventSink events) {
-        String url = (String) ((Map<String, Object>)arguments).get("url");
-        Log.d("TORRENT", "stream url is " + url);
-        torrentStreamHandler = new TorrentStreamHandler(url, events, getFilesDir(), this);
+        Map<String, Object> map = ((Map<String, Object>)arguments);
+        String url = (String) map.get("url");
+        int index = -1;
+        if (map.containsKey("index") && map.get("index") != null){
+             index = Integer.parseInt(String.valueOf(map.get("index")));
+        }
+        torrentStreamHandler = new TorrentStreamHandler(url, index, events, getFilesDir(), this);
     }
 
     @Override

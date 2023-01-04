@@ -1,6 +1,7 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
@@ -37,10 +38,11 @@ void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
 
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  await dotenv.load(fileName: "lib/.env");
+
   await Supabase.initialize(
-    url: "https://lsmnsbwamwjgpgnbhfqf.supabase.co",
-    anonKey:
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzbW5zYndhbXdqZ3BnbmJoZnFmIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzAzNTAyNzIsImV4cCI6MTk4NTkyNjI3Mn0.mpkdOMhskj7ii0KRBRWjzZpnm-nVxw1rFlIJjH85hV4",
+    url: dotenv.env['SUPABASE_URL'] ?? "",
+    anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? "",
   );
 
   await Isar.open(

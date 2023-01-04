@@ -1,3 +1,4 @@
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
@@ -48,11 +49,18 @@ class _VlcPlayerPageState extends State<VlcPlayerPage> {
 
   late VlcPlayerController controller;
   bool loading = true;
+  late AdaptiveThemeMode mode;
 
   @override
   void initState() {
     super.initState();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+    mode = AdaptiveTheme.of(context).mode;
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (mounted) AdaptiveTheme.of(context).setDark();
+    });
+
     init();
   }
 
@@ -60,6 +68,7 @@ class _VlcPlayerPageState extends State<VlcPlayerPage> {
     if (widget.extensionStream.magnet != null) {
       channel.receiveBroadcastStream({
         "url": widget.extensionStream.magnet,
+        "index": widget.extensionStream.fileIndex,
       }).handleError((error) {
         Style.showToast(text: "Error: ${error}");
       }).listen((event) {
@@ -77,7 +86,6 @@ class _VlcPlayerPageState extends State<VlcPlayerPage> {
       });
       return;
     }
-    print(widget.extensionStream.url!);
     controller = VlcPlayerController.network(
       widget.extensionStream.url!,
       autoInitialize: true,
@@ -96,6 +104,7 @@ class _VlcPlayerPageState extends State<VlcPlayerPage> {
       onWillPop: () async {
         SystemChrome.setPreferredOrientations(
             [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
+        AdaptiveTheme.of(context).setThemeMode(mode);
         return true;
       },
       child: Material(

@@ -13,6 +13,7 @@ class ScrobbleManager {
   final Movie? movie;
   final Tv? show;
   final int? season, episode, id;
+  final bool isTraktLogged;
 
   final TraktRepository traktRepository =
       TraktRepository(client: TraktOAuthClient());
@@ -24,6 +25,7 @@ class ScrobbleManager {
   ScrobbleManager({
     required this.playerController,
     required this.item,
+    required this.isTraktLogged,
     this.show,
     this.id,
     this.movie,
@@ -51,26 +53,29 @@ class ScrobbleManager {
   }
 
   void start() {
-    print("scrobble start");
     scrobbleStarted = true;
     double progress = _getProgress();
     progress;
-    traktRepository
-        .scrobbleStart(
-      type: item.type!,
-      tmdbId: id!,
-      progress: _getProgress(),
-    )
-        .then(
-      (value) {
-        localDb.addProgress(progress: _getProgressObject());
-      },
-    );
+
+    if (isTraktLogged) {
+      traktRepository
+          .scrobbleStart(
+        type: item.type!,
+        tmdbId: id!,
+        progress: _getProgress(),
+      )
+          .then(
+        (value) {
+          localDb.addProgress(progress: _getProgressObject());
+        },
+      );
+    } else {
+      localDb.addProgress(progress: _getProgressObject());
+    }
   }
 
   void paused() {
     double progress = _getProgress();
-    print("scrobble progress $progress");
     if (playerController.value.isEnded) {
       stopped();
       return;
@@ -79,25 +84,28 @@ class ScrobbleManager {
       stopped();
       return;
     }
-    print("scrobble paused");
     localDb.addProgress(progress: _getProgressObject());
 
-    traktRepository.scrobblePause(
-      type: item.type!,
-      tmdbId: id!,
-      progress: _getProgress(),
-    );
+    if (isTraktLogged)
+      traktRepository.scrobblePause(
+        type: item.type!,
+        tmdbId: id!,
+        progress: _getProgress(),
+      );
   }
 
   void stopped() {
-    print("scrobble stopped");
-    traktRepository
-        .scrobbleStop(
-          type: item.type!,
-          tmdbId: id!,
-          progress: _getProgress(),
-        )
-        .whenComplete(() => localDb.removeProgress(tmdbId: id!));
+    if (isTraktLogged) {
+      traktRepository
+          .scrobbleStop(
+            type: item.type!,
+            tmdbId: id!,
+            progress: _getProgress(),
+          )
+          .whenComplete(() => localDb.removeProgress(tmdbId: id!));
+    } else {
+      localDb.removeProgress(tmdbId: id!);
+    }
   }
 
   Progress _getProgressObject() {
