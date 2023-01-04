@@ -75,7 +75,7 @@ abstract class _UserStoreBase with Store {
 
       List<Future> listFutures = [];
 
-      if (localLast != null) {
+      if (localLast != null && localLast.movieCollectedAt != null) {
         if (lastActivities.epWatchedAt!.isAfter(localLast.epWatchedAt!)) {
           listFutures.add(fetchUserWatchedShows(
               api: lastActivities, local: localLast, fromApi: true));
@@ -98,8 +98,9 @@ abstract class _UserStoreBase with Store {
           favoritesStore?.fetchFavorites(fromApi: true),
         ]);
       }
-      Future.wait(listFutures).whenComplete(
-          () => localDb.addLastActivities(lastActivities: lastActivities));
+      Future.wait(listFutures).whenComplete(() => localDb.addLastActivities(
+          lastActivities: lastActivities
+            ..extensionsSyncedAt = localLast?.extensionsSyncedAt));
     }
   }
 
