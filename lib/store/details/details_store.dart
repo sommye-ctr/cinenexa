@@ -117,6 +117,7 @@ abstract class _DetailsStore with Store {
   List<Extension> installedExtensions;
 
   bool isStreamLoadingDelayed = false;
+  bool isReviewsLoadingDelayed = false;
 
   @computed
   List<Genre>? get genres {
@@ -307,6 +308,10 @@ abstract class _DetailsStore with Store {
 
   @action
   Future fetchReviews() async {
+    if (traktId == -1) {
+      isReviewsLoadingDelayed = true;
+      return;
+    }
     reviews = ObservableFuture(Repository.getReviews(
       query: Requests.reviews(baseModel.type!, traktId),
       page: reviewPage,
@@ -349,6 +354,10 @@ abstract class _DetailsStore with Store {
       if (isStreamLoadingDelayed) {
         fetchStreams();
         isStreamLoadingDelayed = false;
+      }
+      if (isReviewsLoadingDelayed) {
+        fetchReviews();
+        isReviewsLoadingDelayed = true;
       }
     }
 
