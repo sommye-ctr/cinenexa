@@ -87,16 +87,6 @@ class _LoginPageState extends State<LoginPage> {
                             color: Colors.grey,
                           ),
                         ),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                            onPressed: () {
-                              Navigator.of(context)
-                                  .pushNamed(ForgotPassPage.routeName);
-                            },
-                            child: Text(Strings.forgotPass),
-                          ),
-                        ),
                         Style.getVerticalSpacing(context: context),
                         Container(
                           width: double.infinity,
