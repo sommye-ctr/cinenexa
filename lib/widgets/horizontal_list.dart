@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:watrix/resources/style.dart';
-import 'package:watrix/services/constants.dart';
+import 'package:cinenexa/resources/style.dart';
+import 'package:cinenexa/services/constants.dart';
 
 class HorizontalList<T> extends StatefulWidget {
   final Future<List<T>>? future;

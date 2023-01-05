@@ -1,5 +1,5 @@
 class Strings {
-  static const String appName = "Watrix";
+  static const String appName = "CineNexa";
 
 //Common
   static const String home = "Home";

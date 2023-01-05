@@ -1,8 +1,8 @@
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:mobx/mobx.dart';
-import 'package:watrix/models/local/vlc_player_subtitles.dart';
-import 'package:watrix/models/network/extensions/extension_stream.dart';
-import 'package:watrix/services/local/database.dart';
+import 'package:cinenexa/models/local/vlc_player_subtitles.dart';
+import 'package:cinenexa/models/network/extensions/extension_stream.dart';
+import 'package:cinenexa/services/local/database.dart';
 part 'player_store.g.dart';
 
 class PlayerStore = _PlayerStoreBase with _$PlayerStore;

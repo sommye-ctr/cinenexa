@@ -1,9 +1,9 @@
 import 'package:mobx/mobx.dart';
-import 'package:watrix/models/local/installed_extensions.dart';
-import 'package:watrix/models/local/last_activities.dart';
-import 'package:watrix/models/network/extensions/extension.dart';
-import 'package:watrix/services/local/database.dart';
-import 'package:watrix/services/network/supabase_repository.dart';
+import 'package:cinenexa/models/local/installed_extensions.dart';
+import 'package:cinenexa/models/local/last_activities.dart';
+import 'package:cinenexa/models/network/extensions/extension.dart';
+import 'package:cinenexa/services/local/database.dart';
+import 'package:cinenexa/services/network/supabase_repository.dart';
 
 import '../../resources/strings.dart';
 part 'extensions_store.g.dart';

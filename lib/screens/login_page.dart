@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:watrix/resources/strings.dart';
-import 'package:watrix/resources/style.dart';
-import 'package:watrix/screens/login_configure_page.dart';
-import 'package:watrix/widgets/custom_back_button.dart';
-import 'package:watrix/widgets/custom_text_form.dart';
-import 'package:watrix/widgets/rounded_button.dart';
+import 'package:cinenexa/resources/strings.dart';
+import 'package:cinenexa/resources/style.dart';
+import 'package:cinenexa/screens/login_configure_page.dart';
+import 'package:cinenexa/widgets/custom_back_button.dart';
+import 'package:cinenexa/widgets/custom_text_form.dart';
+import 'package:cinenexa/widgets/rounded_button.dart';
 
 import '../resources/asset.dart';
 import '../utils/screen_size.dart';

@@ -1,4 +1,4 @@
-import 'package:watrix/models/network/base_model.dart';
+import 'package:cinenexa/models/network/base_model.dart';
 
 enum EntityType {
   movie,

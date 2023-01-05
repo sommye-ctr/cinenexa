@@ -1,5 +1,5 @@
-import 'package:watrix/models/network/extensions/extension.dart';
-import 'package:watrix/models/network/extensions/extension_stream.dart';
+import 'package:cinenexa/models/network/extensions/extension.dart';
+import 'package:cinenexa/models/network/extensions/extension_stream.dart';
 
 class TempData {
   final extensions = [

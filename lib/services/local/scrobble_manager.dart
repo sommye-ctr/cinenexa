@@ -1,11 +1,11 @@
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
-import 'package:watrix/models/local/progress.dart';
-import 'package:watrix/models/network/base_model.dart';
-import 'package:watrix/models/network/movie.dart';
-import 'package:watrix/models/network/tv.dart';
-import 'package:watrix/services/local/database.dart';
-import 'package:watrix/services/network/trakt_oauth_client.dart';
-import 'package:watrix/services/network/trakt_repository.dart';
+import 'package:cinenexa/models/local/progress.dart';
+import 'package:cinenexa/models/network/base_model.dart';
+import 'package:cinenexa/models/network/movie.dart';
+import 'package:cinenexa/models/network/tv.dart';
+import 'package:cinenexa/services/local/database.dart';
+import 'package:cinenexa/services/network/trakt_oauth_client.dart';
+import 'package:cinenexa/services/network/trakt_repository.dart';
 
 class ScrobbleManager {
   final VlcPlayerController playerController;

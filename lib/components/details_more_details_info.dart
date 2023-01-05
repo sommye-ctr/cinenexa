@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:watrix/screens/youtube_video_player.dart';
-import 'package:watrix/store/details/details_store.dart';
-import 'package:watrix/widgets/rounded_image.dart';
+import 'package:cinenexa/screens/youtube_video_player.dart';
+import 'package:cinenexa/store/details/details_store.dart';
+import 'package:cinenexa/widgets/rounded_image.dart';
 import 'package:youtube/youtube_thumbnail.dart';
 
 import '../models/network/base_model.dart';

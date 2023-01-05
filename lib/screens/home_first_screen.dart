@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:watrix/screens/extensions_page.dart';
-import 'package:watrix/screens/home_page.dart';
-import 'package:watrix/screens/profile_page.dart';
-import 'package:watrix/screens/search_page.dart';
+import 'package:cinenexa/screens/extensions_page.dart';
+import 'package:cinenexa/screens/home_page.dart';
+import 'package:cinenexa/screens/profile_page.dart';
+import 'package:cinenexa/screens/search_page.dart';
 
 import '../components/home_bottom_nav_bar.dart';
 

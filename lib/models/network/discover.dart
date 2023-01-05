@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:watrix/models/network/enums/languages.dart';
+import 'package:cinenexa/models/network/enums/languages.dart';
 
 import '../local/enums/sort_movies.dart';
 import '../local/enums/sort_tv.dart';

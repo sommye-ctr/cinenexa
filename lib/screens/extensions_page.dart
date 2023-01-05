@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:provider/provider.dart';
-import 'package:watrix/components/extensions_discover.dart';
-import 'package:watrix/components/extensions_installed.dart';
-import 'package:watrix/store/extensions/extensions_store.dart';
+import 'package:cinenexa/components/extensions_discover.dart';
+import 'package:cinenexa/components/extensions_installed.dart';
+import 'package:cinenexa/store/extensions/extensions_store.dart';
 
 import '../resources/strings.dart';
 import '../resources/style.dart';

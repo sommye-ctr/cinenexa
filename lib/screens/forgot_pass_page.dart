@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:watrix/resources/style.dart';
-import 'package:watrix/utils/form_validator.dart';
+import 'package:cinenexa/resources/style.dart';
+import 'package:cinenexa/utils/form_validator.dart';
 
 import '../resources/asset.dart';
 import '../resources/strings.dart';

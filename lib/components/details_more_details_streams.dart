@@ -5,11 +5,11 @@ import 'package:flutter_svg/svg.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
 import 'package:lottie/lottie.dart';
-import 'package:watrix/models/network/extensions/extension_stream.dart';
-import 'package:watrix/resources/asset.dart';
-import 'package:watrix/screens/youtube_video_player.dart';
-import 'package:watrix/store/details/details_store.dart';
-import 'package:watrix/widgets/rounded_button.dart';
+import 'package:cinenexa/models/network/extensions/extension_stream.dart';
+import 'package:cinenexa/resources/asset.dart';
+import 'package:cinenexa/screens/youtube_video_player.dart';
+import 'package:cinenexa/store/details/details_store.dart';
+import 'package:cinenexa/widgets/rounded_button.dart';
 
 import '../models/network/base_model.dart';
 import '../models/network/trakt/trakt_show_history_season.dart';

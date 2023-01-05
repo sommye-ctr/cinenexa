@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:watrix/resources/strings.dart';
+import 'package:cinenexa/resources/strings.dart';
 
 import '../models/network/base_model.dart';
 import '../models/network/enums/duration_type.dart';

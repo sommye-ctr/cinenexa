@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:watrix/services/network/repository.dart';
+import 'package:cinenexa/services/network/repository.dart';
 
 import '../models/network/base_model.dart';
 import '../resources/strings.dart';

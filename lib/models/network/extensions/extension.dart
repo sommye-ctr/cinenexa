@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'package:watrix/models/local/installed_extensions.dart';
+import 'package:cinenexa/models/local/installed_extensions.dart';
 
 class Extension {
   final String id;

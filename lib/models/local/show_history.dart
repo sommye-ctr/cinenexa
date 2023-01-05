@@ -2,10 +2,10 @@
 import 'dart:convert';
 
 import 'package:isar/isar.dart';
-import 'package:watrix/models/network/genre.dart';
-import 'package:watrix/models/network/trakt/trakt_show_history_season.dart';
-import 'package:watrix/models/network/tv.dart';
-import 'package:watrix/utils/date_time_formatter.dart';
+import 'package:cinenexa/models/network/genre.dart';
+import 'package:cinenexa/models/network/trakt/trakt_show_history_season.dart';
+import 'package:cinenexa/models/network/tv.dart';
+import 'package:cinenexa/utils/date_time_formatter.dart';
 
 import '../network/trakt/trakt_show_history_season_ep.dart';
 import '../network/tv_season.dart';

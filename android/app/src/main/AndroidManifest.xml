@@ -17,7 +17,7 @@
         </intent>
     </queries>
 
-    <application android:label="watrix" android:name="${applicationName}" android:icon="@mipmap/launcher_icon" android:usesCleartextTraffic="true" android:allowNativeHeapPointerTagging="false" tools:replace="android:label">
+    <application android:label="CineNexa" android:name="${applicationName}" android:icon="@mipmap/launcher_icon" android:usesCleartextTraffic="true" android:allowNativeHeapPointerTagging="false" tools:replace="android:label">
 
         <activity android:name="com.linusu.flutter_web_auth_2.CallbackActivity" android:exported="true">
             <intent-filter android:label="flutter_web_auth_2">

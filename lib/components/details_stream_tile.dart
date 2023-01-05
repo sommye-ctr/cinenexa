@@ -1,10 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flag/flag_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:watrix/models/network/extensions/extension_stream.dart';
-import 'package:watrix/models/network/watch_provider.dart';
-import 'package:watrix/utils/screen_size.dart';
-import 'package:watrix/utils/size_formatter.dart';
+import 'package:cinenexa/models/network/extensions/extension_stream.dart';
+import 'package:cinenexa/models/network/watch_provider.dart';
+import 'package:cinenexa/utils/screen_size.dart';
+import 'package:cinenexa/utils/size_formatter.dart';
 import '../resources/style.dart';
 
 class DetailsStreamTile extends StatelessWidget {

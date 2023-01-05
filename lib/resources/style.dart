@@ -4,10 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:watrix/models/network/base_model.dart';
-import 'package:watrix/resources/strings.dart';
-import 'package:watrix/utils/link_opener.dart';
-import 'package:watrix/utils/screen_size.dart';
+import 'package:cinenexa/models/network/base_model.dart';
+import 'package:cinenexa/resources/strings.dart';
+import 'package:cinenexa/utils/link_opener.dart';
+import 'package:cinenexa/utils/screen_size.dart';
 
 import '../components/movie_tile.dart';
 import '../services/constants.dart';

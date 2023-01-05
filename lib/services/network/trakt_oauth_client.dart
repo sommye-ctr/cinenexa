@@ -5,7 +5,7 @@ class TraktOAuthClient extends OAuth2Client {
       : super(
           authorizeUrl: "https://trakt.tv/oauth/authorize",
           tokenUrl: "https://api.trakt.tv/oauth/token",
-          redirectUri: "watrix://trakt",
-          customUriScheme: "watrix",
+          redirectUri: "cinenexa://trakt",
+          customUriScheme: "cinenexa",
         );
 }

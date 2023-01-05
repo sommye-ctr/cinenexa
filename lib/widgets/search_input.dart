@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:watrix/services/local/speech_recognizer.dart';
+import 'package:cinenexa/services/local/speech_recognizer.dart';
 
 import '../resources/strings.dart';
 import '../resources/style.dart';

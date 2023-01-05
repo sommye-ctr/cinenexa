@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:watrix/screens/login_page.dart';
-import 'package:watrix/utils/form_validator.dart';
-import 'package:watrix/utils/link_opener.dart';
+import 'package:cinenexa/screens/login_page.dart';
+import 'package:cinenexa/utils/form_validator.dart';
+import 'package:cinenexa/utils/link_opener.dart';
 
 import '../resources/asset.dart';
 import '../resources/strings.dart';

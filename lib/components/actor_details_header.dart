@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:watrix/store/actor_details/actor_details_store.dart';
+import 'package:cinenexa/store/actor_details/actor_details_store.dart';
 
 import '../resources/strings.dart';
 import '../resources/style.dart';

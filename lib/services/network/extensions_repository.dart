@@ -1,10 +1,10 @@
 import 'dart:async';
-import 'package:watrix/models/network/base_model.dart';
-import 'package:watrix/models/network/extensions/extension_stream.dart';
-import 'package:watrix/services/network/utils.dart';
+import 'package:cinenexa/models/network/base_model.dart';
+import 'package:cinenexa/models/network/extensions/extension_stream.dart';
+import 'package:cinenexa/services/network/utils.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:watrix/utils/date_time_formatter.dart';
+import 'package:cinenexa/utils/date_time_formatter.dart';
 
 import '../../models/network/extensions/extension.dart';
 

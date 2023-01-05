@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:watrix/models/network/enums/languages.dart';
-import 'package:watrix/resources/strings.dart';
-import 'package:watrix/resources/style.dart';
-import 'package:watrix/models/network/enums/entity_type.dart';
-import 'package:watrix/services/network/repository.dart';
-import 'package:watrix/services/network/requests.dart';
-import 'package:watrix/utils/screen_size.dart';
-import 'package:watrix/widgets/custom_checkbox_list.dart';
-import 'package:watrix/widgets/custom_rangle_slider.dart';
+import 'package:cinenexa/models/network/enums/languages.dart';
+import 'package:cinenexa/resources/strings.dart';
+import 'package:cinenexa/resources/style.dart';
+import 'package:cinenexa/models/network/enums/entity_type.dart';
+import 'package:cinenexa/services/network/repository.dart';
+import 'package:cinenexa/services/network/requests.dart';
+import 'package:cinenexa/utils/screen_size.dart';
+import 'package:cinenexa/widgets/custom_checkbox_list.dart';
+import 'package:cinenexa/widgets/custom_rangle_slider.dart';
 
 import '../models/local/enums/sort_movies.dart';
 import '../models/local/enums/sort_tv.dart';

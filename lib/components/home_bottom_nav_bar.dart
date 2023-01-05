@@ -1,8 +1,8 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:watrix/resources/strings.dart';
-import 'package:watrix/resources/style.dart';
+import 'package:cinenexa/resources/strings.dart';
+import 'package:cinenexa/resources/style.dart';
 
 class HomeBottomNavBar extends StatefulWidget {
   static const double bottomNavHeight = 56;

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'package:watrix/models/network/review.dart';
-import 'package:watrix/services/local/database.dart';
-import 'package:watrix/services/network/api.dart';
-import 'package:watrix/services/network/utils.dart';
+import 'package:cinenexa/models/network/review.dart';
+import 'package:cinenexa/services/local/database.dart';
+import 'package:cinenexa/services/network/api.dart';
+import 'package:cinenexa/services/network/utils.dart';
 
 import '../../models/network/base_model.dart';
 

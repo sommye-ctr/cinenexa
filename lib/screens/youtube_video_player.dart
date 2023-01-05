@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:watrix/widgets/custom_back_button.dart';
+import 'package:cinenexa/widgets/custom_back_button.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class YoutubeVideoPlayer extends StatefulWidget {

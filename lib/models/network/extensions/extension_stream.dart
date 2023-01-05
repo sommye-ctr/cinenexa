@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:watrix/models/network/extensions/extension.dart';
-import 'package:watrix/models/network/extensions/subtitle.dart';
+import 'package:cinenexa/models/network/extensions/extension.dart';
+import 'package:cinenexa/models/network/extensions/subtitle.dart';
 
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 class ExtensionStream {

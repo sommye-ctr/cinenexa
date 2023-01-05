@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:watrix/utils/screen_size.dart';
-import 'package:watrix/widgets/custom_checkbox.dart';
+import 'package:cinenexa/utils/screen_size.dart';
+import 'package:cinenexa/widgets/custom_checkbox.dart';
 
 enum CheckBoxListType {
   list,

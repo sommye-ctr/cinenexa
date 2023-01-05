@@ -1,15 +1,15 @@
 import 'dart:async';
 
 import 'package:mobx/mobx.dart';
-import 'package:watrix/models/network/extensions/extension_stream.dart';
-import 'package:watrix/models/network/review.dart';
-import 'package:watrix/models/network/trakt/trakt_show_history_season.dart';
-import 'package:watrix/models/network/trakt/trakt_show_history_season_ep.dart';
-import 'package:watrix/models/network/watch_provider.dart';
-import 'package:watrix/services/local/database.dart';
-import 'package:watrix/services/network/requests.dart';
-import 'package:watrix/services/network/trakt_oauth_client.dart';
-import 'package:watrix/services/network/trakt_repository.dart';
+import 'package:cinenexa/models/network/extensions/extension_stream.dart';
+import 'package:cinenexa/models/network/review.dart';
+import 'package:cinenexa/models/network/trakt/trakt_show_history_season.dart';
+import 'package:cinenexa/models/network/trakt/trakt_show_history_season_ep.dart';
+import 'package:cinenexa/models/network/watch_provider.dart';
+import 'package:cinenexa/services/local/database.dart';
+import 'package:cinenexa/services/network/requests.dart';
+import 'package:cinenexa/services/network/trakt_oauth_client.dart';
+import 'package:cinenexa/services/network/trakt_repository.dart';
 
 import '../../models/local/show_history.dart';
 import '../../models/network/base_model.dart';

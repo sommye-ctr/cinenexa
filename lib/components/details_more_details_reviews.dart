@@ -3,7 +3,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mobx/mobx.dart';
-import 'package:watrix/store/details/details_store.dart';
+import 'package:cinenexa/store/details/details_store.dart';
 
 import '../resources/asset.dart';
 import 'details_review_tile.dart';

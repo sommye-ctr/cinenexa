@@ -1,7 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import 'package:watrix/services/network/utils.dart';
+import 'package:cinenexa/services/network/utils.dart';
 
 class WatchProvider {
   final String name;

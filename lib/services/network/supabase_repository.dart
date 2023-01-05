@@ -1,6 +1,6 @@
 import 'package:multiple_result/multiple_result.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:watrix/models/network/extensions/extension.dart';
+import 'package:cinenexa/models/network/extensions/extension.dart';
 
 class SupabaseRepository {
   static final SupabaseClient client = Supabase.instance.client;

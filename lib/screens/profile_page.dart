@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:provider/provider.dart';
 import 'package:random_avatar/random_avatar.dart';
-import 'package:watrix/resources/strings.dart';
-import 'package:watrix/resources/style.dart';
-import 'package:watrix/screens/intro_page.dart';
-import 'package:watrix/screens/login_configure_page.dart';
-import 'package:watrix/screens/settings_page.dart';
-import 'package:watrix/store/user/user_store.dart';
-import 'package:watrix/utils/screen_size.dart';
+import 'package:cinenexa/resources/strings.dart';
+import 'package:cinenexa/resources/style.dart';
+import 'package:cinenexa/screens/intro_page.dart';
+import 'package:cinenexa/screens/login_configure_page.dart';
+import 'package:cinenexa/screens/settings_page.dart';
+import 'package:cinenexa/store/user/user_store.dart';
+import 'package:cinenexa/utils/screen_size.dart';
 
 class ProfilePage extends StatefulWidget {
   final Function()? onBack;

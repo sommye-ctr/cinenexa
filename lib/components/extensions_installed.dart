@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:watrix/resources/strings.dart';
-import 'package:watrix/store/extensions/extensions_store.dart';
+import 'package:cinenexa/resources/strings.dart';
+import 'package:cinenexa/store/extensions/extensions_store.dart';
 
 import '../resources/asset.dart';
 import 'extensions_extension_tile.dart';
