@@ -1,5 +1,9 @@
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:random_avatar/random_avatar.dart';
 import 'package:cinenexa/resources/strings.dart';
@@ -105,8 +109,56 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             onTap: () => _navigateToSettings(SettingsPage.MORE),
           ),
+          Style.getVerticalSpacing(context: context, percent: 0.01),
+          Style.getListTile(
+            context: context,
+            title: Strings.reportBug,
+            trailing: Icon(Icons.arrow_right_outlined),
+            leading: Icon(Icons.bug_report_rounded),
+            onTap: _reportBug,
+          ),
         ],
       ),
+    );
+  }
+
+  void _reportBug() {
+    showCupertinoDialog(
+      context: context,
+      builder: (context) {
+        return CupertinoAlertDialog(
+          title: Text(Strings.reportBug),
+          content: Text(Strings.reportBugInfo),
+          actions: [
+            CupertinoDialogAction(
+              child: Text(Strings.continueSt),
+              onPressed: () async {
+                PackageInfo packageInfo = await PackageInfo.fromPlatform();
+                String package =
+                    "--------------App Info--------------\nversion: ${packageInfo.version}\nname: ${packageInfo.appName}\nbuildNumber: ${packageInfo.buildNumber}\npackage: ${packageInfo.packageName}\n";
+
+                AndroidDeviceInfo deviceInfo =
+                    await DeviceInfoPlugin().androidInfo;
+
+                String device =
+                    "--------------Device Info--------------\nbrand: ${deviceInfo.brand}\n device: ${deviceInfo.device}\nisPhysicalDevice: ${deviceInfo.isPhysicalDevice}\nmanufacturer: ${deviceInfo.brand}\nmodel: ${deviceInfo.model}\nversion: ${deviceInfo.version.release}\n";
+
+                final email = Email(
+                  subject: "Bug Report",
+                  body: "${package} ${device}",
+                  recipients: ['support@cinenexa.com'],
+                );
+
+                await FlutterEmailSender.send(email);
+              },
+            ),
+            CupertinoDialogAction(
+              child: Text(Strings.cancel),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        );
+      },
     );
   }
 

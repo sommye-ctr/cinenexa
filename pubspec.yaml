@@ -76,6 +76,12 @@ dependencies:
   multiple_result: ^4.0.0
   flutter_dotenv: ^5.0.2
   rename: ^2.0.1
+  device_info_plus: ^8.0.0
+  package_info_plus: ^3.0.2
+  flutter_email_sender: ^5.2.0
+
+  firebase_core: ^2.4.1
+  firebase_crashlytics: ^3.0.9
 
 dev_dependencies:
   flutter_test:
