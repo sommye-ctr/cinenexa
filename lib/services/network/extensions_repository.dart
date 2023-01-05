@@ -78,8 +78,7 @@ class ExtensionsRepository {
       "imdbId": imdbId,
     };
 
-    //final Uri uri = Uri.https(extension.endpoint, '', query);
-    final Uri uri = Uri.https("b346-1-23-68-160.in.ngrok.io", '',
+    final Uri uri = Uri.https(extension.endpoint, '',
         query.map((key, value) => MapEntry(key, value.toString())));
 
     try {
