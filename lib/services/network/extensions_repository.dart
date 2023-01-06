@@ -2,6 +2,9 @@ import 'dart:async';
 import 'package:cinenexa/models/network/base_model.dart';
 import 'package:cinenexa/models/network/extensions/extension_stream.dart';
 import 'package:cinenexa/services/network/utils.dart';
+import 'package:cinenexa/services/temp_data.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:cinenexa/utils/date_time_formatter.dart';
@@ -77,28 +80,40 @@ class ExtensionsRepository {
       "traktId": traktId,
       "imdbId": imdbId,
     };
-
-    final Uri uri = Uri.https(extension.endpoint, '',
+    final parsedUri = Uri.parse(extension.endpoint);
+    final Uri uri = Uri.https(parsedUri.authority, '',
         query.map((key, value) => MapEntry(key, value.toString())));
 
+    var response;
+
     try {
-      final response = await http.get(uri).timeout(Duration(seconds: 30));
-      return _handleResponse(response, extension);
+      response = await http.get(uri).timeout(Duration(seconds: 30));
     } on TimeoutException {
       return [];
+    } catch (e, trace) {
+      FirebaseCrashlytics.instance.recordError(e, trace);
+
+      return [];
     }
+    return _handleResponse(response, extension);
   }
 
   List<ExtensionStream> _handleResponse(
       http.Response response, Extension extension) {
     if (response.body.isNotEmpty) {
       try {
-        List sources = Utils.parseJson(response.body);
+        Map sources = Utils.parseJson(response.body);
 
-        return sources
+        //List<ExtensionStream> list = sources['streams']
+        //  .map((e) => ExtensionStream.fromMap(e)..extension = extension)
+        //.toList();
+        List list = sources['streams'];
+        List<ExtensionStream> modLIst = list
             .map((e) => ExtensionStream.fromMap(e)..extension = extension)
             .toList();
-      } catch (e) {
+        return modLIst;
+      } catch (e, trace) {
+        FirebaseCrashlytics.instance.recordError(e, trace);
         return [];
       }
     }
