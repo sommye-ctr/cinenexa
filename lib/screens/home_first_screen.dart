@@ -39,8 +39,10 @@ class _HomeFirstScreenState extends State<HomeFirstScreen> {
                   ),
                   ExtensionsPage(),
                   SearchPage(
-                    onBack: () {
-                      _changeBottomNavIndex(0);
+                    onBack: ({index}) async {
+                      await Future.delayed(Duration(milliseconds: 500));
+
+                      _changeBottomNavIndex(index ?? 0);
                     },
                   ),
                   ProfilePage(

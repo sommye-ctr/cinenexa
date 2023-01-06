@@ -19,7 +19,7 @@ import '../services/network/utils.dart';
 import 'details_page.dart';
 
 class SearchPage extends StatefulWidget {
-  final Function()? onBack;
+  final Function({int? index})? onBack;
 
   SearchPage({Key? key, this.onBack}) : super(key: key);
 
@@ -315,12 +315,15 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
               vote: baseModel.type == BaseModelType.people
                   ? 0
                   : baseModel.voteAverage!,
-              onClick: () {
-                Navigator.pushNamed(
+              onClick: () async {
+                var isRedirect = await Navigator.pushNamed(
                   context,
                   DetailsPage.routeName,
                   arguments: baseModel,
                 );
+                if (isRedirect != null && isRedirect as bool) {
+                  widget.onBack?.call(index: 1);
+                }
               },
             );
           },

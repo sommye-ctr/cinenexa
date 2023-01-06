@@ -270,6 +270,7 @@ class _ExtensionTileState extends State<ExtensionTile> {
             .installExtension(widget.extension)
             .whenComplete(() {
           Navigator.pop(context);
+          Navigator.pop(context);
           widget.onInstall?.call();
         });
       },

@@ -1,3 +1,4 @@
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,6 @@ import 'package:random_avatar/random_avatar.dart';
 import 'package:cinenexa/resources/strings.dart';
 import 'package:cinenexa/resources/style.dart';
 import 'package:cinenexa/screens/intro_page.dart';
-import 'package:cinenexa/screens/login_configure_page.dart';
 import 'package:cinenexa/screens/settings_page.dart';
 import 'package:cinenexa/store/user/user_store.dart';
 import 'package:cinenexa/utils/screen_size.dart';
@@ -220,6 +220,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 onPressed: () async {
                   Style.showLoadingDialog(context: context);
                   await Provider.of<UserStore>(context, listen: false).logout();
+                  AdaptiveTheme.of(context).setLight();
                   Navigator.pop(context);
                   Navigator.pushNamedAndRemoveUntil(
                     context,
