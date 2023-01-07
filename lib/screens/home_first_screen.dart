@@ -3,6 +3,7 @@ import 'package:cinenexa/screens/extensions_page.dart';
 import 'package:cinenexa/screens/home_page.dart';
 import 'package:cinenexa/screens/profile_page.dart';
 import 'package:cinenexa/screens/search_page.dart';
+import 'package:flutter/services.dart';
 
 import '../components/home_bottom_nav_bar.dart';
 
@@ -40,9 +41,12 @@ class _HomeFirstScreenState extends State<HomeFirstScreen> {
                   ExtensionsPage(),
                   SearchPage(
                     onBack: ({index}) async {
-                      await Future.delayed(Duration(milliseconds: 500));
-
-                      _changeBottomNavIndex(index ?? 0);
+                      if (_pageIndex != 0) {
+                        await Future.delayed(Duration(milliseconds: 500));
+                        _changeBottomNavIndex(index ?? 0);
+                        return;
+                      }
+                      SystemNavigator.pop();
                     },
                   ),
                   ProfilePage(

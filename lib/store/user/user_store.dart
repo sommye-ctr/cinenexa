@@ -135,6 +135,10 @@ abstract class _UserStoreBase with Store {
   }
 
   Future _removeProgressFromApi(TraktProgress traktProgress) async {
+    if (!isTraktLogged) {
+      return;
+    }
+
     if (traktProgress.playbackId != null) {
       return repository.removeProgress(progressId: traktProgress.playbackId!);
     }

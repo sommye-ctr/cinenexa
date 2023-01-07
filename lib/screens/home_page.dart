@@ -1,5 +1,6 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:mobx/mobx.dart';
@@ -49,16 +50,18 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: ScreenSize.getPercentOfWidth(context, 0.02),
+    return Scaffold(
+      body: Stack(
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: ScreenSize.getPercentOfWidth(context, 0.02),
+            ),
+            child: _buildBody(),
           ),
-          child: _buildBody(),
-        ),
-        Observer(builder: (context) => _buildFilterFab()),
-      ],
+          Observer(builder: (context) => _buildFilterFab()),
+        ],
+      ),
     );
   }
 
