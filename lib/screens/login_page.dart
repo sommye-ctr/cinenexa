@@ -11,7 +11,6 @@ import 'package:cinenexa/widgets/rounded_button.dart';
 import '../resources/asset.dart';
 import '../utils/screen_size.dart';
 import '../utils/form_validator.dart';
-import 'forgot_pass_page.dart';
 
 class LoginPage extends StatefulWidget {
   static const String routeName = "/login";

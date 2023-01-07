@@ -26,7 +26,7 @@ class Strings {
 
   //Login
   static const String passwordError =
-      "Must contain atleast 8 characters with 1 number";
+      "Password must contain atleast 8 characters";
   static const String emailError = "Enter Valid Email";
   static const String forgotPass = "Forgot Password?";
   static const String email = "Email";
