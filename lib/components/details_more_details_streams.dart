@@ -48,7 +48,7 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
       builder: (context) {
         widget.detailsStore.loadedStreams;
         if (widget.detailsStore.baseModel.type == BaseModelType.movie) {
-          return _buildMovieStreams();
+          return _buildStreams();
         }
         return _buildShowEpisodes();
       },
@@ -79,7 +79,7 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
     );
   }
 
-  Widget _buildMovieStreams() {
+  Widget _buildStreams() {
     return ListView(
       physics: BouncingScrollPhysics(),
       children: [
@@ -113,7 +113,7 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
           return Column(
             children: [
               Style.getVerticalSpacing(context: context),
-              _buildExtensionStreams(),
+              _buildStreamsList(),
             ],
           );
         }),
@@ -166,7 +166,7 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
     );
   }
 
-  Widget _buildExtensionStreams() {
+  Widget _buildStreamsList() {
     return MasonryGridView.builder(
       shrinkWrap: true,
       gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
@@ -205,15 +205,7 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
             ),
           ],
         ),
-        Observer(
-          builder: (context) {
-            if (widget.detailsStore.isStreamLoading) {
-              return Center(child: CircularProgressIndicator());
-            }
-            return Container();
-          },
-        ),
-        Expanded(child: _buildExtensionStreams()),
+        Expanded(child: _buildStreams()),
         /* Center(
           child: ElevatedButton(
             onPressed: () {
