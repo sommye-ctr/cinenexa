@@ -33,7 +33,7 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="watrix" /> <!-- This must correspond to the custom scheme used
+                <data android:scheme="cinenexa" /> <!-- This must correspond to the custom scheme used
                 for instantiatng the client... See below -->
             </intent-filter>
         </activity>
