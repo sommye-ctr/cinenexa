@@ -14,6 +14,7 @@ import 'package:cinenexa/widgets/rounded_button.dart';
 import '../models/network/base_model.dart';
 import '../models/network/trakt/trakt_show_history_season.dart';
 import '../models/network/trakt/trakt_show_history_season_ep.dart';
+import '../models/network/tv_episode.dart';
 import '../models/network/tv_season.dart';
 import '../models/network/watch_provider.dart';
 import '../resources/strings.dart';
@@ -254,7 +255,9 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
       navigateToVideoPlayer(
         stream: extensionStream,
         id: widget.detailsStore.baseModel.id!,
-        progress: widget.detailsStore.progress?.progress,
+        progress: widget.detailsStore.baseModel.type == BaseModelType.movie
+            ? widget.detailsStore.progress?.progress
+            : _getProgressForShow(),
       );
     } else if (extensionStream.ytId != null) {
       Navigator.pushNamed(context, YoutubeVideoPlayer.routeName,
@@ -263,7 +266,9 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
       navigateToVideoPlayer(
         stream: extensionStream,
         id: widget.detailsStore.baseModel.id!,
-        progress: widget.detailsStore.progress?.progress,
+        progress: widget.detailsStore.baseModel.type == BaseModelType.movie
+            ? widget.detailsStore.progress?.progress
+            : _getProgressForShow(),
       );
     } else if (extensionStream.external != null) {
       Style.showExternalLinkOpenWarning(
@@ -272,6 +277,20 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
         url: extensionStream.external!,
       );
     }
+  }
+
+  double? _getProgressForShow() {
+    double? progress;
+    TvEpisode episode =
+        widget.detailsStore.episodes[widget.detailsStore.chosenEpisode!];
+
+    if (widget.detailsStore.progress?.episodeNo == episode.episodeNumber &&
+        widget.detailsStore.progress?.seasonNo ==
+            widget.detailsStore.tv!.seasons![widget.detailsStore.chosenSeason!]
+                .seasonNumber) {
+      progress = widget.detailsStore.progress!.progress!;
+    }
+    return progress;
   }
 
   List<Widget> _buildSeasonDetails() {
