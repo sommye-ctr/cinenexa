@@ -20,4 +20,6 @@ class Asset {
 
   static const String installExtensions =
       "assets/images/install_extensions_image.svg";
+
+  static const String icon = "assets/icon/icon.png";
 }

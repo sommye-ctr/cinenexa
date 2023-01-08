@@ -222,7 +222,7 @@ class _HomeFavoritesState extends State<HomeFavorites>
       });
       return;
     }
-    Style.showSnackBar(context: context, text: Strings.noItemsSelected);
+    Style.showToast(context: context, text: Strings.noItemsSelected);
   }
 
   @override

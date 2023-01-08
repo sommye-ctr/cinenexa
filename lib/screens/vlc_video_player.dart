@@ -70,7 +70,7 @@ class _VlcPlayerPageState extends State<VlcPlayerPage> {
         "url": widget.extensionStream.magnet,
         "index": widget.extensionStream.fileIndex,
       }).handleError((error) {
-        Style.showToast(text: "Error: ${error}");
+        Style.showToast(context: context, text: "Error: ${error}");
       }).listen((event) {
         if (event is String) {
           controller = VlcPlayerController.network(

@@ -7,7 +7,6 @@ import 'package:cinenexa/models/local/show_history.dart';
 import 'package:cinenexa/models/network/base_model.dart';
 import 'package:cinenexa/models/network/movie.dart';
 import 'package:cinenexa/models/network/trakt/trakt_progress.dart';
-import 'package:cinenexa/models/network/cinenexa_user.dart';
 import 'package:cinenexa/models/network/trakt_user.dart';
 import 'package:cinenexa/models/network/user_stats.dart';
 import 'package:cinenexa/services/network/repository.dart';

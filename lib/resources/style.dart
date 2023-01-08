@@ -1,5 +1,6 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cinenexa/resources/asset.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -55,18 +56,30 @@ class Style {
     );
   }
 
-  static void showToast({required String text}) {
-    Fluttertoast.showToast(msg: text);
-  }
-
-  static void showSnackBar(
-      {required BuildContext context, required String text}) {
-    final snack = SnackBar(
-      content: Text(text, textAlign: TextAlign.center),
-      behavior: SnackBarBehavior.floating,
-      shape: StadiumBorder(),
+  static void showToast(
+      {required BuildContext context, required String text, bool? long}) {
+    Widget toast = Card(
+      elevation: 15,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(largeRoundEdgeRadius),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(Asset.icon, width: 24, height: 24),
+            SizedBox(width: 12.0),
+            Text(text),
+          ],
+        ),
+      ),
     );
-    ScaffoldMessenger.of(context).showSnackBar(snack);
+    FToast().init(context).showToast(
+          child: toast,
+          gravity: ToastGravity.BOTTOM,
+          toastDuration: Duration(seconds: long != null ? 4 : 2),
+        );
   }
 
   static Widget getChip(context, String text) {

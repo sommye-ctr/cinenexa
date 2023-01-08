@@ -256,7 +256,7 @@ class _ExtensionTileState extends State<ExtensionTile> {
       });
     } else {
       moreInfoDialog.dismiss();
-      Style.showSnackBar(context: context, text: Strings.noRating);
+      Style.showToast(context: context, text: Strings.noRating);
     }
   }
 

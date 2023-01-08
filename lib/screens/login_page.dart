@@ -131,10 +131,10 @@ class _LoginPageState extends State<LoginPage> {
       }
     } on AuthException catch (error) {
       Navigator.pop(context);
-      Style.showSnackBar(context: context, text: error.message);
+      Style.showToast(context: context, text: error.message);
     } catch (error) {
       Navigator.pop(context);
-      Style.showSnackBar(context: context, text: Strings.unexpecedError);
+      Style.showToast(context: context, text: Strings.unexpecedError);
     }
   }
 }

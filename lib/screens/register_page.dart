@@ -1,9 +1,8 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:restart_app/restart_app.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:cinenexa/screens/login_page.dart';
 import 'package:cinenexa/utils/form_validator.dart';
 import 'package:cinenexa/utils/link_opener.dart';
@@ -177,20 +176,27 @@ class _RegisterPageState extends State<RegisterPage> {
       final Session? session = res.session;
       final User? user = res.user;
 
-      if (session == null && user != null) {
-        Style.showSnackBar(context: context, text: Strings.sucessful);
+      if (session != null && user != null) {
+        Style.showToast(context: context, text: Strings.sucessful);
+        Restart.restartApp();
+      } else {
         Navigator.pushNamed(context, LoginPage.routeName);
       }
     } on AuthException catch (e) {
-      Style.showSnackBar(context: context, text: e.message);
+      FocusManager.instance.primaryFocus?.unfocus();
+      Navigator.pop(context);
+      Style.showToast(context: context, text: e.message, long: true);
     } catch (error) {
-      Style.showSnackBar(context: context, text: Strings.unexpecedError);
+      FocusManager.instance.primaryFocus?.unfocus();
+      Navigator.pop(context);
+      Style.showToast(
+          context: context, text: Strings.unexpecedError, long: true);
     }
   }
 
   void _launchUrl(String url) async {
     if (!await LinkOpener.openLink(url)) {
-      Style.showSnackBar(context: context, text: Strings.unexpecedError);
+      Style.showToast(context: context, text: Strings.unexpecedError);
     }
   }
 }

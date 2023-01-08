@@ -142,7 +142,7 @@ class LoginConfigurePage extends StatelessWidget {
       Style.showLoadingDialog(context: context);
       await traktRepository.getUserStats();
     } catch (e) {
-      Style.showSnackBar(context: context, text: Strings.loginTrakt);
+      Style.showToast(context: context, text: Strings.loginTrakt);
     }
     await Database().addUserTraktStatus(true);
     Navigator.pop(context);

@@ -353,7 +353,7 @@ class _VlcControlsState extends State<VlcControls> {
     var castDevices = await widget.controller.getRendererDevices();
 
     if (castDevices.isEmpty) {
-      Style.showToast(text: Strings.noDeviceFound);
+      Style.showToast(context: context, text: Strings.noDeviceFound);
       return;
     }
 

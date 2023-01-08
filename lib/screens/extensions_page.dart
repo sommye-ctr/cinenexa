@@ -37,12 +37,12 @@ class _ExtensionsPageState extends State<ExtensionsPage> {
     });
     disposer2 = autorun((_) {
       if (extensionsStore.error != null) {
-        Style.showSnackBar(context: context, text: extensionsStore.error!);
+        Style.showToast(context: context, text: extensionsStore.error!);
       }
     });
     disposer3 = autorun((_) {
       if (extensionsStore.successMessage != null) {
-        Style.showSnackBar(
+        Style.showToast(
             context: context, text: extensionsStore.successMessage!);
       }
     });
