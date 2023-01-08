@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
-import 'package:watrix/models/network/custom_exception.dart';
-import 'package:watrix/services/constants.dart';
+import 'package:cinenexa/models/network/custom_exception.dart';
+import 'package:cinenexa/services/constants.dart';
 
 class Api {
   Future<dynamic> getRequest(String url, {bool haveQueries = false}) async {

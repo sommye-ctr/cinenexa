@@ -1,10 +1,10 @@
 import 'package:mobx/mobx.dart';
-import 'package:watrix/models/network/base_model.dart';
-import 'package:watrix/models/network/enums/entity_type.dart';
-import 'package:watrix/services/local/database.dart';
-import 'package:watrix/services/network/trakt_oauth_client.dart';
-import 'package:watrix/services/network/trakt_repository.dart';
-import 'package:watrix/store/user/user_store.dart';
+import 'package:cinenexa/models/network/base_model.dart';
+import 'package:cinenexa/models/network/enums/entity_type.dart';
+import 'package:cinenexa/services/local/database.dart';
+import 'package:cinenexa/services/network/trakt_oauth_client.dart';
+import 'package:cinenexa/services/network/trakt_repository.dart';
+import 'package:cinenexa/store/user/user_store.dart';
 
 part 'favorites_store.g.dart';
 

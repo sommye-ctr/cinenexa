@@ -2,15 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:provider/provider.dart';
-import 'package:watrix/store/user/user_store.dart';
-import 'package:watrix/widgets/custom_progress_indicator.dart';
-import 'package:watrix/widgets/vote_indicator.dart';
-import 'package:watrix/resources/style.dart';
-import 'package:watrix/services/constants.dart';
-import 'package:watrix/store/details/details_store.dart';
-import 'package:watrix/store/favorites/favorites_store.dart';
-import 'package:watrix/utils/screen_size.dart';
-import 'package:watrix/widgets/custom_back_button.dart';
+import 'package:cinenexa/store/user/user_store.dart';
+import 'package:cinenexa/widgets/custom_progress_indicator.dart';
+import 'package:cinenexa/widgets/vote_indicator.dart';
+import 'package:cinenexa/resources/style.dart';
+import 'package:cinenexa/services/constants.dart';
+import 'package:cinenexa/store/details/details_store.dart';
+import 'package:cinenexa/store/favorites/favorites_store.dart';
+import 'package:cinenexa/utils/screen_size.dart';
+import 'package:cinenexa/widgets/custom_back_button.dart';
 
 import '../models/network/base_model.dart';
 import '../resources/strings.dart';
@@ -416,6 +416,13 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
   }
 
   void _onPlayPressed() {
+    if (detailsStore.progress != null &&
+        detailsStore.progress?.seasonNo != null &&
+        detailsStore.progress?.episodeNo != null) {
+      detailsStore.chosenEpisode = (detailsStore.progress!.episodeNo!) - 1;
+      detailsStore.chosenSeason = (detailsStore.progress!.seasonNo!) - 1;
+      detailsStore.fetchStreams();
+    }
     scrollController.animateTo(
       maxExtent - minExtent,
       duration: duration,
@@ -436,7 +443,9 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
 
   String _getResumeText() {
     String text = Strings.resume;
-    if (detailsStore.baseModel.type == BaseModelType.tv) {
+    if (detailsStore.baseModel.type == BaseModelType.tv &&
+        detailsStore.progress?.seasonNo != null &&
+        detailsStore.progress?.episodeNo != null) {
       text +=
           " S${detailsStore.progress!.seasonNo!} EP${detailsStore.progress!.episodeNo!}";
     }

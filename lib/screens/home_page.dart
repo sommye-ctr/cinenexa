@@ -1,19 +1,20 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:mobx/mobx.dart';
-import 'package:watrix/components/home_favourites.dart';
-import 'package:watrix/resources/strings.dart';
-import 'package:watrix/resources/style.dart';
-import 'package:watrix/screens/filter_page.dart';
-import 'package:watrix/screens/see_more_page.dart';
-import 'package:watrix/models/network/enums/entity_type.dart';
-import 'package:watrix/utils/screen_size.dart';
-import 'package:watrix/components/home_bottom_nav_bar.dart';
-import 'package:watrix/components/home_featured.dart';
-import 'package:watrix/components/home_movies.dart';
-import 'package:watrix/components/home_tv.dart';
+import 'package:cinenexa/components/home_favourites.dart';
+import 'package:cinenexa/resources/strings.dart';
+import 'package:cinenexa/resources/style.dart';
+import 'package:cinenexa/screens/filter_page.dart';
+import 'package:cinenexa/screens/see_more_page.dart';
+import 'package:cinenexa/models/network/enums/entity_type.dart';
+import 'package:cinenexa/utils/screen_size.dart';
+import 'package:cinenexa/components/home_bottom_nav_bar.dart';
+import 'package:cinenexa/components/home_featured.dart';
+import 'package:cinenexa/components/home_movies.dart';
+import 'package:cinenexa/components/home_tv.dart';
 
 import '../models/network/base_model.dart';
 import '../models/network/discover.dart';
@@ -22,7 +23,11 @@ import '../components/movie_tile.dart';
 import '../store/home/home_store.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  final VoidCallback? onBack;
+  const HomePage({
+    Key? key,
+    this.onBack,
+  }) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -45,16 +50,18 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: ScreenSize.getPercentOfWidth(context, 0.02),
+    return Scaffold(
+      body: Stack(
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: ScreenSize.getPercentOfWidth(context, 0.02),
+            ),
+            child: _buildBody(),
           ),
-          child: _buildBody(),
-        ),
-        Observer(builder: (context) => _buildFilterFab()),
-      ],
+          Observer(builder: (context) => _buildFilterFab()),
+        ],
+      ),
     );
   }
 
@@ -192,8 +199,11 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  void _onItemClicked(BaseModel baseModel) {
-    homeStore.onItemClicked(context, baseModel);
+  void _onItemClicked(BaseModel baseModel) async {
+    var isRedirect = await homeStore.onItemClicked(context, baseModel);
+    if (isRedirect != null && isRedirect) {
+      widget.onBack?.call();
+    }
   }
 
   void _onSeeMoreClicked(String future, List<BaseModel> items, String heading,

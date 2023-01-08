@@ -194,6 +194,15 @@ mixin _$HomeStore on _HomeStore, Store {
         () => super._fetchFilteredItems(value, pageEndReached: pageEndReached));
   }
 
+  late final _$onItemClickedAsyncAction =
+      AsyncAction('_HomeStore.onItemClicked', context: context);
+
+  @override
+  Future<dynamic> onItemClicked(BuildContext context, BaseModel baseModel) {
+    return _$onItemClickedAsyncAction
+        .run(() => super.onItemClicked(context, baseModel));
+  }
+
   late final _$_HomeStoreActionController =
       ActionController(name: '_HomeStore', context: context);
 
@@ -247,17 +256,6 @@ mixin _$HomeStore on _HomeStore, Store {
         name: '_HomeStore._onFilterProcessed');
     try {
       return super._onFilterProcessed(endPage);
-    } finally {
-      _$_HomeStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void onItemClicked(BuildContext context, BaseModel baseModel) {
-    final _$actionInfo = _$_HomeStoreActionController.startAction(
-        name: '_HomeStore.onItemClicked');
-    try {
-      return super.onItemClicked(context, baseModel);
     } finally {
       _$_HomeStoreActionController.endAction(_$actionInfo);
     }

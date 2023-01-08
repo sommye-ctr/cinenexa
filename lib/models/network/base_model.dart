@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:watrix/models/local/favorites.dart';
-import 'package:watrix/models/network/people.dart';
-import 'package:watrix/models/network/tv.dart';
+import 'package:cinenexa/models/local/favorites.dart';
+import 'package:cinenexa/models/network/people.dart';
+import 'package:cinenexa/models/network/tv.dart';
 
 import 'movie.dart';
 
@@ -200,4 +200,17 @@ enum BaseModelType {
   movie,
   tv,
   people,
+}
+
+extension BaseConverter on BaseModelType {
+  String getString() {
+    switch (this) {
+      case BaseModelType.movie:
+        return "movie";
+      case BaseModelType.tv:
+        return "show";
+      case BaseModelType.people:
+        return "people";
+    }
+  }
 }

@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:watrix/resources/asset.dart';
-import 'package:watrix/resources/strings.dart';
-import 'package:watrix/resources/style.dart';
-import 'package:watrix/screens/login_page.dart';
-import 'package:watrix/screens/register_page.dart';
-import 'package:watrix/utils/screen_size.dart';
-import 'package:watrix/widgets/rounded_button.dart';
+import 'package:cinenexa/resources/asset.dart';
+import 'package:cinenexa/resources/strings.dart';
+import 'package:cinenexa/resources/style.dart';
+import 'package:cinenexa/screens/login_page.dart';
+import 'package:cinenexa/screens/register_page.dart';
+import 'package:cinenexa/utils/screen_size.dart';
+import 'package:cinenexa/widgets/rounded_button.dart';
 
 class IntroPage extends StatefulWidget {
+  static const String routeName = "/intro";
   const IntroPage({Key? key}) : super(key: key);
 
   @override

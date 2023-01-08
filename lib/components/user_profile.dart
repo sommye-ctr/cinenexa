@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:watrix/utils/screen_size.dart';
+import 'package:cinenexa/utils/screen_size.dart';
 
 class UserProfileView extends StatelessWidget {
   final String _heading, _subheading;

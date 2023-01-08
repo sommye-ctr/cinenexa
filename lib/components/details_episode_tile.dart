@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:watrix/services/network/utils.dart';
-import 'package:watrix/utils/date_time_formatter.dart';
+import 'package:cinenexa/services/network/utils.dart';
+import 'package:cinenexa/utils/date_time_formatter.dart';
 
 import '../models/network/tv_episode.dart';
 import '../resources/style.dart';

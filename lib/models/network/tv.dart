@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:isar/isar.dart';
-import 'package:watrix/models/network/tv_season.dart';
+import 'package:cinenexa/models/network/tv_season.dart';
 
 import 'genre.dart';
 

@@ -1,52 +1,123 @@
 import 'dart:async';
+import 'package:cinenexa/models/network/base_model.dart';
+import 'package:cinenexa/models/network/extensions/extension_stream.dart';
+import 'package:cinenexa/services/network/utils.dart';
+import 'package:dio/dio.dart';
+import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
+import 'package:dio_cache_interceptor_hive_store/dio_cache_interceptor_hive_store.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:cinenexa/utils/date_time_formatter.dart';
+import 'package:path_provider/path_provider.dart';
 
-import 'package:watrix/models/network/base_model.dart';
-import 'package:watrix/models/network/extensions/extension.dart';
-import 'package:watrix/models/network/extensions/extension_stream.dart';
-import 'package:watrix/services/temp_data.dart';
+import '../../models/network/extensions/extension.dart';
 
 class ExtensionsRepository {
-  static Future<List<Extension>> getUserExtensions() async {
-    return Future.delayed(
-      Duration(seconds: 1),
-      () {
-        return TempData().extensions;
-      },
+  final List<Extension> installedExtensions;
+
+  late CacheOptions options;
+  late Dio dio;
+
+  ExtensionsRepository({required this.installedExtensions});
+
+  Future _init() async {
+    var cacheDir = await getTemporaryDirectory();
+    options = CacheOptions(
+      store: HiveCacheStore(cacheDir.path),
+      priority: CachePriority.normal,
+      maxStale: Duration(days: 2),
+      policy: CachePolicy.forceCache,
+      keyBuilder: CacheOptions.defaultCacheKeyBuilder,
     );
+    dio = Dio()..interceptors.add(DioCacheInterceptor(options: options));
   }
 
-  static Future<List<ExtensionStream>> getSampleExtension(
-      int index, int start) async {
-    await Future.delayed(Duration(seconds: 2));
-    return TempData.streams.sublist(start, index);
-  }
-
-  static Stream<List<ExtensionStream>> loadStreams(
-      {required BaseModel baseModel, int? season, int? episode}) {
+  Stream<List<ExtensionStream>> loadStreams(
+      {required BaseModel baseModel,
+      required int traktId,
+      required String imdbId,
+      int? season,
+      int? episode}) {
     late StreamController<List<ExtensionStream>> streamController;
 
     void fetch() async {
-      streamController.add(await getSampleExtension(3, 0));
-      streamController.add(await getSampleExtension(6, 3));
+      await _init();
+      for (int i = 0; i < installedExtensions.length; i++) {
+        var stream = await _getStream(
+          baseModel: baseModel,
+          extension: installedExtensions[i],
+          imdbId: imdbId,
+          traktId: traktId,
+          season: season,
+          episode: episode,
+        );
+        streamController.add(stream);
+        if (i == installedExtensions.length - 1) {
+          streamController.close();
+        }
+      }
     }
 
     streamController = StreamController(onListen: fetch);
     return streamController.stream;
+  }
 
-    /* Map<String, dynamic> map = {
-      "type": baseModel.type.toString(),
+  Future<List<ExtensionStream>> _getStream({
+    required BaseModel baseModel,
+    required Extension extension,
+    required int traktId,
+    required String imdbId,
+    int? season,
+    int? episode,
+  }) async {
+    final query = {
+      "type": baseModel.type!.getString(),
+      "name": baseModel.title,
+      "releaseYear":
+          DateTimeFormatter.getYearFromString(baseModel.releaseDate!),
+      "tmdbId": baseModel.id,
       "season": season,
       "episode": episode,
-      "id": baseModel.id,
+      "traktId": traktId,
+      "imdbId": imdbId,
     };
 
-    for (var element in extensions) {
-      Uri uri = Uri.parse(element.endpoint).replace(queryParameters: map);
-      http.get(uri).then((value) {
-        streamController.add(ExtensionStream.fromMap(Utils.encodeJson(value.body))..extension = element);
-      });
+    Response response;
+    try {
+      response = await dio.get(
+        extension.endpoint,
+        queryParameters: query,
+        options: Options(
+          receiveTimeout: 30000,
+        ),
+      );
+    } on DioError catch (e, trace) {
+      if (e.type == DioErrorType) {
+        return [];
+      }
+      FirebaseCrashlytics.instance.recordError(e, trace);
+      return [];
     }
+    return _handleResponse(response.data, extension);
+  }
 
-    yield* streamController.stream; */
+  List<ExtensionStream> _handleResponse(String response, Extension extension) {
+    if (response.isNotEmpty) {
+      try {
+        Map sources = Utils.parseJson(response);
+
+        //List<ExtensionStream> list = sources['streams']
+        //  .map((e) => ExtensionStream.fromMap(e)..extension = extension)
+        //.toList();
+        List list = sources['streams'];
+        List<ExtensionStream> modLIst = list
+            .map((e) => ExtensionStream.fromMap(e)..extension = extension)
+            .toList();
+        return modLIst;
+      } catch (e, trace) {
+        FirebaseCrashlytics.instance.recordError(e, trace);
+        return [];
+      }
+    }
+    return [];
   }
 }

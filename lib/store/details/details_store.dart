@@ -1,18 +1,19 @@
 import 'dart:async';
 
 import 'package:mobx/mobx.dart';
-import 'package:watrix/models/network/extensions/extension_stream.dart';
-import 'package:watrix/models/network/review.dart';
-import 'package:watrix/models/network/trakt/trakt_show_history_season.dart';
-import 'package:watrix/models/network/trakt/trakt_show_history_season_ep.dart';
-import 'package:watrix/models/network/watch_provider.dart';
-import 'package:watrix/services/local/database.dart';
-import 'package:watrix/services/network/requests.dart';
-import 'package:watrix/services/network/trakt_oauth_client.dart';
-import 'package:watrix/services/network/trakt_repository.dart';
+import 'package:cinenexa/models/network/extensions/extension_stream.dart';
+import 'package:cinenexa/models/network/review.dart';
+import 'package:cinenexa/models/network/trakt/trakt_show_history_season.dart';
+import 'package:cinenexa/models/network/trakt/trakt_show_history_season_ep.dart';
+import 'package:cinenexa/models/network/watch_provider.dart';
+import 'package:cinenexa/services/local/database.dart';
+import 'package:cinenexa/services/network/requests.dart';
+import 'package:cinenexa/services/network/trakt_oauth_client.dart';
+import 'package:cinenexa/services/network/trakt_repository.dart';
 
 import '../../models/local/show_history.dart';
 import '../../models/network/base_model.dart';
+import '../../models/network/extensions/extension.dart';
 import '../../models/network/genre.dart';
 import '../../models/network/movie.dart';
 import '../../models/network/trakt/trakt_progress.dart';
@@ -27,8 +28,14 @@ import '../user/user_store.dart';
 part 'details_store.g.dart';
 
 class DetailsStore extends _DetailsStore with _$DetailsStore {
-  DetailsStore({required BaseModel baseModel, required int noOfExtensions})
-      : super(baseModel: baseModel, noOfExtensions: noOfExtensions);
+  DetailsStore(
+      {required BaseModel baseModel,
+      required int noOfExtensions,
+      required List<Extension> installedExtensions})
+      : super(
+            baseModel: baseModel,
+            noOfExtensions: noOfExtensions,
+            installedExtensions: installedExtensions);
 }
 
 abstract class _DetailsStore with Store {
@@ -38,6 +45,7 @@ abstract class _DetailsStore with Store {
   _DetailsStore({
     required this.baseModel,
     required this.noOfExtensions,
+    required this.installedExtensions,
   }) {
     _fetchDetails();
     fetchReviews();
@@ -103,7 +111,13 @@ abstract class _DetailsStore with Store {
   int noOfExtensions;
   bool isReviewNextPageLoading = false;
   int traktId = -1;
+  String imdbId = "";
   TraktRepository repository = TraktRepository(client: TraktOAuthClient());
+  StreamSubscription? streamSubscription;
+  List<Extension> installedExtensions;
+
+  bool isStreamLoadingDelayed = false;
+  bool isReviewsLoadingDelayed = false;
 
   @computed
   List<Genre>? get genres {
@@ -221,6 +235,9 @@ abstract class _DetailsStore with Store {
   @action
   void onEpBackClicked() {
     chosenEpisode = null;
+    streamSubscription?.cancel();
+    loadedStreams.clear();
+    isStreamLoading = true;
   }
 
   @action
@@ -243,32 +260,58 @@ abstract class _DetailsStore with Store {
 
   @action
   void fetchStreams() {
-    StreamSubscription? streamSubscription;
-    streamSubscription =
-        ExtensionsRepository.loadStreams(baseModel: baseModel).listen((event) {
-      loadedStreams.addAll(event);
+    if (noOfExtensions == 0) {
+      isStreamLoading = false;
+      return;
+    }
 
-      var seen = Set<String>();
-      List list = loadedStreams
-          .where((element) => seen.add(element.extension!.id))
-          .toList();
+    if (traktId == -1 || imdbId.isEmpty) {
+      isStreamLoadingDelayed = true;
+      return;
+    }
 
-      if (list.length == noOfExtensions) {
+    ExtensionsRepository extensionsRepository =
+        ExtensionsRepository(installedExtensions: installedExtensions);
+
+    streamSubscription = extensionsRepository
+        .loadStreams(
+      baseModel: baseModel,
+      episode: chosenEpisode != null
+          ? (episodes[chosenEpisode!].episodeNumber)
+          : null,
+      season: chosenSeason != null
+          ? (tv?.seasons?[chosenSeason!].seasonNumber)
+          : null,
+      imdbId: imdbId,
+      traktId: traktId,
+    )
+        .listen(
+      (event) {
+        loadedStreams.addAll(event);
+
+        var seen = Set<String>();
+        List list = loadedStreams
+            .where((element) => seen.add(element.extension!.id))
+            .toList();
+
+        if (list.length == noOfExtensions) {
+          isStreamLoading = false;
+          streamSubscription?.cancel();
+        }
+      },
+      onDone: () {
         isStreamLoading = false;
         streamSubscription?.cancel();
-      }
-    });
+      },
+    );
   }
 
   @action
   Future fetchReviews() async {
     if (traktId == -1) {
-      traktId = await Repository.getTraktIdFromTmdb(
-        tmdbId: baseModel.id!,
-        type: baseModel.type! == BaseModelType.movie ? "movie" : "show",
-      );
+      isReviewsLoadingDelayed = true;
+      return;
     }
-
     reviews = ObservableFuture(Repository.getReviews(
       query: Requests.reviews(baseModel.type!, traktId),
       page: reviewPage,
@@ -300,6 +343,24 @@ abstract class _DetailsStore with Store {
 
   void _fetchDetails() async {
     isAddedToFav = await database.isAddedInFav(baseModel.id!);
+
+    if (traktId == -1) {
+      var map = await Repository.getTraktIdFromTmdb(
+        tmdbId: baseModel.id!,
+        type: baseModel.type!.getString(),
+      );
+      traktId = map['trakt'];
+      imdbId = map['imdb'];
+      if (isStreamLoadingDelayed) {
+        fetchStreams();
+        isStreamLoadingDelayed = false;
+      }
+      if (isReviewsLoadingDelayed) {
+        fetchReviews();
+        isReviewsLoadingDelayed = true;
+      }
+    }
+
     if (baseModel.type == BaseModelType.movie) {
       Map map = await Repository.getMovieDetailsWithExtras(id: baseModel.id!);
       movie = map['movie'];

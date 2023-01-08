@@ -1,9 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import 'package:watrix/models/local/progress.dart';
-import 'package:watrix/models/network/movie.dart';
-import 'package:watrix/models/network/tv.dart';
+import 'package:cinenexa/models/local/progress.dart';
+import 'package:cinenexa/models/network/movie.dart';
+import 'package:cinenexa/models/network/tv.dart';
 
 import '../../../utils/date_time_formatter.dart';
 

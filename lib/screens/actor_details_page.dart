@@ -1,12 +1,12 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:watrix/components/actor_details_header.dart';
-import 'package:watrix/resources/strings.dart';
-import 'package:watrix/screens/see_more_page.dart';
-import 'package:watrix/store/actor_details/actor_details_store.dart';
-import 'package:watrix/utils/screen_size.dart';
-import 'package:watrix/widgets/horizontal_list.dart';
+import 'package:cinenexa/components/actor_details_header.dart';
+import 'package:cinenexa/resources/strings.dart';
+import 'package:cinenexa/screens/see_more_page.dart';
+import 'package:cinenexa/store/actor_details/actor_details_store.dart';
+import 'package:cinenexa/utils/screen_size.dart';
+import 'package:cinenexa/widgets/horizontal_list.dart';
 
 import '../models/network/base_model.dart';
 import '../resources/style.dart';
@@ -45,7 +45,7 @@ class _ActorDetailsPageState extends State<ActorDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AdaptiveTheme.of(context).theme == AdaptiveThemeMode.dark
+      backgroundColor: AdaptiveTheme.of(context).mode == AdaptiveThemeMode.dark
           ? Colors.black
           : Colors.white,
       body: CustomScrollView(

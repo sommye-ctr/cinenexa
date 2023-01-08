@@ -27,13 +27,18 @@ const LastActivitiesSchema = CollectionSchema(
       name: r'epWatchedAt',
       type: IsarType.dateTime,
     ),
-    r'movieCollectedAt': PropertySchema(
+    r'extensionsSyncedAt': PropertySchema(
       id: 2,
+      name: r'extensionsSyncedAt',
+      type: IsarType.dateTime,
+    ),
+    r'movieCollectedAt': PropertySchema(
+      id: 3,
       name: r'movieCollectedAt',
       type: IsarType.dateTime,
     ),
     r'movieWatchedAt': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'movieWatchedAt',
       type: IsarType.dateTime,
     )
@@ -69,8 +74,9 @@ void _lastActivitiesSerialize(
 ) {
   writer.writeDateTime(offsets[0], object.epCollectedAt);
   writer.writeDateTime(offsets[1], object.epWatchedAt);
-  writer.writeDateTime(offsets[2], object.movieCollectedAt);
-  writer.writeDateTime(offsets[3], object.movieWatchedAt);
+  writer.writeDateTime(offsets[2], object.extensionsSyncedAt);
+  writer.writeDateTime(offsets[3], object.movieCollectedAt);
+  writer.writeDateTime(offsets[4], object.movieWatchedAt);
 }
 
 LastActivities _lastActivitiesDeserialize(
@@ -80,11 +86,12 @@ LastActivities _lastActivitiesDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = LastActivities();
-  object.epCollectedAt = reader.readDateTime(offsets[0]);
-  object.epWatchedAt = reader.readDateTime(offsets[1]);
+  object.epCollectedAt = reader.readDateTimeOrNull(offsets[0]);
+  object.epWatchedAt = reader.readDateTimeOrNull(offsets[1]);
+  object.extensionsSyncedAt = reader.readDateTimeOrNull(offsets[2]);
   object.id = id;
-  object.movieCollectedAt = reader.readDateTime(offsets[2]);
-  object.movieWatchedAt = reader.readDateTime(offsets[3]);
+  object.movieCollectedAt = reader.readDateTimeOrNull(offsets[3]);
+  object.movieWatchedAt = reader.readDateTimeOrNull(offsets[4]);
   return object;
 }
 
@@ -96,13 +103,15 @@ P _lastActivitiesDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readDateTimeOrNull(offset)) as P;
     case 1:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readDateTimeOrNull(offset)) as P;
     case 2:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readDateTimeOrNull(offset)) as P;
     case 3:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 4:
+      return (reader.readDateTimeOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -205,7 +214,25 @@ extension LastActivitiesQueryWhere
 extension LastActivitiesQueryFilter
     on QueryBuilder<LastActivities, LastActivities, QFilterCondition> {
   QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
-      epCollectedAtEqualTo(DateTime value) {
+      epCollectedAtIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'epCollectedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
+      epCollectedAtIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'epCollectedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
+      epCollectedAtEqualTo(DateTime? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'epCollectedAt',
@@ -216,7 +243,7 @@ extension LastActivitiesQueryFilter
 
   QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
       epCollectedAtGreaterThan(
-    DateTime value, {
+    DateTime? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -230,7 +257,7 @@ extension LastActivitiesQueryFilter
 
   QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
       epCollectedAtLessThan(
-    DateTime value, {
+    DateTime? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -244,8 +271,8 @@ extension LastActivitiesQueryFilter
 
   QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
       epCollectedAtBetween(
-    DateTime lower,
-    DateTime upper, {
+    DateTime? lower,
+    DateTime? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -261,7 +288,25 @@ extension LastActivitiesQueryFilter
   }
 
   QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
-      epWatchedAtEqualTo(DateTime value) {
+      epWatchedAtIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'epWatchedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
+      epWatchedAtIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'epWatchedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
+      epWatchedAtEqualTo(DateTime? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'epWatchedAt',
@@ -272,7 +317,7 @@ extension LastActivitiesQueryFilter
 
   QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
       epWatchedAtGreaterThan(
-    DateTime value, {
+    DateTime? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -286,7 +331,7 @@ extension LastActivitiesQueryFilter
 
   QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
       epWatchedAtLessThan(
-    DateTime value, {
+    DateTime? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -300,14 +345,88 @@ extension LastActivitiesQueryFilter
 
   QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
       epWatchedAtBetween(
-    DateTime lower,
-    DateTime upper, {
+    DateTime? lower,
+    DateTime? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'epWatchedAt',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
+      extensionsSyncedAtIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'extensionsSyncedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
+      extensionsSyncedAtIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'extensionsSyncedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
+      extensionsSyncedAtEqualTo(DateTime? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'extensionsSyncedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
+      extensionsSyncedAtGreaterThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'extensionsSyncedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
+      extensionsSyncedAtLessThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'extensionsSyncedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
+      extensionsSyncedAtBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'extensionsSyncedAt',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -390,7 +509,25 @@ extension LastActivitiesQueryFilter
   }
 
   QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
-      movieCollectedAtEqualTo(DateTime value) {
+      movieCollectedAtIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'movieCollectedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
+      movieCollectedAtIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'movieCollectedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
+      movieCollectedAtEqualTo(DateTime? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'movieCollectedAt',
@@ -401,7 +538,7 @@ extension LastActivitiesQueryFilter
 
   QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
       movieCollectedAtGreaterThan(
-    DateTime value, {
+    DateTime? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -415,7 +552,7 @@ extension LastActivitiesQueryFilter
 
   QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
       movieCollectedAtLessThan(
-    DateTime value, {
+    DateTime? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -429,8 +566,8 @@ extension LastActivitiesQueryFilter
 
   QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
       movieCollectedAtBetween(
-    DateTime lower,
-    DateTime upper, {
+    DateTime? lower,
+    DateTime? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -446,7 +583,25 @@ extension LastActivitiesQueryFilter
   }
 
   QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
-      movieWatchedAtEqualTo(DateTime value) {
+      movieWatchedAtIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'movieWatchedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
+      movieWatchedAtIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'movieWatchedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
+      movieWatchedAtEqualTo(DateTime? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'movieWatchedAt',
@@ -457,7 +612,7 @@ extension LastActivitiesQueryFilter
 
   QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
       movieWatchedAtGreaterThan(
-    DateTime value, {
+    DateTime? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -471,7 +626,7 @@ extension LastActivitiesQueryFilter
 
   QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
       movieWatchedAtLessThan(
-    DateTime value, {
+    DateTime? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -485,8 +640,8 @@ extension LastActivitiesQueryFilter
 
   QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
       movieWatchedAtBetween(
-    DateTime lower,
-    DateTime upper, {
+    DateTime? lower,
+    DateTime? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -535,6 +690,20 @@ extension LastActivitiesQuerySortBy
       sortByEpWatchedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'epWatchedAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<LastActivities, LastActivities, QAfterSortBy>
+      sortByExtensionsSyncedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'extensionsSyncedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<LastActivities, LastActivities, QAfterSortBy>
+      sortByExtensionsSyncedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'extensionsSyncedAt', Sort.desc);
     });
   }
 
@@ -597,6 +766,20 @@ extension LastActivitiesQuerySortThenBy
     });
   }
 
+  QueryBuilder<LastActivities, LastActivities, QAfterSortBy>
+      thenByExtensionsSyncedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'extensionsSyncedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<LastActivities, LastActivities, QAfterSortBy>
+      thenByExtensionsSyncedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'extensionsSyncedAt', Sort.desc);
+    });
+  }
+
   QueryBuilder<LastActivities, LastActivities, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
@@ -655,6 +838,13 @@ extension LastActivitiesQueryWhereDistinct
   }
 
   QueryBuilder<LastActivities, LastActivities, QDistinct>
+      distinctByExtensionsSyncedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'extensionsSyncedAt');
+    });
+  }
+
+  QueryBuilder<LastActivities, LastActivities, QDistinct>
       distinctByMovieCollectedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'movieCollectedAt');
@@ -677,28 +867,35 @@ extension LastActivitiesQueryProperty
     });
   }
 
-  QueryBuilder<LastActivities, DateTime, QQueryOperations>
+  QueryBuilder<LastActivities, DateTime?, QQueryOperations>
       epCollectedAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'epCollectedAt');
     });
   }
 
-  QueryBuilder<LastActivities, DateTime, QQueryOperations>
+  QueryBuilder<LastActivities, DateTime?, QQueryOperations>
       epWatchedAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'epWatchedAt');
     });
   }
 
-  QueryBuilder<LastActivities, DateTime, QQueryOperations>
+  QueryBuilder<LastActivities, DateTime?, QQueryOperations>
+      extensionsSyncedAtProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'extensionsSyncedAt');
+    });
+  }
+
+  QueryBuilder<LastActivities, DateTime?, QQueryOperations>
       movieCollectedAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'movieCollectedAt');
     });
   }
 
-  QueryBuilder<LastActivities, DateTime, QQueryOperations>
+  QueryBuilder<LastActivities, DateTime?, QQueryOperations>
       movieWatchedAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'movieWatchedAt');

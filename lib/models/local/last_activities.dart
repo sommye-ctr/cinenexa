@@ -6,9 +6,11 @@ part 'last_activities.g.dart';
 class LastActivities {
   Id? id;
 
-  late DateTime movieWatchedAt;
-  late DateTime movieCollectedAt;
+  DateTime? movieWatchedAt;
+  DateTime? movieCollectedAt;
 
-  late DateTime epWatchedAt;
-  late DateTime epCollectedAt;
+  DateTime? epWatchedAt;
+  DateTime? epCollectedAt;
+
+  DateTime? extensionsSyncedAt;
 }

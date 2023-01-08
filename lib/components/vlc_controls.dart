@@ -2,20 +2,20 @@ import 'dart:async';
 
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
-import 'package:watrix/models/network/base_model.dart';
-import 'package:watrix/models/network/movie.dart';
-import 'package:watrix/models/network/tv.dart';
-import 'package:watrix/services/constants.dart';
-import 'package:watrix/services/local/scrobble_manager.dart';
-import 'package:watrix/services/network/utils.dart';
-import 'package:watrix/store/player/player_store.dart';
-import 'package:watrix/widgets/rounded_image.dart';
+import 'package:provider/provider.dart';
+import 'package:cinenexa/models/network/base_model.dart';
+import 'package:cinenexa/models/network/movie.dart';
+import 'package:cinenexa/models/network/tv.dart';
+import 'package:cinenexa/services/local/scrobble_manager.dart';
+import 'package:cinenexa/store/player/player_store.dart';
+import 'package:cinenexa/store/user/user_store.dart';
+import 'package:cinenexa/widgets/rounded_button.dart';
 
+import '../models/network/extensions/extension_stream.dart';
 import '../resources/strings.dart';
 import '../resources/style.dart';
 import '../utils/screen_size.dart';
@@ -30,9 +30,12 @@ class VlcControls extends StatefulWidget {
   final int? season, episode;
   final double? progress;
 
+  final ExtensionStream stream;
+
   const VlcControls({
     Key? key,
     required this.controller,
+    required this.stream,
     this.baseModel,
     this.id,
     this.movie,
@@ -49,72 +52,34 @@ class VlcControls extends StatefulWidget {
 class _VlcControlsState extends State<VlcControls> {
   static const double iconSize = 60;
   static const Duration hideDuration = Duration(seconds: 5);
-
-  int forwardSeek = 30;
-  int rewindSeek = 30;
-
   Timer? hideTimer;
 
-  late ScrobbleManager scrobbleManager;
+  ScrobbleManager? scrobbleManager;
   late PlayerStore playerStore;
-
-  int duration = 0;
-  bool initialCalled = false;
 
   @override
   void initState() {
     super.initState();
-
-    scrobbleManager = ScrobbleManager(
-      playerController: widget.controller,
-      item: widget.baseModel!,
-      episode: widget.episode,
-      movie: widget.movie,
-      season: widget.season,
-      show: widget.show,
-      id: widget.id,
-    );
-    playerStore = PlayerStore();
-
-    widget.controller.addListener(() async {
-      if (widget.controller.value.playingState == PlayingState.buffering) {
-        playerStore.setBuffering(true);
-      } else {
-        playerStore.setBuffering(false);
-      }
-
-      if (widget.controller.value.isInitialized) {
-        duration = widget.controller.value.duration.inMilliseconds;
-      }
-
-      if (widget.controller.value.playingState == PlayingState.playing) {
-        if (!initialCalled) {
-          if (widget.progress != null) {
-            int seconds = (duration * widget.progress!) ~/ 100;
-
-            await widget.controller.pause();
-            await widget.controller.play();
-            await widget.controller.seekTo(Duration(milliseconds: seconds));
-          }
-
-          playerStore.setTracks(await widget.controller.getAudioTracks());
-          playerStore.setSelectedTrack(await widget.controller.getAudioTrack());
-
-          playerStore.setSubtitles(await widget.controller.getSpuTracks());
-          playerStore
-              .setSelectedSubtitle(await widget.controller.getSpuTrack());
-
-          initialCalled = true;
-        }
-
-        playerStore.setPosition(widget.controller.value.position);
-        playerStore.setBuffered(
-          Duration(
-              seconds:
-                  (widget.controller.value.bufferPercent * duration) ~/ 100),
-        );
-      }
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      bool traktLogged =
+          Provider.of<UserStore>(context, listen: false).isTraktLogged;
+      scrobbleManager = ScrobbleManager(
+        playerController: widget.controller,
+        item: widget.baseModel!,
+        isTraktLogged: traktLogged,
+        episode: widget.episode,
+        movie: widget.movie,
+        season: widget.season,
+        show: widget.show,
+        id: widget.id,
+      );
     });
+
+    playerStore = PlayerStore(
+      controller: widget.controller,
+      extensionStream: widget.stream,
+      progress: widget.progress,
+    );
   }
 
   @override
@@ -133,6 +98,35 @@ class _VlcControlsState extends State<VlcControls> {
                 if (playerStore.buffering) {
                   return Center(
                     child: CircularProgressIndicator(),
+                  );
+                }
+                if (playerStore.casting) {
+                  return Container(
+                    height: double.infinity,
+                    width: double.infinity,
+                    color: Theme.of(context).backgroundColor,
+                    child: Center(
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.cast_connected_rounded,
+                            size: ScreenSize.getPercentOfWidth(context, 0.25),
+                            color: Colors.blue,
+                          ),
+                          Style.getVerticalSpacing(context: context),
+                          Text("Casting to ${playerStore.castingDevice}"),
+                          Style.getVerticalSpacing(context: context),
+                          RoundedButton(
+                            child: Text(Strings.disconnect),
+                            onPressed: () async {
+                              await widget.controller.stopRendererScanning();
+                              playerStore.setCasting(false);
+                            },
+                            type: RoundedButtonType.filled,
+                          ),
+                        ],
+                      ),
+                    ),
                   );
                 }
                 if (playerStore.showControls) {
@@ -180,9 +174,10 @@ class _VlcControlsState extends State<VlcControls> {
   }
 
   Future<bool> _onBack() async {
-    scrobbleManager.paused();
+    scrobbleManager?.paused();
     await Future.wait([
       widget.controller.stopRendererScanning(),
+      widget.controller.stop(),
       widget.controller.dispose()
     ]);
     SystemChrome.setPreferredOrientations(
@@ -223,11 +218,6 @@ class _VlcControlsState extends State<VlcControls> {
               _buildTitle(),
             ],
           ),
-          CupertinoSwitch(
-            value: false,
-            activeColor: Theme.of(context).colorScheme.primary,
-            onChanged: (changeValue) {},
-          ),
         ],
       ),
     );
@@ -242,7 +232,7 @@ class _VlcControlsState extends State<VlcControls> {
       child: Observer(builder: (_) {
         return ProgressBar(
           progress: playerStore.position,
-          total: Duration(milliseconds: duration),
+          total: Duration(milliseconds: playerStore.duration),
           barHeight: 3,
           timeLabelLocation: TimeLabelLocation.sides,
           buffered: playerStore.buffered,
@@ -275,116 +265,130 @@ class _VlcControlsState extends State<VlcControls> {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              _buildControlButton(
-                icon: Icons.lock_open_rounded,
-                onTap: () => playerStore.setLocked(!playerStore.locked),
-                size: 25,
-                overlay: true,
-              ),
-              Style.getVerticalHorizontalSpacing(context: context),
-              _buildControlButton(
-                icon: Icons.closed_caption_off,
-                onTap: () {
-                  AwesomeDialog(
-                    context: context,
-                    dialogType: DialogType.noHeader,
-                    width: ScreenSize.getPercentOfWidth(context, 0.7),
-                    title: Strings.settings,
-                    body: _buildSubtitlePopup(),
-                    showCloseIcon: true,
-                    padding: EdgeInsets.all(8),
-                    animType: AnimType.bottomSlide,
-                  ).show();
-                },
-                size: 25,
-                overlay: true,
-              ),
-              Style.getVerticalHorizontalSpacing(context: context),
-              _buildControlButton(
-                icon: Icons.audiotrack_outlined,
-                onTap: () {
-                  AwesomeDialog(
-                    context: context,
-                    dialogType: DialogType.noHeader,
-                    width: ScreenSize.getPercentOfWidth(context, 0.7),
-                    title: Strings.settings,
-                    body: _buildTracksPopup(),
-                    showCloseIcon: true,
-                    padding: EdgeInsets.all(8),
-                    animType: AnimType.bottomSlide,
-                  ).show();
-                },
-                size: 25,
-                overlay: true,
-              ),
-              Style.getVerticalHorizontalSpacing(context: context),
-              _buildControlButton(
-                icon: Icons.restore_rounded,
-                onTap: () {
-                  widget.controller.seekTo(Duration());
-                  widget.controller.play();
-                },
-                size: 25,
-                overlay: true,
-              ),
-              Style.getVerticalHorizontalSpacing(context: context),
-              _buildControlButton(
-                icon: Icons.settings,
-                onTap: () {
-                  AwesomeDialog(
-                    context: context,
-                    dialogType: DialogType.noHeader,
-                    title: Strings.settings,
-                    body: _buildSettingsPopup(),
-                    showCloseIcon: true,
-                    padding: EdgeInsets.all(8),
-                    animType: AnimType.bottomSlide,
-                  ).show();
-                },
-                size: 25,
-                overlay: true,
-              ),
-            ],
+          _buildControlButton(
+            icon: Icons.lock_open_rounded,
+            onTap: () => playerStore.setLocked(!playerStore.locked),
+            size: 25,
+            overlay: true,
           ),
-          _buildMoreDetails()
+          Style.getVerticalHorizontalSpacing(context: context),
+          _buildControlButton(
+            icon: Icons.closed_caption_off,
+            onTap: () {
+              AwesomeDialog(
+                context: context,
+                dialogType: DialogType.noHeader,
+                width: ScreenSize.getPercentOfWidth(context, 0.7),
+                title: Strings.settings,
+                body: _buildSubtitlePopup(),
+                showCloseIcon: true,
+                padding: EdgeInsets.all(8),
+                animType: AnimType.bottomSlide,
+              ).show();
+            },
+            size: 25,
+            overlay: true,
+          ),
+          Style.getVerticalHorizontalSpacing(context: context),
+          _buildControlButton(
+            icon: Icons.audiotrack_outlined,
+            onTap: () {
+              AwesomeDialog(
+                context: context,
+                dialogType: DialogType.noHeader,
+                width: ScreenSize.getPercentOfWidth(context, 0.7),
+                title: Strings.settings,
+                body: _buildTracksPopup(),
+                showCloseIcon: true,
+                padding: EdgeInsets.all(8),
+                animType: AnimType.bottomSlide,
+              ).show();
+            },
+            size: 25,
+            overlay: true,
+          ),
+          Style.getVerticalHorizontalSpacing(context: context),
+          _buildControlButton(
+            icon: Icons.restore_rounded,
+            onTap: () {
+              widget.controller.seekTo(Duration());
+              widget.controller.play();
+            },
+            size: 25,
+            overlay: true,
+          ),
+          Style.getVerticalHorizontalSpacing(context: context),
+          _buildControlButton(
+            icon: Icons.cast_rounded,
+            onTap: () {
+              _cast();
+            },
+            size: 25,
+            overlay: true,
+          ),
+          Style.getVerticalHorizontalSpacing(context: context),
+          _buildControlButton(
+            icon: Icons.settings,
+            onTap: () {
+              AwesomeDialog(
+                context: context,
+                dialogType: DialogType.noHeader,
+                title: Strings.settings,
+                body: _buildSettingsPopup(),
+                showCloseIcon: true,
+                padding: EdgeInsets.all(8),
+                animType: AnimType.bottomSlide,
+              ).show();
+            },
+            size: 25,
+            overlay: true,
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildMoreDetails() {
-    if (widget.baseModel != null && widget.baseModel!.backdropPath != null) {
-      return Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Column(
-            children: [
-              Text(Strings.moreInfo, textAlign: TextAlign.center),
-              Text(
-                Strings.tapToSee,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 12,
-                ),
-              )
-            ],
-          ),
-          Style.getVerticalHorizontalSpacing(context: context),
-          RoundedImage(
-            image: Utils.getBackdropUrl(widget.baseModel!.backdropPath!),
-            width: ScreenSize.getPercentOfWidth(context, 0.12),
-            ratio: Constants.backdropAspectRatio,
-          ),
-        ],
-      );
+  void _cast() async {
+    var castDevices = await widget.controller.getRendererDevices();
+
+    if (castDevices.isEmpty) {
+      Style.showToast(text: Strings.noDeviceFound);
+      return;
     }
-    return Container();
+
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.noHeader,
+      showCloseIcon: true,
+      padding: EdgeInsets.all(8),
+      animType: AnimType.bottomSlide,
+      title: Strings.castDevices,
+      body: _buildCastDevices(castDevices),
+    ).show();
+  }
+
+  Widget _buildCastDevices(Map devices) {
+    return Container(
+      child: ListView.builder(
+        itemCount: devices.length,
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          return Style.getListTile(
+            context: context,
+            title: devices.values.elementAt(index).toString(),
+            onTap: () async {
+              await widget.controller
+                  .castToRenderer(devices.values.elementAt(index).toString());
+              Navigator.pop(context);
+              playerStore.setCasting(true);
+              playerStore
+                  .setCastingDevice(devices.values.elementAt(index).toString());
+            },
+          );
+        },
+      ),
+    );
   }
 
   Widget _buildTracksPopup() {
@@ -430,16 +434,16 @@ class _VlcControlsState extends State<VlcControls> {
   Widget _buildSubtitlePopup() {
     int selected = 0;
     if (playerStore.selectedSubtitle != null) {
-      var key = playerStore.subtitles!.keys
-          .where((element) => element == playerStore.selectedSubtitle!);
-      if (key.isNotEmpty) {
-        selected = playerStore.subtitles!.keys.toList().indexOf(key.first) + 1;
+      int index = playerStore.subs
+          .indexWhere((element) => element.id == playerStore.selectedSubtitle);
+      if (index >= 0) {
+        selected = index + 1;
       }
     }
 
     List<String> allSubtitles = [
       Strings.none,
-      ...playerStore.subtitles!.values.toList()
+      ...playerStore.subs.map((element) => element.name.toString()).toList(),
     ];
 
     return CustomCheckBoxList(
@@ -454,15 +458,15 @@ class _VlcControlsState extends State<VlcControls> {
       ),
       onSelectionAdded: (values) {
         if (values.first == Strings.none) {
-          playerStore.setSelectedSubtitle(null);
-          widget.controller.setSpuTrack(-1);
+          playerStore.changeSubtitle(-1);
           return;
         }
-        int selectedS = playerStore.subtitles!.keys
-            .where((element) => playerStore.subtitles![element] == values.first)
-            .first;
-        playerStore.setSelectedSubtitle(selectedS);
-        widget.controller.setSpuTrack(selectedS);
+        int selectedIndex = playerStore.subs
+            .indexWhere((element) => element.name == values.first);
+
+        playerStore.changeSubtitle(selectedIndex);
+
+        Navigator.pop(context);
       },
     );
   }
@@ -592,12 +596,13 @@ class _VlcControlsState extends State<VlcControls> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _buildControlButton(
-            icon: rewindSeek == 30
+            icon: playerStore.seekDuration == 30
                 ? Icons.replay_30_rounded
                 : Icons.replay_10_rounded,
             onTap: () {
               Duration rewind = Duration(
-                seconds: playerStore.position.inSeconds - rewindSeek,
+                seconds:
+                    playerStore.position.inSeconds - playerStore.seekDuration,
               );
 
               widget.controller.seekTo(rewind);
@@ -616,15 +621,16 @@ class _VlcControlsState extends State<VlcControls> {
             },
           ),
           _buildControlButton(
-            icon: forwardSeek == 30
+            icon: playerStore.seekDuration == 30
                 ? Icons.forward_30_rounded
                 : Icons.forward_10_rounded,
             onTap: () {
               Duration forward = Duration(
-                seconds: playerStore.position.inSeconds + forwardSeek,
+                seconds:
+                    playerStore.position.inSeconds + playerStore.seekDuration,
               );
 
-              if (forward > Duration(milliseconds: duration)) {
+              if (forward > Duration(milliseconds: playerStore.duration)) {
                 widget.controller.seekTo(Duration(seconds: 0));
               } else {
                 widget.controller.seekTo(forward);

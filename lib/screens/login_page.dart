@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:watrix/resources/strings.dart';
-import 'package:watrix/resources/style.dart';
-import 'package:watrix/screens/home_first_screen.dart';
-import 'package:watrix/screens/login_configure_page.dart';
-import 'package:watrix/widgets/custom_back_button.dart';
-import 'package:watrix/widgets/custom_text_form.dart';
-import 'package:watrix/widgets/rounded_button.dart';
+import 'package:cinenexa/resources/strings.dart';
+import 'package:cinenexa/resources/style.dart';
+import 'package:cinenexa/screens/login_configure_page.dart';
+import 'package:cinenexa/widgets/custom_back_button.dart';
+import 'package:cinenexa/widgets/custom_text_form.dart';
+import 'package:cinenexa/widgets/rounded_button.dart';
 
 import '../resources/asset.dart';
 import '../utils/screen_size.dart';
 import '../utils/form_validator.dart';
-import 'forgot_pass_page.dart';
 
 class LoginPage extends StatefulWidget {
   static const String routeName = "/login";
@@ -88,16 +86,6 @@ class _LoginPageState extends State<LoginPage> {
                             color: Colors.grey,
                           ),
                         ),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                            onPressed: () {
-                              Navigator.of(context)
-                                  .pushNamed(ForgotPassPage.routeName);
-                            },
-                            child: Text(Strings.forgotPass),
-                          ),
-                        ),
                         Style.getVerticalSpacing(context: context),
                         Container(
                           width: double.infinity,
@@ -138,7 +126,8 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.pop(context);
 
       if (resp.session != null && resp.user != null) {
-        Navigator.pushNamed(context, LoginConfigurePage.routeName);
+        Navigator.pushNamed(context, LoginConfigurePage.routeName,
+            arguments: true);
       }
     } on AuthException catch (error) {
       Navigator.pop(context);

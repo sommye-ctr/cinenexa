@@ -1,24 +1,18 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class Constants {
-  static const String apiKey = "c76700d23b7e001aa141938818340e79";
+  static String apiKey = dotenv.env['TMDB_KEY'] ?? "";
 
   static String tmdbBase = "https://api.themoviedb.org/3";
   static String tmdbImageBase = "https://image.tmdb.org/t/p";
 
-  static const String traktApi =
-      "28acc06d101c220710f591128cb8c79a1a86409e94bd777876f42905dc179b26";
-  static const String openSubApi = "0fgcaUNKBiPRFgbWOPelMRF0kkfjDA7L";
+  static String traktApi = dotenv.env['TRAKT_KEY'] ?? "";
   static String traktBase = "https://api.trakt.tv";
 
   static Map<String, String> traktRequestHeaders = {
     'Content-type': 'application/json',
     'trakt-api-key': '$traktApi',
     'trakt-api-version': "2",
-  };
-
-  static Map<String, String> openSubRequestHeaders = {
-    "Accept": "*/*",
-    "Api-Key": '$openSubApi',
-    "User-Agent": "Watrix",
   };
 
   static String posterSize = "/w300";

@@ -5,13 +5,13 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mobx/mobx.dart';
-import 'package:watrix/resources/asset.dart';
-import 'package:watrix/resources/strings.dart';
-import 'package:watrix/resources/style.dart';
-import 'package:watrix/screens/actor_details_page.dart';
-import 'package:watrix/store/search/search_store.dart';
-import 'package:watrix/utils/screen_size.dart';
-import 'package:watrix/widgets/search_input.dart';
+import 'package:cinenexa/resources/asset.dart';
+import 'package:cinenexa/resources/strings.dart';
+import 'package:cinenexa/resources/style.dart';
+import 'package:cinenexa/screens/actor_details_page.dart';
+import 'package:cinenexa/store/search/search_store.dart';
+import 'package:cinenexa/utils/screen_size.dart';
+import 'package:cinenexa/widgets/search_input.dart';
 
 import '../components/search_result_tile.dart';
 import '../models/network/base_model.dart';
@@ -19,7 +19,7 @@ import '../services/network/utils.dart';
 import 'details_page.dart';
 
 class SearchPage extends StatefulWidget {
-  final Function()? onBack;
+  final Function({int? index})? onBack;
 
   SearchPage({Key? key, this.onBack}) : super(key: key);
 
@@ -315,12 +315,15 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
               vote: baseModel.type == BaseModelType.people
                   ? 0
                   : baseModel.voteAverage!,
-              onClick: () {
-                Navigator.pushNamed(
+              onClick: () async {
+                var isRedirect = await Navigator.pushNamed(
                   context,
                   DetailsPage.routeName,
                   arguments: baseModel,
                 );
+                if (isRedirect != null && isRedirect as bool) {
+                  widget.onBack?.call(index: 1);
+                }
               },
             );
           },

@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:watrix/screens/extensions_page.dart';
-import 'package:watrix/screens/home_page.dart';
-import 'package:watrix/screens/profile_page.dart';
-import 'package:watrix/screens/search_page.dart';
+import 'package:cinenexa/screens/extensions_page.dart';
+import 'package:cinenexa/screens/home_page.dart';
+import 'package:cinenexa/screens/profile_page.dart';
+import 'package:cinenexa/screens/search_page.dart';
+import 'package:flutter/services.dart';
 
 import '../components/home_bottom_nav_bar.dart';
 
@@ -34,26 +32,26 @@ class _HomeFirstScreenState extends State<HomeFirstScreen> {
               IndexedStack(
                 index: _pageIndex,
                 children: [
-                  HomePage(),
+                  HomePage(
+                    onBack: () async {
+                      await Future.delayed(Duration(milliseconds: 500));
+                      _changeBottomNavIndex(1);
+                    },
+                  ),
                   ExtensionsPage(),
                   SearchPage(
-                    onBack: () {
-                      setState(() {
-                        _pageIndex = 0;
-                        (bottomNavigationKey.currentWidget
-                                as BottomNavigationBar)
-                            .onTap!(0);
-                      });
+                    onBack: ({index}) async {
+                      if (_pageIndex != 0) {
+                        await Future.delayed(Duration(milliseconds: 500));
+                        _changeBottomNavIndex(index ?? 0);
+                        return;
+                      }
+                      SystemNavigator.pop();
                     },
                   ),
                   ProfilePage(
                     onBack: () {
-                      setState(() {
-                        _pageIndex = 0;
-                        (bottomNavigationKey.currentWidget
-                                as BottomNavigationBar)
-                            .onTap!(0);
-                      });
+                      _changeBottomNavIndex(0);
                     },
                   ),
                 ],
@@ -71,5 +69,12 @@ class _HomeFirstScreenState extends State<HomeFirstScreen> {
         ),
       ),
     );
+  }
+
+  void _changeBottomNavIndex(int index) {
+    setState(() {
+      _pageIndex = index;
+      (bottomNavigationKey.currentWidget as BottomNavigationBar).onTap!(index);
+    });
   }
 }

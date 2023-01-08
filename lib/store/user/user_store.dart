@@ -1,18 +1,17 @@
 import 'package:mobx/mobx.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:watrix/models/local/last_activities.dart';
-import 'package:watrix/models/local/show_history.dart';
-import 'package:watrix/models/network/base_model.dart';
-import 'package:watrix/models/network/enums/entity_type.dart';
-import 'package:watrix/models/network/extensions/extension.dart';
-import 'package:watrix/models/network/trakt/trakt_progress.dart';
-import 'package:watrix/models/network/user.dart';
-import 'package:watrix/models/network/user_stats.dart';
-import 'package:watrix/services/local/database.dart';
-import 'package:watrix/services/network/extensions_repository.dart';
-import 'package:watrix/services/network/trakt_oauth_client.dart';
-import 'package:watrix/services/network/trakt_repository.dart';
-import 'package:watrix/store/favorites/favorites_store.dart';
+import 'package:cinenexa/models/local/last_activities.dart';
+import 'package:cinenexa/models/local/show_history.dart';
+import 'package:cinenexa/models/network/base_model.dart';
+import 'package:cinenexa/models/network/enums/entity_type.dart';
+import 'package:cinenexa/models/network/trakt/trakt_progress.dart';
+import 'package:cinenexa/models/network/cinenexa_user.dart';
+import 'package:cinenexa/models/network/trakt_user.dart';
+import 'package:cinenexa/models/network/user_stats.dart';
+import 'package:cinenexa/services/local/database.dart';
+import 'package:cinenexa/services/network/trakt_oauth_client.dart';
+import 'package:cinenexa/services/network/trakt_repository.dart';
+import 'package:cinenexa/store/favorites/favorites_store.dart';
 part 'user_store.g.dart';
 
 class UserStore = _UserStoreBase with _$UserStore;
@@ -36,9 +35,6 @@ abstract class _UserStoreBase with Store {
   @observable
   ObservableList<ShowHistory> showHistory = <ShowHistory>[].asObservable();
 
-  @observable
-  ObservableList<Extension> extensions = <Extension>[].asObservable();
-
   bool get isTraktLogged => traktStatus;
 
   TraktRepository repository = TraktRepository(client: TraktOAuthClient());
@@ -61,11 +57,9 @@ abstract class _UserStoreBase with Store {
       user = CineNexaUser(
         id: supabaseClient.auth.currentUser!.id,
         name: supabaseClient.auth.currentUser!.userMetadata?['name'],
-        avatar: "",
         email: supabaseClient.auth.currentUser!.email!,
       );
     }
-    fetchUserExtensions();
 
     if (isTraktLogged) {
       fetchUserStats();
@@ -81,17 +75,17 @@ abstract class _UserStoreBase with Store {
 
       List<Future> listFutures = [];
 
-      if (localLast != null) {
-        if (lastActivities.epWatchedAt.isAfter(localLast.epWatchedAt)) {
+      if (localLast != null && localLast.movieCollectedAt != null) {
+        if (lastActivities.epWatchedAt!.isAfter(localLast.epWatchedAt!)) {
           listFutures.add(fetchUserWatchedShows(
               api: lastActivities, local: localLast, fromApi: true));
         } else {
           listFutures.add(
               fetchUserWatchedShows(api: lastActivities, local: localLast));
         }
-        if (lastActivities.movieCollectedAt
-                .isAfter(localLast.movieCollectedAt) ||
-            lastActivities.epCollectedAt.isAfter(localLast.epCollectedAt)) {
+        if (lastActivities.movieCollectedAt!
+                .isAfter(localLast.movieCollectedAt!) ||
+            lastActivities.epCollectedAt!.isAfter(localLast.epCollectedAt!)) {
           listFutures.add(
               favoritesStore?.fetchFavorites(fromApi: true) ?? Future.value());
         } else {
@@ -104,14 +98,10 @@ abstract class _UserStoreBase with Store {
           favoritesStore?.fetchFavorites(fromApi: true),
         ]);
       }
-      Future.wait(listFutures).whenComplete(
-          () => localDb.addLastActivities(lastActivities: lastActivities));
+      Future.wait(listFutures).whenComplete(() => localDb.addLastActivities(
+          lastActivities: lastActivities
+            ..extensionsSyncedAt = localLast?.extensionsSyncedAt));
     }
-  }
-
-  @action
-  Future fetchUserExtensions() async {
-    extensions.addAll(await ExtensionsRepository.getUserExtensions());
   }
 
   @action
@@ -145,6 +135,10 @@ abstract class _UserStoreBase with Store {
   }
 
   Future _removeProgressFromApi(TraktProgress traktProgress) async {
+    if (!isTraktLogged) {
+      return;
+    }
+
     if (traktProgress.playbackId != null) {
       return repository.removeProgress(progressId: traktProgress.playbackId!);
     }
@@ -181,6 +175,19 @@ abstract class _UserStoreBase with Store {
   }
 
   @action
+  Future<TraktUser> fetchUserTraktProfile() async {
+    return repository.getUserProfile();
+  }
+
+  @action
+  Future logout() async {
+    return Future.wait([
+      supabaseClient.auth.signOut(),
+      localDb.clearAll(),
+    ]);
+  }
+
+  @action
   Future fetchUserRecommendations() async {
     List list = await Future.wait([
       repository.getRecommendations(type: EntityType.movie),
@@ -188,5 +195,11 @@ abstract class _UserStoreBase with Store {
     ]);
     movieRecommendations.addAll(list[0]);
     showRecommendations.addAll(list[1]);
+  }
+
+  @action
+  Future disconnectTrakt() async {
+    traktStatus = false;
+    return Database().addUserTraktStatus(false);
   }
 }

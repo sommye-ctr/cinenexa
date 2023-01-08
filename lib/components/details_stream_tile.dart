@@ -1,16 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flag/flag_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:watrix/models/network/extensions/extension_stream.dart';
-import 'package:watrix/models/network/watch_provider.dart';
-import 'package:watrix/utils/screen_size.dart';
-import 'package:watrix/utils/size_formatter.dart';
+import 'package:cinenexa/models/network/extensions/extension_stream.dart';
+import 'package:cinenexa/models/network/watch_provider.dart';
+import 'package:cinenexa/utils/screen_size.dart';
+import 'package:cinenexa/utils/size_formatter.dart';
 import '../resources/style.dart';
 
 class DetailsStreamTile extends StatelessWidget {
   final ExtensionStream? extensionStream;
   final WatchProvider? provider;
-  final Function(ExtensionStream? extensionStream)? onClick;
+  final Function(
+      ExtensionStream? extensionStream, WatchProvider? watchProvider)? onClick;
   final bool? hidePlayButton;
   const DetailsStreamTile({
     Key? key,
@@ -23,7 +24,7 @@ class DetailsStreamTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => onClick?.call(extensionStream),
+      onTap: () => onClick?.call(extensionStream, provider),
       child: Container(
         width: ScreenSize.getPercentOfWidth(context, 0.45),
         child: Stack(
@@ -71,7 +72,7 @@ class DetailsStreamTile extends StatelessWidget {
               Align(
                 alignment: Alignment.topRight,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () => onClick?.call(extensionStream, provider),
                   child: Icon(Icons.play_arrow),
                   style: ElevatedButton.styleFrom(
                     shape: CircleBorder(),
@@ -91,8 +92,8 @@ class DetailsStreamTile extends StatelessWidget {
   }
 
   List<Widget> _buildFlag(context) {
-    if (extensionStream?.langCountry == null) return [Container()];
-    List<String>? strings = extensionStream?.langCountry?.split('|');
+    if (extensionStream?.country == null) return [Container()];
+    List<String>? strings = extensionStream?.country?.split('|');
     return [
       Style.getVerticalSpacing(context: context),
       SingleChildScrollView(

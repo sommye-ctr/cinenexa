@@ -17,4 +17,7 @@ class Asset {
   static const String forgotPass = "assets/images/forgot_pass.svg";
   static const String traktConnect = "assets/images/trakt_connect.svg";
   static const String traktConnectTall = "assets/images/trakt_connect_tall.svg";
+
+  static const String installExtensions =
+      "assets/images/install_extensions_image.svg";
 }

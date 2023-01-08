@@ -3,11 +3,11 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
 import 'package:provider/provider.dart';
-import 'package:watrix/resources/strings.dart';
-import 'package:watrix/resources/style.dart';
-import 'package:watrix/screens/see_more_page.dart';
-import 'package:watrix/services/network/repository.dart';
-import 'package:watrix/widgets/custom_progress_indicator.dart';
+import 'package:cinenexa/resources/strings.dart';
+import 'package:cinenexa/resources/style.dart';
+import 'package:cinenexa/screens/see_more_page.dart';
+import 'package:cinenexa/services/network/repository.dart';
+import 'package:cinenexa/widgets/custom_progress_indicator.dart';
 
 import '../models/network/base_model.dart';
 import '../models/network/enums/duration_type.dart';

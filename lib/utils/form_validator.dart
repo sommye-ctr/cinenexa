@@ -12,7 +12,6 @@ extension FormFieldExt on String {
   }
 
   bool get isValidPassword {
-    final passwordRegExp = RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$');
-    return passwordRegExp.hasMatch(this);
+    return this.length > 8;
   }
 }

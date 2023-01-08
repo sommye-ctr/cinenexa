@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'package:watrix/models/network/review.dart';
-import 'package:watrix/services/network/api.dart';
-import 'package:watrix/services/network/utils.dart';
+import 'package:cinenexa/models/network/review.dart';
+import 'package:cinenexa/services/local/database.dart';
+import 'package:cinenexa/services/network/api.dart';
+import 'package:cinenexa/services/network/utils.dart';
 
 import '../../models/network/base_model.dart';
 
@@ -104,12 +105,15 @@ class Repository {
     };
   }
 
-  static Future<int> getTraktIdFromTmdb(
+  static Future<Map> getTraktIdFromTmdb(
       {required int tmdbId, required String type}) async {
     String req = "${Constants.search}/tmdb/$tmdbId?type=$type";
     Response response = await api.getTraktRequest(req);
     List list = Utils.parseJson(response.body);
-    return list.first[type]['ids']['trakt'];
+    return {
+      "trakt": list.first[type]['ids']['trakt'],
+      "imdb": list.first[type]['ids']['imdb'],
+    };
   }
 
   static Future<Map> getMovieDetailsWithExtras({required int id}) async {
@@ -117,17 +121,19 @@ class Repository {
       "${Constants.movie}/${id}?append_to_response=credits,recommendations,videos,watch/providers",
       haveQueries: true,
     );
+    final selectedCountryName = await Database().getProviderCountry();
+
     Video? vid = Utils.convertToVideo(response['videos']['results'] as List);
-    var providerList =
-        response?['watch/providers']?['results']?['US']?['flatrate'] ?? [];
+    var providerList = response?['watch/providers']?['results']
+            ?[selectedCountryName?.countryCode ?? "US"]?['flatrate'] ??
+        [];
     return {
       "movie": Movie.fromMap(response),
       "credits": Utils.convertToBaseModelList(response['credits']['cast']),
       "recommended":
           Utils.convertToBaseModelList(response['recommendations']['results']),
       "video": vid,
-      "providers":
-          Utils.convertToWatchProviderList(providerList), //TODO CHANGE HERE
+      "providers": Utils.convertToWatchProviderList(providerList),
     };
   }
 
@@ -150,9 +156,12 @@ class Repository {
       "${Constants.tv}/${id}?append_to_response=credits,recommendations,videos,watch/providers",
       haveQueries: true,
     );
+    final selectedCountryName = await Database().getProviderCountry();
+
     Video? vid = Utils.convertToVideo(response['videos']['results'] as List);
-    var providerList =
-        response?['watch/providers']?['results']?['US']?['flatrate'] ?? [];
+    var providerList = response?['watch/providers']?['results']
+            ?[selectedCountryName?.countryCode ?? "US"]?['flatrate'] ??
+        [];
 
     return {
       "tv": Tv.fromMap(response),

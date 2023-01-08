@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
-import 'package:watrix/store/see_more/see_more_store.dart';
+import 'package:cinenexa/store/see_more/see_more_store.dart';
 
 import '../components/movie_tile.dart';
 import '../models/network/base_model.dart';

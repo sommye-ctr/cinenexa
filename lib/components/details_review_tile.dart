@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:watrix/models/network/review.dart';
-import 'package:watrix/utils/date_time_formatter.dart';
-import 'package:watrix/utils/screen_size.dart';
+import 'package:cinenexa/models/network/review.dart';
+import 'package:cinenexa/utils/date_time_formatter.dart';
+import 'package:cinenexa/utils/screen_size.dart';
 
 import '../resources/style.dart';
 
