@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:watrix/models/local/installed_extensions.dart';
-import 'package:watrix/models/network/extensions/extension.dart';
 import '../resources/asset.dart';
 import '../store/extensions/extensions_store.dart';
 import 'extensions_extension_tile.dart';

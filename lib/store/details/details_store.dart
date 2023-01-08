@@ -1,15 +1,15 @@
 import 'dart:async';
 
 import 'package:mobx/mobx.dart';
-import 'package:watrix/models/network/extensions/extension_stream.dart';
-import 'package:watrix/models/network/review.dart';
-import 'package:watrix/models/network/trakt/trakt_show_history_season.dart';
-import 'package:watrix/models/network/trakt/trakt_show_history_season_ep.dart';
-import 'package:watrix/models/network/watch_provider.dart';
-import 'package:watrix/services/local/database.dart';
-import 'package:watrix/services/network/requests.dart';
-import 'package:watrix/services/network/trakt_oauth_client.dart';
-import 'package:watrix/services/network/trakt_repository.dart';
+import 'package:cinenexa/models/network/extensions/extension_stream.dart';
+import 'package:cinenexa/models/network/review.dart';
+import 'package:cinenexa/models/network/trakt/trakt_show_history_season.dart';
+import 'package:cinenexa/models/network/trakt/trakt_show_history_season_ep.dart';
+import 'package:cinenexa/models/network/watch_provider.dart';
+import 'package:cinenexa/services/local/database.dart';
+import 'package:cinenexa/services/network/requests.dart';
+import 'package:cinenexa/services/network/trakt_oauth_client.dart';
+import 'package:cinenexa/services/network/trakt_repository.dart';
 
 import '../../models/local/show_history.dart';
 import '../../models/network/base_model.dart';
@@ -115,6 +115,9 @@ abstract class _DetailsStore with Store {
   TraktRepository repository = TraktRepository(client: TraktOAuthClient());
   StreamSubscription? streamSubscription;
   List<Extension> installedExtensions;
+
+  bool isStreamLoadingDelayed = false;
+  bool isReviewsLoadingDelayed = false;
 
   @computed
   List<Genre>? get genres {
@@ -262,6 +265,11 @@ abstract class _DetailsStore with Store {
       return;
     }
 
+    if (traktId == -1 || imdbId.isEmpty) {
+      isStreamLoadingDelayed = true;
+      return;
+    }
+
     ExtensionsRepository extensionsRepository =
         ExtensionsRepository(installedExtensions: installedExtensions);
 
@@ -277,23 +285,33 @@ abstract class _DetailsStore with Store {
       imdbId: imdbId,
       traktId: traktId,
     )
-        .listen((event) {
-      loadedStreams.addAll(event);
+        .listen(
+      (event) {
+        loadedStreams.addAll(event);
 
-      var seen = Set<String>();
-      List list = loadedStreams
-          .where((element) => seen.add(element.extension!.id))
-          .toList();
+        var seen = Set<String>();
+        List list = loadedStreams
+            .where((element) => seen.add(element.extension!.id))
+            .toList();
 
-      if (list.length == noOfExtensions) {
+        if (list.length == noOfExtensions) {
+          isStreamLoading = false;
+          streamSubscription?.cancel();
+        }
+      },
+      onDone: () {
         isStreamLoading = false;
         streamSubscription?.cancel();
-      }
-    });
+      },
+    );
   }
 
   @action
   Future fetchReviews() async {
+    if (traktId == -1) {
+      isReviewsLoadingDelayed = true;
+      return;
+    }
     reviews = ObservableFuture(Repository.getReviews(
       query: Requests.reviews(baseModel.type!, traktId),
       page: reviewPage,
@@ -333,6 +351,14 @@ abstract class _DetailsStore with Store {
       );
       traktId = map['trakt'];
       imdbId = map['imdb'];
+      if (isStreamLoadingDelayed) {
+        fetchStreams();
+        isStreamLoadingDelayed = false;
+      }
+      if (isReviewsLoadingDelayed) {
+        fetchReviews();
+        isReviewsLoadingDelayed = true;
+      }
     }
 
     if (baseModel.type == BaseModelType.movie) {

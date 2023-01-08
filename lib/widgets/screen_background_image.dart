@@ -1,7 +1,7 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:watrix/utils/screen_size.dart';
+import 'package:cinenexa/utils/screen_size.dart';
 
 class ScreenBackgroundImage extends StatelessWidget {
   final Widget child;

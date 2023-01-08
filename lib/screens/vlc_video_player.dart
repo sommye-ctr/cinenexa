@@ -1,10 +1,11 @@
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
-import 'package:watrix/components/vlc_controls.dart';
-import 'package:watrix/models/network/base_model.dart';
-import 'package:watrix/models/network/extensions/extension_stream.dart';
-import 'package:watrix/resources/style.dart';
+import 'package:cinenexa/components/vlc_controls.dart';
+import 'package:cinenexa/models/network/base_model.dart';
+import 'package:cinenexa/models/network/extensions/extension_stream.dart';
+import 'package:cinenexa/resources/style.dart';
 
 import '../models/network/movie.dart';
 import '../models/network/tv.dart';
@@ -37,7 +38,7 @@ class VlcPlayerPage extends StatefulWidget {
 }
 
 class _VlcPlayerPageState extends State<VlcPlayerPage> {
-  static const String TORRENT_STREAM_EVENT_NAME = "watrix/torrentStream";
+  static const String TORRENT_STREAM_EVENT_NAME = "cinenexa/torrentStream";
 
   static const EventChannel channel = EventChannel(TORRENT_STREAM_EVENT_NAME);
   static final magnetRegex = RegExp(
@@ -48,11 +49,18 @@ class _VlcPlayerPageState extends State<VlcPlayerPage> {
 
   late VlcPlayerController controller;
   bool loading = true;
+  late AdaptiveThemeMode mode;
 
   @override
   void initState() {
     super.initState();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+    mode = AdaptiveTheme.of(context).mode;
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (mounted) AdaptiveTheme.of(context).setDark();
+    });
+
     init();
   }
 
@@ -60,6 +68,7 @@ class _VlcPlayerPageState extends State<VlcPlayerPage> {
     if (widget.extensionStream.magnet != null) {
       channel.receiveBroadcastStream({
         "url": widget.extensionStream.magnet,
+        "index": widget.extensionStream.fileIndex,
       }).handleError((error) {
         Style.showToast(text: "Error: ${error}");
       }).listen((event) {
@@ -82,6 +91,7 @@ class _VlcPlayerPageState extends State<VlcPlayerPage> {
       autoInitialize: true,
       autoPlay: true,
       options: VlcPlayerOptions(),
+      hwAcc: HwAcc.full,
     );
     setState(() {
       loading = false;
@@ -94,6 +104,7 @@ class _VlcPlayerPageState extends State<VlcPlayerPage> {
       onWillPop: () async {
         SystemChrome.setPreferredOrientations(
             [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
+        AdaptiveTheme.of(context).setThemeMode(mode);
         return true;
       },
       child: Material(

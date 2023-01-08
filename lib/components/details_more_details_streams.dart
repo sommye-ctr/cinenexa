@@ -4,14 +4,17 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
-import 'package:watrix/models/network/extensions/extension_stream.dart';
-import 'package:watrix/resources/asset.dart';
-import 'package:watrix/screens/youtube_video_player.dart';
-import 'package:watrix/store/details/details_store.dart';
+import 'package:lottie/lottie.dart';
+import 'package:cinenexa/models/network/extensions/extension_stream.dart';
+import 'package:cinenexa/resources/asset.dart';
+import 'package:cinenexa/screens/youtube_video_player.dart';
+import 'package:cinenexa/store/details/details_store.dart';
+import 'package:cinenexa/widgets/rounded_button.dart';
 
 import '../models/network/base_model.dart';
 import '../models/network/trakt/trakt_show_history_season.dart';
 import '../models/network/trakt/trakt_show_history_season_ep.dart';
+import '../models/network/tv_episode.dart';
 import '../models/network/tv_season.dart';
 import '../models/network/watch_provider.dart';
 import '../resources/strings.dart';
@@ -45,7 +48,7 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
       builder: (context) {
         widget.detailsStore.loadedStreams;
         if (widget.detailsStore.baseModel.type == BaseModelType.movie) {
-          return _buildMovieStreams();
+          return _buildStreams();
         }
         return _buildShowEpisodes();
       },
@@ -76,20 +79,44 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
     );
   }
 
-  Widget _buildMovieStreams() {
+  Widget _buildStreams() {
     return ListView(
       physics: BouncingScrollPhysics(),
       children: [
         _buildWatchProviders(),
         if (widget.detailsStore.watchProviders.isNotEmpty)
           Style.getVerticalSpacing(context: context),
-        Builder(builder: (context) {
-          if (widget.detailsStore.isStreamLoading)
+        Observer(builder: (context) {
+          if (widget.detailsStore.noOfExtensions == 0) {
+            return _buildInstallExtensionsHelp();
+          }
+          if (widget.detailsStore.isStreamLoading) {
             return Center(child: CircularProgressIndicator());
-          return Container();
+          } else if (widget.detailsStore.loadedStreams.isEmpty) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                LottieBuilder.asset(
+                  Asset.notFound,
+                  width: ScreenSize.getPercentOfWidth(context, 0.75),
+                ),
+                Text(
+                  Strings.noStreamsReturnedHelp,
+                  textAlign: TextAlign.center,
+                ),
+                Style.getVerticalSpacing(context: context),
+                _buildInstallExtensionsButton(),
+              ],
+            );
+          }
+          return Column(
+            children: [
+              Style.getVerticalSpacing(context: context),
+              _buildStreamsList(),
+            ],
+          );
         }),
-        Style.getVerticalSpacing(context: context),
-        _buildExtensionStreams(),
       ],
     );
   }
@@ -111,7 +138,7 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
     );
   }
 
-  Widget _buildInstallExtensionsText() {
+  Widget _buildInstallExtensionsHelp() {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -125,13 +152,21 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
           Strings.installExtensionsHelp,
           textAlign: TextAlign.center,
         ),
+        Style.getVerticalSpacing(context: context),
+        _buildInstallExtensionsButton(),
       ],
     );
   }
 
-  Widget _buildExtensionStreams() {
-    if (widget.detailsStore.noOfExtensions == 0)
-      return _buildInstallExtensionsText();
+  Widget _buildInstallExtensionsButton() {
+    return RoundedButton(
+      type: RoundedButtonType.outlined,
+      onPressed: () => Navigator.pop(context, true),
+      child: Text(Strings.installExtensions),
+    );
+  }
+
+  Widget _buildStreamsList() {
     return MasonryGridView.builder(
       shrinkWrap: true,
       gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
@@ -170,15 +205,7 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
             ),
           ],
         ),
-        Observer(
-          builder: (context) {
-            if (widget.detailsStore.isStreamLoading) {
-              return Center(child: CircularProgressIndicator());
-            }
-            return Container();
-          },
-        ),
-        Expanded(child: _buildExtensionStreams()),
+        Expanded(child: _buildStreams()),
         /* Center(
           child: ElevatedButton(
             onPressed: () {
@@ -220,7 +247,9 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
       navigateToVideoPlayer(
         stream: extensionStream,
         id: widget.detailsStore.baseModel.id!,
-        progress: widget.detailsStore.progress?.progress,
+        progress: widget.detailsStore.baseModel.type == BaseModelType.movie
+            ? widget.detailsStore.progress?.progress
+            : _getProgressForShow(),
       );
     } else if (extensionStream.ytId != null) {
       Navigator.pushNamed(context, YoutubeVideoPlayer.routeName,
@@ -229,7 +258,9 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
       navigateToVideoPlayer(
         stream: extensionStream,
         id: widget.detailsStore.baseModel.id!,
-        progress: widget.detailsStore.progress?.progress,
+        progress: widget.detailsStore.baseModel.type == BaseModelType.movie
+            ? widget.detailsStore.progress?.progress
+            : _getProgressForShow(),
       );
     } else if (extensionStream.external != null) {
       Style.showExternalLinkOpenWarning(
@@ -238,6 +269,20 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
         url: extensionStream.external!,
       );
     }
+  }
+
+  double? _getProgressForShow() {
+    double? progress;
+    TvEpisode episode =
+        widget.detailsStore.episodes[widget.detailsStore.chosenEpisode!];
+
+    if (widget.detailsStore.progress?.episodeNo == episode.episodeNumber &&
+        widget.detailsStore.progress?.seasonNo ==
+            widget.detailsStore.tv!.seasons![widget.detailsStore.chosenSeason!]
+                .seasonNumber) {
+      progress = widget.detailsStore.progress!.progress!;
+    }
+    return progress;
   }
 
   List<Widget> _buildSeasonDetails() {

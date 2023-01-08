@@ -1,17 +1,35 @@
 import 'dart:async';
-import 'package:watrix/models/network/base_model.dart';
-import 'package:watrix/models/network/extensions/extension_stream.dart';
-import 'package:watrix/services/network/utils.dart';
-
-import 'package:http/http.dart' as http;
-import 'package:watrix/utils/date_time_formatter.dart';
+import 'package:cinenexa/models/network/base_model.dart';
+import 'package:cinenexa/models/network/extensions/extension_stream.dart';
+import 'package:cinenexa/services/network/utils.dart';
+import 'package:dio/dio.dart';
+import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
+import 'package:dio_cache_interceptor_hive_store/dio_cache_interceptor_hive_store.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:cinenexa/utils/date_time_formatter.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../models/network/extensions/extension.dart';
 
 class ExtensionsRepository {
   final List<Extension> installedExtensions;
 
+  late CacheOptions options;
+  late Dio dio;
+
   ExtensionsRepository({required this.installedExtensions});
+
+  Future _init() async {
+    var cacheDir = await getTemporaryDirectory();
+    options = CacheOptions(
+      store: HiveCacheStore(cacheDir.path),
+      priority: CachePriority.normal,
+      maxStale: Duration(days: 2),
+      policy: CachePolicy.forceCache,
+      keyBuilder: CacheOptions.defaultCacheKeyBuilder,
+    );
+    dio = Dio()..interceptors.add(DioCacheInterceptor(options: options));
+  }
 
   Stream<List<ExtensionStream>> loadStreams(
       {required BaseModel baseModel,
@@ -22,35 +40,25 @@ class ExtensionsRepository {
     late StreamController<List<ExtensionStream>> streamController;
 
     void fetch() async {
-      for (var element in installedExtensions) {
+      await _init();
+      for (int i = 0; i < installedExtensions.length; i++) {
         var stream = await _getStream(
           baseModel: baseModel,
-          extension: element,
+          extension: installedExtensions[i],
           imdbId: imdbId,
           traktId: traktId,
+          season: season,
+          episode: episode,
         );
-        if (stream.isNotEmpty) streamController.add(stream);
+        streamController.add(stream);
+        if (i == installedExtensions.length - 1) {
+          streamController.close();
+        }
       }
     }
 
     streamController = StreamController(onListen: fetch);
     return streamController.stream;
-
-    /* Map<String, dynamic> map = {
-      "type": baseModel.type.toString(),
-      "season": season,
-      "episode": episode,
-      "id": baseModel.id,
-    };
-
-    for (var element in extensions) {
-      Uri uri = Uri.parse(element.endpoint).replace(queryParameters: map);
-      http.get(uri).then((value) {
-        streamController.add(ExtensionStream.fromMap(Utils.encodeJson(value.body))..extension = element);
-      });
-    }
-
-    yield* streamController.stream; */
   }
 
   Future<List<ExtensionStream>> _getStream({
@@ -73,22 +81,42 @@ class ExtensionsRepository {
       "imdbId": imdbId,
     };
 
-    final Uri uri = Uri.https(extension.endpoint, '', query);
-    //final Uri uri = Uri.https("3f05-1-23-68-172.in.ngrok.io", '',
-    //query.map((key, value) => MapEntry(key, value.toString())));
-
-    final response = await http.get(uri);
-    return _handleResponse(response, extension);
+    Response response;
+    try {
+      response = await dio.get(
+        extension.endpoint,
+        queryParameters: query,
+        options: Options(
+          receiveTimeout: 30000,
+        ),
+      );
+    } on DioError catch (e, trace) {
+      if (e.type == DioErrorType) {
+        return [];
+      }
+      FirebaseCrashlytics.instance.recordError(e, trace);
+      return [];
+    }
+    return _handleResponse(response.data, extension);
   }
 
-  List<ExtensionStream> _handleResponse(
-      http.Response response, Extension extension) {
-    if (response.body.isNotEmpty) {
-      List sources = Utils.parseJson(response.body);
+  List<ExtensionStream> _handleResponse(String response, Extension extension) {
+    if (response.isNotEmpty) {
+      try {
+        Map sources = Utils.parseJson(response);
 
-      return sources
-          .map((e) => ExtensionStream.fromMap(e)..extension = extension)
-          .toList();
+        //List<ExtensionStream> list = sources['streams']
+        //  .map((e) => ExtensionStream.fromMap(e)..extension = extension)
+        //.toList();
+        List list = sources['streams'];
+        List<ExtensionStream> modLIst = list
+            .map((e) => ExtensionStream.fromMap(e)..extension = extension)
+            .toList();
+        return modLIst;
+      } catch (e, trace) {
+        FirebaseCrashlytics.instance.recordError(e, trace);
+        return [];
+      }
     }
     return [];
   }

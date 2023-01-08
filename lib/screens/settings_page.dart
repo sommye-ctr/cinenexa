@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:watrix/components/settings_general.dart';
-import 'package:watrix/components/settings_integrations.dart';
-import 'package:watrix/components/settings_more.dart';
-import 'package:watrix/components/settings_player.dart';
-import 'package:watrix/utils/screen_size.dart';
-import 'package:watrix/widgets/custom_back_button.dart';
+import 'package:cinenexa/components/settings_general.dart';
+import 'package:cinenexa/components/settings_integrations.dart';
+import 'package:cinenexa/components/settings_more.dart';
+import 'package:cinenexa/components/settings_player.dart';
+import 'package:cinenexa/utils/screen_size.dart';
+import 'package:cinenexa/widgets/custom_back_button.dart';
 
 class SettingsPage extends StatefulWidget {
   static const String routeName = "/settings";

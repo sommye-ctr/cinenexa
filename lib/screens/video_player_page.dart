@@ -1,7 +1,7 @@
 import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:watrix/components/video_player_controls.dart';
+import 'package:cinenexa/components/video_player_controls.dart';
 
 class VideoPlayerPage extends StatefulWidget {
   static const routeName = "/videoPlayer";

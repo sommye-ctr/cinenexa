@@ -1,10 +1,10 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:watrix/resources/strings.dart';
-import 'package:watrix/resources/style.dart';
-import 'package:watrix/services/local/database.dart';
-import 'package:watrix/widgets/rounded_button.dart';
+import 'package:cinenexa/resources/strings.dart';
+import 'package:cinenexa/resources/style.dart';
+import 'package:cinenexa/services/local/database.dart';
+import 'package:cinenexa/widgets/rounded_button.dart';
 
 class SettingsGeneral extends StatefulWidget {
   const SettingsGeneral({Key? key}) : super(key: key);

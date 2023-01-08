@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:watrix/resources/strings.dart';
-import 'package:watrix/resources/style.dart';
-import 'package:watrix/utils/link_opener.dart';
+import 'package:cinenexa/resources/strings.dart';
+import 'package:cinenexa/resources/style.dart';
+import 'package:cinenexa/utils/link_opener.dart';
 
 class SettingsMore extends StatelessWidget {
   const SettingsMore({Key? key}) : super(key: key);

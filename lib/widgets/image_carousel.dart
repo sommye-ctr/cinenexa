@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:watrix/resources/style.dart';
-import 'package:watrix/services/constants.dart';
-import 'package:watrix/services/network/utils.dart';
-import 'package:watrix/utils/screen_size.dart';
-import 'package:watrix/widgets/bubble_page_indicator.dart';
-import 'package:watrix/widgets/rounded_image.dart';
+import 'package:cinenexa/resources/style.dart';
+import 'package:cinenexa/services/constants.dart';
+import 'package:cinenexa/services/network/utils.dart';
+import 'package:cinenexa/utils/screen_size.dart';
+import 'package:cinenexa/widgets/bubble_page_indicator.dart';
+import 'package:cinenexa/widgets/rounded_image.dart';
 
 import '../models/network/base_model.dart';
 

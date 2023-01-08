@@ -4,10 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:watrix/models/network/base_model.dart';
-import 'package:watrix/resources/strings.dart';
-import 'package:watrix/utils/link_opener.dart';
-import 'package:watrix/utils/screen_size.dart';
+import 'package:cinenexa/models/network/base_model.dart';
+import 'package:cinenexa/resources/strings.dart';
+import 'package:cinenexa/utils/link_opener.dart';
+import 'package:cinenexa/utils/screen_size.dart';
 
 import '../components/movie_tile.dart';
 import '../services/constants.dart';
@@ -15,7 +15,7 @@ import '../services/network/utils.dart';
 import '../widgets/rounded_image_placeholder.dart';
 
 class Style {
-  static double movieTileWithTitleRatio = 1 / 1.6;
+  static double movieTileWithTitleRatio = 1 / 1.8;
   static double largeRoundEdgeRadius = 16;
   static double smallRoundEdgeRadius = 8;
   static double cardElevation = 8;
@@ -62,7 +62,7 @@ class Style {
   static void showSnackBar(
       {required BuildContext context, required String text}) {
     final snack = SnackBar(
-      content: Text(text),
+      content: Text(text, textAlign: TextAlign.center),
       behavior: SnackBarBehavior.floating,
       shape: StadiumBorder(),
     );

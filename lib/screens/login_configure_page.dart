@@ -3,13 +3,13 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:restart_app/restart_app.dart';
-import 'package:watrix/resources/strings.dart';
-import 'package:watrix/resources/style.dart';
-import 'package:watrix/screens/home_first_screen.dart';
-import 'package:watrix/services/local/database.dart';
-import 'package:watrix/services/network/trakt_oauth_client.dart';
-import 'package:watrix/services/network/trakt_repository.dart';
-import 'package:watrix/utils/link_opener.dart';
+import 'package:cinenexa/resources/strings.dart';
+import 'package:cinenexa/resources/style.dart';
+import 'package:cinenexa/screens/home_first_screen.dart';
+import 'package:cinenexa/services/local/database.dart';
+import 'package:cinenexa/services/network/trakt_oauth_client.dart';
+import 'package:cinenexa/services/network/trakt_repository.dart';
+import 'package:cinenexa/utils/link_opener.dart';
 
 import '../resources/asset.dart';
 import '../utils/screen_size.dart';
@@ -98,8 +98,7 @@ class LoginConfigurePage extends StatelessWidget {
                 alignment: Alignment.bottomRight,
                 child: TextButton(
                   onPressed: () {
-                    Navigator.pushNamedAndRemoveUntil(
-                        context, HomeFirstScreen.routeName, (route) => false);
+                    Restart.restartApp();
                   },
                   child: Text(Strings.skip),
                 ),

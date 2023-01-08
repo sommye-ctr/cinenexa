@@ -192,14 +192,14 @@ abstract class _HomeStore with Store {
   }
 
   @action
-  void onItemClicked(BuildContext context, BaseModel baseModel) {
+  Future onItemClicked(BuildContext context, BaseModel baseModel) async {
     String name;
     if (baseModel.type == BaseModelType.people) {
       name = ActorDetailsPage.routeName;
     } else {
       name = DetailsPage.routeName;
     }
-    Navigator.pushNamed(
+    return Navigator.pushNamed(
       context,
       name,
       arguments: baseModel,

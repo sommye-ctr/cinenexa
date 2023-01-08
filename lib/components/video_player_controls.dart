@@ -6,11 +6,11 @@ import 'package:better_player/better_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:watrix/resources/asset.dart';
-import 'package:watrix/resources/strings.dart';
-import 'package:watrix/resources/style.dart';
-import 'package:watrix/utils/screen_size.dart';
-import 'package:watrix/widgets/custom_checkbox_list.dart';
+import 'package:cinenexa/resources/asset.dart';
+import 'package:cinenexa/resources/strings.dart';
+import 'package:cinenexa/resources/style.dart';
+import 'package:cinenexa/utils/screen_size.dart';
+import 'package:cinenexa/widgets/custom_checkbox_list.dart';
 
 class VideoPlayerControls extends StatefulWidget {
   final BetterPlayerController controller;

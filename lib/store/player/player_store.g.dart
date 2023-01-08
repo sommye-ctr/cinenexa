@@ -57,6 +57,22 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
     });
   }
 
+  late final _$castingAtom =
+      Atom(name: '_PlayerStoreBase.casting', context: context);
+
+  @override
+  bool get casting {
+    _$castingAtom.reportRead();
+    return super.casting;
+  }
+
+  @override
+  set casting(bool value) {
+    _$castingAtom.reportWrite(value, super.casting, () {
+      super.casting = value;
+    });
+  }
+
   late final _$speedIndexAtom =
       Atom(name: '_PlayerStoreBase.speedIndex', context: context);
 
@@ -169,19 +185,18 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
     });
   }
 
-  late final _$subtitlesAtom =
-      Atom(name: '_PlayerStoreBase.subtitles', context: context);
+  late final _$subsAtom = Atom(name: '_PlayerStoreBase.subs', context: context);
 
   @override
-  ObservableMap<int, String>? get subtitles {
-    _$subtitlesAtom.reportRead();
-    return super.subtitles;
+  ObservableList<VlcPlayerSubtitle> get subs {
+    _$subsAtom.reportRead();
+    return super.subs;
   }
 
   @override
-  set subtitles(ObservableMap<int, String>? value) {
-    _$subtitlesAtom.reportWrite(value, super.subtitles, () {
-      super.subtitles = value;
+  set subs(ObservableList<VlcPlayerSubtitle> value) {
+    _$subsAtom.reportWrite(value, super.subs, () {
+      super.subs = value;
     });
   }
 
@@ -199,6 +214,30 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
     _$tracksAtom.reportWrite(value, super.tracks, () {
       super.tracks = value;
     });
+  }
+
+  late final _$seekDurationAtom =
+      Atom(name: '_PlayerStoreBase.seekDuration', context: context);
+
+  @override
+  int get seekDuration {
+    _$seekDurationAtom.reportRead();
+    return super.seekDuration;
+  }
+
+  @override
+  set seekDuration(int value) {
+    _$seekDurationAtom.reportWrite(value, super.seekDuration, () {
+      super.seekDuration = value;
+    });
+  }
+
+  late final _$initAsyncAction =
+      AsyncAction('_PlayerStoreBase.init', context: context);
+
+  @override
+  Future<dynamic> init() {
+    return _$initAsyncAction.run(() => super.init());
   }
 
   late final _$_PlayerStoreBaseActionController =
@@ -293,11 +332,11 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
   }
 
   @override
-  void setSubtitles(Map<int, String> sub) {
+  void changeSubtitle(int index) {
     final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
-        name: '_PlayerStoreBase.setSubtitles');
+        name: '_PlayerStoreBase.changeSubtitle');
     try {
-      return super.setSubtitles(sub);
+      return super.changeSubtitle(index);
     } finally {
       _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
     }
@@ -337,11 +376,23 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
   }
 
   @override
+  void setCasting(bool status) {
+    final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
+        name: '_PlayerStoreBase.setCasting');
+    try {
+      return super.setCasting(status);
+    } finally {
+      _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 showControls: ${showControls},
 buffering: ${buffering},
 locked: ${locked},
+casting: ${casting},
 speedIndex: ${speedIndex},
 fitIndex: ${fitIndex},
 subtitleDelay: ${subtitleDelay},
@@ -349,8 +400,9 @@ position: ${position},
 buffered: ${buffered},
 selectedSubtitle: ${selectedSubtitle},
 selectedTrack: ${selectedTrack},
-subtitles: ${subtitles},
-tracks: ${tracks}
+subs: ${subs},
+tracks: ${tracks},
+seekDuration: ${seekDuration}
     ''';
   }
 }

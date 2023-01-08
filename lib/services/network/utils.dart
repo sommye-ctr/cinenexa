@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:watrix/models/network/video.dart';
-import 'package:watrix/resources/strings.dart';
-import 'package:watrix/services/constants.dart';
+import 'package:cinenexa/models/network/video.dart';
+import 'package:cinenexa/resources/strings.dart';
+import 'package:cinenexa/services/constants.dart';
 
 import '../../models/local/enums/sort_movies.dart';
 import '../../models/local/enums/sort_tv.dart';

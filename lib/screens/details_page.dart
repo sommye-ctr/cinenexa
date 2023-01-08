@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:watrix/components/details_header.dart';
-import 'package:watrix/components/details_more_details.dart';
-import 'package:watrix/models/network/extensions/extension.dart';
+import 'package:cinenexa/components/details_header.dart';
+import 'package:cinenexa/components/details_more_details.dart';
+import 'package:cinenexa/models/network/extensions/extension.dart';
 
-import 'package:watrix/services/constants.dart';
-import 'package:watrix/store/details/details_store.dart';
-import 'package:watrix/store/extensions/extensions_store.dart';
-import 'package:watrix/store/user/user_store.dart';
+import 'package:cinenexa/services/constants.dart';
+import 'package:cinenexa/store/details/details_store.dart';
+import 'package:cinenexa/store/extensions/extensions_store.dart';
+import 'package:cinenexa/store/user/user_store.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '../models/network/base_model.dart';

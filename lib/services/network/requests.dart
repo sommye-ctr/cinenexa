@@ -1,10 +1,10 @@
 import 'package:flutter/widgets.dart';
-import 'package:watrix/models/network/base_model.dart';
-import 'package:watrix/models/network/enums/languages.dart';
-import 'package:watrix/services/constants.dart';
-import 'package:watrix/models/network/enums/duration_type.dart';
-import 'package:watrix/models/network/enums/entity_type.dart';
-import 'package:watrix/services/network/utils.dart';
+import 'package:cinenexa/models/network/base_model.dart';
+import 'package:cinenexa/models/network/enums/languages.dart';
+import 'package:cinenexa/services/constants.dart';
+import 'package:cinenexa/models/network/enums/duration_type.dart';
+import 'package:cinenexa/models/network/enums/entity_type.dart';
+import 'package:cinenexa/services/network/utils.dart';
 
 import '../../models/local/enums/sort_movies.dart';
 import '../../models/local/enums/sort_tv.dart';

@@ -2,14 +2,14 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
-import 'package:watrix/models/local/installed_extensions.dart';
-import 'package:watrix/models/network/extensions/extension.dart';
-import 'package:watrix/resources/strings.dart';
-import 'package:watrix/store/extensions/extensions_store.dart';
-import 'package:watrix/utils/link_opener.dart';
-import 'package:watrix/utils/screen_size.dart';
-import 'package:watrix/widgets/rounded_button.dart';
-import 'package:watrix/widgets/rounded_image.dart';
+import 'package:cinenexa/models/local/installed_extensions.dart';
+import 'package:cinenexa/models/network/extensions/extension.dart';
+import 'package:cinenexa/resources/strings.dart';
+import 'package:cinenexa/store/extensions/extensions_store.dart';
+import 'package:cinenexa/utils/link_opener.dart';
+import 'package:cinenexa/utils/screen_size.dart';
+import 'package:cinenexa/widgets/rounded_button.dart';
+import 'package:cinenexa/widgets/rounded_image.dart';
 
 import '../resources/style.dart';
 
@@ -253,7 +253,6 @@ class _ExtensionTileState extends State<ExtensionTile> {
           .whenComplete(() {
         Navigator.pop(context);
         moreInfoDialog.dismiss();
-        Style.showSnackBar(context: context, text: Strings.successfulyRated);
       });
     } else {
       moreInfoDialog.dismiss();
@@ -262,13 +261,20 @@ class _ExtensionTileState extends State<ExtensionTile> {
   }
 
   void _onInstallExtension(context) async {
-    Style.showLoadingDialog(context: context);
-    Provider.of<ExtensionsStore>(context, listen: false)
-        .installExtension(widget.extension)
-        .whenComplete(() {
-      Navigator.pop(context);
-      widget.onInstall?.call();
-    });
+    Style.showConfirmationDialog(
+      context: context,
+      text: Strings.installExtensionsWarning,
+      onPressed: () {
+        Style.showLoadingDialog(context: context);
+        Provider.of<ExtensionsStore>(context, listen: false)
+            .installExtension(widget.extension)
+            .whenComplete(() {
+          Navigator.pop(context);
+          Navigator.pop(context);
+          widget.onInstall?.call();
+        });
+      },
+    );
   }
 
   void _onUninstallExtension(context) async {

@@ -1,35 +1,39 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart' as Provider;
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:watrix/models/local/favorites.dart';
-import 'package:watrix/models/local/installed_extensions.dart';
-import 'package:watrix/models/local/last_activities.dart';
-import 'package:watrix/models/local/progress.dart';
-import 'package:watrix/models/local/search_history.dart';
-import 'package:watrix/models/local/show_history.dart';
-import 'package:watrix/resources/scroll_modified.dart';
-import 'package:watrix/resources/strings.dart';
-import 'package:watrix/resources/style.dart';
-import 'package:watrix/screens/actor_details_page.dart';
-import 'package:watrix/screens/details_page.dart';
-import 'package:watrix/screens/forgot_pass_page.dart';
-import 'package:watrix/screens/home_first_screen.dart';
-import 'package:watrix/screens/intro_page.dart';
-import 'package:watrix/screens/login_configure_page.dart';
-import 'package:watrix/screens/login_page.dart';
-import 'package:watrix/screens/register_page.dart';
-import 'package:watrix/screens/settings_page.dart';
-import 'package:watrix/screens/video_player_page.dart';
-import 'package:watrix/screens/vlc_video_player.dart';
-import 'package:watrix/screens/youtube_video_player.dart';
-import 'package:watrix/store/extensions/extensions_store.dart';
-import 'package:watrix/store/favorites/favorites_store.dart';
-import 'package:watrix/store/user/user_store.dart';
+import 'package:cinenexa/models/local/favorites.dart';
+import 'package:cinenexa/models/local/installed_extensions.dart';
+import 'package:cinenexa/models/local/last_activities.dart';
+import 'package:cinenexa/models/local/progress.dart';
+import 'package:cinenexa/models/local/search_history.dart';
+import 'package:cinenexa/models/local/show_history.dart';
+import 'package:cinenexa/resources/scroll_modified.dart';
+import 'package:cinenexa/resources/strings.dart';
+import 'package:cinenexa/resources/style.dart';
+import 'package:cinenexa/screens/actor_details_page.dart';
+import 'package:cinenexa/screens/details_page.dart';
+import 'package:cinenexa/screens/forgot_pass_page.dart';
+import 'package:cinenexa/screens/home_first_screen.dart';
+import 'package:cinenexa/screens/intro_page.dart';
+import 'package:cinenexa/screens/login_configure_page.dart';
+import 'package:cinenexa/screens/login_page.dart';
+import 'package:cinenexa/screens/register_page.dart';
+import 'package:cinenexa/screens/settings_page.dart';
+import 'package:cinenexa/screens/video_player_page.dart';
+import 'package:cinenexa/screens/vlc_video_player.dart';
+import 'package:cinenexa/screens/youtube_video_player.dart';
+import 'package:cinenexa/store/extensions/extensions_store.dart';
+import 'package:cinenexa/store/favorites/favorites_store.dart';
+import 'package:cinenexa/store/user/user_store.dart';
 
 import 'models/network/base_model.dart';
 
@@ -37,11 +41,19 @@ void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
 
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  await dotenv.load(fileName: "lib/.env");
+
   await Supabase.initialize(
-    url: "https://lsmnsbwamwjgpgnbhfqf.supabase.co",
-    anonKey:
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzbW5zYndhbXdqZ3BnbmJoZnFmIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzAzNTAyNzIsImV4cCI6MTk4NTkyNjI3Mn0.mpkdOMhskj7ii0KRBRWjzZpnm-nVxw1rFlIJjH85hV4",
+    url: dotenv.env['SUPABASE_URL'] ?? "",
+    anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? "",
   );
+
+  await Firebase.initializeApp();
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
 
   await Isar.open(
     [

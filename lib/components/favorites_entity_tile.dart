@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:watrix/components/movie_tile.dart';
+import 'package:cinenexa/components/movie_tile.dart';
 
 class FavoritesEntityTile extends StatefulWidget {
   final String image, text;

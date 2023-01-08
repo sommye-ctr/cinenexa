@@ -1,17 +1,17 @@
 import 'package:country_picker/country_picker.dart';
 import 'package:isar/isar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:watrix/models/local/favorites.dart';
-import 'package:watrix/models/local/installed_extensions.dart';
-import 'package:watrix/models/local/last_activities.dart';
-import 'package:watrix/models/local/progress.dart';
-import 'package:watrix/models/local/search_history.dart';
-import 'package:watrix/models/local/show_history.dart';
-import 'package:watrix/models/network/base_model.dart';
-import 'package:watrix/models/network/extensions/extension.dart';
-import 'package:watrix/models/network/trakt/trakt_show_history_season.dart';
-import 'package:watrix/models/network/trakt/trakt_show_history_season_ep.dart';
-import 'package:watrix/utils/date_time_formatter.dart';
+import 'package:cinenexa/models/local/favorites.dart';
+import 'package:cinenexa/models/local/installed_extensions.dart';
+import 'package:cinenexa/models/local/last_activities.dart';
+import 'package:cinenexa/models/local/progress.dart';
+import 'package:cinenexa/models/local/search_history.dart';
+import 'package:cinenexa/models/local/show_history.dart';
+import 'package:cinenexa/models/network/base_model.dart';
+import 'package:cinenexa/models/network/extensions/extension.dart';
+import 'package:cinenexa/models/network/trakt/trakt_show_history_season.dart';
+import 'package:cinenexa/models/network/trakt/trakt_show_history_season_ep.dart';
+import 'package:cinenexa/utils/date_time_formatter.dart';
 
 import '../../models/network/trakt/trakt_progress.dart';
 
@@ -112,12 +112,12 @@ class Database {
     LastActivities? lastActivities = await isar.lastActivities.get(0);
     LastActivities newLastActivities = LastActivities()
       ..id = 0
-      ..epCollectedAt = epCollectedAt ?? lastActivities!.epCollectedAt
-      ..epWatchedAt = epWatchedAt ?? lastActivities!.epWatchedAt
-      ..movieCollectedAt = movieCollectedAt ?? lastActivities!.movieCollectedAt
-      ..movieWatchedAt = movieWatchedAt ?? lastActivities!.movieWatchedAt
+      ..epCollectedAt = epCollectedAt ?? lastActivities?.epCollectedAt
+      ..epWatchedAt = epWatchedAt ?? lastActivities?.epWatchedAt
+      ..movieCollectedAt = movieCollectedAt ?? lastActivities?.movieCollectedAt
+      ..movieWatchedAt = movieWatchedAt ?? lastActivities?.movieWatchedAt
       ..extensionsSyncedAt =
-          extensionSyncedAt ?? lastActivities!.extensionsSyncedAt;
+          extensionSyncedAt ?? lastActivities?.extensionsSyncedAt;
 
     await isar.writeTxn(() async {
       await isar.lastActivities.put(newLastActivities);

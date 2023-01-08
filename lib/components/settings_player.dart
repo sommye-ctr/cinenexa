@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
-import 'package:watrix/resources/strings.dart';
-import 'package:watrix/resources/style.dart';
-import 'package:watrix/services/local/database.dart';
-import 'package:watrix/services/network/trakt_oauth_client.dart';
-import 'package:watrix/widgets/custom_checkbox_list.dart';
+import 'package:cinenexa/resources/strings.dart';
+import 'package:cinenexa/resources/style.dart';
+import 'package:cinenexa/services/local/database.dart';
+import 'package:cinenexa/services/network/trakt_oauth_client.dart';
+import 'package:cinenexa/widgets/custom_checkbox_list.dart';
 
 class SettingsPlayer extends StatefulWidget {
   const SettingsPlayer({Key? key}) : super(key: key);

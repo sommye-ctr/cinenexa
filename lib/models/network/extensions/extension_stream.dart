@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:watrix/models/network/extensions/extension.dart';
-import 'package:watrix/models/network/extensions/subtitle.dart';
+import 'package:cinenexa/models/network/extensions/extension.dart';
+import 'package:cinenexa/models/network/extensions/subtitle.dart';
 
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 class ExtensionStream {
@@ -208,5 +208,10 @@ class ExtensionStream {
 
   factory ExtensionStream.fromString(String source) {
     return ExtensionStream.fromMap(source as Map<String, dynamic>);
+  }
+
+  @override
+  String toString() {
+    return 'ExtensionStream(url: $url, ytId: $ytId, magnet: $magnet, fileIndex: $fileIndex, external: $external, name: $name, quality: $quality, country: $country, dubbed: $dubbed, subbed: $subbed, torrent: $torrent, size: $size, seeds: $seeds, streamGroup: $streamGroup, subtitles: $subtitles, extension: $extension)';
   }
 }

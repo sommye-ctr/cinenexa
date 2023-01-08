@@ -6,12 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
-import 'package:watrix/models/network/base_model.dart';
-import 'package:watrix/models/network/movie.dart';
-import 'package:watrix/models/network/tv.dart';
-import 'package:watrix/services/local/scrobble_manager.dart';
-import 'package:watrix/store/player/player_store.dart';
-import 'package:watrix/widgets/rounded_button.dart';
+import 'package:provider/provider.dart';
+import 'package:cinenexa/models/network/base_model.dart';
+import 'package:cinenexa/models/network/movie.dart';
+import 'package:cinenexa/models/network/tv.dart';
+import 'package:cinenexa/services/local/scrobble_manager.dart';
+import 'package:cinenexa/store/player/player_store.dart';
+import 'package:cinenexa/store/user/user_store.dart';
+import 'package:cinenexa/widgets/rounded_button.dart';
 
 import '../models/network/extensions/extension_stream.dart';
 import '../resources/strings.dart';
@@ -52,22 +54,27 @@ class _VlcControlsState extends State<VlcControls> {
   static const Duration hideDuration = Duration(seconds: 5);
   Timer? hideTimer;
 
-  late ScrobbleManager scrobbleManager;
+  ScrobbleManager? scrobbleManager;
   late PlayerStore playerStore;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      bool traktLogged =
+          Provider.of<UserStore>(context, listen: false).isTraktLogged;
+      scrobbleManager = ScrobbleManager(
+        playerController: widget.controller,
+        item: widget.baseModel!,
+        isTraktLogged: traktLogged,
+        episode: widget.episode,
+        movie: widget.movie,
+        season: widget.season,
+        show: widget.show,
+        id: widget.id,
+      );
+    });
 
-    scrobbleManager = ScrobbleManager(
-      playerController: widget.controller,
-      item: widget.baseModel!,
-      episode: widget.episode,
-      movie: widget.movie,
-      season: widget.season,
-      show: widget.show,
-      id: widget.id,
-    );
     playerStore = PlayerStore(
       controller: widget.controller,
       extensionStream: widget.stream,
@@ -167,7 +174,7 @@ class _VlcControlsState extends State<VlcControls> {
   }
 
   Future<bool> _onBack() async {
-    scrobbleManager.paused();
+    scrobbleManager?.paused();
     await Future.wait([
       widget.controller.stopRendererScanning(),
       widget.controller.stop(),
@@ -427,16 +434,16 @@ class _VlcControlsState extends State<VlcControls> {
   Widget _buildSubtitlePopup() {
     int selected = 0;
     if (playerStore.selectedSubtitle != null) {
-      var key = playerStore.subtitles!.keys
-          .where((element) => element == playerStore.selectedSubtitle!);
-      if (key.isNotEmpty) {
-        selected = playerStore.subtitles!.keys.toList().indexOf(key.first) + 1;
+      int index = playerStore.subs
+          .indexWhere((element) => element.id == playerStore.selectedSubtitle);
+      if (index >= 0) {
+        selected = index + 1;
       }
     }
 
     List<String> allSubtitles = [
       Strings.none,
-      ...playerStore.subtitles!.values.toList()
+      ...playerStore.subs.map((element) => element.name.toString()).toList(),
     ];
 
     return CustomCheckBoxList(
@@ -451,15 +458,15 @@ class _VlcControlsState extends State<VlcControls> {
       ),
       onSelectionAdded: (values) {
         if (values.first == Strings.none) {
-          playerStore.setSelectedSubtitle(null);
-          widget.controller.setSpuTrack(-1);
+          playerStore.changeSubtitle(-1);
           return;
         }
-        int selectedS = playerStore.subtitles!.keys
-            .where((element) => playerStore.subtitles![element] == values.first)
-            .first;
-        playerStore.setSelectedSubtitle(selectedS);
-        widget.controller.setSpuTrack(selectedS);
+        int selectedIndex = playerStore.subs
+            .indexWhere((element) => element.name == values.first);
+
+        playerStore.changeSubtitle(selectedIndex);
+
+        Navigator.pop(context);
       },
     );
   }

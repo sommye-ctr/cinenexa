@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:isar/isar.dart';
 
-import 'package:watrix/models/network/trakt/trakt_show_history_season_ep.dart';
+import 'package:cinenexa/models/network/trakt/trakt_show_history_season_ep.dart';
 
 part 'trakt_show_history_season.g.dart';
 

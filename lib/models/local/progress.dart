@@ -1,8 +1,8 @@
 import 'package:isar/isar.dart';
-import 'package:watrix/models/network/genre.dart';
-import 'package:watrix/models/network/movie.dart';
-import 'package:watrix/models/network/trakt/trakt_progress.dart';
-import 'package:watrix/models/network/tv.dart';
+import 'package:cinenexa/models/network/genre.dart';
+import 'package:cinenexa/models/network/movie.dart';
+import 'package:cinenexa/models/network/trakt/trakt_progress.dart';
+import 'package:cinenexa/models/network/tv.dart';
 
 import '../network/tv_season.dart';
 

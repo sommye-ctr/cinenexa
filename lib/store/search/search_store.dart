@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:mobx/mobx.dart';
-import 'package:watrix/models/local/search_history.dart';
-import 'package:watrix/services/local/database.dart';
-import 'package:watrix/services/network/repository.dart';
+import 'package:cinenexa/models/local/search_history.dart';
+import 'package:cinenexa/services/local/database.dart';
+import 'package:cinenexa/services/network/repository.dart';
 
 import '../../models/network/base_model.dart';
 import '../../models/network/enums/entity_type.dart';

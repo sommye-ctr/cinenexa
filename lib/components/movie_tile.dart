@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:watrix/resources/style.dart';
-import 'package:watrix/widgets/rounded_image.dart';
+import 'package:cinenexa/resources/style.dart';
+import 'package:cinenexa/utils/screen_size.dart';
+import 'package:cinenexa/widgets/rounded_image.dart';
 
 import '../services/constants.dart';
 
@@ -26,6 +27,8 @@ class MovieTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double height = (width / Constants.posterAspectRatio);
+
     return GestureDetector(
       onTap: onClick,
       onLongPress: onLongClick,
@@ -37,7 +40,7 @@ class MovieTile extends StatelessWidget {
             Stack(
               children: [
                 Container(
-                  height: width / Constants.posterAspectRatio,
+                  height: height,
                   child: RoundedImage(
                     image: image,
                     width: width,
@@ -46,7 +49,7 @@ class MovieTile extends StatelessWidget {
                 ),
                 if (darken)
                   Container(
-                    height: width / Constants.posterAspectRatio,
+                    height: height,
                     width: width,
                     decoration: BoxDecoration(
                       color: Colors.black54,

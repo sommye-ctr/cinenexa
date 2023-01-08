@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
-import 'package:watrix/models/local/enums/sort_movies.dart';
-import 'package:watrix/models/network/enums/entity_type.dart';
-import 'package:watrix/services/network/repository.dart';
-import 'package:watrix/services/network/requests.dart';
+import 'package:cinenexa/models/local/enums/sort_movies.dart';
+import 'package:cinenexa/models/network/enums/entity_type.dart';
+import 'package:cinenexa/services/network/repository.dart';
+import 'package:cinenexa/services/network/requests.dart';
 
 import '../../models/network/base_model.dart';
 import '../../models/network/people.dart';

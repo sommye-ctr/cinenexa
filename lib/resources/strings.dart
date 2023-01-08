@@ -1,5 +1,5 @@
 class Strings {
-  static const String appName = "Watrix";
+  static const String appName = "CineNexa";
 
 //Common
   static const String home = "Home";
@@ -26,7 +26,7 @@ class Strings {
 
   //Login
   static const String passwordError =
-      "Must contain atleast 8 characters with 1 number";
+      "Password must contain atleast 8 characters";
   static const String emailError = "Enter Valid Email";
   static const String forgotPass = "Forgot Password?";
   static const String email = "Email";
@@ -105,6 +105,7 @@ class Strings {
 
   //Extensions
   static const String installed = "Installed";
+  static const String uninstalled = "Uninstalled";
   static const String discover = "Discover";
   static const String install = "Install";
   static const String anime = "Anime";
@@ -114,6 +115,13 @@ class Strings {
   static const String successfulyRated = "Succefully Rated!";
   static const String noRating = "No Rating Provided!";
   static const String youRated = "You Rated";
+  static const String installExtensionsWarning =
+      "Usage of third party extensions are subjected to your responsibility and governing laws of respective jurisdiction.";
+
+  static const String alreadyInstalled =
+      "You have already installed this extension. Syncing your extensions...";
+  static const String alreadyRated =
+      "You have already rated this extension. Restart the app to sync.";
 
 //Details
   static const String addToFav = "Add to";
@@ -137,9 +145,12 @@ class Strings {
   static const String streams = "Streams";
   static const String reviews = "Reviews";
   static const String otherInfo = "Other Info";
+  static const String installExtensions = "Install Extensions";
 
   static const String installExtensionsHelp =
-      "Looks like you have not installed any extensions!\nInstall extensions from Home Page in \"Extensions\" to start watching your favorite movies!";
+      "Looks like you have not installed any extensions!\nInstall extensions to start watching your favorite movies!";
+  static const String noStreamsReturnedHelp =
+      "No Streams available. Install more extensions to get more content to binge!";
 
 //Actor Details
   static const String knownFor = "Known For";
@@ -153,6 +164,9 @@ class Strings {
   static const String minSpentMovies = "Minutes spent\non movies";
   static const String minSpentShows = "Minutes spent\non shows";
   static const String logoutConfirm = "You are going to logout. Are you sure?";
+  static const String reportBug = "Report a bug";
+  static const String reportBugInfo =
+      "You are going to report a bug. Be as specific as you can and try to elaborate what actually happened. You can attach screenshots (if any). Kindly do not remove the auto-generated app and device info from the mail. Thank You!";
 
   //Settings
   static const String general = "General";
@@ -182,6 +196,8 @@ class Strings {
   static const String countryProvidersSub =
       "This is used to fetch the streaming services available in the specific country";
   static const String chooseCountry = "Choose Country";
+  static const String disconnectTraktConfirm =
+      "You are going to disconnect CineNexa from your Trakt account. Are you sure?";
 
   //video player
   static const String playBackSpeed = "Playback Speed";
