@@ -1,3 +1,4 @@
+import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:cinenexa/models/network/review.dart';
@@ -27,6 +28,12 @@ class Repository {
     int page = 1,
   }) async {
     String req = "$request?page=$page";
+
+    Country? country = await Database().getTmdbRegion();
+    if (country != null) {
+      req += "&region=${country.countryCode}";
+    }
+
     final response = await api.getRequest(req, haveQueries: true);
     var parsedList = response['results'];
 

@@ -70,7 +70,10 @@ class Style {
           children: [
             Image.asset(Asset.icon, width: 24, height: 24),
             SizedBox(width: 12.0),
-            Text(text),
+            Expanded(
+                child: Text(
+              text,
+            )),
           ],
         ),
       ),
@@ -128,6 +131,7 @@ class Style {
     Widget? leading,
     Widget? trailing,
     VoidCallback? onTap,
+    bool enabled = true,
   }) {
     return Container(
       width: ScreenSize.getPercentOfWidth(context, 0.95),
@@ -138,6 +142,7 @@ class Style {
         subtitle: subtitle != null ? Text(subtitle) : null,
         leading: leading,
         trailing: trailing,
+        enabled: enabled,
         tileColor: Theme.of(context).cardColor,
         onTap: onTap,
         shape: RoundedRectangleBorder(

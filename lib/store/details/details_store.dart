@@ -119,6 +119,8 @@ abstract class _DetailsStore with Store {
   bool isStreamLoadingDelayed = false;
   bool isReviewsLoadingDelayed = false;
 
+  bool isProvidersEnabled = true;
+
   @computed
   List<Genre>? get genres {
     if (baseModel.type == BaseModelType.movie) {
@@ -343,6 +345,7 @@ abstract class _DetailsStore with Store {
 
   void _fetchDetails() async {
     isAddedToFav = await database.isAddedInFav(baseModel.id!);
+    isProvidersEnabled = await database.getJustwatchProvidersStatus();
 
     if (traktId == -1) {
       var map = await Repository.getTraktIdFromTmdb(
@@ -367,7 +370,10 @@ abstract class _DetailsStore with Store {
       credits.addAll(map['credits']);
       recommended.addAll(map['recommended']);
       video = map['video'];
-      watchProviders.addAll(map['providers'] as List<WatchProvider>);
+
+      if (isProvidersEnabled)
+        watchProviders.addAll(map['providers'] as List<WatchProvider>);
+
       fetchProgress();
     } else if (baseModel.type == BaseModelType.tv) {
       Map map = await Repository.getTvDetailsWithExtras(id: baseModel.id!);
@@ -376,7 +382,10 @@ abstract class _DetailsStore with Store {
       recommended.addAll(map['recommended']);
       video = map['video'];
       chosenSeason = 0;
-      watchProviders.addAll(map['providers'] as List<WatchProvider>);
+
+      if (isProvidersEnabled)
+        watchProviders.addAll(map['providers'] as List<WatchProvider>);
+
       fetchProgress();
       _fetchEpisodes();
       fetchWatchHistory();
