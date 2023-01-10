@@ -15,7 +15,10 @@ class SettingsGeneral extends StatefulWidget {
 
 class _SettingsGeneralState extends State<SettingsGeneral> {
   Country? providerCountry;
+  Country? tmdbRegion;
   bool? providersEnabled;
+
+  final Database database = Database();
 
   @override
   void initState() {
@@ -24,8 +27,9 @@ class _SettingsGeneralState extends State<SettingsGeneral> {
   }
 
   void _fetch() async {
-    providerCountry = await Database().getProviderCountry();
-    providersEnabled = await Database().getJustwatchProvidersStatus();
+    providerCountry = await database.getProviderCountry();
+    tmdbRegion = await database.getTmdbRegion();
+    providersEnabled = await database.getJustwatchProvidersStatus();
     if (mounted) {
       setState(() {});
     }
@@ -64,15 +68,22 @@ class _SettingsGeneralState extends State<SettingsGeneral> {
               ),
               Style.getListTile(
                 context: context,
+                title: Strings.tmdbRegion,
+                subtitle: Strings.tmdbRegionSub,
+                trailing: _buildTmdbTrailing(),
+              ),
+              Style.getListTile(
+                context: context,
                 title: Strings.justwatchProvidersShow,
+                subtitle: Strings.countryProvidersSub,
                 trailing: CupertinoSwitch(
                   value: providersEnabled ?? true,
                   onChanged: (value) {
                     providersEnabled = !providersEnabled!;
                     providerCountry = null;
                     setState(() {});
-                    Database().addJustwatchProvidersEnabled(providersEnabled!);
-                    Database().removeProviderCountry();
+                    database.addJustwatchProvidersEnabled(providersEnabled!);
+                    database.removeProviderCountry();
                   },
                 ),
               ),
@@ -80,7 +91,6 @@ class _SettingsGeneralState extends State<SettingsGeneral> {
                 context: context,
                 title: Strings.countryProviders,
                 enabled: providersEnabled != null && providersEnabled!,
-                subtitle: Strings.countryProvidersSub,
                 trailing: _buildCountryTrailing(),
               )
             ],
@@ -93,7 +103,53 @@ class _SettingsGeneralState extends State<SettingsGeneral> {
   void setCountry(var value) {
     providerCountry = value;
     setState(() {});
-    Database().addProviderCountry(value);
+    database.addProviderCountry(value);
+  }
+
+  void setRegion(var value) {
+    tmdbRegion = value;
+    setState(() {});
+    database.addTmdbRegion(value);
+
+    Style.showToast(
+        context: context, text: "Restart app to make the changes effective");
+  }
+
+  Widget _buildTmdbTrailing() {
+    if (tmdbRegion != null) {
+      return GestureDetector(
+        onTap: () {
+          showCountryPicker(
+            context: context,
+            onSelect: (value) {
+              setRegion(value);
+            },
+            showSearch: true,
+          );
+        },
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(tmdbRegion!.flagEmoji),
+            Style.getVerticalHorizontalSpacing(context: context),
+            Text(tmdbRegion!.name),
+          ],
+        ),
+      );
+    }
+    return RoundedButton(
+      child: Text(Strings.chooseCountry),
+      onPressed: () {
+        showCountryPicker(
+          context: context,
+          onSelect: (value) {
+            setRegion(value);
+          },
+          showSearch: true,
+        );
+      },
+      type: RoundedButtonType.outlined,
+    );
   }
 
   Widget _buildCountryTrailing() {

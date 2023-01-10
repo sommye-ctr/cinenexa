@@ -70,7 +70,10 @@ class Style {
           children: [
             Image.asset(Asset.icon, width: 24, height: 24),
             SizedBox(width: 12.0),
-            Text(text),
+            Expanded(
+                child: Text(
+              text,
+            )),
           ],
         ),
       ),

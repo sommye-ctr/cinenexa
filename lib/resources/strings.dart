@@ -196,6 +196,9 @@ class Strings {
   static const String justwatchProvidersShow = "Show JustWatch Providers";
   static const String countryProvidersSub =
       "This is used to fetch the streaming services available in the specific country";
+  static const String tmdbRegion = "Tmdb Region";
+  static const String tmdbRegionSub =
+      "This is used to fetch movies/shows on home screen of the specific country";
   static const String chooseCountry = "Choose Country";
   static const String disconnectTraktConfirm =
       "You are going to disconnect CineNexa from your Trakt account. Are you sure?";
