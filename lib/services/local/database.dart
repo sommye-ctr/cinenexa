@@ -21,6 +21,8 @@ class Database {
   static const String _ALWAYS_EXTERNAL_PLAYER = "ALWAYS_EXTERNAL_PLAYER";
   static const String _AUTO_SUBTITLE = "AUTO_SUBTITLE";
   static const String _SEEK_DURATION = "SEEK_DURATION";
+  static const String _JUSTWATCH_PROVIDERS_ENABLED =
+      "JUSTWATCH_PROVIDERS_ENABLED";
 
   late Isar isar;
 
@@ -43,6 +45,11 @@ class Database {
     await prefs.setBool(_TRAKT_LOGGED_IN, status);
   }
 
+  Future addJustwatchProvidersEnabled(bool status) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_JUSTWATCH_PROVIDERS_ENABLED, status);
+  }
+
   Future addAlwaysExternalPlayer(bool status) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_ALWAYS_EXTERNAL_PLAYER, status);
@@ -63,6 +70,11 @@ class Database {
     return (prefs.getBool(_TRAKT_LOGGED_IN) ?? false);
   }
 
+  Future<bool> getJustwatchProvidersStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    return (prefs.getBool(_JUSTWATCH_PROVIDERS_ENABLED) ?? false);
+  }
+
   Future<bool> getAlwaysExternalPlayer() async {
     final prefs = await SharedPreferences.getInstance();
     return (prefs.getBool(_ALWAYS_EXTERNAL_PLAYER) ?? false);
@@ -81,6 +93,11 @@ class Database {
   Future addProviderCountry(Country country) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_PROVIDER_COUNTRY, country.countryCode);
+  }
+
+  Future removeProviderCountry() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_PROVIDER_COUNTRY);
   }
 
   Future<Country?> getProviderCountry() async {

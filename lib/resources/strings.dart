@@ -192,7 +192,8 @@ class Strings {
   static const String syncInstalledExt = "Sync Installed Extensions";
 
   static const String darkMode = "Dark Mode";
-  static const String countryProviders = "Country for Providers";
+  static const String countryProviders = "Country for JustWatch Providers";
+  static const String justwatchProvidersShow = "Show JustWatch Providers";
   static const String countryProvidersSub =
       "This is used to fetch the streaming services available in the specific country";
   static const String chooseCountry = "Choose Country";

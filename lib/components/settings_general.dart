@@ -15,6 +15,7 @@ class SettingsGeneral extends StatefulWidget {
 
 class _SettingsGeneralState extends State<SettingsGeneral> {
   Country? providerCountry;
+  bool? providersEnabled;
 
   @override
   void initState() {
@@ -24,6 +25,7 @@ class _SettingsGeneralState extends State<SettingsGeneral> {
 
   void _fetch() async {
     providerCountry = await Database().getProviderCountry();
+    providersEnabled = await Database().getJustwatchProvidersStatus();
     if (mounted) {
       setState(() {});
     }
@@ -62,7 +64,22 @@ class _SettingsGeneralState extends State<SettingsGeneral> {
               ),
               Style.getListTile(
                 context: context,
+                title: Strings.justwatchProvidersShow,
+                trailing: CupertinoSwitch(
+                  value: providersEnabled ?? true,
+                  onChanged: (value) {
+                    providersEnabled = !providersEnabled!;
+                    providerCountry = null;
+                    setState(() {});
+                    Database().addJustwatchProvidersEnabled(providersEnabled!);
+                    Database().removeProviderCountry();
+                  },
+                ),
+              ),
+              Style.getListTile(
+                context: context,
                 title: Strings.countryProviders,
+                enabled: providersEnabled != null && providersEnabled!,
                 subtitle: Strings.countryProvidersSub,
                 trailing: _buildCountryTrailing(),
               )
@@ -73,19 +90,25 @@ class _SettingsGeneralState extends State<SettingsGeneral> {
     );
   }
 
+  void setCountry(var value) {
+    providerCountry = value;
+    setState(() {});
+    Database().addProviderCountry(value);
+  }
+
   Widget _buildCountryTrailing() {
     if (providerCountry != null) {
       return GestureDetector(
         onTap: () {
-          showCountryPicker(
-            context: context,
-            onSelect: (value) {
-              providerCountry = value;
-              setState(() {});
-              Database().addProviderCountry(value);
-            },
-            showSearch: true,
-          );
+          if (providersEnabled != null && providersEnabled!) {
+            showCountryPicker(
+              context: context,
+              onSelect: (value) {
+                setCountry(value);
+              },
+              showSearch: true,
+            );
+          }
         },
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -99,17 +122,17 @@ class _SettingsGeneralState extends State<SettingsGeneral> {
     }
     return RoundedButton(
       child: Text(Strings.chooseCountry),
-      onPressed: () {
-        showCountryPicker(
-          context: context,
-          onSelect: (value) {
-            providerCountry = value;
-            setState(() {});
-            Database().addProviderCountry(value);
-          },
-          showSearch: true,
-        );
-      },
+      onPressed: providersEnabled != null && providersEnabled!
+          ? () {
+              showCountryPicker(
+                context: context,
+                onSelect: (value) {
+                  setCountry(value);
+                },
+                showSearch: true,
+              );
+            }
+          : null,
       type: RoundedButtonType.outlined,
     );
   }
