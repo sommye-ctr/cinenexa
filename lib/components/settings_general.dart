@@ -18,6 +18,8 @@ class _SettingsGeneralState extends State<SettingsGeneral> {
   Country? tmdbRegion;
   bool? providersEnabled;
 
+  //ChromeCastController? controller;
+
   final Database database = Database();
 
   @override
@@ -92,7 +94,21 @@ class _SettingsGeneralState extends State<SettingsGeneral> {
                 title: Strings.countryProviders,
                 enabled: providersEnabled != null && providersEnabled!,
                 trailing: _buildCountryTrailing(),
-              )
+              ),
+              /* ChromeCastButton(
+                onButtonCreated: (ctr) {
+                  controller = ctr;
+                  controller?.addSessionListener();
+                },
+                onSessionStarted: () async {
+                  print("started");
+                  controller?.seek(interval: 35);
+
+                  controller?.loadMedia(
+                      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4');
+                  print("seeking");
+                },
+              ), */
             ],
           ),
         ),

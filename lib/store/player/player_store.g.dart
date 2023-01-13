@@ -169,53 +169,6 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
     });
   }
 
-  late final _$selectedTrackAtom =
-      Atom(name: '_PlayerStoreBase.selectedTrack', context: context);
-
-  @override
-  int? get selectedTrack {
-    _$selectedTrackAtom.reportRead();
-    return super.selectedTrack;
-  }
-
-  @override
-  set selectedTrack(int? value) {
-    _$selectedTrackAtom.reportWrite(value, super.selectedTrack, () {
-      super.selectedTrack = value;
-    });
-  }
-
-  late final _$subsAtom = Atom(name: '_PlayerStoreBase.subs', context: context);
-
-  @override
-  ObservableList<VlcPlayerSubtitle> get subs {
-    _$subsAtom.reportRead();
-    return super.subs;
-  }
-
-  @override
-  set subs(ObservableList<VlcPlayerSubtitle> value) {
-    _$subsAtom.reportWrite(value, super.subs, () {
-      super.subs = value;
-    });
-  }
-
-  late final _$tracksAtom =
-      Atom(name: '_PlayerStoreBase.tracks', context: context);
-
-  @override
-  ObservableMap<int, String>? get tracks {
-    _$tracksAtom.reportRead();
-    return super.tracks;
-  }
-
-  @override
-  set tracks(ObservableMap<int, String>? value) {
-    _$tracksAtom.reportWrite(value, super.tracks, () {
-      super.tracks = value;
-    });
-  }
-
   late final _$seekDurationAtom =
       Atom(name: '_PlayerStoreBase.seekDuration', context: context);
 
@@ -238,6 +191,14 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
   @override
   Future<dynamic> init() {
     return _$initAsyncAction.run(() => super.init());
+  }
+
+  late final _$changeSubtitleAsyncAction =
+      AsyncAction('_PlayerStoreBase.changeSubtitle', context: context);
+
+  @override
+  Future<dynamic> changeSubtitle(int index) {
+    return _$changeSubtitleAsyncAction.run(() => super.changeSubtitle(index));
   }
 
   late final _$_PlayerStoreBaseActionController =
@@ -332,39 +293,6 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
   }
 
   @override
-  void changeSubtitle(int index) {
-    final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
-        name: '_PlayerStoreBase.changeSubtitle');
-    try {
-      return super.changeSubtitle(index);
-    } finally {
-      _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void setTracks(Map<int, String> track) {
-    final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
-        name: '_PlayerStoreBase.setTracks');
-    try {
-      return super.setTracks(track);
-    } finally {
-      _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void setSelectedTrack(int? track) {
-    final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
-        name: '_PlayerStoreBase.setSelectedTrack');
-    try {
-      return super.setSelectedTrack(track);
-    } finally {
-      _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   void setSelectedSubtitle(int? subtitle) {
     final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
         name: '_PlayerStoreBase.setSelectedSubtitle');
@@ -399,9 +327,6 @@ subtitleDelay: ${subtitleDelay},
 position: ${position},
 buffered: ${buffered},
 selectedSubtitle: ${selectedSubtitle},
-selectedTrack: ${selectedTrack},
-subs: ${subs},
-tracks: ${tracks},
 seekDuration: ${seekDuration}
     ''';
   }

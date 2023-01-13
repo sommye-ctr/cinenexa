@@ -1,6 +1,6 @@
-import 'package:flutter_vlc_player/flutter_vlc_player.dart';
+import 'package:better_player/better_player.dart';
+import 'package:cinenexa/models/network/extensions/subtitle.dart';
 import 'package:mobx/mobx.dart';
-import 'package:cinenexa/models/local/vlc_player_subtitles.dart';
 import 'package:cinenexa/models/network/extensions/extension_stream.dart';
 import 'package:cinenexa/services/local/database.dart';
 part 'player_store.g.dart';
@@ -31,26 +31,13 @@ abstract class _PlayerStoreBase with Store {
 
   @observable
   int? selectedSubtitle;
-  @observable
-  int? selectedTrack;
-
-  //@observable
-  //ObservableMap<int, String>? subtitles;
-
-  @observable
-  ObservableList<VlcPlayerSubtitle> subs = <VlcPlayerSubtitle>[].asObservable();
-
-  @observable
-  ObservableMap<int, String>? tracks;
 
   @observable
   int seekDuration = 30;
 
-  int duration = 0;
-  bool initialCalled = false;
-  String? castingDevice;
+  Duration duration = Duration();
 
-  final VlcPlayerController controller;
+  final BetterPlayerController controller;
   final ExtensionStream extensionStream;
   final double? progress;
 
@@ -65,76 +52,46 @@ abstract class _PlayerStoreBase with Store {
   @action
   Future init() async {
     seekDuration = await Database().getSeekDuration();
-    controller.addOnRendererEventListener((event, p1, p2) {
-      if (event == VlcRendererEventType.detached) {
-        setCasting(false);
+
+    controller.addEventsListener((event) {
+      switch (event.betterPlayerEventType) {
+        case BetterPlayerEventType.bufferingStart:
+          setBuffering(true);
+          break;
+        case BetterPlayerEventType.bufferingEnd:
+          setBuffering(false);
+          break;
+        case BetterPlayerEventType.initialized:
+          initSeek();
+          break;
+        case BetterPlayerEventType.progress:
+          setBuffered(
+              controller.videoPlayerController!.value.buffered.first.end);
+          setPosition(controller.videoPlayerController!.value.position);
+          break;
+        default:
       }
     });
+  }
 
-    if (extensionStream.subtitles != null &&
-        extensionStream.subtitles!.isNotEmpty) {
-      for (var element in extensionStream.subtitles!) {
-        subs.add(VlcPlayerSubtitle(
-          name: element.title,
-          source: element.url,
-        ));
-      }
-    }
+  Future initSeek() async {
+    controller.videoPlayerController!.seekTo(position);
+    duration = controller.videoPlayerController!.value.duration!;
+    int seconds = (duration.inMilliseconds * progress!) ~/ 100;
 
-    controller.addListener(() async {
-      if (controller.value.playingState == PlayingState.buffering) {
-        setBuffering(true);
-      } else {
-        setBuffering(false);
-      }
+    await controller.play();
+    await controller.seekTo(Duration(milliseconds: seconds));
+    await controller.play();
+  }
 
-      if (controller.value.isInitialized) {
-        duration = controller.value.duration.inMilliseconds;
-        controller.startRendererScanning();
-      }
-
-      if (controller.value.playingState == PlayingState.playing) {
-        if (!initialCalled) {
-          if (progress != null) {
-            int seconds = (duration * progress!) ~/ 100;
-
-            await controller.pause();
-            await controller.play();
-            await controller.seekTo(Duration(milliseconds: seconds));
-          }
-
-          setTracks(await controller.getAudioTracks());
-          setSelectedTrack(await controller.getAudioTrack());
-
-          var list = await controller.getSpuTracks();
-          list.forEach(
-            (key, value) {
-              subs.add(VlcPlayerSubtitle(
-                name: value,
-                vlcId: key,
-              ));
-            },
-          );
-          setSelectedSubtitle(await controller.getSpuTrack());
-
-          initialCalled = true;
-        }
-
-        setPosition(controller.value.position);
-        setBuffered(
-          Duration(seconds: (controller.value.bufferPercent * duration) ~/ 100),
-        );
-      }
-    });
+  @action
+  void setDuration(Duration duration) {
+    this.duration = duration;
   }
 
   @action
   void setSubtitleDelay(int delay) {
     subtitleDelay = delay;
-  }
-
-  void setCastingDevice(String device) {
-    castingDevice = device;
   }
 
   @action
@@ -173,8 +130,22 @@ abstract class _PlayerStoreBase with Store {
   }
 
   @action
-  void changeSubtitle(int index) {
-    if (index == -1) {
+  Future changeSubtitle(int index) async {
+    if (index < 0) {
+      await controller.setupSubtitleSource(BetterPlayerSubtitlesSource());
+      return;
+    }
+    Subtitle sub = extensionStream.subtitles![index];
+    await controller.setupSubtitleSource(
+      BetterPlayerSubtitlesSource(
+        name: sub.title,
+        type: BetterPlayerSubtitlesSourceType.network,
+        urls: [sub.url],
+        selectedByDefault: true,
+      ),
+    );
+    setSelectedSubtitle(index);
+    /* if (index == -1) {
       controller.setSpuTrack(-1);
       setSelectedSubtitle(null);
       return;
@@ -188,17 +159,7 @@ abstract class _PlayerStoreBase with Store {
     }
 
     controller.addSubtitleFromNetwork(subtitle.source!, isSelected: true);
-    setSelectedSubtitle(subtitle.id);
-  }
-
-  @action
-  void setTracks(Map<int, String> track) {
-    tracks = track.asObservable();
-  }
-
-  @action
-  void setSelectedTrack(int? track) {
-    selectedTrack = track;
+    setSelectedSubtitle(subtitle.id); */
   }
 
   @action
