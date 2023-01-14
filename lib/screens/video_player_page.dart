@@ -1,6 +1,8 @@
 import 'package:better_player/better_player.dart';
 import 'package:cinenexa/resources/strings.dart';
+import 'package:cinenexa/services/local/database.dart';
 import 'package:cinenexa/services/network/utils.dart';
+import 'package:cinenexa/utils/settings_indexer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cinenexa/components/video_player_controls.dart';
@@ -47,12 +49,22 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   late BetterPlayerConfiguration configuration;
   late BetterPlayerController controller;
 
+  int? fitIndex, maxCacheIndex;
+
   final GlobalKey betterPlayerKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+
+    _getDefaultValues();
+  }
+
+  Future _getDefaultValues() async {
+    Database database = Database();
+    fitIndex = await database.getDefaultFit();
+    maxCacheIndex = await database.getMaxCache();
 
     configuration = BetterPlayerConfiguration(
         allowedScreenSleep: false,
@@ -62,7 +74,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
         expandToFill: true,
         useRootNavigator: true,
         handleLifecycle: false,
-        fit: BoxFit.contain,
+        fit: SettingsIndexer.getFit(fitIndex!),
         looping: false,
         errorBuilder: (context, errorMessage) {
           return Center(
@@ -95,6 +107,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
             show: widget.show,
             progress: widget.progress,
             id: widget.id,
+            fitIndex: fitIndex,
           ),
         ));
 
@@ -129,6 +142,11 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
       configuration,
       betterPlayerDataSource: BetterPlayerDataSource.network(
         url,
+        cacheConfiguration: BetterPlayerCacheConfiguration(
+          useCache: true,
+          maxCacheSize:
+              SettingsIndexer.getMaxCache(maxCacheIndex!) * 1024 * 1024,
+        ),
         notificationConfiguration: BetterPlayerNotificationConfiguration(
           showNotification: true,
           title: widget.baseModel!.title!,
@@ -154,7 +172,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
 
   Widget _buildBody() {
     if (loading) {
-      return CircularProgressIndicator();
+      return Center(child: CircularProgressIndicator());
     }
     return BetterPlayer(
       key: betterPlayerKey,

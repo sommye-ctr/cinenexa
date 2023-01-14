@@ -28,6 +28,7 @@ class VideoPlayerControls extends StatefulWidget {
   final Tv? show;
   final int? season, episode;
   final double? progress;
+  final int? fitIndex;
 
   final GlobalKey? playerKey;
 
@@ -44,6 +45,7 @@ class VideoPlayerControls extends StatefulWidget {
     this.season,
     this.progress,
     this.playerKey,
+    this.fitIndex,
   }) : super(key: key);
 
   @override
@@ -79,6 +81,7 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
       extensionStream: widget.stream,
       progress: widget.progress,
     );
+    if (widget.fitIndex != null) playerStore.setFitIndex(widget.fitIndex!);
   }
 
   @override
@@ -98,17 +101,20 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
               builder: (context) {
                 if (playerStore.showControls) {
                   if (playerStore.locked) {
-                    return Align(
-                      alignment: Alignment.bottomCenter,
-                      child: _buildControlButton(
-                        icon: Icons.lock_outline_rounded,
-                        onTap: () {
-                          setState(() {
-                            playerStore.setLocked(false);
-                          });
-                        },
-                        size: 25,
-                        overlay: true,
+                    return Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: _buildControlButton(
+                          icon: Icons.lock_outline_rounded,
+                          onTap: () {
+                            setState(() {
+                              playerStore.setLocked(false);
+                            });
+                          },
+                          size: 25,
+                          overlay: true,
+                        ),
                       ),
                     );
                   }
@@ -235,6 +241,15 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
         mainAxisSize: MainAxisSize.min,
         children: [
           _buildControlButton(
+            icon: Icons.restore_rounded,
+            onTap: () {
+              widget.controller.seekTo(Duration());
+            },
+            size: 25,
+            overlay: true,
+          ),
+          Style.getVerticalHorizontalSpacing(context: context),
+          _buildControlButton(
             icon: Icons.lock_open_rounded,
             onTap: () {
               playerStore.setLocked(!playerStore.locked);
@@ -256,15 +271,6 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
                 padding: EdgeInsets.all(8),
                 animType: AnimType.bottomSlide,
               ).show();
-            },
-            size: 25,
-            overlay: true,
-          ),
-          Style.getVerticalHorizontalSpacing(context: context),
-          _buildControlButton(
-            icon: Icons.restore_rounded,
-            onTap: () {
-              widget.controller.seekTo(Duration());
             },
             size: 25,
             overlay: true,

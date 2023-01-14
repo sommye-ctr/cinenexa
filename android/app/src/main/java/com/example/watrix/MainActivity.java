@@ -3,8 +3,7 @@ package com.example.watrix;
 import android.content.Intent;
 import android.util.Log;
 import androidx.annotation.NonNull;
-import com.google.android.gms.cast.framework.CastContext;
-import io.flutter.embedding.android.FlutterFragmentActivity;
+import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.plugin.common.EventChannel;
 import java.util.Map;
@@ -22,7 +21,6 @@ public class MainActivity
   public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
     super.configureFlutterEngine(flutterEngine);
     startService(new Intent(this, NotificationService.class));
-    CastContext.getSharedInstance(getApplicationContext());
     new EventChannel(
       flutterEngine.getDartExecutor().getBinaryMessenger(),
       TORRENT_STREAM_EVENT_NAME

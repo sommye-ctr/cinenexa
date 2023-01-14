@@ -127,8 +127,7 @@ class _SettingsGeneralState extends State<SettingsGeneral> {
     setState(() {});
     database.addTmdbRegion(value);
 
-    Style.showToast(
-        context: context, text: "Restart app to make the changes effective");
+    Style.showToast(context: context, text: Strings.restartAppToEffective);
   }
 
   Widget _buildTmdbTrailing() {

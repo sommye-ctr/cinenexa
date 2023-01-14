@@ -203,6 +203,9 @@ class Strings {
   static const String disconnectTraktConfirm =
       "You are going to disconnect CineNexa from your Trakt account. Are you sure?";
 
+  static const String restartAppToEffective =
+      "Restart app to make the changes effective";
+
   //video player
   static const String playBackSpeed = "Playback Speed";
   static const String settings = "Settings";
@@ -227,5 +230,13 @@ class Strings {
     "Best",
     "Stretch",
     "Cover",
+  ];
+
+  static const maxCacheSizes = [
+    "50MB",
+    "200MB",
+    "500MB",
+    "1000MB",
+    "2000MB",
   ];
 }
