@@ -1,3 +1,4 @@
+import 'package:cinenexa/utils/link_opener.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -12,8 +13,11 @@ import 'package:cinenexa/store/favorites/favorites_store.dart';
 import 'package:cinenexa/utils/screen_size.dart';
 import 'package:cinenexa/widgets/custom_back_button.dart';
 
+import '../models/local/progress.dart';
 import '../models/network/base_model.dart';
+import '../models/network/extensions/extension_stream.dart';
 import '../resources/strings.dart';
+import '../screens/video_player_page.dart';
 import '../services/network/utils.dart';
 import '../utils/date_time_formatter.dart';
 import '../widgets/rounded_button.dart';
@@ -313,7 +317,7 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
       mainAxisSize: MainAxisSize.min,
       children: [
         CustomProgressIndicator(
-          progress: detailsStore.progress!.progress! / 100,
+          progress: detailsStore.progress!.progress / 100,
         ),
         Style.getVerticalSpacing(context: context),
         if (detailsStore.baseModel.type == BaseModelType.movie)
@@ -333,7 +337,7 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
         mainAxisSize: MainAxisSize.min,
         children: [
           RoundedButton(
-            onPressed: _onPlayPressed,
+            onPressed: () => _onPlayPressed(context),
             child: Row(
               children: [
                 _getPlayButton(),
@@ -415,7 +419,39 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
     isDialogShowing = true;
   }
 
-  void _onPlayPressed() {
+  void _onPlayPressed(context) async {
+    if (detailsStore.progress != null &&
+        detailsStore.progress?.stream != null) {
+      if (detailsStore.progress?.seasonNo != null &&
+          detailsStore.progress?.episodeNo != null) {
+        await LinkOpener.navigateToVideoPlayer(
+          baseModel: detailsStore.baseModel,
+          id: detailsStore.baseModel.id!,
+          context: context,
+          ep: detailsStore.progress?.episodeNo,
+          season: detailsStore.progress?.seasonNo,
+          progress: detailsStore.progress,
+          movie: detailsStore.movie,
+          tv: detailsStore.tv,
+          stream: detailsStore.progress!.stream!,
+        );
+        await detailsStore.fetchProgress();
+
+        return;
+      }
+      await LinkOpener.navigateToVideoPlayer(
+        baseModel: detailsStore.baseModel,
+        id: detailsStore.baseModel.id!,
+        context: context,
+        ep: detailsStore.progress?.episodeNo,
+        season: detailsStore.progress?.seasonNo,
+        progress: detailsStore.progress,
+        movie: detailsStore.movie,
+        tv: detailsStore.tv,
+        stream: detailsStore.progress!.stream!,
+      );
+      await detailsStore.fetchProgress();
+    }
     if (detailsStore.progress != null &&
         detailsStore.progress?.seasonNo != null &&
         detailsStore.progress?.episodeNo != null) {
@@ -453,9 +489,9 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
   }
 
   String _getDurationLeft() {
-    int durationPlayed = (detailsStore.movie!.runtime! *
-            (detailsStore.progress!.progress! / 100))
-        .toInt();
+    int durationPlayed =
+        (detailsStore.movie!.runtime! * (detailsStore.progress!.progress / 100))
+            .toInt();
     return "${DateTimeFormatter.getTimeFromMin(detailsStore.movie!.runtime! - durationPlayed)} left";
   }
 

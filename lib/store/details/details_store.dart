@@ -11,6 +11,7 @@ import 'package:cinenexa/services/network/requests.dart';
 import 'package:cinenexa/services/network/trakt_oauth_client.dart';
 import 'package:cinenexa/services/network/trakt_repository.dart';
 
+import '../../models/local/progress.dart';
 import '../../models/local/show_history.dart';
 import '../../models/network/base_model.dart';
 import '../../models/network/extensions/extension.dart';
@@ -105,7 +106,7 @@ abstract class _DetailsStore with Store {
   ShowHistory? showHistory;
 
   @observable
-  TraktProgress? progress;
+  Progress? progress;
 
   int reviewPage = 1;
   int noOfExtensions;
@@ -293,7 +294,7 @@ abstract class _DetailsStore with Store {
 
         var seen = Set<String>();
         List list = loadedStreams
-            .where((element) => seen.add(element.extension!.id))
+            .where((element) => seen.add(element.extension!.id!))
             .toList();
 
         if (list.length == noOfExtensions) {

@@ -7,7 +7,6 @@ import 'package:cinenexa/models/network/extensions/extension.dart';
 import 'package:cinenexa/services/constants.dart';
 import 'package:cinenexa/store/details/details_store.dart';
 import 'package:cinenexa/store/extensions/extensions_store.dart';
-import 'package:cinenexa/store/user/user_store.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '../models/network/base_model.dart';

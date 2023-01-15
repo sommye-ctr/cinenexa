@@ -206,6 +206,16 @@ class Strings {
   static const String restartAppToEffective =
       "Restart app to make the changes effective";
 
+  static const String defaultFit = "Default Fit";
+  static const String maxCacheSize = "Max Cache Size";
+
+  static const String defaultFitSub =
+      "The default scale of video in video player";
+  static const String maxCacheSub = "The max size of cache to store locally";
+  static const String seekDurationSub = "Duration to seek in video player";
+  static const String autoSelectSubtitleSub =
+      "Automatically select the subtitle that was selected during previous playback";
+
   //video player
   static const String playBackSpeed = "Playback Speed";
   static const String settings = "Settings";

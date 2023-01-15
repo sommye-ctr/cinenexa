@@ -6,6 +6,7 @@ import 'package:cinenexa/models/network/tv.dart';
 import 'package:cinenexa/services/local/database.dart';
 import 'package:cinenexa/services/network/trakt_oauth_client.dart';
 import 'package:cinenexa/services/network/trakt_repository.dart';
+import 'package:cinenexa/store/player/player_store.dart';
 
 class ScrobbleManager {
   final BetterPlayerController playerController;
@@ -14,6 +15,7 @@ class ScrobbleManager {
   final Tv? show;
   final int? season, episode, id;
   final bool isTraktLogged;
+  final PlayerStore playerStore;
 
   final TraktRepository traktRepository =
       TraktRepository(client: TraktOAuthClient());
@@ -23,6 +25,7 @@ class ScrobbleManager {
     required this.playerController,
     required this.item,
     required this.isTraktLogged,
+    required this.playerStore,
     this.show,
     this.id,
     this.movie,
@@ -126,6 +129,8 @@ class ScrobbleManager {
       ..show = show
       ..episodeNo = episode
       ..seasonNo = season
+      ..stream = playerStore.extensionStream
+      ..subtitle = playerStore.selectedSubtitle
       ..type = item.type == BaseModelType.movie ? "movie" : "episode";
   }
 

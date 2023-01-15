@@ -205,6 +205,17 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
       ActionController(name: '_PlayerStoreBase', context: context);
 
   @override
+  void setDuration(Duration duration) {
+    final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
+        name: '_PlayerStoreBase.setDuration');
+    try {
+      return super.setDuration(duration);
+    } finally {
+      _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setSubtitleDelay(int delay) {
     final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
         name: '_PlayerStoreBase.setSubtitleDelay');

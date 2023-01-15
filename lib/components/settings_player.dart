@@ -14,7 +14,6 @@ class SettingsPlayer extends StatefulWidget {
 }
 
 class _SettingsPlayerState extends State<SettingsPlayer> {
-  bool alwaysExternalPlayer = false;
   bool autoSubtitle = false;
   int? seekDuration;
   int? defaultFit, maxCache;
@@ -29,7 +28,6 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
   }
 
   void _fetch() async {
-    alwaysExternalPlayer = await database.getAlwaysExternalPlayer();
     autoSubtitle = await database.getAutoSelectSubtitle();
     seekDuration = await database.getSeekDuration();
     defaultFit = await database.getDefaultFit();
@@ -50,19 +48,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
             children: [
               Style.getListTile(
                 context: context,
-                title: Strings.alwaysExternalPlayer,
-                trailing: CupertinoSwitch(
-                  value: alwaysExternalPlayer,
-                  onChanged: (value) async {
-                    alwaysExternalPlayer = value;
-                    await database.addAlwaysExternalPlayer(value);
-                    setState(() {});
-                  },
-                ),
-              ),
-              Style.getListTile(
-                context: context,
                 title: Strings.autoSelectSubtitle,
+                subtitle: Strings.autoSelectSubtitleSub,
                 trailing: CupertinoSwitch(
                   value: autoSubtitle,
                   onChanged: (value) async {
@@ -75,7 +62,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
               Style.getListTile(
                 context: context,
                 title: Strings.seekDuration,
-                subtitle: "Duration to seek in video player",
+                subtitle: Strings.seekDurationSub,
                 trailing: seekDuration != null
                     ? CustomCheckBoxList(
                         children: ["10s", "30s"],
@@ -96,8 +83,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
               ),
               Style.getListTile(
                 context: context,
-                title: "Default Fit",
-                subtitle: "The default scale of video in video player",
+                title: Strings.defaultFit,
+                subtitle: Strings.defaultFitSub,
                 trailing: defaultFit != null
                     ? /* Container(
                         width: ScreenSize.getPercentOfWidth(context, 0.2),
@@ -143,8 +130,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
               ),
               Style.getListTile(
                 context: context,
-                title: "Max Cache Size",
-                subtitle: "The max size of cache to store locally",
+                title: Strings.maxCacheSize,
+                subtitle: Strings.maxCacheSub,
                 trailing: maxCache != null
                     ? /* Container(
                         width: ScreenSize.getPercentOfWidth(context, 0.2),

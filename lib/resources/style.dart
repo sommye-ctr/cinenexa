@@ -21,6 +21,9 @@ class Style {
   static double smallRoundEdgeRadius = 8;
   static double cardElevation = 8;
 
+  static const double iconSize = 60;
+  static const double smallIconSize = 40;
+
   static ThemeData themeData = ThemeData(
     primarySwatch: Colors.orange,
     brightness: Brightness.light,

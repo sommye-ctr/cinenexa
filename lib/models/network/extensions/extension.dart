@@ -1,27 +1,33 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:isar/isar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:cinenexa/models/local/installed_extensions.dart';
 
+part 'extension.g.dart';
+
+@embedded
 class Extension {
-  final String id;
-  final String name;
-  final String domainId;
-  final String endpoint;
-  final DateTime createdAt;
-  final bool providesMovie;
-  final bool providesShow;
-  final bool providesAnime;
-  final String? description;
-  final String? devEmail;
-  final String? devName;
-  final String? devUrl;
+  String? id;
+  String? name;
+  String? domainId;
+  String? endpoint;
+  DateTime? createdAt;
+  bool? providesMovie;
+  bool? providesShow;
+  bool? providesAnime;
+  String? description;
+  String? devEmail;
+  String? devName;
+  String? devUrl;
   double? rating;
   int? ratingCount;
   String? icon;
-  Extension({
+
+  Extension();
+  Extension.def({
     required this.id,
     required this.name,
     required this.domainId,
@@ -56,7 +62,7 @@ class Extension {
     double? rating,
     int? ratingCount,
   }) {
-    return Extension(
+    return Extension.def(
       id: id ?? this.id,
       name: name ?? this.name,
       domainId: domainId ?? this.domainId,
@@ -79,7 +85,7 @@ class Extension {
       'name': name,
       'domain_id': domainId,
       'endpoint': endpoint,
-      'createdAt': createdAt.millisecondsSinceEpoch,
+      'createdAt': createdAt?.millisecondsSinceEpoch,
       'providesMovie': providesMovie,
       'providesShow': providesShow,
       'providesAnime': providesAnime,
@@ -94,7 +100,7 @@ class Extension {
   }
 
   factory Extension.fromMap(Map<String, dynamic> map) {
-    return Extension(
+    return Extension.def(
       id: map['id'] as String,
       name: map['name'] as String,
       domainId: map['domain_id'] as String,
@@ -175,7 +181,7 @@ extension ExtensionConverter on Extension {
 
 extension ExtensionConverter1 on InstalledExtensions {
   Extension getExtension() {
-    return Extension(
+    return Extension.def(
       id: this.stId,
       name: this.name,
       domainId: this.domainId,

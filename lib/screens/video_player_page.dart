@@ -1,4 +1,5 @@
 import 'package:better_player/better_player.dart';
+import 'package:cinenexa/models/local/progress.dart';
 import 'package:cinenexa/resources/strings.dart';
 import 'package:cinenexa/services/local/database.dart';
 import 'package:cinenexa/services/network/utils.dart';
@@ -21,7 +22,7 @@ class VideoPlayerPage extends StatefulWidget {
   final Movie? movie;
   final Tv? show;
   final int? season, episode;
-  final double? progress;
+  final Progress? progress;
   final ExtensionStream extensionStream;
 
   const VideoPlayerPage({
@@ -50,6 +51,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   late BetterPlayerController controller;
 
   int? fitIndex, maxCacheIndex;
+  bool? autoSubtitle;
 
   final GlobalKey betterPlayerKey = GlobalKey();
 
@@ -65,6 +67,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
     Database database = Database();
     fitIndex = await database.getDefaultFit();
     maxCacheIndex = await database.getMaxCache();
+    autoSubtitle = await database.getAutoSelectSubtitle();
 
     configuration = BetterPlayerConfiguration(
         allowedScreenSleep: false,
@@ -108,6 +111,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
             progress: widget.progress,
             id: widget.id,
             fitIndex: fitIndex,
+            autoSubtitle: autoSubtitle,
           ),
         ));
 
