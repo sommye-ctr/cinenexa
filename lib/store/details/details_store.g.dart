@@ -290,13 +290,13 @@ mixin _$DetailsStore on _DetailsStore, Store {
       Atom(name: '_DetailsStore.progress', context: context);
 
   @override
-  TraktProgress? get progress {
+  Progress? get progress {
     _$progressAtom.reportRead();
     return super.progress;
   }
 
   @override
-  set progress(TraktProgress? value) {
+  set progress(Progress? value) {
     _$progressAtom.reportWrite(value, super.progress, () {
       super.progress = value;
     });

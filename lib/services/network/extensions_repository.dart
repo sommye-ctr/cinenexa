@@ -84,7 +84,7 @@ class ExtensionsRepository {
     Response response;
     try {
       response = await dio.get(
-        extension.endpoint,
+        extension.endpoint!,
         queryParameters: query,
         options: Options(
           receiveTimeout: 30000,

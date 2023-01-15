@@ -11,6 +11,7 @@ import 'package:cinenexa/utils/screen_size.dart';
 import 'package:cinenexa/widgets/custom_checkbox_list.dart';
 import 'package:provider/provider.dart';
 
+import '../models/local/progress.dart';
 import '../models/network/base_model.dart';
 import '../models/network/extensions/extension_stream.dart';
 import '../models/network/movie.dart';
@@ -27,8 +28,9 @@ class VideoPlayerControls extends StatefulWidget {
   final Movie? movie;
   final Tv? show;
   final int? season, episode;
-  final double? progress;
+  final Progress? progress;
   final int? fitIndex;
+  final bool? autoSubtitle;
 
   final GlobalKey? playerKey;
 
@@ -46,6 +48,7 @@ class VideoPlayerControls extends StatefulWidget {
     this.progress,
     this.playerKey,
     this.fitIndex,
+    this.autoSubtitle,
   }) : super(key: key);
 
   @override
@@ -53,7 +56,6 @@ class VideoPlayerControls extends StatefulWidget {
 }
 
 class _VideoPlayerControlsState extends State<VideoPlayerControls> {
-  static const double iconSize = 60;
   static const Duration hideDuration = Duration(seconds: 5);
 
   Timer? hideTimer;
@@ -65,6 +67,13 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
     super.initState();
     bool traktLogged =
         Provider.of<UserStore>(context, listen: false).isTraktLogged;
+
+    playerStore = PlayerStore(
+      controller: widget.controller,
+      extensionStream: widget.stream,
+      progress: widget.progress?.progress,
+    );
+
     scrobbleManager = ScrobbleManager(
       playerController: widget.controller,
       item: widget.baseModel!,
@@ -74,14 +83,14 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
       season: widget.season,
       show: widget.show,
       id: widget.id,
+      playerStore: playerStore,
     );
 
-    playerStore = PlayerStore(
-      controller: widget.controller,
-      extensionStream: widget.stream,
-      progress: widget.progress,
-    );
     if (widget.fitIndex != null) playerStore.setFitIndex(widget.fitIndex!);
+    if (widget.autoSubtitle != null &&
+        widget.progress != null &&
+        widget.progress?.subtitle != null)
+      playerStore.changeSubtitle(widget.progress!.subtitle!);
   }
 
   @override
@@ -503,7 +512,7 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
             padding: const EdgeInsets.all(8.0),
             child: Icon(
               icon,
-              size: size ?? iconSize,
+              size: size ?? Style.iconSize,
             ),
           ),
           onTap: onTap,

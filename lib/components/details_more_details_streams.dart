@@ -1,3 +1,5 @@
+import 'package:cinenexa/models/local/progress.dart';
+import 'package:cinenexa/utils/link_opener.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -248,8 +250,17 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
         stream: extensionStream,
         id: widget.detailsStore.baseModel.id!,
         progress: widget.detailsStore.baseModel.type == BaseModelType.movie
-            ? widget.detailsStore.progress?.progress
+            ? widget.detailsStore.progress
             : _getProgressForShow(),
+        ep: widget.detailsStore.chosenEpisode != null
+            ? widget.detailsStore.episodes[widget.detailsStore.chosenEpisode!]
+                .episodeNumber
+            : null,
+        season: widget.detailsStore.chosenSeason != null
+            ? (widget.detailsStore.tv
+                    ?.seasons?[widget.detailsStore.chosenSeason!])
+                ?.seasonNumber
+            : null,
       );
     } else if (extensionStream.ytId != null) {
       Navigator.pushNamed(context, YoutubeVideoPlayer.routeName,
@@ -259,8 +270,17 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
         stream: extensionStream,
         id: widget.detailsStore.baseModel.id!,
         progress: widget.detailsStore.baseModel.type == BaseModelType.movie
-            ? widget.detailsStore.progress?.progress
+            ? widget.detailsStore.progress
             : _getProgressForShow(),
+        ep: widget.detailsStore.chosenEpisode != null
+            ? widget.detailsStore.episodes[widget.detailsStore.chosenEpisode!]
+                .episodeNumber
+            : null,
+        season: widget.detailsStore.chosenSeason != null
+            ? (widget.detailsStore.tv
+                    ?.seasons?[widget.detailsStore.chosenSeason!])
+                ?.seasonNumber
+            : null,
       );
     } else if (extensionStream.external != null) {
       Style.showExternalLinkOpenWarning(
@@ -271,8 +291,8 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
     }
   }
 
-  double? _getProgressForShow() {
-    double? progress;
+  Progress? _getProgressForShow() {
+    Progress? progress;
     TvEpisode episode =
         widget.detailsStore.episodes[widget.detailsStore.chosenEpisode!];
 
@@ -280,7 +300,7 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
         widget.detailsStore.progress?.seasonNo ==
             widget.detailsStore.tv!.seasons![widget.detailsStore.chosenSeason!]
                 .seasonNumber) {
-      progress = widget.detailsStore.progress!.progress!;
+      progress = widget.detailsStore.progress;
     }
     return progress;
   }
@@ -419,26 +439,22 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
   void navigateToVideoPlayer({
     required ExtensionStream stream,
     required int id,
-    double? progress,
+    Progress? progress,
     int? season,
     int? ep,
   }) async {
-    await Navigator.pushNamed(
-      context,
-      VideoPlayerPage.routeName,
-      arguments: {
-        //"url":
-        //  "magnet:?xt=urn:btih:AA6C8D8201FD572B233B3282DCC5BF9DCFA0F0EB&dn=Youkoso+Jitsuryoku+Shijou+Shugi+no+Kyoushitsu+e+%28Classroom+of+the+Elite%29+%28Season+2%29+%5B1080p%5D%5BHEVC+x265+10bit%5D%5BMulti-Subs%5D+-+Judas&tr=http%3A%2F%2Fnyaa.tracker.wf%3A7777%2Fannounce&tr=http%3A%2F%2Fanidex.moe%3A6969%2Fannounce&tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&tr=udp%3A%2F%2Fexodus.desync.com%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&tr=http%3A%2F%2Ftracker.openbittorrent.com%3A80%2Fannounce&tr=udp%3A%2F%2Fopentracker.i2p.rocks%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.internetwarriors.net%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969%2Fannounce&tr=udp%3A%2F%2Fcoppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.zer0day.to%3A1337%2Fannounce",
-        "stream": stream,
-        "movie": widget.detailsStore.movie,
-        "tv": widget.detailsStore.tv,
-        "episode": ep,
-        "season": season,
-        "progress": progress,
-        "id": id,
-        "model": widget.detailsStore.baseModel,
-      },
+    await LinkOpener.navigateToVideoPlayer(
+      stream: stream,
+      id: id,
+      baseModel: widget.detailsStore.baseModel,
+      context: context,
+      ep: ep,
+      season: season,
+      progress: progress,
+      movie: widget.detailsStore.movie,
+      tv: widget.detailsStore.tv,
     );
+
     await widget.detailsStore.fetchProgress();
   }
 }

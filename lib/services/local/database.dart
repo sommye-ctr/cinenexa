@@ -224,7 +224,7 @@ class Database {
     return isar.writeTxn(() async {
       await isar.installedExtensions
           .where()
-          .stIdEqualTo(extension.id)
+          .stIdEqualTo(extension.id!)
           .deleteFirst();
     });
   }
@@ -233,7 +233,7 @@ class Database {
     return isar.writeTxn(() async {
       InstalledExtensions? ext = await isar.installedExtensions
           .where()
-          .stIdEqualTo(extension.id)
+          .stIdEqualTo(extension.id!)
           .findFirst();
 
       if (ext != null) {
@@ -375,8 +375,8 @@ class Database {
     return list.map((e) => e.getTraktProgress()).toList();
   }
 
-  Future<TraktProgress?> getProgress({required int id}) async {
-    return (await isar.progress.get(id))?.getTraktProgress();
+  Future<Progress?> getProgress({required int id}) async {
+    return (await isar.progress.get(id));
   }
 
   Future updateShowHistory({required ShowHistory item}) async {
