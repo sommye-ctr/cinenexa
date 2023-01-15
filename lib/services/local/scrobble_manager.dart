@@ -1,4 +1,4 @@
-import 'package:flutter_vlc_player/flutter_vlc_player.dart';
+import 'package:better_player/better_player.dart';
 import 'package:cinenexa/models/local/progress.dart';
 import 'package:cinenexa/models/network/base_model.dart';
 import 'package:cinenexa/models/network/movie.dart';
@@ -8,7 +8,7 @@ import 'package:cinenexa/services/network/trakt_oauth_client.dart';
 import 'package:cinenexa/services/network/trakt_repository.dart';
 
 class ScrobbleManager {
-  final VlcPlayerController playerController;
+  final BetterPlayerController playerController;
   final BaseModel item;
   final Movie? movie;
   final Tv? show;
@@ -18,9 +18,6 @@ class ScrobbleManager {
   final TraktRepository traktRepository =
       TraktRepository(client: TraktOAuthClient());
   final Database localDb = Database();
-
-  bool pause = false;
-  bool scrobbleStarted = false;
 
   ScrobbleManager({
     required this.playerController,
@@ -32,8 +29,18 @@ class ScrobbleManager {
     this.season,
     this.episode,
   }) {
-    playerController;
-    playerController.addListener(() {
+    playerController.addEventsListener((event) {
+      if (event.betterPlayerEventType == BetterPlayerEventType.pause) {
+        paused();
+      } else if (event.betterPlayerEventType ==
+          BetterPlayerEventType.finished) {
+        stopped();
+      } else if (event.betterPlayerEventType == BetterPlayerEventType.play) {
+        start();
+      }
+    });
+
+    /* playerController.addListener(() {
       PlayingState state = playerController.value.playingState;
       if (state == PlayingState.paused) {
         paused();
@@ -49,14 +56,10 @@ class ScrobbleManager {
         }
         pause = false;
       }
-    });
+    }); */
   }
 
   void start() {
-    scrobbleStarted = true;
-    double progress = _getProgress();
-    progress;
-
     if (isTraktLogged) {
       traktRepository
           .scrobbleStart(
@@ -74,16 +77,22 @@ class ScrobbleManager {
     }
   }
 
-  void paused() {
-    double progress = _getProgress();
-    if (playerController.value.isEnded) {
+  void exit() {
+    if (_getProgress() > 90) {
       stopped();
       return;
     }
+    paused();
+  }
+
+  void paused() {
+    double progress = _getProgress();
+
     if (progress >= 90) {
       stopped();
       return;
     }
+
     localDb.addProgress(progress: _getProgressObject());
 
     if (isTraktLogged)
@@ -121,8 +130,8 @@ class ScrobbleManager {
   }
 
   double _getProgress() {
-    return (playerController.value.position.inSeconds /
-            playerController.value.duration.inSeconds) *
+    return (playerController.videoPlayerController!.value.position.inSeconds /
+            playerController.videoPlayerController!.value.duration!.inSeconds) *
         100;
   }
 }

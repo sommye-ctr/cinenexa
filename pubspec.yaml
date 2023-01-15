@@ -49,10 +49,9 @@ dependencies:
   oauth2_client: ^3.0.0
   lottie: ^1.4.3
   focused_menu: ^1.0.5
-  better_player: ^0.0.83
   audio_video_progress_bar: ^0.11.0
   awesome_dialog: ^3.0.2
-  flutter_vlc_player: ^7.1.5
+  # flutter_vlc_player: ^7.1.5
   settings_ui: ^2.0.2
   scrollable_positioned_list: ^0.3.4
   flutter_expandable_fab: ^1.5.2
@@ -82,6 +81,7 @@ dependencies:
   dio: ^4.0.6
   dio_cache_interceptor: ^3.3.1
   dio_cache_interceptor_hive_store: ^3.2.0
+  better_player: ^0.0.83
 
   firebase_core: ^2.4.1
   firebase_crashlytics: ^3.0.9

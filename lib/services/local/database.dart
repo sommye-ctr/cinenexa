@@ -24,6 +24,8 @@ class Database {
   static const String _JUSTWATCH_PROVIDERS_ENABLED =
       "JUSTWATCH_PROVIDERS_ENABLED";
   static const String _TMDB_REGION = "TMDB_REGION";
+  static const String _MAX_CACHE_SIZE = "MAX_CACHE_SIZE";
+  static const String _DEFAULT_FIT = "DEFAULT_FIT";
 
   late Isar isar;
 
@@ -66,6 +68,16 @@ class Database {
     await prefs.setInt(_SEEK_DURATION, seconds);
   }
 
+  Future addMaxCache(int index) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_MAX_CACHE_SIZE, index);
+  }
+
+  Future addDefaultFit(int indexFit) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_DEFAULT_FIT, indexFit);
+  }
+
   Future<bool> getUserTraktStatus() async {
     final prefs = await SharedPreferences.getInstance();
     return (prefs.getBool(_TRAKT_LOGGED_IN) ?? false);
@@ -89,6 +101,16 @@ class Database {
   Future<int> getSeekDuration() async {
     final prefs = await SharedPreferences.getInstance();
     return (prefs.getInt(_SEEK_DURATION) ?? 30);
+  }
+
+  Future<int> getMaxCache() async {
+    final prefs = await SharedPreferences.getInstance();
+    return (prefs.getInt(_MAX_CACHE_SIZE) ?? 0);
+  }
+
+  Future<int> getDefaultFit() async {
+    final prefs = await SharedPreferences.getInstance();
+    return (prefs.getInt(_DEFAULT_FIT) ?? 0);
   }
 
   Future addProviderCountry(Country country) async {

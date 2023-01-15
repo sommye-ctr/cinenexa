@@ -1,5 +1,6 @@
 package com.example.watrix;
 
+import android.content.Intent;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity;
@@ -19,6 +20,7 @@ public class MainActivity
   @Override
   public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
     super.configureFlutterEngine(flutterEngine);
+    startService(new Intent(this, NotificationService.class));
     new EventChannel(
       flutterEngine.getDartExecutor().getBinaryMessenger(),
       TORRENT_STREAM_EVENT_NAME

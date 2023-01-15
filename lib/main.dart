@@ -29,7 +29,6 @@ import 'package:cinenexa/screens/login_page.dart';
 import 'package:cinenexa/screens/register_page.dart';
 import 'package:cinenexa/screens/settings_page.dart';
 import 'package:cinenexa/screens/video_player_page.dart';
-import 'package:cinenexa/screens/vlc_video_player.dart';
 import 'package:cinenexa/screens/youtube_video_player.dart';
 import 'package:cinenexa/store/extensions/extensions_store.dart';
 import 'package:cinenexa/store/favorites/favorites_store.dart';
@@ -197,7 +196,7 @@ class _MyAppState extends State<MyApp> {
           DeviceOrientation.landscapeRight
         ]);
         return MaterialPageRoute(
-          builder: (context) => VlcPlayerPage(
+          builder: (context) => VideoPlayerPage(
             extensionStream: value['stream'],
             baseModel: value['model'],
             episode: value['episode'],
