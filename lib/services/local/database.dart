@@ -18,7 +18,6 @@ import '../../models/network/trakt/trakt_progress.dart';
 class Database {
   static const String _TRAKT_LOGGED_IN = "TRAKT_LOGGED_IN";
   static const String _PROVIDER_COUNTRY = "PROVIDER_COUNTRY";
-  static const String _ALWAYS_EXTERNAL_PLAYER = "ALWAYS_EXTERNAL_PLAYER";
   static const String _AUTO_SUBTITLE = "AUTO_SUBTITLE";
   static const String _SEEK_DURATION = "SEEK_DURATION";
   static const String _JUSTWATCH_PROVIDERS_ENABLED =
@@ -53,11 +52,6 @@ class Database {
     await prefs.setBool(_JUSTWATCH_PROVIDERS_ENABLED, status);
   }
 
-  Future addAlwaysExternalPlayer(bool status) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_ALWAYS_EXTERNAL_PLAYER, status);
-  }
-
   Future addAutoSelectSubtitle(bool status) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_AUTO_SUBTITLE, status);
@@ -86,11 +80,6 @@ class Database {
   Future<bool> getJustwatchProvidersStatus() async {
     final prefs = await SharedPreferences.getInstance();
     return (prefs.getBool(_JUSTWATCH_PROVIDERS_ENABLED) ?? false);
-  }
-
-  Future<bool> getAlwaysExternalPlayer() async {
-    final prefs = await SharedPreferences.getInstance();
-    return (prefs.getBool(_ALWAYS_EXTERNAL_PLAYER) ?? false);
   }
 
   Future<bool> getAutoSelectSubtitle() async {
