@@ -1245,7 +1245,7 @@ packages:
       name: stream_transform
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.0"
+    version: "2.1.0"
   string_scanner:
     dependency: transitive
     description:
@@ -1386,6 +1386,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.2"
+  video_cast:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: efa2654b482099cd9475511cd26249a93951854d
+      url: "https://github.com/sommye-ctr/video_cast.git"
+    source: git
+    version: "1.0.1"
   visibility_detector:
     dependency: transitive
     description:

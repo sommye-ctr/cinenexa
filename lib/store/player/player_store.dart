@@ -69,6 +69,9 @@ abstract class _PlayerStoreBase with Store {
               controller.videoPlayerController!.value.buffered.first.end);
           setPosition(controller.videoPlayerController!.value.position);
           break;
+        case BetterPlayerEventType.play:
+          if (casting) controller.pause();
+          break;
         default:
       }
     });
