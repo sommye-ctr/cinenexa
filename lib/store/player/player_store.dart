@@ -136,6 +136,7 @@ abstract class _PlayerStoreBase with Store {
   Future changeSubtitle(int index) async {
     if (index < 0) {
       await controller.setupSubtitleSource(BetterPlayerSubtitlesSource());
+      setSelectedSubtitle(null);
       return;
     }
     Subtitle sub = extensionStream.subtitles![index];

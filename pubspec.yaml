@@ -82,8 +82,7 @@ dependencies:
   dio_cache_interceptor: ^3.3.1
   dio_cache_interceptor_hive_store: ^3.2.0
   better_player: ^0.0.83
-  video_cast:
-    git: https://github.com/sommye-ctr/video_cast.git
+  video_cast: ^1.0.2
 
   firebase_core: ^2.4.1
   firebase_crashlytics: ^3.0.9

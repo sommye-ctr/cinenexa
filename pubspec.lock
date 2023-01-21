@@ -1389,12 +1389,10 @@ packages:
   video_cast:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: efa2654b482099cd9475511cd26249a93951854d
-      url: "https://github.com/sommye-ctr/video_cast.git"
-    source: git
-    version: "1.0.1"
+      name: video_cast
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.2"
   visibility_detector:
     dependency: transitive
     description:

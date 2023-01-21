@@ -12,6 +12,7 @@ import 'package:cinenexa/utils/screen_size.dart';
 import 'package:cinenexa/widgets/custom_checkbox_list.dart';
 import 'package:provider/provider.dart';
 import 'package:video_cast/chrome_cast_media_type.dart';
+import 'package:video_cast/chrome_cast_subtitle.dart';
 import 'package:video_cast/video_cast.dart';
 
 import '../models/local/progress.dart';
@@ -139,7 +140,7 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
                       ),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           _buildTopPanel(),
                           if (!playerStore.casting) _buildMainControls(),
@@ -190,7 +191,26 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
   }
 
   Widget _castingControls() {
-    return Center(child: Text("Casting on another device..."));
+    return Column(children: [
+      Text("Casting on another device..."),
+      _buildControlButton(
+        icon: Icons.closed_caption_off,
+        onTap: () {
+          AwesomeDialog(
+            context: context,
+            dialogType: DialogType.noHeader,
+            width: ScreenSize.getPercentOfWidth(context, 0.7),
+            title: Strings.settings,
+            body: _buildSubtitlePopup(),
+            showCloseIcon: true,
+            padding: EdgeInsets.all(8),
+            animType: AnimType.bottomSlide,
+          ).show();
+        },
+        size: 25,
+        overlay: true,
+      ),
+    ]);
   }
 
   Widget _buildTopPanel() {
@@ -218,17 +238,22 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
               playerStore.setCasting(true);
               widget.controller.pause();
               chromeCastController?.loadMedia(
-                type: widget.baseModel!.type == BaseModelType.movie
-                    ? ChromeCastMediaType.movie
-                    : ChromeCastMediaType.show,
-                url: widget.controller.betterPlayerDataSource!.url,
-                title: widget.baseModel!.title!,
-                autoplay: true,
-                image: Utils.getPosterUrl(widget.baseModel!.posterPath!),
-                position: playerStore.position.inMilliseconds.toDouble(),
-                showEpisode: widget.episode,
-                showSeason: widget.season,
-              );
+                  type: widget.baseModel!.type == BaseModelType.movie
+                      ? ChromeCastMediaType.movie
+                      : ChromeCastMediaType.show,
+                  url: widget.controller.betterPlayerDataSource!.url,
+                  title: widget.baseModel!.title!,
+                  autoplay: true,
+                  image: Utils.getPosterUrl(widget.baseModel!.posterPath!),
+                  position: playerStore.position.inMilliseconds.toDouble(),
+                  showEpisode: widget.episode,
+                  showSeason: widget.season,
+                  subtitles: _getCastSubtitles());
+
+              if (playerStore.selectedSubtitle != null) {
+                chromeCastController?.setTrack(
+                    subId: playerStore.selectedSubtitle!.toDouble());
+              }
             },
             onSessionEnding: (position) {
               playerStore.setCasting(false);
@@ -242,6 +267,24 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
         ],
       ),
     );
+  }
+
+  List<ChromeCastSubtitle> _getCastSubtitles() {
+    List<ChromeCastSubtitle> subs = [];
+    if (widget.stream.subtitles != null) {
+      for (int i = 0; i < widget.stream.subtitles!.length; i++) {
+        var element = widget.stream.subtitles![i];
+        subs.add(
+          ChromeCastSubtitle(
+            id: i.toDouble(),
+            name: element.title ?? "",
+            source: element.url ?? "",
+            language: "en-US",
+          ),
+        );
+      }
+    }
+    return subs;
   }
 
   Widget _buildProgressBar() {
@@ -383,8 +426,17 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
         int selectedIndex = widget.stream.subtitles!
             .indexWhere((element) => element.title == values.first);
 
-        playerStore.changeSubtitle(selectedIndex);
-
+        if (playerStore.casting) {
+          if (selectedIndex < 0) {
+            chromeCastController?.disableTrack();
+            playerStore.setSelectedSubtitle(null);
+          } else {
+            chromeCastController?.setTrack(subId: selectedIndex.toDouble());
+            playerStore.setSelectedSubtitle(selectedIndex);
+          }
+        } else {
+          playerStore.changeSubtitle(selectedIndex);
+        }
         Navigator.pop(context);
       },
     );
