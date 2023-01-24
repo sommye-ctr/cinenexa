@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:better_player/better_player.dart';
+import 'package:cinenexa/services/network/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:cinenexa/resources/strings.dart';
@@ -10,6 +11,9 @@ import 'package:cinenexa/resources/style.dart';
 import 'package:cinenexa/utils/screen_size.dart';
 import 'package:cinenexa/widgets/custom_checkbox_list.dart';
 import 'package:provider/provider.dart';
+import 'package:video_cast/chrome_cast_media_type.dart';
+import 'package:video_cast/chrome_cast_subtitle.dart';
+import 'package:video_cast/video_cast.dart';
 
 import '../models/local/progress.dart';
 import '../models/network/base_model.dart';
@@ -61,6 +65,7 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
   Timer? hideTimer;
   ScrobbleManager? scrobbleManager;
   late PlayerStore playerStore;
+  ChromeCastController? chromeCastController;
 
   @override
   void initState() {
@@ -98,7 +103,6 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
     return WillPopScope(
         onWillPop: _onBack,
         child: Observer(builder: (_) {
-          playerStore.buffering;
           return GestureDetector(
             behavior: HitTestBehavior.translucent,
             onTap: () {
@@ -134,22 +138,45 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
                         width: double.infinity,
                         color: Colors.black54,
                       ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildTopPanel(),
-                          _buildMainControls(),
-                          Column(
+                      LayoutBuilder(
+                        builder: (p0, p1) {
+                          if (playerStore.casting) {
+                            return Stack(
+                              children: [
+                                Center(
+                                  child: Text("Casting on another device..."),
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    _buildTopPanel(),
+                                    _castingControls(),
+                                  ],
+                                ),
+                              ],
+                            );
+                          }
+                          return Column(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              _buildProgressBar(),
-                              _buildBottomControls(),
+                              _buildTopPanel(),
+                              _buildMainControls(),
+                              Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  _buildProgressBar(),
+                                  _buildBottomControls(),
+                                ],
+                              ),
                             ],
-                          ),
-                        ],
+                          );
+                        },
                       ),
                     ],
                   );
@@ -163,6 +190,7 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
 
   Future<bool> _onBack() async {
     scrobbleManager?.exit();
+    if (playerStore.casting) chromeCastController?.endSession();
     widget.controller.exitFullScreen();
     return true;
   }
@@ -183,6 +211,29 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
     playerStore.setShowControls(false);
   }
 
+  Widget _castingControls() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: _buildControlButton(
+        icon: Icons.closed_caption_off,
+        onTap: () {
+          AwesomeDialog(
+            context: context,
+            dialogType: DialogType.noHeader,
+            width: ScreenSize.getPercentOfWidth(context, 0.7),
+            title: Strings.settings,
+            body: _buildSubtitlePopup(),
+            showCloseIcon: true,
+            padding: EdgeInsets.all(8),
+            animType: AnimType.bottomSlide,
+          ).show();
+        },
+        size: 25,
+        overlay: true,
+      ),
+    );
+  }
+
   Widget _buildTopPanel() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -199,9 +250,62 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
               _buildTitle(),
             ],
           ),
+          ChromeCastButton(
+            onButtonCreated: (controller) {
+              chromeCastController = controller;
+              chromeCastController?.addSessionListener();
+            },
+            onSessionStarted: () {
+              playerStore.setCasting(true);
+              widget.controller.pause();
+              chromeCastController?.loadMedia(
+                  type: widget.baseModel!.type == BaseModelType.movie
+                      ? ChromeCastMediaType.movie
+                      : ChromeCastMediaType.show,
+                  url: widget.controller.betterPlayerDataSource!.url,
+                  title: widget.baseModel!.title!,
+                  autoplay: true,
+                  image: Utils.getPosterUrl(widget.baseModel!.posterPath!),
+                  position: playerStore.position.inMilliseconds.toDouble(),
+                  showEpisode: widget.episode,
+                  showSeason: widget.season,
+                  subtitles: _getCastSubtitles());
+
+              if (playerStore.selectedSubtitle != null) {
+                chromeCastController?.setTrack(
+                    subId: playerStore.selectedSubtitle!.toDouble());
+              }
+            },
+            onSessionEnding: (position) {
+              playerStore.setCasting(false);
+              scrobbleManager?.paused();
+              if (position != null)
+                widget.controller.seekTo(Duration(milliseconds: position));
+
+              widget.controller.play();
+            },
+          ),
         ],
       ),
     );
+  }
+
+  List<ChromeCastSubtitle> _getCastSubtitles() {
+    List<ChromeCastSubtitle> subs = [];
+    if (widget.stream.subtitles != null) {
+      for (int i = 0; i < widget.stream.subtitles!.length; i++) {
+        var element = widget.stream.subtitles![i];
+        subs.add(
+          ChromeCastSubtitle(
+            id: i.toDouble(),
+            name: element.title ?? "",
+            source: element.url ?? "",
+            language: "en-US",
+          ),
+        );
+      }
+    }
+    return subs;
   }
 
   Widget _buildProgressBar() {
@@ -337,14 +441,29 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
       ),
       onSelectionAdded: (values) {
         if (values.first == Strings.none) {
+          if (playerStore.casting) {
+            chromeCastController?.disableTrack();
+            playerStore.setSelectedSubtitle(null);
+            Navigator.pop(context);
+            return;
+          }
           playerStore.changeSubtitle(-1);
           return;
         }
         int selectedIndex = widget.stream.subtitles!
             .indexWhere((element) => element.title == values.first);
 
-        playerStore.changeSubtitle(selectedIndex);
-
+        if (playerStore.casting) {
+          if (selectedIndex < 0) {
+            chromeCastController?.disableTrack();
+            playerStore.setSelectedSubtitle(null);
+          } else {
+            chromeCastController?.setTrack(subId: selectedIndex.toDouble());
+            playerStore.setSelectedSubtitle(selectedIndex);
+          }
+        } else {
+          playerStore.changeSubtitle(selectedIndex);
+        }
         Navigator.pop(context);
       },
     );
@@ -444,6 +563,7 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
   }
 
   Widget _buildMainControls() {
+    int interval = playerStore.seekDuration == 30 ? 30 : 10;
     return Align(
       alignment: Alignment.center,
       child: Row(
@@ -456,8 +576,7 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
                 : Icons.replay_10_rounded,
             onTap: () {
               Duration rewind = Duration(
-                seconds: playerStore.position.inSeconds -
-                    (playerStore.seekDuration == 30 ? 30 : 10),
+                seconds: playerStore.position.inSeconds - interval,
               );
 
               widget.controller.seekTo(rewind);
@@ -481,8 +600,7 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
                 : Icons.forward_10_rounded,
             onTap: () {
               Duration forward = Duration(
-                seconds: playerStore.position.inSeconds +
-                    (playerStore.seekDuration == 30 ? 30 : 10),
+                seconds: playerStore.position.inSeconds + interval,
               );
 
               if (forward >
@@ -496,6 +614,20 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
         ],
       ),
     );
+  }
+
+  Future<IconData> _playingIcon() async {
+    if (playerStore.casting) {
+      bool? playing = (await chromeCastController?.isPlaying());
+      if (playing != null && playing) {
+        return Icons.pause_rounded;
+      }
+      return Icons.play_arrow_rounded;
+    }
+    if (widget.controller.isPlaying()!) {
+      return Icons.pause_rounded;
+    }
+    return Icons.play_arrow_rounded;
   }
 
   Widget _buildControlButton(

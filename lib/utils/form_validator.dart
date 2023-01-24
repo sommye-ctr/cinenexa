@@ -12,6 +12,6 @@ extension FormFieldExt on String {
   }
 
   bool get isValidPassword {
-    return this.length > 8;
+    return this.length >= 8;
   }
 }

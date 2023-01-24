@@ -1,7 +1,5 @@
 import 'package:flutter/rendering.dart';
 
-import '../resources/strings.dart';
-
 class SettingsIndexer {
   static int getMaxCache(int maxCacheIndex) {
     switch (maxCacheIndex) {
@@ -15,6 +13,10 @@ class SettingsIndexer {
         return 1000;
       case 4:
         return 2000;
+      case 5:
+        return 5000;
+      case 6:
+        return 10000;
       default:
         throw UnimplementedError("No cache index found!");
     }
