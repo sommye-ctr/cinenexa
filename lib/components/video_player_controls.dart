@@ -138,24 +138,45 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
                         width: double.infinity,
                         color: Colors.black54,
                       ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          _buildTopPanel(),
-                          if (!playerStore.casting) _buildMainControls(),
-                          if (!playerStore.casting)
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                      LayoutBuilder(
+                        builder: (p0, p1) {
+                          if (playerStore.casting) {
+                            return Stack(
                               children: [
-                                _buildProgressBar(),
-                                _buildBottomControls(),
+                                Center(
+                                  child: Text("Casting on another device..."),
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    _buildTopPanel(),
+                                    _castingControls(),
+                                  ],
+                                ),
                               ],
-                            ),
-                          if (playerStore.casting) _castingControls(),
-                        ],
+                            );
+                          }
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              _buildTopPanel(),
+                              _buildMainControls(),
+                              Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  _buildProgressBar(),
+                                  _buildBottomControls(),
+                                ],
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     ],
                   );
@@ -191,9 +212,9 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
   }
 
   Widget _castingControls() {
-    return Column(children: [
-      Text("Casting on another device..."),
-      _buildControlButton(
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: _buildControlButton(
         icon: Icons.closed_caption_off,
         onTap: () {
           AwesomeDialog(
@@ -210,7 +231,7 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
         size: 25,
         overlay: true,
       ),
-    ]);
+    );
   }
 
   Widget _buildTopPanel() {
@@ -420,6 +441,12 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
       ),
       onSelectionAdded: (values) {
         if (values.first == Strings.none) {
+          if (playerStore.casting) {
+            chromeCastController?.disableTrack();
+            playerStore.setSelectedSubtitle(null);
+            Navigator.pop(context);
+            return;
+          }
           playerStore.changeSubtitle(-1);
           return;
         }

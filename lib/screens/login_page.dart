@@ -1,3 +1,4 @@
+import 'package:cinenexa/screens/forgot_pass_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -84,6 +85,16 @@ class _LoginPageState extends State<LoginPage> {
                           icon: Icon(
                             Icons.lock_outline_rounded,
                             color: Colors.grey,
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.pushNamed(
+                                  context, ForgotPassPage.routeName);
+                            },
+                            child: Text(Strings.forgotPass),
                           ),
                         ),
                         Style.getVerticalSpacing(context: context),

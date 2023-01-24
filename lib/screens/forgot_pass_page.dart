@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:cinenexa/resources/style.dart';
 import 'package:cinenexa/utils/form_validator.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../resources/asset.dart';
 import '../resources/strings.dart';
@@ -21,6 +22,7 @@ class ForgotPassPage extends StatefulWidget {
 
 class _ForgotPassPageState extends State<ForgotPassPage> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController emailController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +49,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
                     key: _formKey,
                     child: CustomTextFormField(
                       hint: Strings.email,
+                      textEditingController: emailController,
                       validator: (val) {
                         if (!val!.isValidEmail) {
                           return Strings.emailError;
@@ -63,9 +66,24 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
                     width: double.infinity,
                     child: RoundedButton(
                       child: Text(Strings.continueSt),
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          print("done!");
+                      onPressed: () async {
+                        Style.showLoadingDialog(context: context);
+                        try {
+                          await Supabase.instance.client.auth
+                              .resetPasswordForEmail(
+                            emailController.value.text,
+                            redirectTo:
+                                "https://www.cinenexa.com/reset-password/",
+                          );
+                          Style.showToast(
+                            context: context,
+                            text:
+                                "An email has been sent to your registered email",
+                          );
+                          Navigator.pop(context);
+                        } catch (e) {
+                          Navigator.pop(context);
+                          Style.showToast(context: context, text: e.toString());
                         }
                       },
                       type: RoundedButtonType.filled,
