@@ -11,13 +11,13 @@ import 'package:cinenexa/services/network/requests.dart';
 import 'package:cinenexa/services/network/trakt_oauth_client.dart';
 import 'package:cinenexa/services/network/trakt_repository.dart';
 
+import '../../models/local/installed_extensions.dart';
 import '../../models/local/progress.dart';
 import '../../models/local/show_history.dart';
 import '../../models/network/base_model.dart';
 import '../../models/network/extensions/extension.dart';
 import '../../models/network/genre.dart';
 import '../../models/network/movie.dart';
-import '../../models/network/trakt/trakt_progress.dart';
 import '../../models/network/tv.dart';
 import '../../models/network/tv_episode.dart';
 import '../../models/network/video.dart';
@@ -32,7 +32,7 @@ class DetailsStore extends _DetailsStore with _$DetailsStore {
   DetailsStore(
       {required BaseModel baseModel,
       required int noOfExtensions,
-      required List<Extension> installedExtensions})
+      required List<InstalledExtensions> installedExtensions})
       : super(
             baseModel: baseModel,
             noOfExtensions: noOfExtensions,
@@ -115,7 +115,7 @@ abstract class _DetailsStore with Store {
   String imdbId = "";
   TraktRepository repository = TraktRepository(client: TraktOAuthClient());
   StreamSubscription? streamSubscription;
-  List<Extension> installedExtensions;
+  List<InstalledExtensions> installedExtensions;
 
   bool isStreamLoadingDelayed = false;
   bool isReviewsLoadingDelayed = false;

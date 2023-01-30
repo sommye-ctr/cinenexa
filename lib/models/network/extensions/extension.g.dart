@@ -13,83 +13,88 @@ const ExtensionSchema = Schema(
   name: r'Extension',
   id: -4770436545624543336,
   properties: {
-    r'createdAt': PropertySchema(
+    r'configJson': PropertySchema(
       id: 0,
+      name: r'configJson',
+      type: IsarType.string,
+    ),
+    r'createdAt': PropertySchema(
+      id: 1,
       name: r'createdAt',
       type: IsarType.dateTime,
     ),
     r'description': PropertySchema(
-      id: 1,
+      id: 2,
       name: r'description',
       type: IsarType.string,
     ),
     r'devEmail': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'devEmail',
       type: IsarType.string,
     ),
     r'devName': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'devName',
       type: IsarType.string,
     ),
     r'devUrl': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'devUrl',
       type: IsarType.string,
     ),
     r'domainId': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'domainId',
       type: IsarType.string,
     ),
     r'endpoint': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'endpoint',
       type: IsarType.string,
     ),
     r'hashCode': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'hashCode',
       type: IsarType.long,
     ),
     r'icon': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'icon',
       type: IsarType.string,
     ),
     r'id': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'id',
       type: IsarType.string,
     ),
     r'name': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'name',
       type: IsarType.string,
     ),
     r'providesAnime': PropertySchema(
-      id: 11,
+      id: 12,
       name: r'providesAnime',
       type: IsarType.bool,
     ),
     r'providesMovie': PropertySchema(
-      id: 12,
+      id: 13,
       name: r'providesMovie',
       type: IsarType.bool,
     ),
     r'providesShow': PropertySchema(
-      id: 13,
+      id: 14,
       name: r'providesShow',
       type: IsarType.bool,
     ),
     r'rating': PropertySchema(
-      id: 14,
+      id: 15,
       name: r'rating',
       type: IsarType.double,
     ),
     r'ratingCount': PropertySchema(
-      id: 15,
+      id: 16,
       name: r'ratingCount',
       type: IsarType.long,
     )
@@ -106,6 +111,12 @@ int _extensionEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  {
+    final value = object.configJson;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   {
     final value = object.description;
     if (value != null) {
@@ -169,22 +180,23 @@ void _extensionSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeDateTime(offsets[0], object.createdAt);
-  writer.writeString(offsets[1], object.description);
-  writer.writeString(offsets[2], object.devEmail);
-  writer.writeString(offsets[3], object.devName);
-  writer.writeString(offsets[4], object.devUrl);
-  writer.writeString(offsets[5], object.domainId);
-  writer.writeString(offsets[6], object.endpoint);
-  writer.writeLong(offsets[7], object.hashCode);
-  writer.writeString(offsets[8], object.icon);
-  writer.writeString(offsets[9], object.id);
-  writer.writeString(offsets[10], object.name);
-  writer.writeBool(offsets[11], object.providesAnime);
-  writer.writeBool(offsets[12], object.providesMovie);
-  writer.writeBool(offsets[13], object.providesShow);
-  writer.writeDouble(offsets[14], object.rating);
-  writer.writeLong(offsets[15], object.ratingCount);
+  writer.writeString(offsets[0], object.configJson);
+  writer.writeDateTime(offsets[1], object.createdAt);
+  writer.writeString(offsets[2], object.description);
+  writer.writeString(offsets[3], object.devEmail);
+  writer.writeString(offsets[4], object.devName);
+  writer.writeString(offsets[5], object.devUrl);
+  writer.writeString(offsets[6], object.domainId);
+  writer.writeString(offsets[7], object.endpoint);
+  writer.writeLong(offsets[8], object.hashCode);
+  writer.writeString(offsets[9], object.icon);
+  writer.writeString(offsets[10], object.id);
+  writer.writeString(offsets[11], object.name);
+  writer.writeBool(offsets[12], object.providesAnime);
+  writer.writeBool(offsets[13], object.providesMovie);
+  writer.writeBool(offsets[14], object.providesShow);
+  writer.writeDouble(offsets[15], object.rating);
+  writer.writeLong(offsets[16], object.ratingCount);
 }
 
 Extension _extensionDeserialize(
@@ -194,21 +206,22 @@ Extension _extensionDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Extension();
-  object.createdAt = reader.readDateTimeOrNull(offsets[0]);
-  object.description = reader.readStringOrNull(offsets[1]);
-  object.devEmail = reader.readStringOrNull(offsets[2]);
-  object.devName = reader.readStringOrNull(offsets[3]);
-  object.devUrl = reader.readStringOrNull(offsets[4]);
-  object.domainId = reader.readStringOrNull(offsets[5]);
-  object.endpoint = reader.readStringOrNull(offsets[6]);
-  object.icon = reader.readStringOrNull(offsets[8]);
-  object.id = reader.readStringOrNull(offsets[9]);
-  object.name = reader.readStringOrNull(offsets[10]);
-  object.providesAnime = reader.readBoolOrNull(offsets[11]);
-  object.providesMovie = reader.readBoolOrNull(offsets[12]);
-  object.providesShow = reader.readBoolOrNull(offsets[13]);
-  object.rating = reader.readDoubleOrNull(offsets[14]);
-  object.ratingCount = reader.readLongOrNull(offsets[15]);
+  object.configJson = reader.readStringOrNull(offsets[0]);
+  object.createdAt = reader.readDateTimeOrNull(offsets[1]);
+  object.description = reader.readStringOrNull(offsets[2]);
+  object.devEmail = reader.readStringOrNull(offsets[3]);
+  object.devName = reader.readStringOrNull(offsets[4]);
+  object.devUrl = reader.readStringOrNull(offsets[5]);
+  object.domainId = reader.readStringOrNull(offsets[6]);
+  object.endpoint = reader.readStringOrNull(offsets[7]);
+  object.icon = reader.readStringOrNull(offsets[9]);
+  object.id = reader.readStringOrNull(offsets[10]);
+  object.name = reader.readStringOrNull(offsets[11]);
+  object.providesAnime = reader.readBoolOrNull(offsets[12]);
+  object.providesMovie = reader.readBoolOrNull(offsets[13]);
+  object.providesShow = reader.readBoolOrNull(offsets[14]);
+  object.rating = reader.readDoubleOrNull(offsets[15]);
+  object.ratingCount = reader.readLongOrNull(offsets[16]);
   return object;
 }
 
@@ -220,9 +233,9 @@ P _extensionDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readDateTimeOrNull(offset)) as P;
-    case 1:
       return (reader.readStringOrNull(offset)) as P;
+    case 1:
+      return (reader.readDateTimeOrNull(offset)) as P;
     case 2:
       return (reader.readStringOrNull(offset)) as P;
     case 3:
@@ -234,22 +247,24 @@ P _extensionDeserializeProp<P>(
     case 6:
       return (reader.readStringOrNull(offset)) as P;
     case 7:
-      return (reader.readLong(offset)) as P;
-    case 8:
       return (reader.readStringOrNull(offset)) as P;
+    case 8:
+      return (reader.readLong(offset)) as P;
     case 9:
       return (reader.readStringOrNull(offset)) as P;
     case 10:
       return (reader.readStringOrNull(offset)) as P;
     case 11:
-      return (reader.readBoolOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 12:
       return (reader.readBoolOrNull(offset)) as P;
     case 13:
       return (reader.readBoolOrNull(offset)) as P;
     case 14:
-      return (reader.readDoubleOrNull(offset)) as P;
+      return (reader.readBoolOrNull(offset)) as P;
     case 15:
+      return (reader.readDoubleOrNull(offset)) as P;
+    case 16:
       return (reader.readLongOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -258,6 +273,157 @@ P _extensionDeserializeProp<P>(
 
 extension ExtensionQueryFilter
     on QueryBuilder<Extension, Extension, QFilterCondition> {
+  QueryBuilder<Extension, Extension, QAfterFilterCondition> configJsonIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'configJson',
+      ));
+    });
+  }
+
+  QueryBuilder<Extension, Extension, QAfterFilterCondition>
+      configJsonIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'configJson',
+      ));
+    });
+  }
+
+  QueryBuilder<Extension, Extension, QAfterFilterCondition> configJsonEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'configJson',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Extension, Extension, QAfterFilterCondition>
+      configJsonGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'configJson',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Extension, Extension, QAfterFilterCondition> configJsonLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'configJson',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Extension, Extension, QAfterFilterCondition> configJsonBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'configJson',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Extension, Extension, QAfterFilterCondition>
+      configJsonStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'configJson',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Extension, Extension, QAfterFilterCondition> configJsonEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'configJson',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Extension, Extension, QAfterFilterCondition> configJsonContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'configJson',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Extension, Extension, QAfterFilterCondition> configJsonMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'configJson',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Extension, Extension, QAfterFilterCondition>
+      configJsonIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'configJson',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Extension, Extension, QAfterFilterCondition>
+      configJsonIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'configJson',
+        value: '',
+      ));
+    });
+  }
+
   QueryBuilder<Extension, Extension, QAfterFilterCondition> createdAtIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(

@@ -1,14 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cinenexa/screens/extension_config_page.dart';
+import 'package:cinenexa/store/extensions/extensions_store.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:restart_app/restart_app.dart';
-import 'package:cinenexa/models/network/cinenexa_user.dart';
 import 'package:cinenexa/models/network/trakt_user.dart';
 import 'package:cinenexa/resources/strings.dart';
 import 'package:cinenexa/resources/style.dart';
-import 'package:cinenexa/screens/home_first_screen.dart';
 import 'package:cinenexa/screens/login_configure_page.dart';
-import 'package:cinenexa/services/network/utils.dart';
 import 'package:cinenexa/store/user/user_store.dart';
 
 class SettingsIntegrations extends StatefulWidget {

@@ -5,7 +5,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:restart_app/restart_app.dart';
 import 'package:cinenexa/resources/strings.dart';
 import 'package:cinenexa/resources/style.dart';
-import 'package:cinenexa/screens/home_first_screen.dart';
 import 'package:cinenexa/services/local/database.dart';
 import 'package:cinenexa/services/network/trakt_oauth_client.dart';
 import 'package:cinenexa/services/network/trakt_repository.dart';

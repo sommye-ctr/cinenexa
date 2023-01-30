@@ -102,9 +102,9 @@ mixin _$ExtensionsStore on _ExtensionsStoreBase, Store {
       AsyncAction('_ExtensionsStoreBase.installExtension', context: context);
 
   @override
-  Future<dynamic> installExtension(Extension extension) {
+  Future<dynamic> installExtension(Extension extension, {String? userData}) {
     return _$installExtensionAsyncAction
-        .run(() => super.installExtension(extension));
+        .run(() => super.installExtension(extension, userData: userData));
   }
 
   late final _$syncInstalledExtensionsAsyncAction = AsyncAction(
