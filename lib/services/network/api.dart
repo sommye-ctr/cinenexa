@@ -1,9 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dio/dio.dart';
+import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
+import 'package:dio_cache_interceptor_hive_store/dio_cache_interceptor_hive_store.dart';
 import 'package:http/http.dart' as http;
 import 'package:cinenexa/models/network/custom_exception.dart';
 import 'package:cinenexa/services/constants.dart';
+import 'package:path_provider/path_provider.dart';
+
+import '../../models/network/extensions/extension.dart';
 
 class Api {
   Future<dynamic> getRequest(String url, {bool haveQueries = false}) async {
@@ -34,6 +40,24 @@ class Api {
       throw FetchException("No internet connection");
     }
     return resp;
+  }
+
+  Future<String> getJsonFile(Extension extension) async {
+    var cacheDir = await getTemporaryDirectory();
+    Dio dio = Dio()
+      ..interceptors.add(
+        DioCacheInterceptor(
+          options: CacheOptions(
+            store: HiveCacheStore(cacheDir.path),
+            priority: CachePriority.normal,
+            maxStale: Duration(days: 14),
+            policy: CachePolicy.forceCache,
+            keyBuilder: CacheOptions.defaultCacheKeyBuilder,
+          ),
+        ),
+      );
+    Response response = await dio.get(extension.configJson!);
+    return response.data;
   }
 
   http.Response _invalidate(http.Response response) {

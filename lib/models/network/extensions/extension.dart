@@ -26,6 +26,8 @@ class Extension {
   int? ratingCount;
   String? icon;
 
+  String? configJson;
+
   Extension();
   Extension.def({
     required this.id,
@@ -42,6 +44,7 @@ class Extension {
     this.devUrl,
     this.rating,
     this.ratingCount,
+    this.configJson,
   }) : icon = Supabase.instance.client.storage
             .from('extensions-icons')
             .getPublicUrl("$id.jpg");
@@ -61,6 +64,7 @@ class Extension {
     String? devUrl,
     double? rating,
     int? ratingCount,
+    String? configJson,
   }) {
     return Extension.def(
       id: id ?? this.id,
@@ -77,6 +81,7 @@ class Extension {
       devUrl: devUrl ?? this.devUrl,
       rating: rating ?? this.rating,
       ratingCount: ratingCount ?? this.ratingCount,
+      configJson: configJson ?? this.configJson,
     );
   }
 
@@ -96,6 +101,7 @@ class Extension {
       'rating': rating,
       'ratingCount': ratingCount,
       'icon': icon,
+      'configJson': configJson,
     };
   }
 
@@ -117,6 +123,8 @@ class Extension {
       rating: map['rating'] != null ? (map['rating'] as num).toDouble() : null,
       ratingCount:
           map['rating_count'] != null ? map['rating_count'] as int : null,
+      configJson:
+          map['config_json'] != null ? map['config_json'] as String : null,
     );
   }
 
@@ -146,7 +154,8 @@ class Extension {
         devUrl.hashCode ^
         rating.hashCode ^
         ratingCount.hashCode ^
-        icon.hashCode;
+        icon.hashCode ^
+        configJson.hashCode;
   }
 
   @override
@@ -158,7 +167,7 @@ class Extension {
 }
 
 extension ExtensionConverter on Extension {
-  InstalledExtensions getInstalled({int? providedRating}) {
+  InstalledExtensions getInstalled({int? providedRating, String? userData}) {
     return InstalledExtensions()
       ..createdAt = this.createdAt
       ..description = this.description
@@ -175,7 +184,8 @@ extension ExtensionConverter on Extension {
       ..rating = this.rating
       ..ratingCount = this.ratingCount
       ..stId = this.id
-      ..providedRating = providedRating;
+      ..providedRating = providedRating
+      ..userData = userData;
   }
 }
 

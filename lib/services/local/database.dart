@@ -168,18 +168,20 @@ class Database {
     });
   }
 
-  Future addInstalledExtension(Extension extension) {
+  Future addInstalledExtension(Extension extension, {String? userData}) {
     return isar.writeTxn(() async {
-      await isar.installedExtensions.put(extension.getInstalled());
+      await isar.installedExtensions.put(extension.getInstalled(
+        userData: userData,
+      ));
     });
   }
 
   //adds all the extensions assuming that this is to be called when all the extensions provided are installed
-  Future updateAllInstalledExtensions(List<Extension> extensions) async {
+  Future updateAllInstalledExtensions(
+      List<InstalledExtensions> extensions) async {
     return isar.writeTxn(() async {
       await isar.installedExtensions.clear();
-      await isar.installedExtensions
-          .putAll(extensions.map((e) => e.getInstalled()).toList());
+      await isar.installedExtensions.putAll(extensions);
     });
   }
 
@@ -199,9 +201,11 @@ class Database {
 
       int? id = newExt[i].id;
       int? providedRating = newExt[i].providedRating;
+      String? userData = newExt[i].userData;
       newExt[i] = ext.getInstalled()
         ..id = id
-        ..providedRating = providedRating;
+        ..providedRating = providedRating
+        ..userData = userData;
     }
 
     return isar.writeTxn(() async {

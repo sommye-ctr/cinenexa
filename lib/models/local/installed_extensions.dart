@@ -24,4 +24,5 @@ class InstalledExtensions {
   late String? icon;
 
   late int? providedRating;
+  late String? userData;
 }

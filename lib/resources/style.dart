@@ -217,6 +217,7 @@ class Style {
 
   static void showLoadingDialog({
     required BuildContext context,
+    String? text,
   }) {
     AwesomeDialog(
       context: context,
@@ -224,8 +225,20 @@ class Style {
       dismissOnBackKeyPress: false,
       dialogType: DialogType.noHeader,
       dialogBackgroundColor: Colors.transparent,
-      body: Center(
-        child: CircularProgressIndicator(),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Center(
+            child: CircularProgressIndicator(),
+          ),
+          if (text != null)
+            Text(
+              text,
+              textAlign: TextAlign.center,
+            ),
+        ],
       ),
       padding: EdgeInsets.all(8),
       useRootNavigator: true,

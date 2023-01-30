@@ -78,15 +78,19 @@ abstract class _ExtensionsStoreBase with Store {
   }
 
   @action
-  Future installExtension(Extension extension) async {
-    var result =
-        await SupabaseRepository.installExtension(extension: extension);
+  Future installExtension(Extension extension, {String? userData}) async {
+    var result = await SupabaseRepository.installExtension(
+      extension: extension,
+      userData: userData,
+    );
 
     result.when(
       (success) {
         successMessage = Strings.installed;
-
-        return database.addInstalledExtension(extension);
+        return database.addInstalledExtension(
+          extension,
+          userData: userData,
+        );
       },
       (err) {
         if (err.code == "23505") {
@@ -105,9 +109,12 @@ abstract class _ExtensionsStoreBase with Store {
     return list.when(
       (success) {
         installedExtensions.clear();
-        installedExtensions.addAll(success.map((e) => e.getInstalled()));
+        installedExtensions.addAll(
+            success.map((e) => e.extension.getInstalled(userData: e.userData)));
         Future.wait([
-          database.updateAllInstalledExtensions(success),
+          database.updateAllInstalledExtensions(success
+              .map((e) => e.extension.getInstalled(userData: e.userData))
+              .toList()),
           database.updateLastActivities(extensionSyncedAt: DateTime.now()),
         ]);
       },

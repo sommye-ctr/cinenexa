@@ -1,4 +1,5 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:cinenexa/screens/extension_config_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
@@ -172,6 +173,15 @@ class _MyAppState extends State<MyApp> {
         return MaterialPageRoute(
           builder: (context) {
             return ForgotPassPage();
+          },
+        );
+      case ExtensionConfig.routeName:
+        return MaterialPageRoute(
+          builder: (context) {
+            return ExtensionConfig(
+              json: settings.arguments['json'],
+              extension: settings.arguments['extension'],
+            );
           },
         );
       case LoginConfigurePage.routeName:

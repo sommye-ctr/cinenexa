@@ -1,14 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cinenexa/screens/extension_config_page.dart';
+import 'package:cinenexa/store/extensions/extensions_store.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:restart_app/restart_app.dart';
-import 'package:cinenexa/models/network/cinenexa_user.dart';
 import 'package:cinenexa/models/network/trakt_user.dart';
 import 'package:cinenexa/resources/strings.dart';
 import 'package:cinenexa/resources/style.dart';
-import 'package:cinenexa/screens/home_first_screen.dart';
 import 'package:cinenexa/screens/login_configure_page.dart';
-import 'package:cinenexa/services/network/utils.dart';
 import 'package:cinenexa/store/user/user_store.dart';
 
 class SettingsIntegrations extends StatefulWidget {
@@ -108,6 +107,24 @@ class _SettingsIntegrationsState extends State<SettingsIntegrations> {
                     );
                   },
                 ),
+              Style.getListTile(
+                context: context,
+                title: "FOrm",
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    ExtensionConfig.routeName,
+                    arguments: {
+                      "extension":
+                          Provider.of<ExtensionsStore>(context, listen: false)
+                              .discoverExtensions!
+                              .first,
+                      "json":
+                          "[{\"id\":\"q-genre\",\"type\":\"checkbox\",\"title\":\"Genres\",\"description\":\"Selectthegenres\",\"fields\":[\"Action\",\"Adventure\",\"Comedy\",\"Drama\"],\"required\":true},{\"id\":\"q-country\",\"type\":\"dropdown\",\"title\":\"Country\",\"description\":\"Selectthecountries\",\"fields\":[\"USA\",\"UK\",\"Germany\",\"France\"],\"required\":false},{\"id\":\"q-lang\",\"type\":\"radio\",\"title\":\"Language\",\"description\":\"Selectthelanguage\",\"fields\":[\"English\",\"German\",\"Hindi\",\"Arabic\"],\"required\":true},{\"id\":\"q-key\",\"type\":\"text\",\"title\":\"APIkey\",\"description\":\"Enteryourapikey\",\"required\":true,\"maxLines\":4,\"inputType\":\"string|number\"},{\"id\":\"q-cars\",\"type\":\"checkbox\",\"title\":\"Cars\",\"description\":\"Selectthecars\",\"fields\":[\"Mustang\",\"GWagon\",\"Audi\",\"Ferrari\"],\"required\":true}]",
+                    },
+                  );
+                },
+              ),
             ],
           ),
         ),

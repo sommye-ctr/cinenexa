@@ -1,4 +1,7 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:cinenexa/screens/extension_config_page.dart';
+import 'package:cinenexa/services/network/api.dart';
+import 'package:cinenexa/services/network/extensions_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
@@ -135,7 +138,10 @@ class _ExtensionTileState extends State<ExtensionTile> {
     }
     return [
       RoundedButton(
-        child: Text(Strings.install),
+        child: Text(widget.extension.configJson != null &&
+                widget.extension.configJson!.isNotEmpty
+            ? Strings.configure
+            : Strings.install),
         onPressed: () => _onInstallExtension(context),
         type: RoundedButtonType.filled,
       ),
@@ -261,6 +267,11 @@ class _ExtensionTileState extends State<ExtensionTile> {
   }
 
   void _onInstallExtension(context) async {
+    if (widget.extension.configJson != null &&
+        widget.extension.configJson!.isNotEmpty) {
+      _onConfigureExtension();
+      return;
+    }
     Style.showConfirmationDialog(
       context: context,
       text: Strings.installExtensionsWarning,
@@ -273,6 +284,44 @@ class _ExtensionTileState extends State<ExtensionTile> {
           Navigator.pop(context);
           widget.onInstall?.call();
         });
+      },
+    );
+  }
+
+  void _onConfigureExtension() async {
+    Style.showConfirmationDialog(
+      context: context,
+      text: Strings.installExtensionsWarning,
+      onPressed: () {
+        Navigator.pop(context);
+
+        Style.showConfirmationDialog(
+          context: context,
+          text: Strings.requireDataWarning,
+          onPressed: () async {
+            Style.showLoadingDialog(
+                context: context, text: Strings.preparingForm);
+            String json = await Api().getJsonFile(widget.extension);
+            Navigator.pop(context);
+
+            var result = await Navigator.pushNamed(
+              context,
+              ExtensionConfig.routeName,
+              arguments: {
+                "json": json,
+                "extension": widget.extension,
+              },
+            );
+            if (result != null && result is String) {
+              //print(result);
+              Provider.of<ExtensionsStore>(context, listen: false)
+                  .installExtension(widget.extension, userData: result)
+                  .whenComplete(() {
+                Navigator.pop(context);
+              });
+            }
+          },
+        );
       },
     );
   }

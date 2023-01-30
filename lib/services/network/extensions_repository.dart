@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cinenexa/models/local/installed_extensions.dart';
 import 'package:cinenexa/models/network/base_model.dart';
 import 'package:cinenexa/models/network/extensions/extension_stream.dart';
 import 'package:cinenexa/services/network/utils.dart';
@@ -12,7 +13,7 @@ import 'package:path_provider/path_provider.dart';
 import '../../models/network/extensions/extension.dart';
 
 class ExtensionsRepository {
-  final List<Extension> installedExtensions;
+  final List<InstalledExtensions> installedExtensions;
 
   late CacheOptions options;
   late Dio dio;
@@ -63,7 +64,7 @@ class ExtensionsRepository {
 
   Future<List<ExtensionStream>> _getStream({
     required BaseModel baseModel,
-    required Extension extension,
+    required InstalledExtensions extension,
     required int traktId,
     required String imdbId,
     int? season,
@@ -83,13 +84,11 @@ class ExtensionsRepository {
 
     Response response;
     try {
-      response = await dio.get(
-        extension.endpoint!,
-        queryParameters: query,
-        options: Options(
-          receiveTimeout: 30000,
-        ),
-      );
+      if (extension.userData != null && extension.userData!.isNotEmpty) {
+        response = await putResponse(extension, query);
+      } else {
+        response = await getResponse(extension, query);
+      }
     } on DioError catch (e, trace) {
       if (e.type == DioErrorType) {
         return [];
@@ -100,7 +99,33 @@ class ExtensionsRepository {
     return _handleResponse(response.data, extension);
   }
 
-  List<ExtensionStream> _handleResponse(String response, Extension extension) {
+  Future<Response> putResponse(
+      InstalledExtensions extension, Map<String, dynamic> query) {
+    return dio.put(
+      extension.endpoint!,
+      queryParameters: query,
+      data: {
+        "params": extension.userData,
+      },
+      options: Options(
+        receiveTimeout: 30000,
+      ),
+    );
+  }
+
+  Future<Response> getResponse(
+      InstalledExtensions extension, Map<String, dynamic> query) {
+    return dio.get(
+      extension.endpoint!,
+      queryParameters: query,
+      options: Options(
+        receiveTimeout: 30000,
+      ),
+    );
+  }
+
+  List<ExtensionStream> _handleResponse(
+      String response, InstalledExtensions extension) {
     if (response.isNotEmpty) {
       try {
         Map sources = Utils.parseJson(response);
@@ -110,7 +135,8 @@ class ExtensionsRepository {
         //.toList();
         List list = sources['streams'];
         List<ExtensionStream> modLIst = list
-            .map((e) => ExtensionStream.fromMap(e)..extension = extension)
+            .map((e) => ExtensionStream.fromMap(e)
+              ..extension = extension.getExtension())
             .toList();
         return modLIst;
       } catch (e, trace) {
