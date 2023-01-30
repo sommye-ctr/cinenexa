@@ -107,24 +107,6 @@ class _SettingsIntegrationsState extends State<SettingsIntegrations> {
                     );
                   },
                 ),
-              Style.getListTile(
-                context: context,
-                title: "FOrm",
-                onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    ExtensionConfig.routeName,
-                    arguments: {
-                      "extension":
-                          Provider.of<ExtensionsStore>(context, listen: false)
-                              .discoverExtensions!
-                              .first,
-                      "json":
-                          "[{\"id\":\"q-genre\",\"type\":\"checkbox\",\"title\":\"Genres\",\"description\":\"Selectthegenres\",\"fields\":[\"Action\",\"Adventure\",\"Comedy\",\"Drama\"],\"required\":true},{\"id\":\"q-country\",\"type\":\"dropdown\",\"title\":\"Country\",\"description\":\"Selectthecountries\",\"fields\":[\"USA\",\"UK\",\"Germany\",\"France\"],\"required\":false},{\"id\":\"q-lang\",\"type\":\"radio\",\"title\":\"Language\",\"description\":\"Selectthelanguage\",\"fields\":[\"English\",\"German\",\"Hindi\",\"Arabic\"],\"required\":true},{\"id\":\"q-key\",\"type\":\"text\",\"title\":\"APIkey\",\"description\":\"Enteryourapikey\",\"required\":true,\"maxLines\":4,\"inputType\":\"string|number\"},{\"id\":\"q-cars\",\"type\":\"checkbox\",\"title\":\"Cars\",\"description\":\"Selectthecars\",\"fields\":[\"Mustang\",\"GWagon\",\"Audi\",\"Ferrari\"],\"required\":true}]",
-                    },
-                  );
-                },
-              ),
             ],
           ),
         ),
