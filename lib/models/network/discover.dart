@@ -1,3 +1,4 @@
+import 'package:cinenexa/models/network/enums/discover_release_year.dart';
 import 'package:flutter/material.dart';
 import 'package:cinenexa/models/network/enums/languages.dart';
 
@@ -9,7 +10,10 @@ class Discover {
   String? certification;
   SortMoviesBy? sortMoviesBy;
   SortTvBy? sortTvBy;
+
   DateTimeRange? releaseDateRange;
+  DateTime? releaseDate;
+
   RangeValues? voteAverage;
   List<Genre> genres;
   List<Languages> languages;
@@ -17,8 +21,9 @@ class Discover {
     this.certification,
     this.sortMoviesBy,
     this.sortTvBy,
-    this.releaseDateRange,
     this.voteAverage,
+    this.releaseDate,
+    this.releaseDateRange,
     List<Genre>? genres,
     List<Languages>? languages,
   })  : this.genres = genres ?? [],

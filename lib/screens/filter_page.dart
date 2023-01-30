@@ -22,7 +22,7 @@ class FilterPage extends StatelessWidget {
   static final DEFAULT_VOTE_AVERAGE = RangeValues(0, 10);
   static final DEFAULT_YEAR = RangeValues(
     DateTime.now().year - 100,
-    DateTime.now().year.toDouble(),
+    DateTime.now().year - 11,
   );
 
   final Discover discover;
@@ -177,25 +177,37 @@ class FilterPage extends StatelessWidget {
   }
 
   List<Widget> _buildReleaseYear(context) {
+    List<String> years = [];
+    for (int i = 0; i < 11; i++) {
+      years.add((DateTime.now().year - i).toString());
+    }
+    years.add("Older");
+
     return [
       Text(
         Strings.year,
         style: Style.headingStyle,
       ),
       Style.getVerticalSpacing(context: context),
-      CustomRangeSlider(
-        values: getDefaultYearValues(),
-        max: DEFAULT_YEAR.end,
-        min: DEFAULT_YEAR.start,
-        onChanged: (changedValues) {
-          discover.releaseDateRange = DateTimeRange(
-            start: DateTime(
-              changedValues.start.toInt(),
-            ),
-            end: DateTime(
-              changedValues.end.toInt(),
-            ),
-          );
+      CustomCheckBoxList(
+        children: years,
+        type: CheckBoxListType.grid,
+        singleSelect: true,
+        selectedItems: _getSelectedDate(),
+        delegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          childAspectRatio: 16 / 9,
+          crossAxisSpacing: ScreenSize.getPercentOfWidth(context, 0.025),
+          mainAxisSpacing: ScreenSize.getPercentOfWidth(context, 0.025),
+        ),
+        onSelectionAdded: (values) {
+          if (values.first == "Older") {
+            discover.releaseDateRange = DateTimeRange(
+                start: DateTime(DEFAULT_YEAR.start.toInt()),
+                end: DateTime(DEFAULT_YEAR.end.toInt()));
+            return;
+          }
+          discover.releaseDate = DateTime(int.parse(values.first));
         },
       ),
     ];
@@ -339,6 +351,7 @@ class FilterPage extends StatelessWidget {
     if (discover.certification == null &&
         (discover.sortMoviesBy == null && discover.sortTvBy == null) &&
         discover.releaseDateRange == null &&
+        discover.releaseDate == null &&
         discover.voteAverage == null &&
         discover.genres.isEmpty &&
         discover.languages.isEmpty) {
@@ -362,6 +375,16 @@ class FilterPage extends StatelessWidget {
       DateTime.now().year - 100,
       DateTime.now().year.toDouble(),
     );
+  }
+
+  List<int> _getSelectedDate() {
+    if (discover.releaseDate != null) {
+      return [DateTime.now().year - discover.releaseDate!.year];
+    }
+    if (discover.releaseDateRange != null) {
+      return [10];
+    }
+    return [];
   }
 
   RangeValues getDefaultVoteAverage() {

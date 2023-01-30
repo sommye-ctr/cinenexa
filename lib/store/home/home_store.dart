@@ -91,6 +91,7 @@ abstract class _HomeStore with Store {
         sortMoviesBy: discover.sortMoviesBy,
         sortTvBy: discover.sortTvBy,
         withLanguages: discover.languages,
+        releaseDateEqual: discover.releaseDate,
       ),
     );
   }
@@ -130,6 +131,7 @@ abstract class _HomeStore with Store {
         sortMoviesBy: discover.sortMoviesBy,
         sortTvBy: discover.sortTvBy,
         withLanguages: discover.languages,
+        releaseDateEqual: discover.releaseDate,
       ),
       pageEndReached: true,
     );
