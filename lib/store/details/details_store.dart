@@ -15,7 +15,6 @@ import '../../models/local/installed_extensions.dart';
 import '../../models/local/progress.dart';
 import '../../models/local/show_history.dart';
 import '../../models/network/base_model.dart';
-import '../../models/network/extensions/extension.dart';
 import '../../models/network/genre.dart';
 import '../../models/network/movie.dart';
 import '../../models/network/tv.dart';
