@@ -95,20 +95,6 @@ class _SettingsGeneralState extends State<SettingsGeneral> {
                 enabled: providersEnabled != null && providersEnabled!,
                 trailing: _buildCountryTrailing(),
               ),
-              /* ChromeCastButton(
-                onButtonCreated: (ctr) {
-                  controller = ctr;
-                  controller?.addSessionListener();
-                },
-                onSessionStarted: () async {
-                  print("started");
-                  controller?.seek(interval: 35);
-
-                  controller?.loadMedia(
-                      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4');
-                  print("seeking");
-                },
-              ), */
             ],
           ),
         ),

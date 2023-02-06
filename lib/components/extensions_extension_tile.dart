@@ -313,7 +313,6 @@ class _ExtensionTileState extends State<ExtensionTile> {
               },
             );
             if (result != null && result is String) {
-              //print(result);
               Provider.of<ExtensionsStore>(context, listen: false)
                   .installExtension(widget.extension, userData: result)
                   .whenComplete(() {

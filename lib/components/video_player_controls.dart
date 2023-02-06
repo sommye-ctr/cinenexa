@@ -214,7 +214,6 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
                 season: playerStore.season,
                 episode: playerStore.episodes[playerStore.nextEpIndex ?? 0],
                 onCancel: () {
-                  print("cncel");
                   playerStore.setNextEpCancel(true);
                 },
                 onNext: (episode, season) {
