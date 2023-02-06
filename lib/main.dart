@@ -215,6 +215,7 @@ class _MyAppState extends State<MyApp> {
             show: value['tv'],
             progress: value['progress'],
             id: value['id'],
+            detailsStore: value['store'],
           ),
         );
       default:

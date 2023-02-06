@@ -12,10 +12,12 @@ import '../utils/screen_size.dart';
 class DetailsMoreDetails extends StatefulWidget {
   final DetailsStore detailsStore;
   final double height;
+  final ScrollController controller;
   const DetailsMoreDetails({
     Key? key,
     required this.detailsStore,
     required this.height,
+    required this.controller,
   }) : super(key: key);
 
   @override
@@ -72,7 +74,10 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
               child: TabBarView(
                 controller: tabController,
                 children: [
-                  DetailsMoreDetailsStreams(detailsStore: widget.detailsStore),
+                  DetailsMoreDetailsStreams(
+                    detailsStore: widget.detailsStore,
+                    controller: widget.controller,
+                  ),
                   DetailsMoreDetailsInfo(detailsStore: widget.detailsStore),
                   DetailsMoreDetailsReviews(detailsStore: widget.detailsStore),
                 ],

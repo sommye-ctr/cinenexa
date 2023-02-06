@@ -3,6 +3,9 @@ import 'package:cinenexa/models/network/extensions/subtitle.dart';
 import 'package:mobx/mobx.dart';
 import 'package:cinenexa/models/network/extensions/extension_stream.dart';
 import 'package:cinenexa/services/local/database.dart';
+
+import '../../models/network/tv_episode.dart';
+import '../details/details_store.dart';
 part 'player_store.g.dart';
 
 class PlayerStore = _PlayerStoreBase with _$PlayerStore;
@@ -16,6 +19,13 @@ abstract class _PlayerStoreBase with Store {
   bool locked = false;
   @observable
   bool casting = false;
+
+  @observable
+  bool nextEp = false;
+  @observable
+  bool nextEpInit = false;
+  @observable
+  bool nextEpCancel = false;
 
   @observable
   int speedIndex = 0;
@@ -33,25 +43,41 @@ abstract class _PlayerStoreBase with Store {
   int? selectedSubtitle;
 
   @observable
+  ObservableList<TvEpisode> episodes = <TvEpisode>[].asObservable();
+  late int currentEpIndex, season;
+  int? nextEpIndex;
+
   int seekDuration = 30;
+  int nextEpPopupDuration = 30;
+  bool autoPlay = false;
 
   Duration duration = Duration();
 
   final BetterPlayerController controller;
   final ExtensionStream extensionStream;
+  final DetailsStore detailsStore;
   final double? progress;
 
   _PlayerStoreBase({
     required this.controller,
     required this.extensionStream,
+    required this.detailsStore,
     this.progress,
+    required this.season,
+    required int episode,
   }) {
+    episodes.addAll(detailsStore.episodes);
+    currentEpIndex = detailsStore.episodes
+        .indexWhere((element) => element.episodeNumber == episode);
+
     init();
   }
 
   @action
   Future init() async {
     seekDuration = await Database().getSeekDuration();
+    nextEpPopupDuration = await Database().getNextEpDuration();
+    autoPlay = await Database().getAutoPlay();
 
     controller.addEventsListener((event) {
       switch (event.betterPlayerEventType) {
@@ -68,6 +94,7 @@ abstract class _PlayerStoreBase with Store {
           setBuffered(
               controller.videoPlayerController!.value.buffered.first.end);
           setPosition(controller.videoPlayerController!.value.position);
+          _handleNextEpPopup();
           break;
         case BetterPlayerEventType.play:
           if (casting) controller.pause();
@@ -75,6 +102,30 @@ abstract class _PlayerStoreBase with Store {
         default:
       }
     });
+  }
+
+  void _handleNextEpPopup() {
+    if (!autoPlay) {
+      return;
+    }
+    Duration? duration = controller.videoPlayerController!.value.duration;
+    int diff = duration == null ? 0 : (duration.inSeconds - position.inSeconds);
+
+    if (position.inSeconds >= 1 &&
+        diff <= (nextEpPopupDuration + 15) &&
+        !nextEpInit) {
+      nextEpInit = true;
+      if (currentEpIndex == episodes.length - 1) {
+        fetchNewEps();
+      } else {
+        setEpisode();
+      }
+    } else {
+      setNextEpFlag(false);
+    }
+    if (position.inSeconds >= 1 && diff <= nextEpPopupDuration && !nextEp) {
+      setNextEpFlag(true);
+    }
   }
 
   Future initSeek() async {
@@ -85,6 +136,47 @@ abstract class _PlayerStoreBase with Store {
     await controller.play();
     await controller.seekTo(Duration(milliseconds: seconds));
     await controller.play();
+  }
+
+  @action
+  Future fetchNewEps() async {
+    if (detailsStore.tv!.seasons!.length - 1 >=
+        detailsStore.chosenSeason! + 1) {
+      List<TvEpisode> list =
+          await detailsStore.onSeasonChanged(detailsStore.chosenSeason! + 1);
+      detailsStore.onEpBackClicked();
+      detailsStore.onEpiodeClicked(0);
+      nextEpIndex = 0;
+      season =
+          detailsStore.tv?.seasons?[detailsStore.chosenSeason!].seasonNumber ??
+              0;
+      episodes.clear();
+      episodes.addAll(list);
+      fetchStreams();
+    }
+  }
+
+  @action
+  void setEpisode() {
+    nextEpIndex = currentEpIndex + 1;
+    detailsStore.onEpBackClicked();
+    detailsStore.onEpiodeClicked(nextEpIndex!);
+    fetchStreams();
+  }
+
+  @action
+  Future fetchStreams() async {
+    detailsStore.fetchStreams();
+  }
+
+  @action
+  void setNextEpFlag(bool value) {
+    this.nextEp = value;
+  }
+
+  @action
+  void setNextEpCancel(bool value) {
+    this.nextEpCancel = value;
   }
 
   @action

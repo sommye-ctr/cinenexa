@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:better_player/better_player.dart';
+import 'package:cinenexa/components/video_player_next_episode.dart';
 import 'package:cinenexa/services/network/utils.dart';
+import 'package:cinenexa/store/details/details_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:cinenexa/resources/strings.dart';
@@ -35,6 +37,7 @@ class VideoPlayerControls extends StatefulWidget {
   final Progress? progress;
   final int? fitIndex;
   final bool? autoSubtitle;
+  final DetailsStore? detailsStore;
 
   final GlobalKey? playerKey;
 
@@ -53,6 +56,7 @@ class VideoPlayerControls extends StatefulWidget {
     this.playerKey,
     this.fitIndex,
     this.autoSubtitle,
+    this.detailsStore,
   }) : super(key: key);
 
   @override
@@ -77,6 +81,9 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
       controller: widget.controller,
       extensionStream: widget.stream,
       progress: widget.progress?.progress,
+      detailsStore: widget.detailsStore!,
+      episode: widget.episode!,
+      season: widget.season!,
     );
 
     scrobbleManager = ScrobbleManager(
@@ -94,15 +101,18 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
     if (widget.fitIndex != null) playerStore.setFitIndex(widget.fitIndex!);
     if (widget.autoSubtitle != null &&
         widget.progress != null &&
-        widget.progress?.subtitle != null)
+        widget.progress?.subtitle != null) {
       playerStore.changeSubtitle(widget.progress!.subtitle!);
+    }
+    _cancelAndRestartTimer();
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-        onWillPop: _onBack,
-        child: Observer(builder: (_) {
+      onWillPop: _onBack,
+      child: Observer(
+        builder: (_) {
           return GestureDetector(
             behavior: HitTestBehavior.translucent,
             onTap: () {
@@ -112,6 +122,7 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
             },
             child: Observer(
               builder: (context) {
+                playerStore.nextEp;
                 if (playerStore.showControls) {
                   if (playerStore.locked) {
                     return Padding(
@@ -178,14 +189,44 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
                           );
                         },
                       ),
+                      _buildPopup(),
                     ],
                   );
                 }
-                return Container();
+                return _buildPopup();
               },
             ),
           );
-        }));
+        },
+      ),
+    );
+  }
+
+  Widget _buildPopup() {
+    return Align(
+      alignment: Alignment.bottomRight,
+      child: LayoutBuilder(
+        builder: (p0, p1) {
+          if (playerStore.nextEp && !playerStore.nextEpCancel)
+            return Container(
+              width: ScreenSize.getPercentOfWidth(context, 0.35),
+              child: VideoPlayerNextEpisode(
+                season: playerStore.season,
+                episode: playerStore.episodes[playerStore.nextEpIndex ?? 0],
+                onCancel: () {
+                  playerStore.setNextEpCancel(true);
+                },
+                onNext: (episode, season) {
+                  scrobbleManager?.exit();
+                  if (playerStore.casting) chromeCastController?.endSession();
+                  widget.controller.exitFullScreen();
+                },
+              ),
+            );
+          return Container();
+        },
+      ),
+    );
   }
 
   Future<bool> _onBack() async {
@@ -310,6 +351,8 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
 
   Widget _buildProgressBar() {
     return Observer(builder: (_) {
+      Duration? duration =
+          playerStore.controller.videoPlayerController!.value.duration;
       return Padding(
         padding: EdgeInsets.symmetric(
           horizontal: 16,
@@ -317,8 +360,7 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
         ),
         child: ProgressBar(
           progress: playerStore.position,
-          total: playerStore.controller.videoPlayerController!.value.duration ??
-              Duration(),
+          total: duration ?? Duration(),
           barHeight: 3,
           timeLabelLocation: TimeLabelLocation.sides,
           buffered: playerStore.buffered,

@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:cinenexa/models/network/extensions/extension.dart';
 
 class UserExtensions {
-  final String id;
+  final int id;
   final DateTime createdAt;
   final Extension extension;
   final String? userData;
@@ -17,7 +17,7 @@ class UserExtensions {
   });
 
   UserExtensions copyWith({
-    String? id,
+    int? id,
     DateTime? createdAt,
     Extension? extension,
     String? userData,
@@ -41,7 +41,7 @@ class UserExtensions {
 
   factory UserExtensions.fromMap(Map<String, dynamic> map) {
     return UserExtensions(
-      id: map['id'] as String,
+      id: map['id'] as int,
       createdAt: DateTime.parse(map['created_at'] as String),
       extension: Extension.fromMap(map['extension_id'] as Map<String, dynamic>),
       userData: map['user_data'],

@@ -19,12 +19,12 @@ class SupabaseRepository {
     }
   }
 
-  static Future<Result<List<UserExtensions>, PostgrestException>>
+  static Future<Result<List<UserExtensions>, Object>>
       getUserExtensions() async {
     try {
       final resp = await client
           .from('user_extensions')
-          .select('extension_id(*)')
+          .select('*,extension_id(*)')
           .eq('user_id', client.auth.currentUser!.id)
           .order('created_at', ascending: false);
       return Success((resp as List)
@@ -33,7 +33,7 @@ class SupabaseRepository {
           )
           .toList());
     } catch (e) {
-      return Error(e as PostgrestException);
+      return Error(e);
     }
   }
 

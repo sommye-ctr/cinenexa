@@ -1,8 +1,10 @@
 import 'package:better_player/better_player.dart';
 import 'package:cinenexa/models/local/progress.dart';
+import 'package:cinenexa/models/network/tv_episode.dart';
 import 'package:cinenexa/resources/strings.dart';
 import 'package:cinenexa/services/local/database.dart';
 import 'package:cinenexa/services/network/utils.dart';
+import 'package:cinenexa/store/details/details_store.dart';
 import 'package:cinenexa/utils/settings_indexer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -24,6 +26,7 @@ class VideoPlayerPage extends StatefulWidget {
   final int? season, episode;
   final Progress? progress;
   final ExtensionStream extensionStream;
+  final DetailsStore? detailsStore;
 
   const VideoPlayerPage({
     Key? key,
@@ -35,6 +38,7 @@ class VideoPlayerPage extends StatefulWidget {
     this.episode,
     this.season,
     this.progress,
+    this.detailsStore,
   }) : super(key: key);
 
   @override
@@ -112,6 +116,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
             id: widget.id,
             fitIndex: fitIndex,
             autoSubtitle: autoSubtitle,
+            detailsStore: widget.detailsStore,
           ),
         ));
 

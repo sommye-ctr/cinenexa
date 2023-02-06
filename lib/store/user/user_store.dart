@@ -94,13 +94,18 @@ abstract class _UserStoreBase with Store {
       } else {
         futures.addAll([
           fetchUserWatchedShows(
-              api: lastActivities, local: localLast, fromApi: true),
+            api: lastActivities,
+            local: localLast,
+            fromApi: true,
+          ),
           favoritesStore?.fetchFavorites(fromApi: true),
         ]);
       }
       Future.wait(listFutures).whenComplete(() => localDb.addLastActivities(
           lastActivities: lastActivities
             ..extensionsSyncedAt = localLast?.extensionsSyncedAt));
+    } else {
+      favoritesStore?.fetchFavorites(fromApi: false);
     }
   }
 

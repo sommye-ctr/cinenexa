@@ -15,7 +15,6 @@ import '../../models/local/installed_extensions.dart';
 import '../../models/local/progress.dart';
 import '../../models/local/show_history.dart';
 import '../../models/network/base_model.dart';
-import '../../models/network/extensions/extension.dart';
 import '../../models/network/genre.dart';
 import '../../models/network/movie.dart';
 import '../../models/network/tv.dart';
@@ -225,9 +224,9 @@ abstract class _DetailsStore with Store {
   }
 
   @action
-  void onSeasonChanged(int index) {
+  Future<List<TvEpisode>> onSeasonChanged(int index) {
     chosenSeason = index;
-    _fetchEpisodes();
+    return _fetchEpisodes();
   }
 
   @action
@@ -252,13 +251,14 @@ abstract class _DetailsStore with Store {
     }
   }
 
-  void _fetchEpisodes() async {
+  Future<List<TvEpisode>> _fetchEpisodes() async {
     List<TvEpisode> latest = await Repository.getSeasonEpisodes(
       tvId: baseModel.id!,
       seasonNo: tv!.seasons![chosenSeason!].seasonNumber!,
     );
     episodes.clear();
     episodes.addAll(latest);
+    return latest;
   }
 
   @action
