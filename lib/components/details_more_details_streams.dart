@@ -21,7 +21,6 @@ import '../models/network/tv_season.dart';
 import '../models/network/watch_provider.dart';
 import '../resources/strings.dart';
 import '../resources/style.dart';
-import '../screens/video_player_page.dart';
 import '../utils/screen_size.dart';
 import '../widgets/horizontal_list.dart';
 import 'details_episode_tile.dart';
@@ -29,9 +28,11 @@ import 'details_stream_tile.dart';
 
 class DetailsMoreDetailsStreams extends StatefulWidget {
   final DetailsStore detailsStore;
+  final ScrollController controller;
   const DetailsMoreDetailsStreams({
     Key? key,
     required this.detailsStore,
+    required this.controller,
   }) : super(key: key);
 
   @override
@@ -453,6 +454,18 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
       progress: progress,
       movie: widget.detailsStore.movie,
       tv: widget.detailsStore.tv,
+      detailsStore: widget.detailsStore,
+    );
+
+    Future.delayed(
+      Duration(milliseconds: 500),
+      () {
+        widget.controller.animateTo(
+          widget.controller.position.maxScrollExtent,
+          duration: Duration(milliseconds: 500),
+          curve: Curves.easeIn,
+        );
+      },
     );
 
     await widget.detailsStore.fetchProgress();

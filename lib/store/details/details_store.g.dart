@@ -379,7 +379,7 @@ mixin _$DetailsStore on _DetailsStore, Store {
   }
 
   @override
-  void onSeasonChanged(int index) {
+  Future<List<TvEpisode>> onSeasonChanged(int index) {
     final _$actionInfo = _$_DetailsStoreActionController.startAction(
         name: '_DetailsStore.onSeasonChanged');
     try {

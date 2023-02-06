@@ -13,11 +13,8 @@ import 'package:cinenexa/store/favorites/favorites_store.dart';
 import 'package:cinenexa/utils/screen_size.dart';
 import 'package:cinenexa/widgets/custom_back_button.dart';
 
-import '../models/local/progress.dart';
 import '../models/network/base_model.dart';
-import '../models/network/extensions/extension_stream.dart';
 import '../resources/strings.dart';
-import '../screens/video_player_page.dart';
 import '../services/network/utils.dart';
 import '../utils/date_time_formatter.dart';
 import '../widgets/rounded_button.dart';
@@ -434,7 +431,9 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
           movie: detailsStore.movie,
           tv: detailsStore.tv,
           stream: detailsStore.progress!.stream!,
+          detailsStore: detailsStore,
         );
+        scrollTop();
         await detailsStore.fetchProgress();
 
         return;
@@ -449,7 +448,9 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
         movie: detailsStore.movie,
         tv: detailsStore.tv,
         stream: detailsStore.progress!.stream!,
+        detailsStore: detailsStore,
       );
+      scrollTop();
       await detailsStore.fetchProgress();
     }
     if (detailsStore.progress != null &&
@@ -459,10 +460,18 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
       detailsStore.chosenSeason = (detailsStore.progress!.seasonNo!) - 1;
       detailsStore.fetchStreams();
     }
-    scrollController.animateTo(
-      maxExtent - minExtent,
-      duration: duration,
-      curve: Curves.easeIn,
+  }
+
+  void scrollTop() {
+    Future.delayed(
+      Duration(milliseconds: 500),
+      () {
+        scrollController.animateTo(
+          maxExtent,
+          duration: duration,
+          curve: Curves.easeIn,
+        );
+      },
     );
   }
 

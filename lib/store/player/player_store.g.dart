@@ -73,6 +73,38 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
     });
   }
 
+  late final _$nextEpAtom =
+      Atom(name: '_PlayerStoreBase.nextEp', context: context);
+
+  @override
+  bool get nextEp {
+    _$nextEpAtom.reportRead();
+    return super.nextEp;
+  }
+
+  @override
+  set nextEp(bool value) {
+    _$nextEpAtom.reportWrite(value, super.nextEp, () {
+      super.nextEp = value;
+    });
+  }
+
+  late final _$nextEpInitAtom =
+      Atom(name: '_PlayerStoreBase.nextEpInit', context: context);
+
+  @override
+  bool get nextEpInit {
+    _$nextEpInitAtom.reportRead();
+    return super.nextEpInit;
+  }
+
+  @override
+  set nextEpInit(bool value) {
+    _$nextEpInitAtom.reportWrite(value, super.nextEpInit, () {
+      super.nextEpInit = value;
+    });
+  }
+
   late final _$speedIndexAtom =
       Atom(name: '_PlayerStoreBase.speedIndex', context: context);
 
@@ -169,6 +201,22 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
     });
   }
 
+  late final _$episodesAtom =
+      Atom(name: '_PlayerStoreBase.episodes', context: context);
+
+  @override
+  ObservableList<TvEpisode> get episodes {
+    _$episodesAtom.reportRead();
+    return super.episodes;
+  }
+
+  @override
+  set episodes(ObservableList<TvEpisode> value) {
+    _$episodesAtom.reportWrite(value, super.episodes, () {
+      super.episodes = value;
+    });
+  }
+
   late final _$seekDurationAtom =
       Atom(name: '_PlayerStoreBase.seekDuration', context: context);
 
@@ -193,6 +241,22 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
     return _$initAsyncAction.run(() => super.init());
   }
 
+  late final _$fetchNewEpsAsyncAction =
+      AsyncAction('_PlayerStoreBase.fetchNewEps', context: context);
+
+  @override
+  Future fetchNewEps() {
+    return _$fetchNewEpsAsyncAction.run(() => super.fetchNewEps());
+  }
+
+  late final _$fetchStreamsAsyncAction =
+      AsyncAction('_PlayerStoreBase.fetchStreams', context: context);
+
+  @override
+  Future fetchStreams() {
+    return _$fetchStreamsAsyncAction.run(() => super.fetchStreams());
+  }
+
   late final _$changeSubtitleAsyncAction =
       AsyncAction('_PlayerStoreBase.changeSubtitle', context: context);
 
@@ -203,6 +267,28 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
 
   late final _$_PlayerStoreBaseActionController =
       ActionController(name: '_PlayerStoreBase', context: context);
+
+  @override
+  void setEpisode() {
+    final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
+        name: '_PlayerStoreBase.setEpisode');
+    try {
+      return super.setEpisode();
+    } finally {
+      _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setNextEpFlag(bool value) {
+    final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
+        name: '_PlayerStoreBase.setNextEpFlag');
+    try {
+      return super.setNextEpFlag(value);
+    } finally {
+      _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
 
   @override
   void setDuration(Duration duration) {
@@ -332,12 +418,15 @@ showControls: ${showControls},
 buffering: ${buffering},
 locked: ${locked},
 casting: ${casting},
+nextEp: ${nextEp},
+nextEpInit: ${nextEpInit},
 speedIndex: ${speedIndex},
 fitIndex: ${fitIndex},
 subtitleDelay: ${subtitleDelay},
 position: ${position},
 buffered: ${buffered},
 selectedSubtitle: ${selectedSubtitle},
+episodes: ${episodes},
 seekDuration: ${seekDuration}
     ''';
   }

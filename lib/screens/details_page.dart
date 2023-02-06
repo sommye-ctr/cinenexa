@@ -72,6 +72,7 @@ class _DetailsPageState extends State<DetailsPage> {
             SliverToBoxAdapter(
               child: DetailsMoreDetails(
                 detailsStore: detailsStore,
+                controller: _controller,
                 height: ScreenSize.getPercentOfHeight(context, 1) - minHeight,
               ),
             )

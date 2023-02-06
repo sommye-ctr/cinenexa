@@ -1,5 +1,7 @@
 import 'package:cinenexa/models/network/base_model.dart';
 import 'package:cinenexa/models/network/tv.dart';
+import 'package:cinenexa/models/network/tv_episode.dart';
+import 'package:cinenexa/store/details/details_store.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -29,6 +31,7 @@ class LinkOpener {
     Tv? tv,
     Movie? movie,
     required BaseModel baseModel,
+    DetailsStore? detailsStore,
     context,
   }) async {
     return Navigator.pushNamed(
@@ -43,6 +46,7 @@ class LinkOpener {
         "progress": progress,
         "id": id,
         "model": baseModel,
+        'store': detailsStore,
       },
     );
   }

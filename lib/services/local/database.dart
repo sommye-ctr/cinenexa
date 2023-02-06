@@ -25,6 +25,8 @@ class Database {
   static const String _TMDB_REGION = "TMDB_REGION";
   static const String _MAX_CACHE_SIZE = "MAX_CACHE_SIZE";
   static const String _DEFAULT_FIT = "DEFAULT_FIT";
+  static const String _NEXT_EP_DURATION = "NEXT_EP_DURATION";
+  static const String _AUTOPLAY = "AUTOPLAY";
 
   late Isar isar;
 
@@ -57,9 +59,19 @@ class Database {
     await prefs.setBool(_AUTO_SUBTITLE, status);
   }
 
+  Future addAutoPlay(bool status) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_AUTOPLAY, status);
+  }
+
   Future addSeekDuration(int seconds) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_SEEK_DURATION, seconds);
+  }
+
+  Future addNextEpDuration(int seconds) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_NEXT_EP_DURATION, seconds);
   }
 
   Future addMaxCache(int index) async {
@@ -87,9 +99,19 @@ class Database {
     return (prefs.getBool(_AUTO_SUBTITLE) ?? false);
   }
 
+  Future<bool> getAutoPlay() async {
+    final prefs = await SharedPreferences.getInstance();
+    return (prefs.getBool(_AUTOPLAY) ?? false);
+  }
+
   Future<int> getSeekDuration() async {
     final prefs = await SharedPreferences.getInstance();
     return (prefs.getInt(_SEEK_DURATION) ?? 30);
+  }
+
+  Future<int> getNextEpDuration() async {
+    final prefs = await SharedPreferences.getInstance();
+    return (prefs.getInt(_NEXT_EP_DURATION) ?? 30);
   }
 
   Future<int> getMaxCache() async {

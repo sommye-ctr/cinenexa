@@ -1,29 +1,48 @@
 import 'package:cinenexa/models/network/tv_episode.dart';
-import 'package:cinenexa/services/constants.dart';
-import 'package:cinenexa/services/network/utils.dart';
-import 'package:cinenexa/utils/screen_size.dart';
-import 'package:cinenexa/widgets/rounded_image.dart';
+import 'package:cinenexa/resources/style.dart';
+import 'package:cinenexa/widgets/rounded_button.dart';
 import 'package:flutter/material.dart';
 
 class VideoPlayerNextEpisode extends StatelessWidget {
   final TvEpisode episode;
+  final int season;
+  final VoidCallback onCancel;
+  final Function(TvEpisode episode, int season) onNext;
   const VideoPlayerNextEpisode({
     Key? key,
+    required this.season,
     required this.episode,
+    required this.onCancel,
+    required this.onNext,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Column(
-        children: [
-          RoundedImage(
-            image: Utils.getStillUrl(episode.stillPath),
-            width: ScreenSize.getPercentOfWidth(context, 0.1),
-            ratio: Constants.stillAspectRatio,
-          ),
-        ],
-      ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          "S${season} EP ${episode.episodeNumber}",
+          textAlign: TextAlign.center,
+        ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RoundedButton(
+              child: Text("Cancel"),
+              onPressed: () => onCancel(),
+              type: RoundedButtonType.outlined,
+            ),
+            Style.getVerticalHorizontalSpacing(context: context),
+            RoundedButton(
+              child: Text("Next"),
+              onPressed: () => onNext(episode, season),
+              type: RoundedButtonType.outlined,
+            )
+          ],
+        ),
+      ],
     );
   }
 }
