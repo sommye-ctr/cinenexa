@@ -44,7 +44,7 @@ abstract class _PlayerStoreBase with Store {
 
   @observable
   ObservableList<TvEpisode> episodes = <TvEpisode>[].asObservable();
-  late int currentEpIndex, season;
+  late int? currentEpIndex, season;
   int? nextEpIndex;
 
   int seekDuration = 30;
@@ -63,8 +63,8 @@ abstract class _PlayerStoreBase with Store {
     required this.extensionStream,
     required this.detailsStore,
     this.progress,
-    required this.season,
-    required int episode,
+    this.season,
+    int? episode,
   }) {
     episodes.addAll(detailsStore.episodes);
     currentEpIndex = detailsStore.episodes
@@ -105,7 +105,7 @@ abstract class _PlayerStoreBase with Store {
   }
 
   void _handleNextEpPopup() {
-    if (!autoPlay) {
+    if (!autoPlay || season == null) {
       return;
     }
     Duration? duration = controller.videoPlayerController!.value.duration;
@@ -158,7 +158,7 @@ abstract class _PlayerStoreBase with Store {
 
   @action
   void setEpisode() {
-    nextEpIndex = currentEpIndex + 1;
+    nextEpIndex = currentEpIndex! + 1;
     detailsStore.onEpBackClicked();
     detailsStore.onEpiodeClicked(nextEpIndex!);
     fetchStreams();

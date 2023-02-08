@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:better_player/better_player.dart';
@@ -38,6 +39,7 @@ class VideoPlayerControls extends StatefulWidget {
   final int? fitIndex;
   final bool? autoSubtitle;
   final DetailsStore? detailsStore;
+  final bool? initialDark;
 
   final GlobalKey? playerKey;
 
@@ -57,6 +59,7 @@ class VideoPlayerControls extends StatefulWidget {
     this.fitIndex,
     this.autoSubtitle,
     this.detailsStore,
+    this.initialDark,
   }) : super(key: key);
 
   @override
@@ -82,8 +85,8 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
       extensionStream: widget.stream,
       progress: widget.progress?.progress,
       detailsStore: widget.detailsStore!,
-      episode: widget.episode!,
-      season: widget.season!,
+      episode: widget.episode,
+      season: widget.season,
     );
 
     scrobbleManager = ScrobbleManager(
@@ -207,17 +210,21 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
       alignment: Alignment.bottomRight,
       child: LayoutBuilder(
         builder: (p0, p1) {
-          if (playerStore.nextEp && !playerStore.nextEpCancel)
+          if (playerStore.nextEp &&
+              !playerStore.nextEpCancel &&
+              playerStore.season != null)
             return Container(
               width: ScreenSize.getPercentOfWidth(context, 0.35),
               child: VideoPlayerNextEpisode(
-                season: playerStore.season,
+                season: playerStore.season!,
                 episode: playerStore.episodes[playerStore.nextEpIndex ?? 0],
                 onCancel: () {
                   playerStore.setNextEpCancel(true);
                 },
                 onNext: (episode, season) {
                   scrobbleManager?.exit();
+                  if (widget.initialDark != null && !widget.initialDark!)
+                    AdaptiveTheme.of(context).setLight();
                   if (playerStore.casting) chromeCastController?.endSession();
                   widget.controller.exitFullScreen();
                 },
@@ -231,6 +238,8 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
 
   Future<bool> _onBack() async {
     scrobbleManager?.exit();
+    if (widget.initialDark != null && !widget.initialDark!)
+      AdaptiveTheme.of(context).setLight();
     if (playerStore.casting) chromeCastController?.endSession();
     widget.controller.exitFullScreen();
     return true;
@@ -300,17 +309,19 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
               playerStore.setCasting(true);
               widget.controller.pause();
               chromeCastController?.loadMedia(
-                  type: widget.baseModel!.type == BaseModelType.movie
-                      ? ChromeCastMediaType.movie
-                      : ChromeCastMediaType.show,
-                  url: widget.controller.betterPlayerDataSource!.url,
-                  title: widget.baseModel!.title!,
-                  autoplay: true,
-                  image: Utils.getPosterUrl(widget.baseModel!.posterPath!),
-                  position: playerStore.position.inMilliseconds.toDouble(),
-                  showEpisode: widget.episode,
-                  showSeason: widget.season,
-                  subtitles: _getCastSubtitles());
+                type: widget.baseModel!.type == BaseModelType.movie
+                    ? ChromeCastMediaType.movie
+                    : ChromeCastMediaType.show,
+                url: widget.controller.betterPlayerDataSource!.url,
+                title: widget.baseModel!.title!,
+                autoplay: true,
+                image: Utils.getPosterUrl(widget.baseModel!.posterPath!),
+                position: playerStore.position.inMilliseconds.toDouble(),
+                showEpisode: widget.episode,
+                showSeason: widget.season,
+                subtitles: _getCastSubtitles(),
+              );
+              playerStore.setShowControls(false);
 
               if (playerStore.selectedSubtitle != null) {
                 chromeCastController?.setTrack(

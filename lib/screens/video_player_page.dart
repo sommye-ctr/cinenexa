@@ -1,6 +1,6 @@
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:better_player/better_player.dart';
 import 'package:cinenexa/models/local/progress.dart';
-import 'package:cinenexa/models/network/tv_episode.dart';
 import 'package:cinenexa/resources/strings.dart';
 import 'package:cinenexa/services/local/database.dart';
 import 'package:cinenexa/services/network/utils.dart';
@@ -56,6 +56,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
 
   int? fitIndex, maxCacheIndex;
   bool? autoSubtitle;
+  bool? initalDark;
 
   final GlobalKey betterPlayerKey = GlobalKey();
 
@@ -63,7 +64,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   void initState() {
     super.initState();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-
     _getDefaultValues();
   }
 
@@ -72,6 +72,9 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
     fitIndex = await database.getDefaultFit();
     maxCacheIndex = await database.getMaxCache();
     autoSubtitle = await database.getAutoSelectSubtitle();
+
+    initalDark = AdaptiveTheme.of(context).mode == AdaptiveThemeMode.dark;
+    AdaptiveTheme.of(context).setDark();
 
     configuration = BetterPlayerConfiguration(
         allowedScreenSleep: false,
@@ -117,6 +120,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
             fitIndex: fitIndex,
             autoSubtitle: autoSubtitle,
             detailsStore: widget.detailsStore,
+            initialDark: initalDark,
           ),
         ));
 
