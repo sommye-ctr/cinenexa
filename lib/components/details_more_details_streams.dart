@@ -1,6 +1,7 @@
 import 'package:cinenexa/models/local/progress.dart';
 import 'package:cinenexa/utils/link_opener.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/svg.dart';
@@ -467,6 +468,11 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
         );
       },
     );
+
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
 
     await widget.detailsStore.fetchProgress();
   }

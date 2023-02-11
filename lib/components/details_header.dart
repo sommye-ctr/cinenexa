@@ -1,6 +1,7 @@
 import 'package:cinenexa/utils/link_opener.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:provider/provider.dart';
 import 'package:cinenexa/store/user/user_store.dart';
@@ -462,7 +463,7 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
     }
   }
 
-  void scrollTop() {
+  void scrollTop() async {
     Future.delayed(
       Duration(milliseconds: 500),
       () {
@@ -473,6 +474,10 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
         );
       },
     );
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
   }
 
   Text _getPlayButton() {

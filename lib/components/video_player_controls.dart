@@ -8,6 +8,7 @@ import 'package:cinenexa/components/video_player_next_episode.dart';
 import 'package:cinenexa/services/network/utils.dart';
 import 'package:cinenexa/store/details/details_store.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:cinenexa/resources/strings.dart';
 import 'package:cinenexa/resources/style.dart';
@@ -242,6 +243,10 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
       AdaptiveTheme.of(context).setLight();
     if (playerStore.casting) chromeCastController?.endSession();
     widget.controller.exitFullScreen();
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return true;
   }
 
