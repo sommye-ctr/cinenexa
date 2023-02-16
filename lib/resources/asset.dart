@@ -22,4 +22,7 @@ class Asset {
       "assets/images/install_extensions_image.svg";
 
   static const String icon = "assets/icon/icon.png";
+
+  static const String traktBranding = "assets/images/trakt_branding.svg";
+  static const String tmdbBranding = "assets/images/tmdb_branding.svg";
 }

@@ -1,9 +1,11 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:cinenexa/resources/asset.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:random_avatar/random_avatar.dart';
@@ -56,6 +58,27 @@ class _ProfilePageState extends State<ProfilePage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildAttribution() {
+    return Center(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SvgPicture.asset(
+            Asset.traktBranding,
+            width: ScreenSize.getPercentOfWidth(context, 0.1),
+          ),
+          Style.getVerticalHorizontalSpacing(context: context, percent: 0.05),
+          SvgPicture.asset(
+            Asset.tmdbBranding,
+            width: ScreenSize.getPercentOfWidth(context, 0.15),
+          ),
+        ],
       ),
     );
   }
@@ -117,6 +140,8 @@ class _ProfilePageState extends State<ProfilePage> {
             leading: Icon(Icons.bug_report_rounded),
             onTap: _reportBug,
           ),
+          Style.getVerticalHorizontalSpacing(context: context),
+          _buildAttribution(),
         ],
       ),
     );

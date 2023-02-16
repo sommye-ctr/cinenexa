@@ -460,7 +460,10 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
       detailsStore.chosenEpisode = (detailsStore.progress!.episodeNo!) - 1;
       detailsStore.chosenSeason = (detailsStore.progress!.seasonNo!) - 1;
       detailsStore.fetchStreams();
+      scrollTop();
+      return;
     }
+    scrollTop();
   }
 
   void scrollTop() async {

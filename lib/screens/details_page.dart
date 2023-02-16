@@ -70,6 +70,11 @@ class _DetailsPageState extends State<DetailsPage> {
               ),
             ),
             SliverToBoxAdapter(
+              child: Container(
+                height: 1,
+              ),
+            ),
+            SliverToBoxAdapter(
               child: DetailsMoreDetails(
                 detailsStore: detailsStore,
                 controller: _controller,
