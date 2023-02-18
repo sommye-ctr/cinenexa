@@ -101,7 +101,7 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                LottieBuilder.asset(
+                SvgPicture.asset(
                   Asset.notFound,
                   width: ScreenSize.getPercentOfWidth(context, 0.75),
                 ),

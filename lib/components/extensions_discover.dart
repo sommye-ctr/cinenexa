@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:lottie/lottie.dart';
 import '../resources/asset.dart';
 import '../store/extensions/extensions_store.dart';
+import '../utils/screen_size.dart';
 import 'extensions_extension_tile.dart';
 
 class ExtensionsDiscover extends StatefulWidget {
@@ -35,8 +37,9 @@ class _ExtensionsDiscoverState extends State<ExtensionsDiscover>
 
     if (widget.extensionsStore.discoverExtensions != null &&
         widget.extensionsStore.discoverExtensions!.isEmpty) {
-      return LottieBuilder.asset(
+      return SvgPicture.asset(
         Asset.notFound,
+        width: ScreenSize.getPercentOfWidth(context, 0.75),
       );
     }
 

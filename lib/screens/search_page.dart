@@ -2,6 +2,7 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mobx/mobx.dart';
@@ -290,9 +291,11 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     List<BaseModel> list = searchStore.results;
     if (searchStore.fetchItemsFuture.status == FutureStatus.fulfilled &&
         list.isEmpty) {
-      return LottieBuilder.asset(
-        Asset.notFound,
-        repeat: true,
+      return Center(
+        child: SvgPicture.asset(
+          Asset.notFound,
+          width: ScreenSize.getPercentOfWidth(context, 0.75),
+        ),
       );
     }
     return Flexible(
@@ -340,9 +343,11 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     List<BaseModel> list = searchStore.results;
     if (searchStore.fetchItemsFuture.status == FutureStatus.fulfilled &&
         list.isEmpty) {
-      return LottieBuilder.asset(
-        Asset.notFound,
-        repeat: true,
+      return Center(
+        child: SvgPicture.asset(
+          Asset.notFound,
+          width: ScreenSize.getPercentOfWidth(context, 0.75),
+        ),
       );
     }
     return Expanded(
