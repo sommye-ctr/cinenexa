@@ -139,8 +139,11 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.pop(context);
 
       if (resp.session != null && resp.user != null) {
-        Navigator.pushNamed(context, LoginConfigurePage.routeName,
-            arguments: true);
+        Navigator.pushNamed(
+          context,
+          LoginConfigurePage.routeName,
+          arguments: true,
+        );
       }
     } on AuthException catch (error) {
       Navigator.pop(context);

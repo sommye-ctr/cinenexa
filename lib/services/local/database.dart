@@ -27,6 +27,7 @@ class Database {
   static const String _DEFAULT_FIT = "DEFAULT_FIT";
   static const String _NEXT_EP_DURATION = "NEXT_EP_DURATION";
   static const String _AUTOPLAY = "AUTOPLAY";
+  static const String _GUEST_SIGNUP = "GUEST_SIGNUP";
 
   late Isar isar;
 
@@ -47,6 +48,11 @@ class Database {
   Future addUserTraktStatus(bool status) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_TRAKT_LOGGED_IN, status);
+  }
+
+  Future addGuestSignupStatus(bool status) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_GUEST_SIGNUP, status);
   }
 
   Future addJustwatchProvidersEnabled(bool status) async {
@@ -87,6 +93,11 @@ class Database {
   Future<bool> getUserTraktStatus() async {
     final prefs = await SharedPreferences.getInstance();
     return (prefs.getBool(_TRAKT_LOGGED_IN) ?? false);
+  }
+
+  Future<bool> getGuestSignupStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    return (prefs.getBool(_GUEST_SIGNUP) ?? false);
   }
 
   Future<bool> getJustwatchProvidersStatus() async {
@@ -237,7 +248,7 @@ class Database {
 
   Future removeInstalledExtension(Extension extension) {
     return isar.writeTxn(() async {
-      await isar.installedExtensions
+      return await isar.installedExtensions
           .where()
           .stIdEqualTo(extension.id!)
           .deleteFirst();

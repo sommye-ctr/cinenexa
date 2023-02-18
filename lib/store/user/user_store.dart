@@ -41,6 +41,7 @@ abstract class _UserStoreBase with Store {
   Database localDb = Database();
   SupabaseClient supabaseClient = Supabase.instance.client;
   bool traktStatus = false;
+  bool guestLogin = false;
 
   _UserStoreBase({FavoritesStore? favoritesStore}) {
     init(favoritesStore: favoritesStore);
@@ -52,6 +53,7 @@ abstract class _UserStoreBase with Store {
   @action
   Future init({FavoritesStore? favoritesStore}) async {
     traktStatus = await localDb.getUserTraktStatus();
+    guestLogin = await localDb.getGuestSignupStatus();
 
     if (supabaseClient.auth.currentUser != null) {
       user = CineNexaUser(

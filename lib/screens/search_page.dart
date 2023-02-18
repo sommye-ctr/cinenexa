@@ -412,7 +412,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       default:
     }
 
-    searchStore.searchClicked(null);
+    searchStore.searchClicked(baseModel.title!);
   }
 
   void _onSearchTypeChanged(int index) {

@@ -1,7 +1,6 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cinenexa/screens/extension_config_page.dart';
 import 'package:cinenexa/services/network/api.dart';
-import 'package:cinenexa/services/network/extensions_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
@@ -326,13 +325,20 @@ class _ExtensionTileState extends State<ExtensionTile> {
   }
 
   void _onUninstallExtension(context) async {
-    Style.showLoadingDialog(context: context);
-    Provider.of<ExtensionsStore>(context, listen: false)
-        .uninstallExtension(widget.extension)
-        .whenComplete(() {
-      Navigator.pop(context);
-      widget.onUninstall?.call();
-    });
+    Style.showConfirmationDialog(
+      context: context,
+      text: "You are going to uninstall the extension. Are you sure?",
+      onPressed: () {
+        Style.showLoadingDialog(context: context);
+        Provider.of<ExtensionsStore>(context, listen: false)
+            .uninstallExtension(widget.extension)
+            .whenComplete(() {
+          Navigator.pop(context);
+          Navigator.pop(context);
+          widget.onUninstall?.call();
+        });
+      },
+    );
   }
 
   List<Widget> _buildProviderChips(context) {

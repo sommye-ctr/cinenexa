@@ -1,5 +1,6 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:cinenexa/screens/extension_config_page.dart';
+import 'package:cinenexa/services/local/database.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
@@ -73,17 +74,21 @@ void main() async {
   );
 
   final savedThemeMode = await AdaptiveTheme.getThemeMode();
+  final anonStatus = await Database().getGuestSignupStatus();
 
   runApp(MyApp(
     savedThemeMode: savedThemeMode,
+    anonStatus: anonStatus,
   ));
 }
 
 class MyApp extends StatefulWidget {
   final AdaptiveThemeMode? savedThemeMode;
+  final bool? anonStatus;
   const MyApp({
     Key? key,
     this.savedThemeMode,
+    this.anonStatus,
   }) : super(key: key);
 
   @override
@@ -96,10 +101,11 @@ class _MyAppState extends State<MyApp> {
     FavoritesStore favoritesStore = FavoritesStore();
     Widget homeWidget;
 
-    if (Supabase.instance.client.auth.currentUser == null) {
-      homeWidget = IntroPage();
-    } else {
+    if (Supabase.instance.client.auth.currentUser != null ||
+        (widget.anonStatus ?? false)) {
       homeWidget = HomeFirstScreen();
+    } else {
+      homeWidget = IntroPage();
     }
     FlutterNativeSplash.remove();
 

@@ -1,5 +1,7 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:cinenexa/resources/asset.dart';
+import 'package:cinenexa/utils/size_formatter.dart';
+import 'package:cinenexa/widgets/rounded_button.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -208,6 +210,12 @@ class _ProfilePageState extends State<ProfilePage> {
                   width: ScreenSize.getPercentOfWidth(context, 0.1),
                   height: ScreenSize.getPercentOfWidth(context, 0.1),
                 ),
+              if (userStore.user == null)
+                randomAvatar(
+                  SizeFormatter.getRandomString(10),
+                  width: ScreenSize.getPercentOfWidth(context, 0.1),
+                  height: ScreenSize.getPercentOfWidth(context, 0.1),
+                ),
               SizedBox(
                 width: 8,
               ),
@@ -216,7 +224,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    userStore.user?.name ?? Strings.unknown,
+                    userStore.user?.name ?? Strings.anonymous,
                     style: TextStyle(
                       fontSize: 20,
                     ),
@@ -237,29 +245,38 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ],
           ),
-          IconButton(
-            onPressed: () {
-              Style.showConfirmationDialog(
-                context: context,
-                text: Strings.logoutConfirm,
-                onPressed: () async {
-                  Style.showLoadingDialog(context: context);
-                  await Provider.of<UserStore>(context, listen: false).logout();
-                  AdaptiveTheme.of(context).setLight();
-                  Navigator.pop(context);
-                  Navigator.pushNamedAndRemoveUntil(
-                    context,
-                    IntroPage.routeName,
-                    (route) => false,
-                  );
-                },
-              );
-            },
-            icon: Icon(Icons.logout_rounded),
-          ),
+          if (userStore.user != null)
+            IconButton(
+              onPressed: () {
+                Style.showConfirmationDialog(
+                  context: context,
+                  text: Strings.logoutConfirm,
+                  onPressed: () => logout(),
+                );
+              },
+              icon: Icon(Icons.logout_rounded),
+            ),
+          if (userStore.guestLogin)
+            RoundedButton(
+              child: Text(Strings.signIn),
+              onPressed: () => logout(),
+              type: RoundedButtonType.outlined,
+            ),
         ],
       );
     });
+  }
+
+  void logout() async {
+    Style.showLoadingDialog(context: context);
+    await Provider.of<UserStore>(context, listen: false).logout();
+    AdaptiveTheme.of(context).setLight();
+    Navigator.pop(context);
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      IntroPage.routeName,
+      (route) => false,
+    );
   }
 
   Widget _buildStatCardsTile() {

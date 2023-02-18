@@ -23,6 +23,7 @@ class Strings {
       "Track your movies & show progress along with enjoying your favorite watch!";
   static const String signIn = "Sign In";
   static const String register = "Register";
+  static const String guestLogin = "Guest Login";
 
   //Login
   static const String passwordError =
@@ -126,6 +127,7 @@ class Strings {
       "You have already installed this extension. Syncing your extensions...";
   static const String alreadyRated =
       "You have already rated this extension. Restart the app to sync.";
+  static const String loginToRate = "Login to Rate Extensions";
 
   static const String raiseComplaint = "Raise Complaint";
   static const String extensionForm = "Extension Form";
@@ -167,7 +169,7 @@ class Strings {
   static const String birthday = "Birthday";
 
 //Profile
-  static const String unknown = "Unknown";
+  static const String anonymous = "Anonymous";
   static const String watchedMovies = "Movies\nWatched";
   static const String watchedShows = "Shows\nWatched";
   static const String minSpentMovies = "Minutes spent\non movies";

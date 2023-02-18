@@ -24,6 +24,7 @@ abstract class _ExtensionsStoreBase with Store {
 
   @observable
   String? successMessage;
+  bool _isGuestLogin = false;
 
   Database database = Database();
 
@@ -33,6 +34,9 @@ abstract class _ExtensionsStoreBase with Store {
 
   @action
   Future _init() async {
+    bool status = await database.getGuestSignupStatus();
+    _isGuestLogin = Supabase.instance.client.auth.currentUser == null && status;
+
     LastActivities? lastActivities = await database.getLastActivities();
     if (lastActivities == null || lastActivities.extensionsSyncedAt == null) {
       return syncInstalledExtensions();
@@ -41,6 +45,7 @@ abstract class _ExtensionsStoreBase with Store {
     }
 
     database.watchInstalledExtensions().listen((event) async {
+      print("here");
       installedExtensions.clear();
       installedExtensions.addAll(await database.getInstalledExtensions());
     });
@@ -66,13 +71,22 @@ abstract class _ExtensionsStoreBase with Store {
 
   @action
   Future uninstallExtension(Extension extension) async {
+    if (_isGuestLogin) {
+      successMessage = Strings.uninstalled;
+      await database.removeInstalledExtension(extension);
+      installedExtensions
+          .removeWhere((element) => element.stId == extension.id);
+      return;
+    }
     var result =
         await SupabaseRepository.uninstallExtension(extension: extension);
 
     result.when(
-      (success) {
+      (success) async {
         successMessage = Strings.uninstalled;
-        return database.removeInstalledExtension(extension);
+        await database.removeInstalledExtension(extension);
+        installedExtensions
+            .removeWhere((element) => element.stId == extension.id);
       },
       (err) => error = err.message,
     );
@@ -80,18 +94,29 @@ abstract class _ExtensionsStoreBase with Store {
 
   @action
   Future installExtension(Extension extension, {String? userData}) async {
+    if (_isGuestLogin) {
+      successMessage = Strings.installed;
+      await database.addInstalledExtension(
+        extension,
+        userData: userData,
+      );
+      installedExtensions.add(extension.getInstalled(userData: userData));
+      return;
+    }
+
     var result = await SupabaseRepository.installExtension(
       extension: extension,
       userData: userData,
     );
 
     result.when(
-      (success) {
+      (success) async {
         successMessage = Strings.installed;
-        return database.addInstalledExtension(
+        await database.addInstalledExtension(
           extension,
           userData: userData,
         );
+        installedExtensions.add(extension.getInstalled(userData: userData));
       },
       (err) {
         if (err.code == "23505") {
@@ -106,6 +131,15 @@ abstract class _ExtensionsStoreBase with Store {
 
   @action
   Future syncInstalledExtensions() async {
+    if (_isGuestLogin) {
+      final list = await database.getInstalledExtensions();
+
+      installedExtensions.clear();
+      installedExtensions.addAll(list);
+      database.updateAllInstalledExtensions(list);
+      return;
+    }
+
     final list = await SupabaseRepository.getUserExtensions();
     return list.when(
       (success) {
@@ -141,6 +175,11 @@ abstract class _ExtensionsStoreBase with Store {
       ratingCount: extension.ratingCount! + 1,
     );
     installedExtensions[index] = temp; */
+
+    if (_isGuestLogin) {
+      error = Strings.loginToRate;
+      return;
+    }
 
     var result = await SupabaseRepository.rateExtension(
       extension: extension,
