@@ -131,6 +131,7 @@ class Repository {
     final selectedCountryName = await Database().getProviderCountry();
 
     Video? vid = Utils.convertToVideo(response['videos']['results'] as List);
+
     var providerList = response?['watch/providers']?['results']
             ?[selectedCountryName?.countryCode ?? "US"]?['flatrate'] ??
         [];
