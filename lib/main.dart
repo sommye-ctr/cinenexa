@@ -227,6 +227,7 @@ class _MyAppState extends State<MyApp> {
             progress: value['progress'],
             id: value['id'],
             detailsStore: value['store'],
+            showHistory: value['showHistory'],
           ),
         );
       default:

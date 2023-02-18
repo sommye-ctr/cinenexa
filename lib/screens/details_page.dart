@@ -1,3 +1,4 @@
+import 'package:cinenexa/store/user/user_store.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cinenexa/components/details_header.dart';
@@ -38,10 +39,12 @@ class _DetailsPageState extends State<DetailsPage> {
   void initState() {
     var list = Provider.of<ExtensionsStore>(context, listen: false)
         .installedExtensions;
+    bool trakt = Provider.of<UserStore>(context, listen: false).isTraktLogged;
     detailsStore = DetailsStore(
       baseModel: widget.baseModel,
       noOfExtensions: list.length,
       installedExtensions: list,
+      isTraktLogged: trakt,
     );
     super.initState();
   }

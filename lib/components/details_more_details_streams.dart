@@ -456,6 +456,7 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
       movie: widget.detailsStore.movie,
       tv: widget.detailsStore.tv,
       detailsStore: widget.detailsStore,
+      showHistory: widget.detailsStore.showHistory,
     );
 
     Future.delayed(

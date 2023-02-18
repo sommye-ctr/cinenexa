@@ -5,6 +5,7 @@ import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:better_player/better_player.dart';
 import 'package:cinenexa/components/video_player_next_episode.dart';
+import 'package:cinenexa/models/local/show_history.dart';
 import 'package:cinenexa/services/network/utils.dart';
 import 'package:cinenexa/store/details/details_store.dart';
 import 'package:flutter/material.dart';
@@ -41,6 +42,7 @@ class VideoPlayerControls extends StatefulWidget {
   final bool? autoSubtitle;
   final DetailsStore? detailsStore;
   final bool? initialDark;
+  final ShowHistory? showHistory;
 
   final GlobalKey? playerKey;
 
@@ -61,6 +63,7 @@ class VideoPlayerControls extends StatefulWidget {
     this.autoSubtitle,
     this.detailsStore,
     this.initialDark,
+    this.showHistory,
   }) : super(key: key);
 
   @override
@@ -100,6 +103,11 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
       show: widget.show,
       id: widget.id,
       playerStore: playerStore,
+      showHistory: widget.showHistory,
+      episodeId: widget.detailsStore!.chosenEpisode != null
+          ? widget
+              .detailsStore!.episodes[widget.detailsStore!.chosenEpisode!].id
+          : null,
     );
 
     if (widget.fitIndex != null) playerStore.setFitIndex(widget.fitIndex!);

@@ -1,5 +1,6 @@
 import 'package:better_player/better_player.dart';
 import 'package:cinenexa/models/local/progress.dart';
+import 'package:cinenexa/models/local/show_history.dart';
 import 'package:cinenexa/models/network/base_model.dart';
 import 'package:cinenexa/models/network/movie.dart';
 import 'package:cinenexa/models/network/tv.dart';
@@ -16,6 +17,8 @@ class ScrobbleManager {
   final int? season, episode, id;
   final bool isTraktLogged;
   final PlayerStore playerStore;
+  final ShowHistory? showHistory;
+  final int? episodeId;
 
   final TraktRepository traktRepository =
       TraktRepository(client: TraktOAuthClient());
@@ -26,6 +29,8 @@ class ScrobbleManager {
     required this.item,
     required this.isTraktLogged,
     required this.playerStore,
+    this.showHistory,
+    this.episodeId,
     this.show,
     this.id,
     this.movie,
@@ -67,7 +72,7 @@ class ScrobbleManager {
       traktRepository
           .scrobbleStart(
         type: item.type!,
-        tmdbId: id!,
+        tmdbId: item.id!,
         progress: _getProgress(),
       )
           .then(
@@ -83,6 +88,18 @@ class ScrobbleManager {
   void exit() {
     if (_getProgress() > 90) {
       stopped();
+      if (item.type == BaseModelType.tv) {
+        Database().watchEp(
+          episodeNumber: episode!,
+          episodeId: episodeId!,
+          seasonNo: season,
+          showHistory: showHistory,
+          baseModelId: item.id!,
+          tv: show!,
+          isTraktLogged: isTraktLogged,
+          repository: TraktRepository(client: TraktOAuthClient()),
+        );
+      }
       return;
     }
     paused();
@@ -101,7 +118,7 @@ class ScrobbleManager {
     if (isTraktLogged)
       traktRepository.scrobblePause(
         type: item.type!,
-        tmdbId: id!,
+        tmdbId: item.id!,
         progress: _getProgress(),
       );
   }
@@ -110,13 +127,15 @@ class ScrobbleManager {
     if (isTraktLogged) {
       traktRepository
           .scrobbleStop(
-            type: item.type!,
-            tmdbId: id!,
-            progress: _getProgress(),
-          )
-          .whenComplete(() => localDb.removeProgress(tmdbId: id!));
+        type: item.type!,
+        tmdbId: item.id!,
+        progress: _getProgress(),
+      )
+          .whenComplete(() {
+        localDb.removeProgress(tmdbId: item.id!);
+      });
     } else {
-      localDb.removeProgress(tmdbId: id!);
+      localDb.removeProgress(tmdbId: item.id!);
     }
   }
 

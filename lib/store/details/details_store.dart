@@ -28,24 +28,28 @@ import '../user/user_store.dart';
 part 'details_store.g.dart';
 
 class DetailsStore extends _DetailsStore with _$DetailsStore {
-  DetailsStore(
-      {required BaseModel baseModel,
-      required int noOfExtensions,
-      required List<InstalledExtensions> installedExtensions})
-      : super(
+  DetailsStore({
+    required BaseModel baseModel,
+    required int noOfExtensions,
+    required List<InstalledExtensions> installedExtensions,
+    required bool isTraktLogged,
+  }) : super(
             baseModel: baseModel,
             noOfExtensions: noOfExtensions,
-            installedExtensions: installedExtensions);
+            installedExtensions: installedExtensions,
+            isTraktLogged: isTraktLogged);
 }
 
 abstract class _DetailsStore with Store {
   final BaseModel baseModel;
   Database database = Database();
+  final bool isTraktLogged;
 
   _DetailsStore({
     required this.baseModel,
     required this.noOfExtensions,
     required this.installedExtensions,
+    required this.isTraktLogged,
   }) {
     _fetchDetails();
     fetchReviews();
@@ -150,19 +154,44 @@ abstract class _DetailsStore with Store {
 
   @action
   Future markWatchedClicked({required int epIndex}) async {
-    TraktShowHistorySeasonEp ep = TraktShowHistorySeasonEp(
+    showHistory = await database.watchEp(
+      episodeNumber: episodes[epIndex].episodeNumber,
+      episodeId: episodes[epIndex].id,
+      seasonNo: tv!.seasons![chosenSeason!].seasonNumber,
+      showHistory: showHistory,
+      baseModelId: baseModel.id!,
+      tv: tv!,
+      isTraktLogged: isTraktLogged,
+      repository: repository,
+    );
+
+    /* TraktShowHistorySeasonEp ep = TraktShowHistorySeasonEp(
       lastWatchedAt: DateTime.now().toUtc().toIso8601String(),
       number: episodes[epIndex].episodeNumber,
       plays: 1,
     );
+    int? seasonNo = tv!.seasons![chosenSeason!].seasonNumber;
 
-    int seasonIndex = showHistory!.seasons!.indexWhere((element) =>
-        element.number == tv!.seasons![chosenSeason!].seasonNumber);
-    List<TraktShowHistorySeason> seasons = showHistory!.seasons!;
+    ShowHistory tempHistory;
+    if (showHistory == null) {
+      tempHistory = ShowHistory()
+        ..id = baseModel.id!
+        ..lastWatched = ep
+        ..show = tv
+        ..seasons = null
+        ..lastWatched = ep
+        ..lastWatchedSeason = seasonNo;
+    } else {
+      tempHistory = showHistory!;
+    }
 
-    if (seasonIndex > 0) {
+    int? seasonIndex = tempHistory.seasons
+        ?.indexWhere((element) => element.number == seasonNo);
+    List<TraktShowHistorySeason>? seasons = tempHistory.seasons;
+
+    if (seasonIndex != null && seasonIndex >= 0 && seasons != null) {
       List<TraktShowHistorySeasonEp> eps = List.of(
-        showHistory!.seasons![seasonIndex].episodes!,
+        tempHistory.seasons![seasonIndex].episodes!,
         growable: true,
       )..add(ep);
 
@@ -171,56 +200,43 @@ abstract class _DetailsStore with Store {
       List<TraktShowHistorySeasonEp> eps = List.of([ep], growable: true);
 
       TraktShowHistorySeason season = TraktShowHistorySeason(
-        number: tv!.seasons![chosenSeason!].seasonNumber,
+        number: seasonNo,
         episodes: eps,
       );
-      List<TraktShowHistorySeason> newSeasons = List.of(seasons, growable: true)
-        ..add(season);
+      List<TraktShowHistorySeason> newSeasons =
+          List.of(seasons ?? [], growable: true)..add(season);
       seasons = newSeasons;
     }
 
-    ShowHistory newshowHistory = showHistory!;
     showHistory = ShowHistory()
-      ..id = newshowHistory.id
+      ..id = tempHistory.id
       ..lastUpdatedAt = DateTime.now().toUtc()
-      ..lastWatched = newshowHistory.lastWatched
-      ..lastWatchedSeason = newshowHistory.lastWatchedSeason
-      ..show = newshowHistory.show
+      ..lastWatched = tempHistory.lastWatched
+      ..lastWatchedSeason = tempHistory.lastWatchedSeason
+      ..show = tempHistory.show
       ..seasons = seasons;
-    await Future.wait([
-      repository.addToWatched(tmdbEpId: episodes[epIndex].id),
-      database.updateLastActivities(epWatchedAt: DateTime.now().toUtc()),
-      database.updateShowHistory(item: showHistory!),
-    ]);
+
+    List<Future> futures = [];
+    futures.add(database.updateShowHistory(item: showHistory!));
+    if (isTraktLogged) {
+      futures.addAll([
+        repository.addToWatched(tmdbEpId: episodes[epIndex].id),
+        database.updateLastActivities(epWatchedAt: DateTime.now().toUtc())
+      ]);
+    }
+    await Future.wait(futures); */
   }
 
   @action
   Future markUnwatchedClicked({required int epIndex}) async {
-    int seasonIndex = showHistory!.seasons!.indexWhere((element) =>
-        element.number == tv!.seasons![chosenSeason!].seasonNumber);
-
-    List<TraktShowHistorySeasonEp> eps =
-        List.of(showHistory!.seasons![seasonIndex].episodes!, growable: true)
-          ..removeWhere(
-              (element) => element.number == episodes[epIndex].episodeNumber);
-
-    List<TraktShowHistorySeason> seasons = showHistory!.seasons!;
-    seasons[seasonIndex].episodes = eps;
-
-    ShowHistory newshowHistory = showHistory!;
-    showHistory = ShowHistory()
-      ..id = newshowHistory.id
-      ..lastUpdatedAt = DateTime.now().toUtc()
-      ..lastWatched = newshowHistory.lastWatched
-      ..lastWatchedSeason = newshowHistory.lastWatchedSeason
-      ..show = newshowHistory.show
-      ..seasons = seasons;
-
-    await Future.wait([
-      database.updateShowHistory(item: showHistory!),
-      database.updateLastActivities(epWatchedAt: DateTime.now().toUtc()),
-      repository.removeFromWatched(tmdbEpId: episodes[epIndex].id),
-    ]);
+    showHistory = await database.unwatchEp(
+      episodeNumber: episodes[epIndex].episodeNumber,
+      episodeId: episodes[epIndex].id,
+      seasonNumber: tv!.seasons![chosenSeason!].seasonNumber,
+      showHistory: showHistory!,
+      isTraktLogged: isTraktLogged,
+      repository: repository,
+    );
   }
 
   @action

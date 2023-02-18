@@ -433,6 +433,7 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
           tv: detailsStore.tv,
           stream: detailsStore.progress!.stream!,
           detailsStore: detailsStore,
+          showHistory: detailsStore.showHistory,
         );
         scrollTop();
         await detailsStore.fetchProgress();
@@ -450,6 +451,7 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
         tv: detailsStore.tv,
         stream: detailsStore.progress!.stream!,
         detailsStore: detailsStore,
+        showHistory: detailsStore.showHistory,
       );
       scrollTop();
       await detailsStore.fetchProgress();

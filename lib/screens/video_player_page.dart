@@ -1,6 +1,7 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:better_player/better_player.dart';
 import 'package:cinenexa/models/local/progress.dart';
+import 'package:cinenexa/models/local/show_history.dart';
 import 'package:cinenexa/resources/strings.dart';
 import 'package:cinenexa/services/local/database.dart';
 import 'package:cinenexa/services/network/utils.dart';
@@ -27,11 +28,13 @@ class VideoPlayerPage extends StatefulWidget {
   final Progress? progress;
   final ExtensionStream extensionStream;
   final DetailsStore? detailsStore;
+  final ShowHistory? showHistory;
 
   const VideoPlayerPage({
     Key? key,
     required this.extensionStream,
     this.baseModel,
+    this.showHistory,
     this.id,
     this.movie,
     this.show,
@@ -121,6 +124,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
             autoSubtitle: autoSubtitle,
             detailsStore: widget.detailsStore,
             initialDark: initalDark,
+            showHistory: widget.showHistory,
           ),
         ));
 

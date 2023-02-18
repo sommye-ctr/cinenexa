@@ -1,3 +1,4 @@
+import 'package:cinenexa/models/local/show_history.dart';
 import 'package:cinenexa/models/network/base_model.dart';
 import 'package:cinenexa/models/network/tv.dart';
 import 'package:cinenexa/store/details/details_store.dart';
@@ -31,6 +32,7 @@ class LinkOpener {
     Movie? movie,
     required BaseModel baseModel,
     DetailsStore? detailsStore,
+    ShowHistory? showHistory,
     context,
   }) async {
     return Navigator.pushNamed(
@@ -46,6 +48,7 @@ class LinkOpener {
         "id": id,
         "model": baseModel,
         'store': detailsStore,
+        "showHistory": showHistory,
       },
     );
   }

@@ -1,3 +1,5 @@
+import 'package:cinenexa/models/network/tv.dart';
+import 'package:cinenexa/services/network/trakt_repository.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:isar/isar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -406,7 +408,6 @@ class Database {
   }
 
   Future updateShowHistory({required ShowHistory item}) async {
-    item;
     Map map = _calculateLastWatchedEp(item.seasons!);
     item = item
       ..lastWatched = map['ep']
@@ -454,6 +455,129 @@ class Database {
     return await isar.showHistorys.get(id);
   }
 
+  Future<ShowHistory> unwatchEp({
+    required int episodeNumber,
+    required int episodeId,
+    required int? seasonNumber,
+    required ShowHistory showHistory,
+    required bool isTraktLogged,
+    required TraktRepository repository,
+  }) async {
+    int seasonIndex = showHistory.seasons!
+        .indexWhere((element) => element.number == seasonNumber);
+
+    List<TraktShowHistorySeasonEp> eps =
+        List.of(showHistory.seasons![seasonIndex].episodes!, growable: true)
+          ..removeWhere((element) => element.number == episodeNumber);
+
+    List<TraktShowHistorySeason> seasons = List.of(showHistory.seasons!);
+    seasons[seasonIndex].episodes = eps;
+
+    if (seasons[seasonIndex].episodes!.isEmpty) {
+      seasons.removeAt(seasonIndex);
+    }
+
+    ShowHistory newshowHistory = showHistory;
+    showHistory = ShowHistory()
+      ..id = newshowHistory.id
+      ..lastUpdatedAt = DateTime.now().toUtc()
+      ..lastWatched = newshowHistory.lastWatched
+      ..lastWatchedSeason = newshowHistory.lastWatchedSeason
+      ..show = newshowHistory.show
+      ..seasons = seasons;
+
+    List<Future> futures = [];
+    futures.add(updateShowHistory(item: showHistory));
+    if (isTraktLogged) {
+      futures.addAll([
+        updateLastActivities(epWatchedAt: DateTime.now().toUtc()),
+        repository.removeFromWatched(tmdbEpId: episodeId),
+      ]);
+    }
+    await Future.wait(futures);
+    return showHistory;
+  }
+
+  Future<ShowHistory> watchEp({
+    required int episodeNumber,
+    required int episodeId,
+    required int? seasonNo,
+    required ShowHistory? showHistory,
+    required int baseModelId,
+    required Tv tv,
+    required bool isTraktLogged,
+    required TraktRepository repository,
+  }) async {
+    TraktShowHistorySeasonEp ep = TraktShowHistorySeasonEp(
+      lastWatchedAt: DateTime.now().toUtc().toIso8601String(),
+      number: episodeNumber,
+      plays: 1,
+    );
+
+    ShowHistory tempHistory;
+    if (showHistory == null) {
+      tempHistory = ShowHistory()
+        ..id = baseModelId
+        ..lastWatched = ep
+        ..show = tv
+        ..seasons = null
+        ..lastWatched = ep
+        ..lastWatchedSeason = seasonNo;
+    } else {
+      tempHistory = showHistory;
+    }
+
+    int? seasonIndex = tempHistory.seasons
+        ?.indexWhere((element) => element.number == seasonNo);
+    List<TraktShowHistorySeason>? seasons = tempHistory.seasons;
+
+    if (seasonIndex != null && seasonIndex >= 0 && seasons != null) {
+      //check if history already exists
+      if (tempHistory.seasons![seasonIndex].episodes!
+              .indexWhere((element) => element.number == episodeNumber) >=
+          0) {
+        int plays = ep.plays ?? 1;
+        ep.plays = plays + 1;
+      } else {
+        List<TraktShowHistorySeasonEp> eps = List.of(
+          tempHistory.seasons![seasonIndex].episodes!,
+          growable: true,
+        )..add(ep);
+
+        seasons[seasonIndex].episodes = eps;
+      }
+    } else {
+      List<TraktShowHistorySeasonEp> eps = List.of([ep], growable: true);
+
+      TraktShowHistorySeason season = TraktShowHistorySeason(
+        number: seasonNo,
+        episodes: eps,
+      );
+      List<TraktShowHistorySeason> newSeasons =
+          List.of(seasons ?? [], growable: true)..add(season);
+      seasons = newSeasons;
+    }
+
+    showHistory = ShowHistory()
+      ..id = tempHistory.id
+      ..lastUpdatedAt = DateTime.now().toUtc()
+      ..lastWatched = tempHistory.lastWatched
+      ..lastWatchedSeason = tempHistory.lastWatchedSeason
+      ..show = tempHistory.show
+      ..seasons = seasons;
+
+    List<Future> futures = [];
+    futures.add(updateShowHistory(item: showHistory));
+    if (isTraktLogged) {
+      futures.addAll([
+        repository.addToWatched(tmdbEpId: episodeId),
+        updateLastActivities(epWatchedAt: DateTime.now().toUtc())
+      ]);
+    }
+    await Future.wait(futures);
+    return showHistory;
+  }
+
   Map _calculateLastWatchedEp(List<TraktShowHistorySeason> items) {
     Map<int, TraktShowHistorySeasonEp> latestEps = {};
 
@@ -468,9 +592,6 @@ class Database {
                 return valueDate.compareTo(elementDate) > 0 ? value : element;
               }));
     }
-
-    latestEps;
-
     TraktShowHistorySeasonEp t = latestEps.values.reduce((value, element) {
       return DateTimeFormatter.parseDate(value.lastWatchedAt)!
               .isAfter(DateTimeFormatter.parseDate(element.lastWatchedAt)!)
