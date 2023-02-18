@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:in_app_review/in_app_review.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:random_avatar/random_avatar.dart';
@@ -142,7 +143,16 @@ class _ProfilePageState extends State<ProfilePage> {
             leading: Icon(Icons.bug_report_rounded),
             onTap: _reportBug,
           ),
-          Style.getVerticalHorizontalSpacing(context: context),
+          Style.getListTile(
+            context: context,
+            title: "Rate CineNexa",
+            leading: Icon(Icons.star_rounded),
+            trailing: Icon(Icons.arrow_right_outlined),
+            onTap: () {
+              InAppReview.instance.openStoreListing();
+            },
+          ),
+          Style.getVerticalSpacing(context: context),
           _buildAttribution(),
         ],
       ),
