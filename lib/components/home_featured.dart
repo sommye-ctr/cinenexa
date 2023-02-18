@@ -49,7 +49,6 @@ class _HomeFeaturedState extends State<HomeFeatured>
   Widget _buildProgress() {
     return Observer(builder: (_) {
       UserStore userStore = Provider.of<UserStore>(context);
-      userStore.progress.length;
       return HorizontalList<TraktProgress>.fromInititalValues(
         items: userStore.progress,
         heading: Strings.pickupLeft,
@@ -192,7 +191,9 @@ class _HomeFeaturedState extends State<HomeFeatured>
               context: context, widthPercent: 0.3),
           buildWidget: (item) {
             return Style.getActorTile(
-              callback: () => widget.onItemClicked(item),
+              callback: () {
+                widget.onItemClicked(item);
+              },
               context: context,
               poster: item.posterPath,
               title: item.title,

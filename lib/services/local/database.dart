@@ -175,6 +175,16 @@ class Database {
     }
   }
 
+  Future clearTraktInfo() async {
+    isar.writeTxn(() async {
+      return Future.wait([
+        isar.favorites.clear(),
+        isar.progress.clear(),
+        isar.showHistorys.clear(),
+      ]);
+    });
+  }
+
   void addLastActivities({required LastActivities lastActivities}) async {
     isar.writeTxn(() async {
       isar.lastActivities.put(lastActivities..id = 0);
@@ -354,8 +364,8 @@ class Database {
     required List<TraktProgress> list,
     required Function(List<TraktProgress>) onChange,
   }) async {
-    List<Progress> items = [];
-    List<int> ids = [];
+    List<Progress> items = await isar.progress.where().findAll();
+    List<int?> ids = items.map((e) => e.id).toList();
 
     for (var element in list) {
       Progress progress = element.getProgress();

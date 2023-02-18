@@ -117,7 +117,19 @@ class _SeeMorePageState extends State<SeeMorePage> {
       );
     }
     return Style.getActorTile(
-        callback: () {},
+        callback: () {
+          String name;
+          if (seeMoreStore.items[index].type == BaseModelType.people) {
+            name = ActorDetailsPage.routeName;
+          } else {
+            name = DetailsPage.routeName;
+          }
+          Navigator.pushNamed(
+            context,
+            name,
+            arguments: seeMoreStore.items[index],
+          );
+        },
         context: context,
         title: seeMoreStore.items[index].title,
         poster: seeMoreStore.items[index].posterPath);

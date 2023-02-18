@@ -207,6 +207,10 @@ abstract class _UserStoreBase with Store {
   @action
   Future disconnectTrakt() async {
     traktStatus = false;
-    return Database().addUserTraktStatus(false);
+
+    return Future.wait([
+      Database().clearTraktInfo(),
+      Database().addUserTraktStatus(false),
+    ]);
   }
 }
