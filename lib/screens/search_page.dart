@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
-import 'package:lottie/lottie.dart';
 import 'package:mobx/mobx.dart';
 import 'package:cinenexa/resources/asset.dart';
 import 'package:cinenexa/resources/strings.dart';

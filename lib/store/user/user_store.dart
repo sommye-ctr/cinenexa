@@ -118,10 +118,11 @@ abstract class _UserStoreBase with Store {
 
   @action
   Future fetchUserProgress({bool fromApi = true}) async {
-    progress
-      ..clear()
-      ..addAll(await localDb.getAllProgress());
-    if (fromApi)
+    var list = await localDb.getAllProgress();
+    progress.clear();
+    progress.addAll(list);
+
+    if (fromApi) {
       localDb.updateProgress(
           list: await repository.getUserProgress(),
           onChange: (list) {
@@ -129,6 +130,7 @@ abstract class _UserStoreBase with Store {
               ..clear()
               ..addAll(list);
           });
+    }
   }
 
   @action

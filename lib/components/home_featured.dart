@@ -49,6 +49,8 @@ class _HomeFeaturedState extends State<HomeFeatured>
   Widget _buildProgress() {
     return Observer(builder: (_) {
       UserStore userStore = Provider.of<UserStore>(context);
+      userStore.progress.length; //to rebuild trigger
+
       return HorizontalList<TraktProgress>.fromInititalValues(
         items: userStore.progress,
         heading: Strings.pickupLeft,

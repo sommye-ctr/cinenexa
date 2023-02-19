@@ -386,8 +386,6 @@ class Database {
 
     await isar.writeTxn(() async {
       await isar.progress.putAll(items);
-    }).whenComplete(() async {
-      onChange(await getAllProgress());
     });
   }
 
