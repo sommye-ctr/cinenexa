@@ -123,9 +123,10 @@ abstract class _SearchStore with Store {
       speakToTextClicked(false);
     }
 
-    if (term != null) {
-      searchTerm = term;
+    if (term == null || term.length < 3) {
+      return;
     }
+    searchTerm = term;
 
     _fetchItems(
       Repository.search(searchTerm, entityType),

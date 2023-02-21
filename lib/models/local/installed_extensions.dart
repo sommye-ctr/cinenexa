@@ -6,15 +6,15 @@ class InstalledExtensions {
   Id? id;
 
   @Index()
-  late String stId;
+  late String? stId;
 
-  late String name;
-  late String domainId;
-  late String endpoint;
-  late DateTime createdAt;
-  late bool providesMovie;
-  late bool providesShow;
-  late bool providesAnime;
+  late String? name;
+  late String? domainId;
+  late String? endpoint;
+  late DateTime? createdAt;
+  late bool? providesMovie;
+  late bool? providesShow;
+  late bool? providesAnime;
   late String? description;
   late String? devEmail;
   late String? devName;
@@ -24,4 +24,5 @@ class InstalledExtensions {
   late String? icon;
 
   late int? providedRating;
+  late String? userData;
 }

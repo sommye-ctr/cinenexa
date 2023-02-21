@@ -41,6 +41,7 @@ abstract class _UserStoreBase with Store {
   Database localDb = Database();
   SupabaseClient supabaseClient = Supabase.instance.client;
   bool traktStatus = false;
+  bool guestLogin = false;
 
   _UserStoreBase({FavoritesStore? favoritesStore}) {
     init(favoritesStore: favoritesStore);
@@ -52,6 +53,7 @@ abstract class _UserStoreBase with Store {
   @action
   Future init({FavoritesStore? favoritesStore}) async {
     traktStatus = await localDb.getUserTraktStatus();
+    guestLogin = await localDb.getGuestSignupStatus();
 
     if (supabaseClient.auth.currentUser != null) {
       user = CineNexaUser(
@@ -94,13 +96,18 @@ abstract class _UserStoreBase with Store {
       } else {
         futures.addAll([
           fetchUserWatchedShows(
-              api: lastActivities, local: localLast, fromApi: true),
+            api: lastActivities,
+            local: localLast,
+            fromApi: true,
+          ),
           favoritesStore?.fetchFavorites(fromApi: true),
         ]);
       }
       Future.wait(listFutures).whenComplete(() => localDb.addLastActivities(
           lastActivities: lastActivities
             ..extensionsSyncedAt = localLast?.extensionsSyncedAt));
+    } else {
+      favoritesStore?.fetchFavorites(fromApi: false);
     }
   }
 
@@ -111,10 +118,11 @@ abstract class _UserStoreBase with Store {
 
   @action
   Future fetchUserProgress({bool fromApi = true}) async {
-    progress
-      ..clear()
-      ..addAll(await localDb.getAllProgress());
-    if (fromApi)
+    var list = await localDb.getAllProgress();
+    progress.clear();
+    progress.addAll(list);
+
+    if (fromApi) {
       localDb.updateProgress(
           list: await repository.getUserProgress(),
           onChange: (list) {
@@ -122,6 +130,7 @@ abstract class _UserStoreBase with Store {
               ..clear()
               ..addAll(list);
           });
+    }
   }
 
   @action
@@ -200,6 +209,10 @@ abstract class _UserStoreBase with Store {
   @action
   Future disconnectTrakt() async {
     traktStatus = false;
-    return Database().addUserTraktStatus(false);
+
+    return Future.wait([
+      Database().clearTraktInfo(),
+      Database().addUserTraktStatus(false),
+    ]);
   }
 }

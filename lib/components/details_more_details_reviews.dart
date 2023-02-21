@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mobx/mobx.dart';
 import 'package:cinenexa/store/details/details_store.dart';
 
 import '../resources/asset.dart';
+import '../utils/screen_size.dart';
 import 'details_review_tile.dart';
 
 class DetailsMoreDetailsReviews extends StatefulWidget {
@@ -65,9 +67,9 @@ class _DetailsMoreDetailsReviewsState extends State<DetailsMoreDetailsReviews> {
           ],
         );
       }
-      return LottieBuilder.asset(
+      return SvgPicture.asset(
         Asset.notFound,
-        repeat: true,
+        width: ScreenSize.getPercentOfWidth(context, 0.75),
       );
     });
   }

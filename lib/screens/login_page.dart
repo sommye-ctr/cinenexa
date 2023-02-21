@@ -1,3 +1,4 @@
+import 'package:cinenexa/screens/forgot_pass_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -30,85 +31,97 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Material(
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: Padding(
-          padding: EdgeInsets.symmetric(
-              horizontal: ScreenSize.getPercentOfWidth(context, 0.02)),
-          child: Stack(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SvgPicture.asset(
-                    Asset.login,
-                    width: ScreenSize.getPercentOfWidth(context, 1),
-                    height: ScreenSize.getPercentOfWidth(context, 1),
-                  ),
-                  Style.getVerticalSpacing(context: context),
-                  Padding(
-                    padding: EdgeInsets.only(
-                        left: ScreenSize.getPercentOfWidth(context, 0.05)),
-                    child: Text(
-                      Strings.signIn,
-                      style:
-                          TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+        resizeToAvoidBottomInset: true,
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: ScreenSize.getPercentOfWidth(context, 0.02)),
+            child: Stack(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SvgPicture.asset(
+                      Asset.login,
+                      width: ScreenSize.getPercentOfWidth(context, 1),
+                      height: ScreenSize.getPercentOfWidth(context, 1),
                     ),
-                  ),
-                  Style.getVerticalSpacing(context: context),
-                  Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        CustomTextFormField(
-                          hint: Strings.email,
-                          textEditingController: emailController,
-                          validator: (val) {
-                            if (!val!.isValidEmail) {
-                              return Strings.emailError;
-                            }
-                          },
-                          icon: Icon(
-                            Icons.mail_outline_rounded,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        CustomTextFormField(
-                          hint: Strings.password,
-                          textEditingController: passController,
-                          obscure: true,
-                          validator: (val) {
-                            if (!val!.isValidPassword) {
-                              return Strings.passwordError;
-                            }
-                          },
-                          icon: Icon(
-                            Icons.lock_outline_rounded,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        Style.getVerticalSpacing(context: context),
-                        Container(
-                          width: double.infinity,
-                          child: RoundedButton(
-                            child: Text(Strings.signIn),
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                _onClick();
+                    Style.getVerticalSpacing(context: context),
+                    Padding(
+                      padding: EdgeInsets.only(
+                          left: ScreenSize.getPercentOfWidth(context, 0.05)),
+                      child: Text(
+                        Strings.signIn,
+                        style: TextStyle(
+                            fontSize: 25, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Style.getVerticalSpacing(context: context),
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          CustomTextFormField(
+                            hint: Strings.email,
+                            textEditingController: emailController,
+                            validator: (val) {
+                              if (!val!.isValidEmail) {
+                                return Strings.emailError;
                               }
                             },
-                            type: RoundedButtonType.filled,
+                            icon: Icon(
+                              Icons.mail_outline_rounded,
+                              color: Colors.grey,
+                            ),
                           ),
-                        ),
-                      ],
+                          CustomTextFormField(
+                            hint: Strings.password,
+                            textEditingController: passController,
+                            obscure: true,
+                            validator: (val) {
+                              if (!val!.isValidPassword) {
+                                return Strings.passwordError;
+                              }
+                            },
+                            icon: Icon(
+                              Icons.lock_outline_rounded,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.topRight,
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.pushNamed(
+                                    context, ForgotPassPage.routeName);
+                              },
+                              child: Text(Strings.forgotPass),
+                            ),
+                          ),
+                          Style.getVerticalSpacing(context: context),
+                          Container(
+                            width: double.infinity,
+                            child: RoundedButton(
+                              child: Text(Strings.signIn),
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  _onClick();
+                                }
+                              },
+                              type: RoundedButtonType.filled,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: kToolbarHeight),
-                child: CustomBackButton(),
-              ),
-            ],
+                  ],
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: kToolbarHeight),
+                  child: CustomBackButton(),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -126,15 +139,18 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.pop(context);
 
       if (resp.session != null && resp.user != null) {
-        Navigator.pushNamed(context, LoginConfigurePage.routeName,
-            arguments: true);
+        Navigator.pushNamed(
+          context,
+          LoginConfigurePage.routeName,
+          arguments: true,
+        );
       }
     } on AuthException catch (error) {
       Navigator.pop(context);
-      Style.showSnackBar(context: context, text: error.message);
+      Style.showToast(context: context, text: error.message);
     } catch (error) {
       Navigator.pop(context);
-      Style.showSnackBar(context: context, text: Strings.unexpecedError);
+      Style.showToast(context: context, text: Strings.unexpecedError);
     }
   }
 }

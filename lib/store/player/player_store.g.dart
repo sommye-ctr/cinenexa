@@ -73,6 +73,38 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
     });
   }
 
+  late final _$nextEpAtom =
+      Atom(name: '_PlayerStoreBase.nextEp', context: context);
+
+  @override
+  bool get nextEp {
+    _$nextEpAtom.reportRead();
+    return super.nextEp;
+  }
+
+  @override
+  set nextEp(bool value) {
+    _$nextEpAtom.reportWrite(value, super.nextEp, () {
+      super.nextEp = value;
+    });
+  }
+
+  late final _$nextEpInitAtom =
+      Atom(name: '_PlayerStoreBase.nextEpInit', context: context);
+
+  @override
+  bool get nextEpInit {
+    _$nextEpInitAtom.reportRead();
+    return super.nextEpInit;
+  }
+
+  @override
+  set nextEpInit(bool value) {
+    _$nextEpInitAtom.reportWrite(value, super.nextEpInit, () {
+      super.nextEpInit = value;
+    });
+  }
+
   late final _$speedIndexAtom =
       Atom(name: '_PlayerStoreBase.speedIndex', context: context);
 
@@ -169,50 +201,19 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
     });
   }
 
-  late final _$selectedTrackAtom =
-      Atom(name: '_PlayerStoreBase.selectedTrack', context: context);
+  late final _$episodesAtom =
+      Atom(name: '_PlayerStoreBase.episodes', context: context);
 
   @override
-  int? get selectedTrack {
-    _$selectedTrackAtom.reportRead();
-    return super.selectedTrack;
+  ObservableList<TvEpisode> get episodes {
+    _$episodesAtom.reportRead();
+    return super.episodes;
   }
 
   @override
-  set selectedTrack(int? value) {
-    _$selectedTrackAtom.reportWrite(value, super.selectedTrack, () {
-      super.selectedTrack = value;
-    });
-  }
-
-  late final _$subsAtom = Atom(name: '_PlayerStoreBase.subs', context: context);
-
-  @override
-  ObservableList<VlcPlayerSubtitle> get subs {
-    _$subsAtom.reportRead();
-    return super.subs;
-  }
-
-  @override
-  set subs(ObservableList<VlcPlayerSubtitle> value) {
-    _$subsAtom.reportWrite(value, super.subs, () {
-      super.subs = value;
-    });
-  }
-
-  late final _$tracksAtom =
-      Atom(name: '_PlayerStoreBase.tracks', context: context);
-
-  @override
-  ObservableMap<int, String>? get tracks {
-    _$tracksAtom.reportRead();
-    return super.tracks;
-  }
-
-  @override
-  set tracks(ObservableMap<int, String>? value) {
-    _$tracksAtom.reportWrite(value, super.tracks, () {
-      super.tracks = value;
+  set episodes(ObservableList<TvEpisode> value) {
+    _$episodesAtom.reportWrite(value, super.episodes, () {
+      super.episodes = value;
     });
   }
 
@@ -240,8 +241,65 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
     return _$initAsyncAction.run(() => super.init());
   }
 
+  late final _$fetchNewEpsAsyncAction =
+      AsyncAction('_PlayerStoreBase.fetchNewEps', context: context);
+
+  @override
+  Future fetchNewEps() {
+    return _$fetchNewEpsAsyncAction.run(() => super.fetchNewEps());
+  }
+
+  late final _$fetchStreamsAsyncAction =
+      AsyncAction('_PlayerStoreBase.fetchStreams', context: context);
+
+  @override
+  Future fetchStreams() {
+    return _$fetchStreamsAsyncAction.run(() => super.fetchStreams());
+  }
+
+  late final _$changeSubtitleAsyncAction =
+      AsyncAction('_PlayerStoreBase.changeSubtitle', context: context);
+
+  @override
+  Future<dynamic> changeSubtitle(int index) {
+    return _$changeSubtitleAsyncAction.run(() => super.changeSubtitle(index));
+  }
+
   late final _$_PlayerStoreBaseActionController =
       ActionController(name: '_PlayerStoreBase', context: context);
+
+  @override
+  void setEpisode() {
+    final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
+        name: '_PlayerStoreBase.setEpisode');
+    try {
+      return super.setEpisode();
+    } finally {
+      _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setNextEpFlag(bool value) {
+    final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
+        name: '_PlayerStoreBase.setNextEpFlag');
+    try {
+      return super.setNextEpFlag(value);
+    } finally {
+      _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setDuration(Duration duration) {
+    final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
+        name: '_PlayerStoreBase.setDuration');
+    try {
+      return super.setDuration(duration);
+    } finally {
+      _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
 
   @override
   void setSubtitleDelay(int delay) {
@@ -332,39 +390,6 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
   }
 
   @override
-  void changeSubtitle(int index) {
-    final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
-        name: '_PlayerStoreBase.changeSubtitle');
-    try {
-      return super.changeSubtitle(index);
-    } finally {
-      _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void setTracks(Map<int, String> track) {
-    final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
-        name: '_PlayerStoreBase.setTracks');
-    try {
-      return super.setTracks(track);
-    } finally {
-      _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void setSelectedTrack(int? track) {
-    final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
-        name: '_PlayerStoreBase.setSelectedTrack');
-    try {
-      return super.setSelectedTrack(track);
-    } finally {
-      _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   void setSelectedSubtitle(int? subtitle) {
     final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
         name: '_PlayerStoreBase.setSelectedSubtitle');
@@ -393,15 +418,15 @@ showControls: ${showControls},
 buffering: ${buffering},
 locked: ${locked},
 casting: ${casting},
+nextEp: ${nextEp},
+nextEpInit: ${nextEpInit},
 speedIndex: ${speedIndex},
 fitIndex: ${fitIndex},
 subtitleDelay: ${subtitleDelay},
 position: ${position},
 buffered: ${buffered},
 selectedSubtitle: ${selectedSubtitle},
-selectedTrack: ${selectedTrack},
-subs: ${subs},
-tracks: ${tracks},
+episodes: ${episodes},
 seekDuration: ${seekDuration}
     ''';
   }

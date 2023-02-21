@@ -4,6 +4,7 @@ import 'package:cinenexa/models/local/last_activities.dart';
 import 'package:cinenexa/models/network/extensions/extension.dart';
 import 'package:cinenexa/services/local/database.dart';
 import 'package:cinenexa/services/network/supabase_repository.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../resources/strings.dart';
 part 'extensions_store.g.dart';
@@ -23,6 +24,7 @@ abstract class _ExtensionsStoreBase with Store {
 
   @observable
   String? successMessage;
+  bool _isGuestLogin = false;
 
   Database database = Database();
 
@@ -32,6 +34,9 @@ abstract class _ExtensionsStoreBase with Store {
 
   @action
   Future _init() async {
+    bool status = await database.getGuestSignupStatus();
+    _isGuestLogin = Supabase.instance.client.auth.currentUser == null && status;
+
     LastActivities? lastActivities = await database.getLastActivities();
     if (lastActivities == null || lastActivities.extensionsSyncedAt == null) {
       return syncInstalledExtensions();
@@ -40,6 +45,7 @@ abstract class _ExtensionsStoreBase with Store {
     }
 
     database.watchInstalledExtensions().listen((event) async {
+      print("here");
       installedExtensions.clear();
       installedExtensions.addAll(await database.getInstalledExtensions());
     });
@@ -65,28 +71,52 @@ abstract class _ExtensionsStoreBase with Store {
 
   @action
   Future uninstallExtension(Extension extension) async {
+    if (_isGuestLogin) {
+      successMessage = Strings.uninstalled;
+      await database.removeInstalledExtension(extension);
+      installedExtensions
+          .removeWhere((element) => element.stId == extension.id);
+      return;
+    }
     var result =
         await SupabaseRepository.uninstallExtension(extension: extension);
 
     result.when(
-      (success) {
+      (success) async {
         successMessage = Strings.uninstalled;
-        return database.removeInstalledExtension(extension);
+        await database.removeInstalledExtension(extension);
+        installedExtensions
+            .removeWhere((element) => element.stId == extension.id);
       },
       (err) => error = err.message,
     );
   }
 
   @action
-  Future installExtension(Extension extension) async {
-    var result =
-        await SupabaseRepository.installExtension(extension: extension);
+  Future installExtension(Extension extension, {String? userData}) async {
+    if (_isGuestLogin) {
+      successMessage = Strings.installed;
+      await database.addInstalledExtension(
+        extension,
+        userData: userData,
+      );
+      installedExtensions.add(extension.getInstalled(userData: userData));
+      return;
+    }
+
+    var result = await SupabaseRepository.installExtension(
+      extension: extension,
+      userData: userData,
+    );
 
     result.when(
-      (success) {
+      (success) async {
         successMessage = Strings.installed;
-
-        return database.addInstalledExtension(extension);
+        await database.addInstalledExtension(
+          extension,
+          userData: userData,
+        );
+        installedExtensions.add(extension.getInstalled(userData: userData));
       },
       (err) {
         if (err.code == "23505") {
@@ -101,18 +131,30 @@ abstract class _ExtensionsStoreBase with Store {
 
   @action
   Future syncInstalledExtensions() async {
+    if (_isGuestLogin) {
+      final list = await database.getInstalledExtensions();
+
+      installedExtensions.clear();
+      installedExtensions.addAll(list);
+      database.updateAllInstalledExtensions(list);
+      return;
+    }
+
     final list = await SupabaseRepository.getUserExtensions();
     return list.when(
       (success) {
         installedExtensions.clear();
-        installedExtensions.addAll(success.map((e) => e.getInstalled()));
+        installedExtensions.addAll(
+            success.map((e) => e.extension.getInstalled(userData: e.userData)));
         Future.wait([
-          database.updateAllInstalledExtensions(success),
+          database.updateAllInstalledExtensions(success
+              .map((e) => e.extension.getInstalled(userData: e.userData))
+              .toList()),
           database.updateLastActivities(extensionSyncedAt: DateTime.now()),
         ]);
       },
       (err) {
-        error = err.message;
+        error = err is PostgrestException ? err.message : err.toString();
       },
     );
   }
@@ -133,6 +175,11 @@ abstract class _ExtensionsStoreBase with Store {
       ratingCount: extension.ratingCount! + 1,
     );
     installedExtensions[index] = temp; */
+
+    if (_isGuestLogin) {
+      error = Strings.loginToRate;
+      return;
+    }
 
     var result = await SupabaseRepository.rateExtension(
       extension: extension,

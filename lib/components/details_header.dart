@@ -1,5 +1,7 @@
+import 'package:cinenexa/utils/link_opener.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:provider/provider.dart';
 import 'package:cinenexa/store/user/user_store.dart';
@@ -313,7 +315,7 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
       mainAxisSize: MainAxisSize.min,
       children: [
         CustomProgressIndicator(
-          progress: detailsStore.progress!.progress! / 100,
+          progress: detailsStore.progress!.progress / 100,
         ),
         Style.getVerticalSpacing(context: context),
         if (detailsStore.baseModel.type == BaseModelType.movie)
@@ -333,7 +335,7 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
         mainAxisSize: MainAxisSize.min,
         children: [
           RoundedButton(
-            onPressed: _onPlayPressed,
+            onPressed: () => _onPlayPressed(context),
             child: Row(
               children: [
                 _getPlayButton(),
@@ -415,19 +417,72 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
     isDialogShowing = true;
   }
 
-  void _onPlayPressed() {
+  void _onPlayPressed(context) async {
+    if (detailsStore.progress != null &&
+        detailsStore.progress?.stream != null) {
+      if (detailsStore.progress?.seasonNo != null &&
+          detailsStore.progress?.episodeNo != null) {
+        await LinkOpener.navigateToVideoPlayer(
+          baseModel: detailsStore.baseModel,
+          id: detailsStore.baseModel.id!,
+          context: context,
+          ep: detailsStore.progress?.episodeNo,
+          season: detailsStore.progress?.seasonNo,
+          progress: detailsStore.progress,
+          movie: detailsStore.movie,
+          tv: detailsStore.tv,
+          stream: detailsStore.progress!.stream!,
+          detailsStore: detailsStore,
+          showHistory: detailsStore.showHistory,
+        );
+        scrollTop();
+        await detailsStore.fetchProgress();
+
+        return;
+      }
+      await LinkOpener.navigateToVideoPlayer(
+        baseModel: detailsStore.baseModel,
+        id: detailsStore.baseModel.id!,
+        context: context,
+        ep: detailsStore.progress?.episodeNo,
+        season: detailsStore.progress?.seasonNo,
+        progress: detailsStore.progress,
+        movie: detailsStore.movie,
+        tv: detailsStore.tv,
+        stream: detailsStore.progress!.stream!,
+        detailsStore: detailsStore,
+        showHistory: detailsStore.showHistory,
+      );
+      scrollTop();
+      await detailsStore.fetchProgress();
+    }
     if (detailsStore.progress != null &&
         detailsStore.progress?.seasonNo != null &&
         detailsStore.progress?.episodeNo != null) {
       detailsStore.chosenEpisode = (detailsStore.progress!.episodeNo!) - 1;
       detailsStore.chosenSeason = (detailsStore.progress!.seasonNo!) - 1;
       detailsStore.fetchStreams();
+      scrollTop();
+      return;
     }
-    scrollController.animateTo(
-      maxExtent - minExtent,
-      duration: duration,
-      curve: Curves.easeIn,
+    scrollTop();
+  }
+
+  void scrollTop() async {
+    Future.delayed(
+      Duration(milliseconds: 500),
+      () {
+        scrollController.animateTo(
+          maxExtent,
+          duration: duration,
+          curve: Curves.easeIn,
+        );
+      },
     );
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
   }
 
   Text _getPlayButton() {
@@ -453,9 +508,9 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
   }
 
   String _getDurationLeft() {
-    int durationPlayed = (detailsStore.movie!.runtime! *
-            (detailsStore.progress!.progress! / 100))
-        .toInt();
+    int durationPlayed =
+        (detailsStore.movie!.runtime! * (detailsStore.progress!.progress / 100))
+            .toInt();
     return "${DateTimeFormatter.getTimeFromMin(detailsStore.movie!.runtime! - durationPlayed)} left";
   }
 

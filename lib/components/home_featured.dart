@@ -49,7 +49,8 @@ class _HomeFeaturedState extends State<HomeFeatured>
   Widget _buildProgress() {
     return Observer(builder: (_) {
       UserStore userStore = Provider.of<UserStore>(context);
-      userStore.progress.length;
+      userStore.progress.length; //to rebuild trigger
+
       return HorizontalList<TraktProgress>.fromInititalValues(
         items: userStore.progress,
         heading: Strings.pickupLeft,
@@ -186,34 +187,6 @@ class _HomeFeaturedState extends State<HomeFeatured>
         ),
         Style.getVerticalSpacing(context: context),
         HorizontalList<BaseModel>(
-          future: Repository.getTitles(Requests.popular(EntityType.people)),
-          heading: Strings.popularActors,
-          buildPlaceHolder: () => Style.getMovieTilePlaceHolder(
-              context: context, widthPercent: 0.3),
-          buildWidget: (item) {
-            return Style.getActorTile(
-              callback: () => widget.onItemClicked(item),
-              context: context,
-              poster: item.posterPath,
-              title: item.title,
-            );
-          },
-          height:
-              Style.getMovieTileHeight(context: context, widthPercent: 0.15) *
-                  1.8,
-          onRightTrailClicked: (items) {
-            if (widget.onSeeMoreClicked != null) {
-              widget.onSeeMoreClicked!(
-                Requests.popular(EntityType.people),
-                items,
-                Strings.popularActors,
-                seeMoreChildType: SeeMoreChildType.circle,
-              );
-            }
-          },
-        ),
-        Style.getVerticalSpacing(context: context),
-        HorizontalList<BaseModel>(
           future: Repository.getTitles(
             Requests.popular(EntityType.movie),
             shuffle: true,
@@ -262,6 +235,36 @@ class _HomeFeaturedState extends State<HomeFeatured>
                 Requests.popular(EntityType.tv),
                 items,
                 Strings.popularTv,
+              );
+            }
+          },
+        ),
+        Style.getVerticalSpacing(context: context),
+        HorizontalList<BaseModel>(
+          future: Repository.getTitles(Requests.popular(EntityType.people)),
+          heading: Strings.popularActors,
+          buildPlaceHolder: () => Style.getMovieTilePlaceHolder(
+              context: context, widthPercent: 0.3),
+          buildWidget: (item) {
+            return Style.getActorTile(
+              callback: () {
+                widget.onItemClicked(item);
+              },
+              context: context,
+              poster: item.posterPath,
+              title: item.title,
+            );
+          },
+          height:
+              Style.getMovieTileHeight(context: context, widthPercent: 0.15) *
+                  1.8,
+          onRightTrailClicked: (items) {
+            if (widget.onSeeMoreClicked != null) {
+              widget.onSeeMoreClicked!(
+                Requests.popular(EntityType.people),
+                items,
+                Strings.popularActors,
+                seeMoreChildType: SeeMoreChildType.circle,
               );
             }
           },

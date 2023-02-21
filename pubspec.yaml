@@ -15,7 +15,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.0.3+3
+version: 1.0.4+12
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -49,10 +49,9 @@ dependencies:
   oauth2_client: ^3.0.0
   lottie: ^1.4.3
   focused_menu: ^1.0.5
-  better_player: ^0.0.83
   audio_video_progress_bar: ^0.11.0
   awesome_dialog: ^3.0.2
-  flutter_vlc_player: ^7.1.5
+  # flutter_vlc_player: ^7.1.5
   settings_ui: ^2.0.2
   scrollable_positioned_list: ^0.3.4
   flutter_expandable_fab: ^1.5.2
@@ -82,9 +81,13 @@ dependencies:
   dio: ^4.0.6
   dio_cache_interceptor: ^3.3.1
   dio_cache_interceptor_hive_store: ^3.2.0
+  better_player: ^0.0.83
+  video_cast: ^1.0.2
+  numberpicker: ^2.1.1
 
   firebase_core: ^2.4.1
   firebase_crashlytics: ^3.0.9
+  in_app_review: ^2.0.6
 
 dev_dependencies:
   flutter_test:
@@ -121,7 +124,6 @@ flutter:
   assets:
     - assets/images/
     - assets/icon/
-    - assets/animations/
     - lib/.env
 
   # An image asset can refer to one or more resolution-specific "variants", see

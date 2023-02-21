@@ -1,4 +1,6 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:cinenexa/screens/extension_config_page.dart';
+import 'package:cinenexa/services/local/database.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
@@ -29,7 +31,6 @@ import 'package:cinenexa/screens/login_page.dart';
 import 'package:cinenexa/screens/register_page.dart';
 import 'package:cinenexa/screens/settings_page.dart';
 import 'package:cinenexa/screens/video_player_page.dart';
-import 'package:cinenexa/screens/vlc_video_player.dart';
 import 'package:cinenexa/screens/youtube_video_player.dart';
 import 'package:cinenexa/store/extensions/extensions_store.dart';
 import 'package:cinenexa/store/favorites/favorites_store.dart';
@@ -47,6 +48,11 @@ void main() async {
     url: dotenv.env['SUPABASE_URL'] ?? "",
     anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? "",
   );
+
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
 
   await Firebase.initializeApp();
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
@@ -68,17 +74,21 @@ void main() async {
   );
 
   final savedThemeMode = await AdaptiveTheme.getThemeMode();
+  final anonStatus = await Database().getGuestSignupStatus();
 
   runApp(MyApp(
     savedThemeMode: savedThemeMode,
+    anonStatus: anonStatus,
   ));
 }
 
 class MyApp extends StatefulWidget {
   final AdaptiveThemeMode? savedThemeMode;
+  final bool? anonStatus;
   const MyApp({
     Key? key,
     this.savedThemeMode,
+    this.anonStatus,
   }) : super(key: key);
 
   @override
@@ -91,10 +101,11 @@ class _MyAppState extends State<MyApp> {
     FavoritesStore favoritesStore = FavoritesStore();
     Widget homeWidget;
 
-    if (Supabase.instance.client.auth.currentUser == null) {
-      homeWidget = IntroPage();
-    } else {
+    if (Supabase.instance.client.auth.currentUser != null ||
+        (widget.anonStatus ?? false)) {
       homeWidget = HomeFirstScreen();
+    } else {
+      homeWidget = IntroPage();
     }
     FlutterNativeSplash.remove();
 
@@ -175,6 +186,15 @@ class _MyAppState extends State<MyApp> {
             return ForgotPassPage();
           },
         );
+      case ExtensionConfig.routeName:
+        return MaterialPageRoute(
+          builder: (context) {
+            return ExtensionConfig(
+              json: settings.arguments['json'],
+              extension: settings.arguments['extension'],
+            );
+          },
+        );
       case LoginConfigurePage.routeName:
         return MaterialPageRoute(
           builder: (context) {
@@ -197,7 +217,7 @@ class _MyAppState extends State<MyApp> {
           DeviceOrientation.landscapeRight
         ]);
         return MaterialPageRoute(
-          builder: (context) => VlcPlayerPage(
+          builder: (context) => VideoPlayerPage(
             extensionStream: value['stream'],
             baseModel: value['model'],
             episode: value['episode'],
@@ -206,6 +226,8 @@ class _MyAppState extends State<MyApp> {
             show: value['tv'],
             progress: value['progress'],
             id: value['id'],
+            detailsStore: value['store'],
+            showHistory: value['showHistory'],
           ),
         );
       default:

@@ -4,6 +4,9 @@ import 'package:cinenexa/models/network/movie.dart';
 import 'package:cinenexa/models/network/trakt/trakt_progress.dart';
 import 'package:cinenexa/models/network/tv.dart';
 
+import '../network/extensions/extension.dart';
+import '../network/extensions/extension_stream.dart';
+import '../network/extensions/subtitle.dart';
 import '../network/tv_season.dart';
 
 part 'progress.g.dart';
@@ -23,6 +26,9 @@ class Progress {
 
   @Index()
   DateTime? pausedAt;
+
+  ExtensionStream? stream;
+  int? subtitle;
 }
 
 extension ProgressConverter on Progress {

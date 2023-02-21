@@ -1,5 +1,6 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cinenexa/resources/asset.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -19,6 +20,9 @@ class Style {
   static double largeRoundEdgeRadius = 16;
   static double smallRoundEdgeRadius = 8;
   static double cardElevation = 8;
+
+  static const double iconSize = 60;
+  static const double smallIconSize = 40;
 
   static ThemeData themeData = ThemeData(
     primarySwatch: Colors.orange,
@@ -55,18 +59,33 @@ class Style {
     );
   }
 
-  static void showToast({required String text}) {
-    Fluttertoast.showToast(msg: text);
-  }
-
-  static void showSnackBar(
-      {required BuildContext context, required String text}) {
-    final snack = SnackBar(
-      content: Text(text, textAlign: TextAlign.center),
-      behavior: SnackBarBehavior.floating,
-      shape: StadiumBorder(),
+  static void showToast(
+      {required BuildContext context, required String text, bool? long}) {
+    Widget toast = Card(
+      elevation: 15,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(largeRoundEdgeRadius),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(Asset.icon, width: 24, height: 24),
+            SizedBox(width: 12.0),
+            Expanded(
+                child: Text(
+              text,
+            )),
+          ],
+        ),
+      ),
     );
-    ScaffoldMessenger.of(context).showSnackBar(snack);
+    FToast().init(context).showToast(
+          child: toast,
+          gravity: ToastGravity.BOTTOM,
+          toastDuration: Duration(seconds: long != null ? 4 : 2),
+        );
   }
 
   static Widget getChip(context, String text) {
@@ -115,6 +134,7 @@ class Style {
     Widget? leading,
     Widget? trailing,
     VoidCallback? onTap,
+    bool enabled = true,
   }) {
     return Container(
       width: ScreenSize.getPercentOfWidth(context, 0.95),
@@ -125,6 +145,7 @@ class Style {
         subtitle: subtitle != null ? Text(subtitle) : null,
         leading: leading,
         trailing: trailing,
+        enabled: enabled,
         tileColor: Theme.of(context).cardColor,
         onTap: onTap,
         shape: RoundedRectangleBorder(
@@ -196,6 +217,7 @@ class Style {
 
   static void showLoadingDialog({
     required BuildContext context,
+    String? text,
   }) {
     AwesomeDialog(
       context: context,
@@ -203,8 +225,20 @@ class Style {
       dismissOnBackKeyPress: false,
       dialogType: DialogType.noHeader,
       dialogBackgroundColor: Colors.transparent,
-      body: Center(
-        child: CircularProgressIndicator(),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Center(
+            child: CircularProgressIndicator(),
+          ),
+          if (text != null)
+            Text(
+              text,
+              textAlign: TextAlign.center,
+            ),
+        ],
       ),
       padding: EdgeInsets.all(8),
       useRootNavigator: true,

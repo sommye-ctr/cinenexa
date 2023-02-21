@@ -1,3 +1,5 @@
+import 'package:cinenexa/models/network/tv.dart';
+import 'package:cinenexa/services/network/trakt_repository.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:isar/isar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,9 +20,16 @@ import '../../models/network/trakt/trakt_progress.dart';
 class Database {
   static const String _TRAKT_LOGGED_IN = "TRAKT_LOGGED_IN";
   static const String _PROVIDER_COUNTRY = "PROVIDER_COUNTRY";
-  static const String _ALWAYS_EXTERNAL_PLAYER = "ALWAYS_EXTERNAL_PLAYER";
   static const String _AUTO_SUBTITLE = "AUTO_SUBTITLE";
   static const String _SEEK_DURATION = "SEEK_DURATION";
+  static const String _JUSTWATCH_PROVIDERS_ENABLED =
+      "JUSTWATCH_PROVIDERS_ENABLED";
+  static const String _TMDB_REGION = "TMDB_REGION";
+  static const String _MAX_CACHE_SIZE = "MAX_CACHE_SIZE";
+  static const String _DEFAULT_FIT = "DEFAULT_FIT";
+  static const String _NEXT_EP_DURATION = "NEXT_EP_DURATION";
+  static const String _AUTOPLAY = "AUTOPLAY";
+  static const String _GUEST_SIGNUP = "GUEST_SIGNUP";
 
   late Isar isar;
 
@@ -43,9 +52,14 @@ class Database {
     await prefs.setBool(_TRAKT_LOGGED_IN, status);
   }
 
-  Future addAlwaysExternalPlayer(bool status) async {
+  Future addGuestSignupStatus(bool status) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_ALWAYS_EXTERNAL_PLAYER, status);
+    await prefs.setBool(_GUEST_SIGNUP, status);
+  }
+
+  Future addJustwatchProvidersEnabled(bool status) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_JUSTWATCH_PROVIDERS_ENABLED, status);
   }
 
   Future addAutoSelectSubtitle(bool status) async {
@@ -53,9 +67,29 @@ class Database {
     await prefs.setBool(_AUTO_SUBTITLE, status);
   }
 
+  Future addAutoPlay(bool status) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_AUTOPLAY, status);
+  }
+
   Future addSeekDuration(int seconds) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_SEEK_DURATION, seconds);
+  }
+
+  Future addNextEpDuration(int seconds) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_NEXT_EP_DURATION, seconds);
+  }
+
+  Future addMaxCache(int index) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_MAX_CACHE_SIZE, index);
+  }
+
+  Future addDefaultFit(int indexFit) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_DEFAULT_FIT, indexFit);
   }
 
   Future<bool> getUserTraktStatus() async {
@@ -63,9 +97,14 @@ class Database {
     return (prefs.getBool(_TRAKT_LOGGED_IN) ?? false);
   }
 
-  Future<bool> getAlwaysExternalPlayer() async {
+  Future<bool> getGuestSignupStatus() async {
     final prefs = await SharedPreferences.getInstance();
-    return (prefs.getBool(_ALWAYS_EXTERNAL_PLAYER) ?? false);
+    return (prefs.getBool(_GUEST_SIGNUP) ?? false);
+  }
+
+  Future<bool> getJustwatchProvidersStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    return (prefs.getBool(_JUSTWATCH_PROVIDERS_ENABLED) ?? false);
   }
 
   Future<bool> getAutoSelectSubtitle() async {
@@ -73,14 +112,54 @@ class Database {
     return (prefs.getBool(_AUTO_SUBTITLE) ?? false);
   }
 
+  Future<bool> getAutoPlay() async {
+    final prefs = await SharedPreferences.getInstance();
+    return (prefs.getBool(_AUTOPLAY) ?? false);
+  }
+
   Future<int> getSeekDuration() async {
     final prefs = await SharedPreferences.getInstance();
     return (prefs.getInt(_SEEK_DURATION) ?? 30);
   }
 
+  Future<int> getNextEpDuration() async {
+    final prefs = await SharedPreferences.getInstance();
+    return (prefs.getInt(_NEXT_EP_DURATION) ?? 30);
+  }
+
+  Future<int> getMaxCache() async {
+    final prefs = await SharedPreferences.getInstance();
+    return (prefs.getInt(_MAX_CACHE_SIZE) ?? 0);
+  }
+
+  Future<int> getDefaultFit() async {
+    final prefs = await SharedPreferences.getInstance();
+    return (prefs.getInt(_DEFAULT_FIT) ?? 0);
+  }
+
   Future addProviderCountry(Country country) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_PROVIDER_COUNTRY, country.countryCode);
+  }
+
+  Future addTmdbRegion(Country country) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_TMDB_REGION, country.countryCode);
+  }
+
+  Future removeProviderCountry() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_PROVIDER_COUNTRY);
+  }
+
+  Future<Country?> getTmdbRegion() async {
+    final prefs = await SharedPreferences.getInstance();
+    return Country.tryParse(prefs.getString(_TMDB_REGION) ?? "");
+  }
+
+  Future removeTmdbRegion() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_TMDB_REGION);
   }
 
   Future<Country?> getProviderCountry() async {
@@ -94,6 +173,16 @@ class Database {
     } catch (e) {
       return null;
     }
+  }
+
+  Future clearTraktInfo() async {
+    isar.writeTxn(() async {
+      return Future.wait([
+        isar.favorites.clear(),
+        isar.progress.clear(),
+        isar.showHistorys.clear(),
+      ]);
+    });
   }
 
   void addLastActivities({required LastActivities lastActivities}) async {
@@ -124,18 +213,20 @@ class Database {
     });
   }
 
-  Future addInstalledExtension(Extension extension) {
+  Future addInstalledExtension(Extension extension, {String? userData}) {
     return isar.writeTxn(() async {
-      await isar.installedExtensions.put(extension.getInstalled());
+      await isar.installedExtensions.put(extension.getInstalled(
+        userData: userData,
+      ));
     });
   }
 
   //adds all the extensions assuming that this is to be called when all the extensions provided are installed
-  Future updateAllInstalledExtensions(List<Extension> extensions) async {
+  Future updateAllInstalledExtensions(
+      List<InstalledExtensions> extensions) async {
     return isar.writeTxn(() async {
       await isar.installedExtensions.clear();
-      await isar.installedExtensions
-          .putAll(extensions.map((e) => e.getInstalled()).toList());
+      await isar.installedExtensions.putAll(extensions);
     });
   }
 
@@ -155,9 +246,11 @@ class Database {
 
       int? id = newExt[i].id;
       int? providedRating = newExt[i].providedRating;
+      String? userData = newExt[i].userData;
       newExt[i] = ext.getInstalled()
         ..id = id
-        ..providedRating = providedRating;
+        ..providedRating = providedRating
+        ..userData = userData;
     }
 
     return isar.writeTxn(() async {
@@ -167,9 +260,9 @@ class Database {
 
   Future removeInstalledExtension(Extension extension) {
     return isar.writeTxn(() async {
-      await isar.installedExtensions
+      return await isar.installedExtensions
           .where()
-          .stIdEqualTo(extension.id)
+          .stIdEqualTo(extension.id!)
           .deleteFirst();
     });
   }
@@ -178,7 +271,7 @@ class Database {
     return isar.writeTxn(() async {
       InstalledExtensions? ext = await isar.installedExtensions
           .where()
-          .stIdEqualTo(extension.id)
+          .stIdEqualTo(extension.id!)
           .findFirst();
 
       if (ext != null) {
@@ -271,8 +364,8 @@ class Database {
     required List<TraktProgress> list,
     required Function(List<TraktProgress>) onChange,
   }) async {
-    List<Progress> items = [];
-    List<int> ids = [];
+    List<Progress> items = await isar.progress.where().findAll();
+    List<int?> ids = items.map((e) => e.id).toList();
 
     for (var element in list) {
       Progress progress = element.getProgress();
@@ -293,8 +386,6 @@ class Database {
 
     await isar.writeTxn(() async {
       await isar.progress.putAll(items);
-    }).whenComplete(() async {
-      onChange(await getAllProgress());
     });
   }
 
@@ -320,12 +411,11 @@ class Database {
     return list.map((e) => e.getTraktProgress()).toList();
   }
 
-  Future<TraktProgress?> getProgress({required int id}) async {
-    return (await isar.progress.get(id))?.getTraktProgress();
+  Future<Progress?> getProgress({required int id}) async {
+    return (await isar.progress.get(id));
   }
 
   Future updateShowHistory({required ShowHistory item}) async {
-    item;
     Map map = _calculateLastWatchedEp(item.seasons!);
     item = item
       ..lastWatched = map['ep']
@@ -373,6 +463,129 @@ class Database {
     return await isar.showHistorys.get(id);
   }
 
+  Future<ShowHistory> unwatchEp({
+    required int episodeNumber,
+    required int episodeId,
+    required int? seasonNumber,
+    required ShowHistory showHistory,
+    required bool isTraktLogged,
+    required TraktRepository repository,
+  }) async {
+    int seasonIndex = showHistory.seasons!
+        .indexWhere((element) => element.number == seasonNumber);
+
+    List<TraktShowHistorySeasonEp> eps =
+        List.of(showHistory.seasons![seasonIndex].episodes!, growable: true)
+          ..removeWhere((element) => element.number == episodeNumber);
+
+    List<TraktShowHistorySeason> seasons = List.of(showHistory.seasons!);
+    seasons[seasonIndex].episodes = eps;
+
+    if (seasons[seasonIndex].episodes!.isEmpty) {
+      seasons.removeAt(seasonIndex);
+    }
+
+    ShowHistory newshowHistory = showHistory;
+    showHistory = ShowHistory()
+      ..id = newshowHistory.id
+      ..lastUpdatedAt = DateTime.now().toUtc()
+      ..lastWatched = newshowHistory.lastWatched
+      ..lastWatchedSeason = newshowHistory.lastWatchedSeason
+      ..show = newshowHistory.show
+      ..seasons = seasons;
+
+    List<Future> futures = [];
+    futures.add(updateShowHistory(item: showHistory));
+    if (isTraktLogged) {
+      futures.addAll([
+        updateLastActivities(epWatchedAt: DateTime.now().toUtc()),
+        repository.removeFromWatched(tmdbEpId: episodeId),
+      ]);
+    }
+    await Future.wait(futures);
+    return showHistory;
+  }
+
+  Future<ShowHistory> watchEp({
+    required int episodeNumber,
+    required int episodeId,
+    required int? seasonNo,
+    required ShowHistory? showHistory,
+    required int baseModelId,
+    required Tv tv,
+    required bool isTraktLogged,
+    required TraktRepository repository,
+  }) async {
+    TraktShowHistorySeasonEp ep = TraktShowHistorySeasonEp(
+      lastWatchedAt: DateTime.now().toUtc().toIso8601String(),
+      number: episodeNumber,
+      plays: 1,
+    );
+
+    ShowHistory tempHistory;
+    if (showHistory == null) {
+      tempHistory = ShowHistory()
+        ..id = baseModelId
+        ..lastWatched = ep
+        ..show = tv
+        ..seasons = null
+        ..lastWatched = ep
+        ..lastWatchedSeason = seasonNo;
+    } else {
+      tempHistory = showHistory;
+    }
+
+    int? seasonIndex = tempHistory.seasons
+        ?.indexWhere((element) => element.number == seasonNo);
+    List<TraktShowHistorySeason>? seasons = tempHistory.seasons;
+
+    if (seasonIndex != null && seasonIndex >= 0 && seasons != null) {
+      //check if history already exists
+      if (tempHistory.seasons![seasonIndex].episodes!
+              .indexWhere((element) => element.number == episodeNumber) >=
+          0) {
+        int plays = ep.plays ?? 1;
+        ep.plays = plays + 1;
+      } else {
+        List<TraktShowHistorySeasonEp> eps = List.of(
+          tempHistory.seasons![seasonIndex].episodes!,
+          growable: true,
+        )..add(ep);
+
+        seasons[seasonIndex].episodes = eps;
+      }
+    } else {
+      List<TraktShowHistorySeasonEp> eps = List.of([ep], growable: true);
+
+      TraktShowHistorySeason season = TraktShowHistorySeason(
+        number: seasonNo,
+        episodes: eps,
+      );
+      List<TraktShowHistorySeason> newSeasons =
+          List.of(seasons ?? [], growable: true)..add(season);
+      seasons = newSeasons;
+    }
+
+    showHistory = ShowHistory()
+      ..id = tempHistory.id
+      ..lastUpdatedAt = DateTime.now().toUtc()
+      ..lastWatched = tempHistory.lastWatched
+      ..lastWatchedSeason = tempHistory.lastWatchedSeason
+      ..show = tempHistory.show
+      ..seasons = seasons;
+
+    List<Future> futures = [];
+    futures.add(updateShowHistory(item: showHistory));
+    if (isTraktLogged) {
+      futures.addAll([
+        repository.addToWatched(tmdbEpId: episodeId),
+        updateLastActivities(epWatchedAt: DateTime.now().toUtc())
+      ]);
+    }
+    await Future.wait(futures);
+    return showHistory;
+  }
+
   Map _calculateLastWatchedEp(List<TraktShowHistorySeason> items) {
     Map<int, TraktShowHistorySeasonEp> latestEps = {};
 
@@ -387,9 +600,6 @@ class Database {
                 return valueDate.compareTo(elementDate) > 0 ? value : element;
               }));
     }
-
-    latestEps;
-
     TraktShowHistorySeasonEp t = latestEps.values.reduce((value, element) {
       return DateTimeFormatter.parseDate(value.lastWatchedAt)!
               .isAfter(DateTimeFormatter.parseDate(element.lastWatchedAt)!)

@@ -1,4 +1,6 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:cinenexa/screens/extension_config_page.dart';
+import 'package:cinenexa/services/network/api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
@@ -77,7 +79,7 @@ class _ExtensionTileState extends State<ExtensionTile> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    widget.extension.name,
+                    widget.extension.name ?? "",
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Style.getVerticalSpacing(context: context),
@@ -135,7 +137,10 @@ class _ExtensionTileState extends State<ExtensionTile> {
     }
     return [
       RoundedButton(
-        child: Text(Strings.install),
+        child: Text(widget.extension.configJson != null &&
+                widget.extension.configJson!.isNotEmpty
+            ? Strings.configure
+            : Strings.install),
         onPressed: () => _onInstallExtension(context),
         type: RoundedButtonType.filled,
       ),
@@ -161,7 +166,7 @@ class _ExtensionTileState extends State<ExtensionTile> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                widget.extension.name,
+                widget.extension.name ?? "",
                 style: Style.headingStyle.copyWith(fontWeight: FontWeight.bold),
               ),
               if (widget.extension.devUrl != null)
@@ -256,11 +261,16 @@ class _ExtensionTileState extends State<ExtensionTile> {
       });
     } else {
       moreInfoDialog.dismiss();
-      Style.showSnackBar(context: context, text: Strings.noRating);
+      Style.showToast(context: context, text: Strings.noRating);
     }
   }
 
   void _onInstallExtension(context) async {
+    if (widget.extension.configJson != null &&
+        widget.extension.configJson!.isNotEmpty) {
+      _onConfigureExtension();
+      return;
+    }
     Style.showConfirmationDialog(
       context: context,
       text: Strings.installExtensionsWarning,
@@ -277,25 +287,72 @@ class _ExtensionTileState extends State<ExtensionTile> {
     );
   }
 
+  void _onConfigureExtension() async {
+    Style.showConfirmationDialog(
+      context: context,
+      text: Strings.installExtensionsWarning,
+      onPressed: () {
+        Navigator.pop(context);
+
+        Style.showConfirmationDialog(
+          context: context,
+          text: Strings.requireDataWarning,
+          onPressed: () async {
+            Style.showLoadingDialog(
+                context: context, text: Strings.preparingForm);
+            String json = await Api().getJsonFile(widget.extension);
+            Navigator.pop(context);
+
+            var result = await Navigator.pushNamed(
+              context,
+              ExtensionConfig.routeName,
+              arguments: {
+                "json": json,
+                "extension": widget.extension,
+              },
+            );
+            if (result != null && result is String) {
+              Provider.of<ExtensionsStore>(context, listen: false)
+                  .installExtension(widget.extension, userData: result)
+                  .whenComplete(() {
+                Navigator.pop(context);
+              });
+            }
+          },
+        );
+      },
+    );
+  }
+
   void _onUninstallExtension(context) async {
-    Style.showLoadingDialog(context: context);
-    Provider.of<ExtensionsStore>(context, listen: false)
-        .uninstallExtension(widget.extension)
-        .whenComplete(() {
-      Navigator.pop(context);
-      widget.onUninstall?.call();
-    });
+    Style.showConfirmationDialog(
+      context: context,
+      text: "You are going to uninstall the extension. Are you sure?",
+      onPressed: () {
+        Style.showLoadingDialog(context: context);
+        Provider.of<ExtensionsStore>(context, listen: false)
+            .uninstallExtension(widget.extension)
+            .whenComplete(() {
+          Navigator.pop(context);
+          Navigator.pop(context);
+          widget.onUninstall?.call();
+        });
+      },
+    );
   }
 
   List<Widget> _buildProviderChips(context) {
     List<Widget> list = [];
-    if (widget.extension.providesAnime) {
+    if (widget.extension.providesAnime != null &&
+        widget.extension.providesAnime!) {
       list.add(Style.getChip(context, Strings.anime));
     }
-    if (widget.extension.providesMovie) {
+    if (widget.extension.providesMovie != null &&
+        widget.extension.providesMovie!) {
       list.add(Style.getChip(context, Strings.movie));
     }
-    if (widget.extension.providesShow) {
+    if (widget.extension.providesShow != null &&
+        widget.extension.providesShow!) {
       list.add(Style.getChip(context, Strings.show));
     }
     return list;

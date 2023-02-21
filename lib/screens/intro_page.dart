@@ -1,3 +1,4 @@
+import 'package:cinenexa/services/local/database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:cinenexa/resources/asset.dart';
@@ -7,6 +8,8 @@ import 'package:cinenexa/screens/login_page.dart';
 import 'package:cinenexa/screens/register_page.dart';
 import 'package:cinenexa/utils/screen_size.dart';
 import 'package:cinenexa/widgets/rounded_button.dart';
+
+import 'login_configure_page.dart';
 
 class IntroPage extends StatefulWidget {
   static const String routeName = "/intro";
@@ -61,23 +64,42 @@ class _IntroPageState extends State<IntroPage> {
               ),
               child: Align(
                 alignment: Alignment.bottomCenter,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    RoundedButton(
-                      child: Text(Strings.register),
-                      onPressed: () {
-                        Navigator.of(context).pushNamed(RegisterPage.routeName);
-                      },
-                      type: RoundedButtonType.filled,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        RoundedButton(
+                          child: Text(Strings.register),
+                          onPressed: () {
+                            Navigator.of(context)
+                                .pushNamed(RegisterPage.routeName);
+                          },
+                          type: RoundedButtonType.filled,
+                        ),
+                        Style.getVerticalHorizontalSpacing(context: context),
+                        RoundedButton(
+                          child: Text(Strings.signIn),
+                          onPressed: () {
+                            Navigator.of(context)
+                                .pushNamed(LoginPage.routeName);
+                          },
+                          type: RoundedButtonType.outlined,
+                        ),
+                      ],
                     ),
-                    Style.getVerticalHorizontalSpacing(context: context),
-                    RoundedButton(
-                      child: Text(Strings.signIn),
-                      onPressed: () {
-                        Navigator.of(context).pushNamed(LoginPage.routeName);
+                    Style.getVerticalSpacing(context: context),
+                    TextButton(
+                      onPressed: () async {
+                        await Database().addGuestSignupStatus(true);
+                        Navigator.pushNamed(
+                          context,
+                          LoginConfigurePage.routeName,
+                          arguments: true,
+                        );
                       },
-                      type: RoundedButtonType.outlined,
+                      child: Text(Strings.guestLogin),
                     ),
                   ],
                 ),

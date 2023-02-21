@@ -54,8 +54,19 @@ const ProgressSchema = CollectionSchema(
       type: IsarType.object,
       target: r'Tv',
     ),
-    r'type': PropertySchema(
+    r'stream': PropertySchema(
       id: 7,
+      name: r'stream',
+      type: IsarType.object,
+      target: r'ExtensionStream',
+    ),
+    r'subtitle': PropertySchema(
+      id: 8,
+      name: r'subtitle',
+      type: IsarType.long,
+    ),
+    r'type': PropertySchema(
+      id: 9,
       name: r'type',
       type: IsarType.string,
     )
@@ -85,7 +96,10 @@ const ProgressSchema = CollectionSchema(
     r'Movie': MovieSchema,
     r'Genre': GenreSchema,
     r'Tv': TvSchema,
-    r'TvSeason': TvSeasonSchema
+    r'TvSeason': TvSeasonSchema,
+    r'ExtensionStream': ExtensionStreamSchema,
+    r'Subtitle': SubtitleSchema,
+    r'Extension': ExtensionSchema
   },
   getId: _progressGetId,
   getLinks: _progressGetLinks,
@@ -111,6 +125,14 @@ int _progressEstimateSize(
     if (value != null) {
       bytesCount +=
           3 + TvSchema.estimateSize(value, allOffsets[Tv]!, allOffsets);
+    }
+  }
+  {
+    final value = object.stream;
+    if (value != null) {
+      bytesCount += 3 +
+          ExtensionStreamSchema.estimateSize(
+              value, allOffsets[ExtensionStream]!, allOffsets);
     }
   }
   bytesCount += 3 + object.type.length * 3;
@@ -140,7 +162,14 @@ void _progressSerialize(
     TvSchema.serialize,
     object.show,
   );
-  writer.writeString(offsets[7], object.type);
+  writer.writeObject<ExtensionStream>(
+    offsets[7],
+    allOffsets,
+    ExtensionStreamSchema.serialize,
+    object.stream,
+  );
+  writer.writeLong(offsets[8], object.subtitle);
+  writer.writeString(offsets[9], object.type);
 }
 
 Progress _progressDeserialize(
@@ -166,7 +195,13 @@ Progress _progressDeserialize(
     TvSchema.deserialize,
     allOffsets,
   );
-  object.type = reader.readString(offsets[7]);
+  object.stream = reader.readObjectOrNull<ExtensionStream>(
+    offsets[7],
+    ExtensionStreamSchema.deserialize,
+    allOffsets,
+  );
+  object.subtitle = reader.readLongOrNull(offsets[8]);
+  object.type = reader.readString(offsets[9]);
   return object;
 }
 
@@ -200,6 +235,14 @@ P _progressDeserializeProp<P>(
         allOffsets,
       )) as P;
     case 7:
+      return (reader.readObjectOrNull<ExtensionStream>(
+        offset,
+        ExtensionStreamSchema.deserialize,
+        allOffsets,
+      )) as P;
+    case 8:
+      return (reader.readLongOrNull(offset)) as P;
+    case 9:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -852,6 +895,91 @@ extension ProgressQueryFilter
     });
   }
 
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> streamIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'stream',
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> streamIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'stream',
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> subtitleIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'subtitle',
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> subtitleIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'subtitle',
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> subtitleEqualTo(
+      int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'subtitle',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> subtitleGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'subtitle',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> subtitleLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'subtitle',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> subtitleBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'subtitle',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<Progress, Progress, QAfterFilterCondition> typeEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -998,6 +1126,13 @@ extension ProgressQueryObject
       return query.object(q, r'show');
     });
   }
+
+  QueryBuilder<Progress, Progress, QAfterFilterCondition> stream(
+      FilterQuery<ExtensionStream> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'stream');
+    });
+  }
 }
 
 extension ProgressQueryLinks
@@ -1061,6 +1196,18 @@ extension ProgressQuerySortBy on QueryBuilder<Progress, Progress, QSortBy> {
   QueryBuilder<Progress, Progress, QAfterSortBy> sortBySeasonNoDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'seasonNo', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterSortBy> sortBySubtitle() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'subtitle', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterSortBy> sortBySubtitleDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'subtitle', Sort.desc);
     });
   }
 
@@ -1151,6 +1298,18 @@ extension ProgressQuerySortThenBy
     });
   }
 
+  QueryBuilder<Progress, Progress, QAfterSortBy> thenBySubtitle() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'subtitle', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QAfterSortBy> thenBySubtitleDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'subtitle', Sort.desc);
+    });
+  }
+
   QueryBuilder<Progress, Progress, QAfterSortBy> thenByType() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'type', Sort.asc);
@@ -1193,6 +1352,12 @@ extension ProgressQueryWhereDistinct
   QueryBuilder<Progress, Progress, QDistinct> distinctBySeasonNo() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'seasonNo');
+    });
+  }
+
+  QueryBuilder<Progress, Progress, QDistinct> distinctBySubtitle() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'subtitle');
     });
   }
 
@@ -1251,6 +1416,18 @@ extension ProgressQueryProperty
   QueryBuilder<Progress, Tv?, QQueryOperations> showProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'show');
+    });
+  }
+
+  QueryBuilder<Progress, ExtensionStream?, QQueryOperations> streamProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'stream');
+    });
+  }
+
+  QueryBuilder<Progress, int?, QQueryOperations> subtitleProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'subtitle');
     });
   }
 

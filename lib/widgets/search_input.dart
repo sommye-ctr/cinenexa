@@ -100,7 +100,7 @@ class _SearchInputState extends State<SearchInput> {
       }, onDone: () {
         widget.onEditingComplete();
       }, onError: (err) {
-        Style.showSnackBar(context: context, text: err.errorMsg);
+        Style.showToast(context: context, text: err.errorMsg);
       });
 
   @override

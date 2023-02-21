@@ -1,8 +1,11 @@
-import 'package:flutter_vlc_player/flutter_vlc_player.dart';
+import 'package:better_player/better_player.dart';
+import 'package:cinenexa/models/network/extensions/subtitle.dart';
 import 'package:mobx/mobx.dart';
-import 'package:cinenexa/models/local/vlc_player_subtitles.dart';
 import 'package:cinenexa/models/network/extensions/extension_stream.dart';
 import 'package:cinenexa/services/local/database.dart';
+
+import '../../models/network/tv_episode.dart';
+import '../details/details_store.dart';
 part 'player_store.g.dart';
 
 class PlayerStore = _PlayerStoreBase with _$PlayerStore;
@@ -18,6 +21,13 @@ abstract class _PlayerStoreBase with Store {
   bool casting = false;
 
   @observable
+  bool nextEp = false;
+  @observable
+  bool nextEpInit = false;
+  @observable
+  bool nextEpCancel = false;
+
+  @observable
   int speedIndex = 0;
   @observable
   int fitIndex = 0;
@@ -31,110 +41,152 @@ abstract class _PlayerStoreBase with Store {
 
   @observable
   int? selectedSubtitle;
-  @observable
-  int? selectedTrack;
-
-  //@observable
-  //ObservableMap<int, String>? subtitles;
 
   @observable
-  ObservableList<VlcPlayerSubtitle> subs = <VlcPlayerSubtitle>[].asObservable();
+  ObservableList<TvEpisode> episodes = <TvEpisode>[].asObservable();
+  late int? currentEpIndex, season;
+  int? nextEpIndex;
 
-  @observable
-  ObservableMap<int, String>? tracks;
-
-  @observable
   int seekDuration = 30;
+  int nextEpPopupDuration = 30;
+  bool autoPlay = false;
 
-  int duration = 0;
-  bool initialCalled = false;
-  String? castingDevice;
+  Duration duration = Duration();
 
-  final VlcPlayerController controller;
+  final BetterPlayerController controller;
   final ExtensionStream extensionStream;
+  final DetailsStore detailsStore;
   final double? progress;
 
   _PlayerStoreBase({
     required this.controller,
     required this.extensionStream,
+    required this.detailsStore,
     this.progress,
+    this.season,
+    int? episode,
   }) {
+    episodes.addAll(detailsStore.episodes);
+    currentEpIndex = detailsStore.episodes
+        .indexWhere((element) => element.episodeNumber == episode);
+
     init();
   }
 
   @action
   Future init() async {
     seekDuration = await Database().getSeekDuration();
-    controller.addOnRendererEventListener((event, p1, p2) {
-      if (event == VlcRendererEventType.detached) {
-        setCasting(false);
+    nextEpPopupDuration = await Database().getNextEpDuration();
+    autoPlay = await Database().getAutoPlay();
+
+    controller.addEventsListener((event) {
+      switch (event.betterPlayerEventType) {
+        case BetterPlayerEventType.bufferingStart:
+          setBuffering(true);
+          break;
+        case BetterPlayerEventType.bufferingEnd:
+          setBuffering(false);
+          break;
+        case BetterPlayerEventType.initialized:
+          initSeek();
+          break;
+        case BetterPlayerEventType.progress:
+          setBuffered(
+              controller.videoPlayerController!.value.buffered.first.end);
+          setPosition(controller.videoPlayerController!.value.position);
+          _handleNextEpPopup();
+          break;
+        case BetterPlayerEventType.play:
+          if (casting) controller.pause();
+          break;
+        default:
       }
     });
+  }
 
-    if (extensionStream.subtitles != null &&
-        extensionStream.subtitles!.isNotEmpty) {
-      for (var element in extensionStream.subtitles!) {
-        subs.add(VlcPlayerSubtitle(
-          name: element.title,
-          source: element.url,
-        ));
-      }
+  void _handleNextEpPopup() {
+    if (!autoPlay || season == null) {
+      return;
     }
+    Duration? duration = controller.videoPlayerController!.value.duration;
+    int diff = duration == null ? 0 : (duration.inSeconds - position.inSeconds);
 
-    controller.addListener(() async {
-      if (controller.value.playingState == PlayingState.buffering) {
-        setBuffering(true);
+    if (position.inSeconds >= 1 &&
+        diff <= (nextEpPopupDuration + 15) &&
+        !nextEpInit) {
+      nextEpInit = true;
+      if (currentEpIndex == episodes.length - 1) {
+        fetchNewEps();
       } else {
-        setBuffering(false);
+        setEpisode();
       }
+    } else {
+      setNextEpFlag(false);
+    }
+    if (position.inSeconds >= 1 && diff <= nextEpPopupDuration && !nextEp) {
+      setNextEpFlag(true);
+    }
+  }
 
-      if (controller.value.isInitialized) {
-        duration = controller.value.duration.inMilliseconds;
-        controller.startRendererScanning();
-      }
+  Future initSeek() async {
+    controller.videoPlayerController!.seekTo(position);
+    duration = controller.videoPlayerController!.value.duration!;
+    int seconds = (duration.inMilliseconds * progress!) ~/ 100;
 
-      if (controller.value.playingState == PlayingState.playing) {
-        if (!initialCalled) {
-          if (progress != null) {
-            int seconds = (duration * progress!) ~/ 100;
+    await controller.play();
+    await controller.seekTo(Duration(milliseconds: seconds));
+    await controller.play();
+  }
 
-            await controller.pause();
-            await controller.play();
-            await controller.seekTo(Duration(milliseconds: seconds));
-          }
+  @action
+  Future fetchNewEps() async {
+    if (detailsStore.tv!.seasons!.length - 1 >=
+        detailsStore.chosenSeason! + 1) {
+      List<TvEpisode> list =
+          await detailsStore.onSeasonChanged(detailsStore.chosenSeason! + 1);
+      detailsStore.onEpBackClicked();
+      detailsStore.onEpiodeClicked(0);
+      nextEpIndex = 0;
+      season =
+          detailsStore.tv?.seasons?[detailsStore.chosenSeason!].seasonNumber ??
+              0;
+      episodes.clear();
+      episodes.addAll(list);
+      fetchStreams();
+    }
+  }
 
-          setTracks(await controller.getAudioTracks());
-          setSelectedTrack(await controller.getAudioTrack());
+  @action
+  void setEpisode() {
+    nextEpIndex = currentEpIndex! + 1;
+    detailsStore.onEpBackClicked();
+    detailsStore.onEpiodeClicked(nextEpIndex!);
+    fetchStreams();
+  }
 
-          var list = await controller.getSpuTracks();
-          list.forEach(
-            (key, value) {
-              subs.add(VlcPlayerSubtitle(
-                name: value,
-                vlcId: key,
-              ));
-            },
-          );
-          setSelectedSubtitle(await controller.getSpuTrack());
+  @action
+  Future fetchStreams() async {
+    detailsStore.fetchStreams();
+  }
 
-          initialCalled = true;
-        }
+  @action
+  void setNextEpFlag(bool value) {
+    this.nextEp = value;
+  }
 
-        setPosition(controller.value.position);
-        setBuffered(
-          Duration(seconds: (controller.value.bufferPercent * duration) ~/ 100),
-        );
-      }
-    });
+  @action
+  void setNextEpCancel(bool value) {
+    this.nextEpCancel = value;
+  }
+
+  @action
+  void setDuration(Duration duration) {
+    this.duration = duration;
   }
 
   @action
   void setSubtitleDelay(int delay) {
     subtitleDelay = delay;
-  }
-
-  void setCastingDevice(String device) {
-    castingDevice = device;
   }
 
   @action
@@ -173,8 +225,23 @@ abstract class _PlayerStoreBase with Store {
   }
 
   @action
-  void changeSubtitle(int index) {
-    if (index == -1) {
+  Future changeSubtitle(int index) async {
+    if (index < 0) {
+      await controller.setupSubtitleSource(BetterPlayerSubtitlesSource());
+      setSelectedSubtitle(null);
+      return;
+    }
+    Subtitle sub = extensionStream.subtitles![index];
+    await controller.setupSubtitleSource(
+      BetterPlayerSubtitlesSource(
+        name: sub.title,
+        type: BetterPlayerSubtitlesSourceType.network,
+        urls: [sub.url],
+        selectedByDefault: true,
+      ),
+    );
+    setSelectedSubtitle(index);
+    /* if (index == -1) {
       controller.setSpuTrack(-1);
       setSelectedSubtitle(null);
       return;
@@ -188,17 +255,7 @@ abstract class _PlayerStoreBase with Store {
     }
 
     controller.addSubtitleFromNetwork(subtitle.source!, isSelected: true);
-    setSelectedSubtitle(subtitle.id);
-  }
-
-  @action
-  void setTracks(Map<int, String> track) {
-    tracks = track.asObservable();
-  }
-
-  @action
-  void setSelectedTrack(int? track) {
-    selectedTrack = track;
+    setSelectedSubtitle(subtitle.id); */
   }
 
   @action

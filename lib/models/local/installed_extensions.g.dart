@@ -97,6 +97,11 @@ const InstalledExtensionsSchema = CollectionSchema(
       id: 15,
       name: r'stId',
       type: IsarType.string,
+    ),
+    r'userData': PropertySchema(
+      id: 16,
+      name: r'userData',
+      type: IsarType.string,
     )
   },
   estimateSize: _installedExtensionsEstimateSize,
@@ -157,16 +162,42 @@ int _installedExtensionsEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
-  bytesCount += 3 + object.domainId.length * 3;
-  bytesCount += 3 + object.endpoint.length * 3;
+  {
+    final value = object.domainId;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.endpoint;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   {
     final value = object.icon;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
     }
   }
-  bytesCount += 3 + object.name.length * 3;
-  bytesCount += 3 + object.stId.length * 3;
+  {
+    final value = object.name;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.stId;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.userData;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   return bytesCount;
 }
 
@@ -192,6 +223,7 @@ void _installedExtensionsSerialize(
   writer.writeDouble(offsets[13], object.rating);
   writer.writeLong(offsets[14], object.ratingCount);
   writer.writeString(offsets[15], object.stId);
+  writer.writeString(offsets[16], object.userData);
 }
 
 InstalledExtensions _installedExtensionsDeserialize(
@@ -201,23 +233,24 @@ InstalledExtensions _installedExtensionsDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = InstalledExtensions();
-  object.createdAt = reader.readDateTime(offsets[0]);
+  object.createdAt = reader.readDateTimeOrNull(offsets[0]);
   object.description = reader.readStringOrNull(offsets[1]);
   object.devEmail = reader.readStringOrNull(offsets[2]);
   object.devName = reader.readStringOrNull(offsets[3]);
   object.devUrl = reader.readStringOrNull(offsets[4]);
-  object.domainId = reader.readString(offsets[5]);
-  object.endpoint = reader.readString(offsets[6]);
+  object.domainId = reader.readStringOrNull(offsets[5]);
+  object.endpoint = reader.readStringOrNull(offsets[6]);
   object.icon = reader.readStringOrNull(offsets[7]);
   object.id = id;
-  object.name = reader.readString(offsets[8]);
+  object.name = reader.readStringOrNull(offsets[8]);
   object.providedRating = reader.readLongOrNull(offsets[9]);
-  object.providesAnime = reader.readBool(offsets[10]);
-  object.providesMovie = reader.readBool(offsets[11]);
-  object.providesShow = reader.readBool(offsets[12]);
+  object.providesAnime = reader.readBoolOrNull(offsets[10]);
+  object.providesMovie = reader.readBoolOrNull(offsets[11]);
+  object.providesShow = reader.readBoolOrNull(offsets[12]);
   object.rating = reader.readDoubleOrNull(offsets[13]);
   object.ratingCount = reader.readLongOrNull(offsets[14]);
-  object.stId = reader.readString(offsets[15]);
+  object.stId = reader.readStringOrNull(offsets[15]);
+  object.userData = reader.readStringOrNull(offsets[16]);
   return object;
 }
 
@@ -229,7 +262,7 @@ P _installedExtensionsDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readDateTimeOrNull(offset)) as P;
     case 1:
       return (reader.readStringOrNull(offset)) as P;
     case 2:
@@ -239,27 +272,29 @@ P _installedExtensionsDeserializeProp<P>(
     case 4:
       return (reader.readStringOrNull(offset)) as P;
     case 5:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 6:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 7:
       return (reader.readStringOrNull(offset)) as P;
     case 8:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 9:
       return (reader.readLongOrNull(offset)) as P;
     case 10:
-      return (reader.readBool(offset)) as P;
+      return (reader.readBoolOrNull(offset)) as P;
     case 11:
-      return (reader.readBool(offset)) as P;
+      return (reader.readBoolOrNull(offset)) as P;
     case 12:
-      return (reader.readBool(offset)) as P;
+      return (reader.readBoolOrNull(offset)) as P;
     case 13:
       return (reader.readDoubleOrNull(offset)) as P;
     case 14:
       return (reader.readLongOrNull(offset)) as P;
     case 15:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
+    case 16:
+      return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -359,7 +394,29 @@ extension InstalledExtensionsQueryWhere
   }
 
   QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterWhereClause>
-      stIdEqualTo(String stId) {
+      stIdIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'stId',
+        value: [null],
+      ));
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterWhereClause>
+      stIdIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'stId',
+        lower: [null],
+        includeLower: false,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterWhereClause>
+      stIdEqualTo(String? stId) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.equalTo(
         indexName: r'stId',
@@ -369,7 +426,7 @@ extension InstalledExtensionsQueryWhere
   }
 
   QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterWhereClause>
-      stIdNotEqualTo(String stId) {
+      stIdNotEqualTo(String? stId) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -407,7 +464,25 @@ extension InstalledExtensionsQueryWhere
 extension InstalledExtensionsQueryFilter on QueryBuilder<InstalledExtensions,
     InstalledExtensions, QFilterCondition> {
   QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
-      createdAtEqualTo(DateTime value) {
+      createdAtIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'createdAt',
+      ));
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
+      createdAtIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'createdAt',
+      ));
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
+      createdAtEqualTo(DateTime? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'createdAt',
@@ -418,7 +493,7 @@ extension InstalledExtensionsQueryFilter on QueryBuilder<InstalledExtensions,
 
   QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
       createdAtGreaterThan(
-    DateTime value, {
+    DateTime? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -432,7 +507,7 @@ extension InstalledExtensionsQueryFilter on QueryBuilder<InstalledExtensions,
 
   QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
       createdAtLessThan(
-    DateTime value, {
+    DateTime? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -446,8 +521,8 @@ extension InstalledExtensionsQueryFilter on QueryBuilder<InstalledExtensions,
 
   QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
       createdAtBetween(
-    DateTime lower,
-    DateTime upper, {
+    DateTime? lower,
+    DateTime? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -1079,8 +1154,26 @@ extension InstalledExtensionsQueryFilter on QueryBuilder<InstalledExtensions,
   }
 
   QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
+      domainIdIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'domainId',
+      ));
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
+      domainIdIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'domainId',
+      ));
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
       domainIdEqualTo(
-    String value, {
+    String? value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -1094,7 +1187,7 @@ extension InstalledExtensionsQueryFilter on QueryBuilder<InstalledExtensions,
 
   QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
       domainIdGreaterThan(
-    String value, {
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -1110,7 +1203,7 @@ extension InstalledExtensionsQueryFilter on QueryBuilder<InstalledExtensions,
 
   QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
       domainIdLessThan(
-    String value, {
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -1126,8 +1219,8 @@ extension InstalledExtensionsQueryFilter on QueryBuilder<InstalledExtensions,
 
   QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
       domainIdBetween(
-    String lower,
-    String upper, {
+    String? lower,
+    String? upper, {
     bool includeLower = true,
     bool includeUpper = true,
     bool caseSensitive = true,
@@ -1215,8 +1308,26 @@ extension InstalledExtensionsQueryFilter on QueryBuilder<InstalledExtensions,
   }
 
   QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
+      endpointIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'endpoint',
+      ));
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
+      endpointIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'endpoint',
+      ));
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
       endpointEqualTo(
-    String value, {
+    String? value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -1230,7 +1341,7 @@ extension InstalledExtensionsQueryFilter on QueryBuilder<InstalledExtensions,
 
   QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
       endpointGreaterThan(
-    String value, {
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -1246,7 +1357,7 @@ extension InstalledExtensionsQueryFilter on QueryBuilder<InstalledExtensions,
 
   QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
       endpointLessThan(
-    String value, {
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -1262,8 +1373,8 @@ extension InstalledExtensionsQueryFilter on QueryBuilder<InstalledExtensions,
 
   QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
       endpointBetween(
-    String lower,
-    String upper, {
+    String? lower,
+    String? upper, {
     bool includeLower = true,
     bool includeUpper = true,
     bool caseSensitive = true,
@@ -1579,8 +1690,26 @@ extension InstalledExtensionsQueryFilter on QueryBuilder<InstalledExtensions,
   }
 
   QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
+      nameIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'name',
+      ));
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
+      nameIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'name',
+      ));
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
       nameEqualTo(
-    String value, {
+    String? value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -1594,7 +1723,7 @@ extension InstalledExtensionsQueryFilter on QueryBuilder<InstalledExtensions,
 
   QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
       nameGreaterThan(
-    String value, {
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -1610,7 +1739,7 @@ extension InstalledExtensionsQueryFilter on QueryBuilder<InstalledExtensions,
 
   QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
       nameLessThan(
-    String value, {
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -1626,8 +1755,8 @@ extension InstalledExtensionsQueryFilter on QueryBuilder<InstalledExtensions,
 
   QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
       nameBetween(
-    String lower,
-    String upper, {
+    String? lower,
+    String? upper, {
     bool includeLower = true,
     bool includeUpper = true,
     bool caseSensitive = true,
@@ -1789,7 +1918,25 @@ extension InstalledExtensionsQueryFilter on QueryBuilder<InstalledExtensions,
   }
 
   QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
-      providesAnimeEqualTo(bool value) {
+      providesAnimeIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'providesAnime',
+      ));
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
+      providesAnimeIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'providesAnime',
+      ));
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
+      providesAnimeEqualTo(bool? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'providesAnime',
@@ -1799,7 +1946,25 @@ extension InstalledExtensionsQueryFilter on QueryBuilder<InstalledExtensions,
   }
 
   QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
-      providesMovieEqualTo(bool value) {
+      providesMovieIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'providesMovie',
+      ));
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
+      providesMovieIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'providesMovie',
+      ));
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
+      providesMovieEqualTo(bool? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'providesMovie',
@@ -1809,7 +1974,25 @@ extension InstalledExtensionsQueryFilter on QueryBuilder<InstalledExtensions,
   }
 
   QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
-      providesShowEqualTo(bool value) {
+      providesShowIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'providesShow',
+      ));
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
+      providesShowIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'providesShow',
+      ));
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
+      providesShowEqualTo(bool? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'providesShow',
@@ -1977,8 +2160,26 @@ extension InstalledExtensionsQueryFilter on QueryBuilder<InstalledExtensions,
   }
 
   QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
+      stIdIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'stId',
+      ));
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
+      stIdIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'stId',
+      ));
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
       stIdEqualTo(
-    String value, {
+    String? value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -1992,7 +2193,7 @@ extension InstalledExtensionsQueryFilter on QueryBuilder<InstalledExtensions,
 
   QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
       stIdGreaterThan(
-    String value, {
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -2008,7 +2209,7 @@ extension InstalledExtensionsQueryFilter on QueryBuilder<InstalledExtensions,
 
   QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
       stIdLessThan(
-    String value, {
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -2024,8 +2225,8 @@ extension InstalledExtensionsQueryFilter on QueryBuilder<InstalledExtensions,
 
   QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
       stIdBetween(
-    String lower,
-    String upper, {
+    String? lower,
+    String? upper, {
     bool includeLower = true,
     bool includeUpper = true,
     bool caseSensitive = true,
@@ -2107,6 +2308,160 @@ extension InstalledExtensionsQueryFilter on QueryBuilder<InstalledExtensions,
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'stId',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
+      userDataIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'userData',
+      ));
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
+      userDataIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'userData',
+      ));
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
+      userDataEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'userData',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
+      userDataGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'userData',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
+      userDataLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'userData',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
+      userDataBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'userData',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
+      userDataStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'userData',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
+      userDataEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'userData',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
+      userDataContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'userData',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
+      userDataMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'userData',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
+      userDataIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'userData',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterFilterCondition>
+      userDataIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'userData',
         value: '',
       ));
     });
@@ -2342,6 +2697,20 @@ extension InstalledExtensionsQuerySortBy
       sortByStIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'stId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterSortBy>
+      sortByUserData() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userData', Sort.asc);
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterSortBy>
+      sortByUserDataDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userData', Sort.desc);
     });
   }
 }
@@ -2585,6 +2954,20 @@ extension InstalledExtensionsQuerySortThenBy
       return query.addSortBy(r'stId', Sort.desc);
     });
   }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterSortBy>
+      thenByUserData() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userData', Sort.asc);
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QAfterSortBy>
+      thenByUserDataDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userData', Sort.desc);
+    });
+  }
 }
 
 extension InstalledExtensionsQueryWhereDistinct
@@ -2700,6 +3083,13 @@ extension InstalledExtensionsQueryWhereDistinct
       return query.addDistinctBy(r'stId', caseSensitive: caseSensitive);
     });
   }
+
+  QueryBuilder<InstalledExtensions, InstalledExtensions, QDistinct>
+      distinctByUserData({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'userData', caseSensitive: caseSensitive);
+    });
+  }
 }
 
 extension InstalledExtensionsQueryProperty
@@ -2710,7 +3100,7 @@ extension InstalledExtensionsQueryProperty
     });
   }
 
-  QueryBuilder<InstalledExtensions, DateTime, QQueryOperations>
+  QueryBuilder<InstalledExtensions, DateTime?, QQueryOperations>
       createdAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'createdAt');
@@ -2745,14 +3135,14 @@ extension InstalledExtensionsQueryProperty
     });
   }
 
-  QueryBuilder<InstalledExtensions, String, QQueryOperations>
+  QueryBuilder<InstalledExtensions, String?, QQueryOperations>
       domainIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'domainId');
     });
   }
 
-  QueryBuilder<InstalledExtensions, String, QQueryOperations>
+  QueryBuilder<InstalledExtensions, String?, QQueryOperations>
       endpointProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'endpoint');
@@ -2765,7 +3155,7 @@ extension InstalledExtensionsQueryProperty
     });
   }
 
-  QueryBuilder<InstalledExtensions, String, QQueryOperations> nameProperty() {
+  QueryBuilder<InstalledExtensions, String?, QQueryOperations> nameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'name');
     });
@@ -2778,21 +3168,21 @@ extension InstalledExtensionsQueryProperty
     });
   }
 
-  QueryBuilder<InstalledExtensions, bool, QQueryOperations>
+  QueryBuilder<InstalledExtensions, bool?, QQueryOperations>
       providesAnimeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'providesAnime');
     });
   }
 
-  QueryBuilder<InstalledExtensions, bool, QQueryOperations>
+  QueryBuilder<InstalledExtensions, bool?, QQueryOperations>
       providesMovieProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'providesMovie');
     });
   }
 
-  QueryBuilder<InstalledExtensions, bool, QQueryOperations>
+  QueryBuilder<InstalledExtensions, bool?, QQueryOperations>
       providesShowProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'providesShow');
@@ -2813,9 +3203,16 @@ extension InstalledExtensionsQueryProperty
     });
   }
 
-  QueryBuilder<InstalledExtensions, String, QQueryOperations> stIdProperty() {
+  QueryBuilder<InstalledExtensions, String?, QQueryOperations> stIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'stId');
+    });
+  }
+
+  QueryBuilder<InstalledExtensions, String?, QQueryOperations>
+      userDataProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'userData');
     });
   }
 }

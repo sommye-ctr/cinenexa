@@ -1,10 +1,16 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:isar/isar.dart';
+
+part 'subtitle.g.dart';
+
+@embedded
 class Subtitle {
-  final String title;
-  final String url;
-  Subtitle({
+  String? title;
+  String? url;
+  Subtitle();
+  Subtitle.def({
     required this.title,
     required this.url,
   });
@@ -13,7 +19,7 @@ class Subtitle {
     String? title,
     String? url,
   }) {
-    return Subtitle(
+    return Subtitle.def(
       title: title ?? this.title,
       url: url ?? this.url,
     );
@@ -27,7 +33,7 @@ class Subtitle {
   }
 
   factory Subtitle.fromMap(Map<String, dynamic> map) {
-    return Subtitle(
+    return Subtitle.def(
       title: map['title'] as String,
       url: map['url'] as String,
     );

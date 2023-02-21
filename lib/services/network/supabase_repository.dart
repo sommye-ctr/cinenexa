@@ -1,3 +1,4 @@
+import 'package:cinenexa/models/network/extensions/user_extensions.dart';
 import 'package:multiple_result/multiple_result.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:cinenexa/models/network/extensions/extension.dart';
@@ -18,30 +19,31 @@ class SupabaseRepository {
     }
   }
 
-  static Future<Result<List<Extension>, PostgrestException>>
+  static Future<Result<List<UserExtensions>, Object>>
       getUserExtensions() async {
     try {
       final resp = await client
           .from('user_extensions')
-          .select('extension_id(*)')
+          .select('*,extension_id(*)')
           .eq('user_id', client.auth.currentUser!.id)
           .order('created_at', ascending: false);
       return Success((resp as List)
           .map(
-            (e) => Extension.fromMap(e['extension_id']),
+            (e) => UserExtensions.fromMap(e),
           )
           .toList());
     } catch (e) {
-      return Error(e as PostgrestException);
+      return Error(e);
     }
   }
 
   static Future<Result<Unit, PostgrestException>> installExtension(
-      {required Extension extension}) async {
+      {required Extension extension, String? userData}) async {
     try {
       await client.from('user_extensions').insert({
         'user_id': client.auth.currentUser!.id,
         'extension_id': extension.id,
+        'user_data': userData,
       });
       return Success(unit);
     } catch (e) {

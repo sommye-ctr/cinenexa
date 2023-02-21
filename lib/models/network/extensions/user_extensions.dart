@@ -4,24 +4,29 @@ import 'dart:convert';
 import 'package:cinenexa/models/network/extensions/extension.dart';
 
 class UserExtensions {
-  final String id;
+  final int id;
   final DateTime createdAt;
   final Extension extension;
+  final String? userData;
+
   UserExtensions({
     required this.id,
     required this.createdAt,
     required this.extension,
+    this.userData,
   });
 
   UserExtensions copyWith({
-    String? id,
+    int? id,
     DateTime? createdAt,
     Extension? extension,
+    String? userData,
   }) {
     return UserExtensions(
       id: id ?? this.id,
       createdAt: createdAt ?? this.createdAt,
       extension: extension ?? this.extension,
+      userData: userData ?? this.userData,
     );
   }
 
@@ -30,14 +35,16 @@ class UserExtensions {
       'id': id,
       'created_at': createdAt.millisecondsSinceEpoch,
       'extension_id': extension.toMap(),
+      'user_data': userData
     };
   }
 
   factory UserExtensions.fromMap(Map<String, dynamic> map) {
     return UserExtensions(
-      id: map['id'] as String,
+      id: map['id'] as int,
       createdAt: DateTime.parse(map['created_at'] as String),
       extension: Extension.fromMap(map['extension_id'] as Map<String, dynamic>),
+      userData: map['user_data'],
     );
   }
 
@@ -56,9 +63,11 @@ class UserExtensions {
 
     return other.id == id &&
         other.createdAt == createdAt &&
-        other.extension == extension;
+        other.extension == extension &&
+        other.userData == userData;
   }
 
   @override
-  int get hashCode => id.hashCode ^ createdAt.hashCode ^ extension.hashCode;
+  int get hashCode =>
+      id.hashCode ^ createdAt.hashCode ^ extension.hashCode ^ userData.hashCode;
 }

@@ -107,6 +107,7 @@ class Requests {
     int page = 1,
     DateTime? releaseDateLessThan,
     DateTime? releaseDateMoreThan,
+    DateTime? releaseDateEqual,
     int? voteAverageLessThan,
     int? voteAverageGreaterThan,
     List<Genre>? withGenres,
@@ -148,6 +149,13 @@ class Requests {
 
     if (releaseDateLessThan != null) {
       queries.add('$dateBase.lte=${releaseDateLessThan.toIso8601String()}');
+    }
+
+    String yearBase = type == EntityType.movie
+        ? "primary_release_year"
+        : "first_air_date_year";
+    if (releaseDateEqual != null) {
+      queries.add('$yearBase=${releaseDateEqual.year}');
     }
 
     if (withPeople != null) {

@@ -3,29 +3,35 @@ import 'dart:math';
 
 import 'package:cinenexa/models/network/extensions/extension.dart';
 import 'package:cinenexa/models/network/extensions/subtitle.dart';
+import 'package:isar/isar.dart';
+
+part 'extension_stream.g.dart';
 
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+@embedded
 class ExtensionStream {
-  final double id = Random().nextInt(9000000) + 100000;
+  double id = Random().nextInt(9000000) + 100000;
 
-  final String? url;
-  final String? ytId;
-  final String? magnet;
-  final int? fileIndex;
-  final String? external;
+  String? url;
+  String? ytId;
+  String? magnet;
+  int? fileIndex;
+  String? external;
 
-  final String? name;
-  final String? quality;
-  final String? country;
-  final bool? dubbed;
-  final bool? subbed;
-  final bool? torrent;
-  final double? size;
-  final int? seeds;
-  final String? streamGroup;
-  final List<Subtitle>? subtitles;
+  String? name;
+  String? quality;
+  String? country;
+  bool? dubbed;
+  bool? subbed;
+  bool? torrent;
+  double? size;
+  int? seeds;
+  String? streamGroup;
+  List<Subtitle>? subtitles;
 
   Extension? extension;
+
+  ExtensionStream();
 
   ExtensionStream.url({
     required this.url,

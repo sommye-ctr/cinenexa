@@ -107,12 +107,23 @@ class Utils {
 
   static Video? convertToVideo(var parsedList) {
     if (parsedList.isEmpty) return null;
-    return parsedList
-        .map((e) {
-          if (e['type'] == "Trailer") return Video.fromMap(e);
-        })
-        .toList()
-        .first;
+
+    List trailers = [];
+    for (var element in parsedList) {
+      if (element['type'] == "Trailer") {
+        trailers.add(element);
+      }
+    }
+
+    for (var element in trailers) {
+      if (element['official'] == true) {
+        return Video.fromMap(element);
+      }
+    }
+
+    if (trailers.isNotEmpty) {
+      return Video.fromMap(trailers.first);
+    }
   }
 
   static List<BaseModel> convertToBaseModelListWithSkipLimit(

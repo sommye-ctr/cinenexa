@@ -15,6 +15,12 @@ class SettingsGeneral extends StatefulWidget {
 
 class _SettingsGeneralState extends State<SettingsGeneral> {
   Country? providerCountry;
+  Country? tmdbRegion;
+  bool? providersEnabled;
+
+  //ChromeCastController? controller;
+
+  final Database database = Database();
 
   @override
   void initState() {
@@ -23,7 +29,9 @@ class _SettingsGeneralState extends State<SettingsGeneral> {
   }
 
   void _fetch() async {
-    providerCountry = await Database().getProviderCountry();
+    providerCountry = await database.getProviderCountry();
+    tmdbRegion = await database.getTmdbRegion();
+    providersEnabled = await database.getJustwatchProvidersStatus();
     if (mounted) {
       setState(() {});
     }
@@ -62,10 +70,31 @@ class _SettingsGeneralState extends State<SettingsGeneral> {
               ),
               Style.getListTile(
                 context: context,
-                title: Strings.countryProviders,
+                title: Strings.tmdbRegion,
+                subtitle: Strings.tmdbRegionSub,
+                trailing: _buildTmdbTrailing(),
+              ),
+              Style.getListTile(
+                context: context,
+                title: Strings.justwatchProvidersShow,
                 subtitle: Strings.countryProvidersSub,
+                trailing: CupertinoSwitch(
+                  value: providersEnabled ?? true,
+                  onChanged: (value) {
+                    providersEnabled = !providersEnabled!;
+                    providerCountry = null;
+                    setState(() {});
+                    database.addJustwatchProvidersEnabled(providersEnabled!);
+                    database.removeProviderCountry();
+                  },
+                ),
+              ),
+              Style.getListTile(
+                context: context,
+                title: Strings.countryProviders,
+                enabled: providersEnabled != null && providersEnabled!,
                 trailing: _buildCountryTrailing(),
-              )
+              ),
             ],
           ),
         ),
@@ -73,19 +102,70 @@ class _SettingsGeneralState extends State<SettingsGeneral> {
     );
   }
 
-  Widget _buildCountryTrailing() {
-    if (providerCountry != null) {
+  void setCountry(var value) {
+    providerCountry = value;
+    setState(() {});
+    database.addProviderCountry(value);
+  }
+
+  void setRegion(var value) {
+    tmdbRegion = value;
+    setState(() {});
+    database.addTmdbRegion(value);
+
+    Style.showToast(context: context, text: Strings.restartAppToEffective);
+  }
+
+  Widget _buildTmdbTrailing() {
+    if (tmdbRegion != null) {
       return GestureDetector(
         onTap: () {
           showCountryPicker(
             context: context,
             onSelect: (value) {
-              providerCountry = value;
-              setState(() {});
-              Database().addProviderCountry(value);
+              setRegion(value);
             },
             showSearch: true,
           );
+        },
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(tmdbRegion!.flagEmoji),
+            Style.getVerticalHorizontalSpacing(context: context),
+            Text(tmdbRegion!.name),
+          ],
+        ),
+      );
+    }
+    return RoundedButton(
+      child: Text(Strings.chooseCountry),
+      onPressed: () {
+        showCountryPicker(
+          context: context,
+          onSelect: (value) {
+            setRegion(value);
+          },
+          showSearch: true,
+        );
+      },
+      type: RoundedButtonType.outlined,
+    );
+  }
+
+  Widget _buildCountryTrailing() {
+    if (providerCountry != null) {
+      return GestureDetector(
+        onTap: () {
+          if (providersEnabled != null && providersEnabled!) {
+            showCountryPicker(
+              context: context,
+              onSelect: (value) {
+                setCountry(value);
+              },
+              showSearch: true,
+            );
+          }
         },
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -99,17 +179,17 @@ class _SettingsGeneralState extends State<SettingsGeneral> {
     }
     return RoundedButton(
       child: Text(Strings.chooseCountry),
-      onPressed: () {
-        showCountryPicker(
-          context: context,
-          onSelect: (value) {
-            providerCountry = value;
-            setState(() {});
-            Database().addProviderCountry(value);
-          },
-          showSearch: true,
-        );
-      },
+      onPressed: providersEnabled != null && providersEnabled!
+          ? () {
+              showCountryPicker(
+                context: context,
+                onSelect: (value) {
+                  setCountry(value);
+                },
+                showSearch: true,
+              );
+            }
+          : null,
       type: RoundedButtonType.outlined,
     );
   }

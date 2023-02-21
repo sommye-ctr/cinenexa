@@ -1,27 +1,35 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:isar/isar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:cinenexa/models/local/installed_extensions.dart';
 
+part 'extension.g.dart';
+
+@embedded
 class Extension {
-  final String id;
-  final String name;
-  final String domainId;
-  final String endpoint;
-  final DateTime createdAt;
-  final bool providesMovie;
-  final bool providesShow;
-  final bool providesAnime;
-  final String? description;
-  final String? devEmail;
-  final String? devName;
-  final String? devUrl;
+  String? id;
+  String? name;
+  String? domainId;
+  String? endpoint;
+  DateTime? createdAt;
+  bool? providesMovie;
+  bool? providesShow;
+  bool? providesAnime;
+  String? description;
+  String? devEmail;
+  String? devName;
+  String? devUrl;
   double? rating;
   int? ratingCount;
   String? icon;
-  Extension({
+
+  String? configJson;
+
+  Extension();
+  Extension.def({
     required this.id,
     required this.name,
     required this.domainId,
@@ -36,6 +44,7 @@ class Extension {
     this.devUrl,
     this.rating,
     this.ratingCount,
+    this.configJson,
   }) : icon = Supabase.instance.client.storage
             .from('extensions-icons')
             .getPublicUrl("$id.jpg");
@@ -55,8 +64,9 @@ class Extension {
     String? devUrl,
     double? rating,
     int? ratingCount,
+    String? configJson,
   }) {
-    return Extension(
+    return Extension.def(
       id: id ?? this.id,
       name: name ?? this.name,
       domainId: domainId ?? this.domainId,
@@ -71,6 +81,7 @@ class Extension {
       devUrl: devUrl ?? this.devUrl,
       rating: rating ?? this.rating,
       ratingCount: ratingCount ?? this.ratingCount,
+      configJson: configJson ?? this.configJson,
     );
   }
 
@@ -79,7 +90,7 @@ class Extension {
       'name': name,
       'domain_id': domainId,
       'endpoint': endpoint,
-      'createdAt': createdAt.millisecondsSinceEpoch,
+      'createdAt': createdAt?.millisecondsSinceEpoch,
       'providesMovie': providesMovie,
       'providesShow': providesShow,
       'providesAnime': providesAnime,
@@ -90,11 +101,12 @@ class Extension {
       'rating': rating,
       'ratingCount': ratingCount,
       'icon': icon,
+      'configJson': configJson,
     };
   }
 
   factory Extension.fromMap(Map<String, dynamic> map) {
-    return Extension(
+    return Extension.def(
       id: map['id'] as String,
       name: map['name'] as String,
       domainId: map['domain_id'] as String,
@@ -111,6 +123,8 @@ class Extension {
       rating: map['rating'] != null ? (map['rating'] as num).toDouble() : null,
       ratingCount:
           map['rating_count'] != null ? map['rating_count'] as int : null,
+      configJson:
+          map['config_json'] != null ? map['config_json'] as String : null,
     );
   }
 
@@ -140,7 +154,8 @@ class Extension {
         devUrl.hashCode ^
         rating.hashCode ^
         ratingCount.hashCode ^
-        icon.hashCode;
+        icon.hashCode ^
+        configJson.hashCode;
   }
 
   @override
@@ -152,7 +167,7 @@ class Extension {
 }
 
 extension ExtensionConverter on Extension {
-  InstalledExtensions getInstalled({int? providedRating}) {
+  InstalledExtensions getInstalled({int? providedRating, String? userData}) {
     return InstalledExtensions()
       ..createdAt = this.createdAt
       ..description = this.description
@@ -169,13 +184,14 @@ extension ExtensionConverter on Extension {
       ..rating = this.rating
       ..ratingCount = this.ratingCount
       ..stId = this.id
-      ..providedRating = providedRating;
+      ..providedRating = providedRating
+      ..userData = userData;
   }
 }
 
 extension ExtensionConverter1 on InstalledExtensions {
   Extension getExtension() {
-    return Extension(
+    return Extension.def(
       id: this.stId,
       name: this.name,
       domainId: this.domainId,
