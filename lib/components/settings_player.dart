@@ -5,7 +5,6 @@ import 'package:cinenexa/resources/style.dart';
 import 'package:cinenexa/services/local/database.dart';
 import 'package:cinenexa/widgets/custom_checkbox_list.dart';
 import 'package:flutter/material.dart';
-import 'package:numberpicker/numberpicker.dart';
 
 class SettingsPlayer extends StatefulWidget {
   const SettingsPlayer({Key? key}) : super(key: key);

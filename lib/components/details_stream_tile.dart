@@ -50,6 +50,9 @@ class DetailsStreamTile extends StatelessWidget {
                         imageUrl: (extensionStream?.extension?.icon ??
                                 provider?.logo) ??
                             "",
+                        errorWidget: (context, url, error) {
+                          return Icon(Icons.error_outline_outlined);
+                        },
                       ),
                       body: Expanded(
                         child: Text(

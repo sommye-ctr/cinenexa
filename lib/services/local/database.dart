@@ -154,7 +154,11 @@ class Database {
 
   Future<Country?> getTmdbRegion() async {
     final prefs = await SharedPreferences.getInstance();
-    return Country.tryParse(prefs.getString(_TMDB_REGION) ?? "");
+    try {
+      return Country.tryParse(prefs.getString(_TMDB_REGION) ?? "");
+    } catch (e) {
+      return null;
+    }
   }
 
   Future removeTmdbRegion() async {
