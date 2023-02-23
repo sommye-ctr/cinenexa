@@ -73,21 +73,13 @@ class DetailsStreamTile extends StatelessWidget {
             ),
             if (hidePlayButton == null)
               Align(
-                alignment: Alignment.topRight,
-                child: ElevatedButton(
-                  onPressed: () => onClick?.call(extensionStream, provider),
-                  child: Icon(Icons.play_arrow),
-                  style: ElevatedButton.styleFrom(
-                    shape: CircleBorder(),
-                    padding: EdgeInsets.only(
-                      left: 4,
-                      top: 4,
-                      bottom: 4,
-                      right: 4,
+                  alignment: Alignment.topRight,
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.play_arrow,
                     ),
-                  ),
-                ),
-              ),
+                    onPressed: () => onClick?.call(extensionStream, provider),
+                  )),
           ],
         ),
       ),
