@@ -80,6 +80,8 @@ class _ExtensionTileState extends State<ExtensionTile> {
                 children: [
                   Text(
                     widget.extension.name ?? "",
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Style.getVerticalSpacing(context: context),
@@ -162,25 +164,32 @@ class _ExtensionTileState extends State<ExtensionTile> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          Text(
+            widget.extension.name ?? "",
+            style: Style.headingStyle.copyWith(fontWeight: FontWeight.bold),
+            maxLines: 2,
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+          ),
+          Style.getVerticalSpacing(context: context, percent: 0.001),
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                widget.extension.name ?? "",
-                style: Style.headingStyle.copyWith(fontWeight: FontWeight.bold),
+                "Made By ${widget.extension.devName}",
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
               if (widget.extension.devUrl != null)
                 IconButton(
                   onPressed: () {
                     LinkOpener.openLink(widget.extension.devUrl!);
                   },
-                  icon: Icon(Icons.open_in_new),
+                  icon: Icon(Icons.open_in_new, size: 20),
                 ),
             ],
           ),
-          Style.getVerticalSpacing(context: context, percent: 0.001),
-          Text("Made By ${widget.extension.devName}"),
-          Style.getVerticalSpacing(context: context),
+          Style.getVerticalSpacing(context: context, percent: 0.01),
           Center(
             child: Wrap(
               alignment: WrapAlignment.center,
