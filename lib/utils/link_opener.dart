@@ -4,7 +4,6 @@ import 'package:cinenexa/models/network/tv.dart';
 import 'package:cinenexa/store/details/details_store.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import '../models/local/progress.dart';
 import '../models/network/extensions/extension_stream.dart';
 import '../models/network/movie.dart';
