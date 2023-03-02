@@ -51,40 +51,46 @@ class _DetailsPageState extends State<DetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: NotificationListener<ScrollEndNotification>(
-        onNotification: (_) {
-          _snapBehaviour();
-          return false;
-        },
-        child: CustomScrollView(
-          key: PageStorageKey("scrollkey"),
-          controller: _controller,
-          physics: BouncingScrollPhysics(),
-          slivers: [
-            SliverPersistentHeader(
-              pinned: true,
-              floating: true,
-              delegate: DetailsHeader(
-                maxHeight: maxHeight,
-                minHeight: minHeight,
-                detailsStore: detailsStore,
-                scrollController: _controller,
+    return WillPopScope(
+      onWillPop: () async {
+        detailsStore.cancelStreams();
+        return true;
+      },
+      child: Scaffold(
+        body: NotificationListener<ScrollEndNotification>(
+          onNotification: (_) {
+            _snapBehaviour();
+            return false;
+          },
+          child: CustomScrollView(
+            key: PageStorageKey("scrollkey"),
+            controller: _controller,
+            physics: BouncingScrollPhysics(),
+            slivers: [
+              SliverPersistentHeader(
+                pinned: true,
+                floating: true,
+                delegate: DetailsHeader(
+                  maxHeight: maxHeight,
+                  minHeight: minHeight,
+                  detailsStore: detailsStore,
+                  scrollController: _controller,
+                ),
               ),
-            ),
-            SliverToBoxAdapter(
-              child: Container(
-                height: 1,
+              SliverToBoxAdapter(
+                child: Container(
+                  height: 1,
+                ),
               ),
-            ),
-            SliverToBoxAdapter(
-              child: DetailsMoreDetails(
-                detailsStore: detailsStore,
-                controller: _controller,
-                height: ScreenSize.getPercentOfHeight(context, 1) - minHeight,
-              ),
-            )
-          ],
+              SliverToBoxAdapter(
+                child: DetailsMoreDetails(
+                  detailsStore: detailsStore,
+                  controller: _controller,
+                  height: ScreenSize.getPercentOfHeight(context, 1) - minHeight,
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

@@ -6,7 +6,6 @@ import 'package:cinenexa/services/network/utils.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:dio_cache_interceptor_hive_store/dio_cache_interceptor_hive_store.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:cinenexa/utils/date_time_formatter.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -95,29 +94,28 @@ class ExtensionsRepository {
         } else {
           response = await getResponse(extension, query);
         }
-      } on DioError catch (e, trace) {
+      } on DioError catch (e) {
         if (e.type == DioErrorType) {
           return [];
         }
-        FirebaseCrashlytics.instance.recordError(e, trace);
         return [];
       }
       var data = _handleResponse(response, extension);
       return data;
-    } catch (e, trace) {
-      FirebaseCrashlytics.instance.recordError(e, trace);
+    } catch (e) {
       return [];
     }
   }
 
   Future<Response> putResponse(
       InstalledExtensions extension, Map<String, dynamic> query) async {
-    var result = await dio.put(
+    var result = dio.put(
       extension.endpoint!,
       queryParameters: query,
       data: {
         "params": extension.userData,
       },
+        print("showing event");
       options: Options(
         receiveTimeout: 30000,
       ),
@@ -127,7 +125,7 @@ class ExtensionsRepository {
 
   Future<Response> getResponse(
       InstalledExtensions extension, Map<String, dynamic> query) async {
-    var resp = await dio.get(
+    var resp = dio.get(
       extension.endpoint!,
       queryParameters: query,
       options: Options(
@@ -160,8 +158,7 @@ class ExtensionsRepository {
         return modLIst;
       }
       return [];
-    } catch (e, trace) {
-      FirebaseCrashlytics.instance.recordError(e, trace);
+    } catch (e) {
       return [];
     }
   }
