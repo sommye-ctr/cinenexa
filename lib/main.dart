@@ -1,6 +1,7 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:cinenexa/screens/extension_config_page.dart';
 import 'package:cinenexa/services/local/database.dart';
+import 'package:cinenexa/store/platform/platform_store.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
@@ -49,10 +50,10 @@ void main() async {
     anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? "",
   );
 
-  await SystemChrome.setPreferredOrientations([
+  /* await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
-  ]);
+  ]); */ //TODO MANAGE THIS
 
   await Firebase.initializeApp();
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
@@ -118,19 +119,28 @@ class _MyAppState extends State<MyApp> {
         Provider.Provider(
           create: (_) => ExtensionsStore(),
         ),
+        Provider.Provider(
+          create: (_) => PlatformStore(),
+        ),
       ],
       child: AdaptiveTheme(
         light: Style.themeData,
         dark: Style.darkThemeData(context),
-        initial: widget.savedThemeMode ?? AdaptiveThemeMode.light,
-        builder: (light, dark) => MaterialApp(
-          title: Strings.appName,
-          debugShowCheckedModeBanner: false,
-          theme: light,
-          darkTheme: dark,
-          scrollBehavior: ScrollBehaviorModified(),
-          onGenerateRoute: _handleRoutes,
-          home: homeWidget,
+        initial:
+            widget.savedThemeMode ?? AdaptiveThemeMode.dark, //TODO CHANGE HERE
+        builder: (light, dark) => Shortcuts(
+          shortcuts: <LogicalKeySet, Intent>{
+            LogicalKeySet(LogicalKeyboardKey.select): ActivateIntent(),
+          },
+          child: MaterialApp(
+            title: Strings.appName,
+            debugShowCheckedModeBanner: false,
+            theme: light,
+            darkTheme: dark,
+            scrollBehavior: ScrollBehaviorModified(),
+            onGenerateRoute: _handleRoutes,
+            home: homeWidget,
+          ),
         ),
       ),
     );
