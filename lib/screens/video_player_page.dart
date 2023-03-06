@@ -60,6 +60,9 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   int? fitIndex, maxCacheIndex;
   bool? autoSubtitle;
   bool? initalDark;
+  bool? subBackground;
+  int? subFontSize;
+  int? subPosition;
 
   TorrentStreamer? torrentStreamer;
   int? progress;
@@ -78,6 +81,9 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
     fitIndex = await database.getDefaultFit();
     maxCacheIndex = await database.getMaxCache();
     autoSubtitle = await database.getAutoSelectSubtitle();
+    subBackground = await database.getSubBg();
+    subFontSize = await database.getSubFontSize();
+    subPosition = await database.getSubPosition();
 
     initalDark = AdaptiveTheme.of(context).mode == AdaptiveThemeMode.dark;
     AdaptiveTheme.of(context).setDark();
@@ -110,6 +116,13 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
             Navigator.pop(context);
           }
         },
+        subtitlesConfiguration: BetterPlayerSubtitlesConfiguration(
+          outlineEnabled: subBackground ?? false,
+          bottomPadding: subPosition?.toDouble() ?? 20,
+          fontSize: subFontSize?.toDouble() ?? 14,
+          backgroundColor:
+              (subBackground ?? false) ? Colors.black : Colors.transparent,
+        ),
         controlsConfiguration: BetterPlayerControlsConfiguration(
           playerTheme: BetterPlayerTheme.custom,
           customControlsBuilder: (controller, onPlayerVisibilityChanged) =>

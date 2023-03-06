@@ -233,6 +233,13 @@ class Strings {
   static const String autoPlayDurationSub =
       "Duration from the end of video, before which the popup should be shown";
 
+  static const String subtitle = "Subtitle";
+  static const String subtitleSettings = "Subtitle Settings";
+  static const String subtitlePreview = "Subtitles look like this";
+  static const String backGround = "Background";
+  static const String position = "Position";
+  static const String fontSize = "Font Size";
+
   //video player
   static const String playBackSpeed = "Playback Speed";
   static const String settings = "Settings";

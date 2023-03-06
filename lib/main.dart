@@ -1,4 +1,5 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:cinenexa/components/settings_subtitle_setting.dart';
 import 'package:cinenexa/screens/extension_config_page.dart';
 import 'package:cinenexa/services/local/database.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -208,6 +209,12 @@ class _MyAppState extends State<MyApp> {
         return MaterialPageRoute(
           builder: (context) {
             return YoutubeVideoPlayer(ytId: value);
+          },
+        );
+      case SubtitleSettings.routeName:
+        return MaterialPageRoute(
+          builder: (context) {
+            return SubtitleSettings();
           },
         );
       case VideoPlayerPage.routeName:

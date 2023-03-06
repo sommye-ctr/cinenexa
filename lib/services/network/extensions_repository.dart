@@ -115,7 +115,6 @@ class ExtensionsRepository {
       data: {
         "params": extension.userData,
       },
-        print("showing event");
       options: Options(
         receiveTimeout: 30000,
       ),
