@@ -220,7 +220,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
               Style.getListTile(
                 context: context,
                 title: Strings.subtitleSettings,
-                trailing: Icon(Icons.arrow_right_rounded),
+                trailing: Icon(Icons.arrow_right_outlined),
                 onTap: () {
                   Navigator.pushNamed(context, SubtitleSettings.routeName);
                 },
