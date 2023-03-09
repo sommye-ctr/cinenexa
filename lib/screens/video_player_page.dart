@@ -9,7 +9,6 @@ import 'package:cinenexa/services/network/utils.dart';
 import 'package:cinenexa/store/details/details_store.dart';
 import 'package:cinenexa/utils/settings_indexer.dart';
 import 'package:cinenexa/widgets/custom_back_button.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cinenexa/components/video_player_controls.dart';

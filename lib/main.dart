@@ -1,10 +1,9 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:amplitude_flutter/amplitude.dart';
 import 'package:cinenexa/components/settings_subtitle_setting.dart';
 import 'package:cinenexa/screens/extension_config_page.dart';
 import 'package:cinenexa/services/local/database.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:flutter/foundation.dart';
+import 'package:cinenexa/services/network/analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -12,6 +11,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart' as Provider;
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:cinenexa/models/local/favorites.dart';
 import 'package:cinenexa/models/local/installed_extensions.dart';
@@ -55,12 +55,8 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  await Firebase.initializeApp();
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
-  PlatformDispatcher.instance.onError = (error, stack) {
-    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    return true;
-  };
+  final Amplitude amplitude = Amplitude.getInstance();
+  amplitude.init(dotenv.env['AMPLITUDE_KEY'] ?? "");
 
   await Isar.open(
     [
@@ -77,10 +73,18 @@ void main() async {
   final savedThemeMode = await AdaptiveTheme.getThemeMode();
   final anonStatus = await Database().getGuestSignupStatus();
 
-  runApp(MyApp(
-    savedThemeMode: savedThemeMode,
-    anonStatus: anonStatus,
-  ));
+  await SentryFlutter.init(
+    (options) {
+      options.dsn = dotenv.env['SENTRY_KEY'];
+      // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
+      // We recommend adjusting this value in production.
+      options.tracesSampleRate = 0.7;
+    },
+    appRunner: () => runApp(MyApp(
+      savedThemeMode: savedThemeMode,
+      anonStatus: anonStatus,
+    )),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -109,6 +113,7 @@ class _MyAppState extends State<MyApp> {
       homeWidget = IntroPage();
     }
     FlutterNativeSplash.remove();
+    Analytics().logStartup();
 
     return Provider.MultiProvider(
       providers: [

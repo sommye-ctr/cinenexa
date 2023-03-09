@@ -202,7 +202,11 @@ class Database {
 
   Future<Country?> getProviderCountry() async {
     final prefs = await SharedPreferences.getInstance();
-    return Country.tryParse(prefs.getString(_PROVIDER_COUNTRY) ?? "");
+    try {
+      return Country.tryParse(prefs.getString(_PROVIDER_COUNTRY) ?? "");
+    } catch (e) {
+      return null;
+    }
   }
 
   Future<LastActivities?> getLastActivities() async {

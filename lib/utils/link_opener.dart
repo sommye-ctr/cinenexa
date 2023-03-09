@@ -1,6 +1,7 @@
 import 'package:cinenexa/models/local/show_history.dart';
 import 'package:cinenexa/models/network/base_model.dart';
 import 'package:cinenexa/models/network/tv.dart';
+import 'package:cinenexa/services/network/analytics.dart';
 import 'package:cinenexa/store/details/details_store.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -34,6 +35,7 @@ class LinkOpener {
     ShowHistory? showHistory,
     context,
   }) async {
+    Analytics().logMoviePlay(title: baseModel.title!, tmdbId: baseModel.id!);
     return Navigator.pushNamed(
       context,
       VideoPlayerPage.routeName,

@@ -1,4 +1,5 @@
 import 'package:cinenexa/services/local/database.dart';
+import 'package:cinenexa/services/network/analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:cinenexa/resources/asset.dart';
@@ -93,6 +94,7 @@ class _IntroPageState extends State<IntroPage> {
                     TextButton(
                       onPressed: () async {
                         await Database().addGuestSignupStatus(true);
+                        Analytics().logAnonymousLogin();
                         Navigator.pushNamed(
                           context,
                           LoginConfigurePage.routeName,
