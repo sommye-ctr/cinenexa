@@ -83,15 +83,13 @@ abstract class _HomeStore with Store {
       Requests.discover(
         type: tabIndex == defaultMovieIndex ? EntityType.movie : EntityType.tv,
         certification: discover.certification,
-        releaseDateLessThan: discover.releaseDateRange?.end,
-        releaseDateMoreThan: discover.releaseDateRange?.start,
+        releaseYears: discover.releaseYears,
         voteAverageGreaterThan: discover.voteAverage?.start.toInt(),
         voteAverageLessThan: discover.voteAverage?.end.toInt(),
         withGenres: discover.genres,
         sortMoviesBy: discover.sortMoviesBy,
         sortTvBy: discover.sortTvBy,
         withLanguages: discover.languages,
-        releaseDateEqual: discover.releaseDate,
       ),
     );
   }
@@ -123,15 +121,13 @@ abstract class _HomeStore with Store {
       Requests.discover(
         type: tabIndex == defaultMovieIndex ? EntityType.movie : EntityType.tv,
         certification: discover.certification,
-        releaseDateLessThan: discover.releaseDateRange?.end,
-        releaseDateMoreThan: discover.releaseDateRange?.start,
         voteAverageGreaterThan: discover.voteAverage?.start.toInt(),
         voteAverageLessThan: discover.voteAverage?.end.toInt(),
         withGenres: discover.genres,
         sortMoviesBy: discover.sortMoviesBy,
         sortTvBy: discover.sortTvBy,
         withLanguages: discover.languages,
-        releaseDateEqual: discover.releaseDate,
+        releaseYears: discover.releaseYears,
       ),
       pageEndReached: true,
     );
