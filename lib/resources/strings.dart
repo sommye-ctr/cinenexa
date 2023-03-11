@@ -243,6 +243,10 @@ class Strings {
   //video player
   static const String playBackSpeed = "Playback Speed";
   static const String settings = "Settings";
+  static const String lock = "Lock";
+  static const String subtitles = "Subtitles";
+  static const String locked = "Locked";
+  static const String restart = "Restart";
   static const String none = "None";
   static const String tapToSee = "Tap to see";
   static const String castDevices = "Cast Devices";

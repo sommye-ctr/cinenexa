@@ -149,4 +149,12 @@ class _CustomCheckBoxListState extends State<CustomCheckBoxList> {
     }
     widget.onSelectionChanged?.call(selectedItems);
   }
+
+  @override
+  void dispose() {
+    for (var element in notifiers) {
+      element.dispose();
+    }
+    super.dispose();
+  }
 }
