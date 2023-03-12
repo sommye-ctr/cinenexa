@@ -228,6 +228,11 @@ abstract class _DetailsStore with Store {
   }
 
   @action
+  void cancelStreams() {
+    streamSubscription?.cancel();
+  }
+
+  @action
   Future markUnwatchedClicked({required int epIndex}) async {
     showHistory = await database.unwatchEp(
       episodeNumber: episodes[epIndex].episodeNumber,

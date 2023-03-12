@@ -133,8 +133,8 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final AuthResponse resp =
           await Supabase.instance.client.auth.signInWithPassword(
-        password: passController.text,
-        email: emailController.text,
+        password: passController.text.trim(),
+        email: emailController.text.trim(),
       );
       Navigator.pop(context);
 

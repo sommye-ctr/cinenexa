@@ -4,9 +4,11 @@ import 'package:cinenexa/models/local/progress.dart';
 import 'package:cinenexa/models/local/show_history.dart';
 import 'package:cinenexa/resources/strings.dart';
 import 'package:cinenexa/services/local/database.dart';
+import 'package:cinenexa/services/local/torrent_streamer.dart';
 import 'package:cinenexa/services/network/utils.dart';
 import 'package:cinenexa/store/details/details_store.dart';
 import 'package:cinenexa/utils/settings_indexer.dart';
+import 'package:cinenexa/widgets/custom_back_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cinenexa/components/video_player_controls.dart';
@@ -49,9 +51,6 @@ class VideoPlayerPage extends StatefulWidget {
 }
 
 class _VideoPlayerPageState extends State<VideoPlayerPage> {
-  static const String TORRENT_STREAM_EVENT_NAME = "cinenexa/torrentStream";
-  static const EventChannel channel = EventChannel(TORRENT_STREAM_EVENT_NAME);
-
   bool loading = true;
 
   late BetterPlayerConfiguration configuration;
@@ -60,6 +59,12 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   int? fitIndex, maxCacheIndex;
   bool? autoSubtitle;
   bool? initalDark;
+  bool? subBackground;
+  int? subFontSize;
+  int? subPosition;
+
+  TorrentStreamer? torrentStreamer;
+  int? progress;
 
   final GlobalKey betterPlayerKey = GlobalKey();
 
@@ -75,6 +80,9 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
     fitIndex = await database.getDefaultFit();
     maxCacheIndex = await database.getMaxCache();
     autoSubtitle = await database.getAutoSelectSubtitle();
+    subBackground = await database.getSubBg();
+    subFontSize = await database.getSubFontSize();
+    subPosition = await database.getSubPosition();
 
     initalDark = AdaptiveTheme.of(context).mode == AdaptiveThemeMode.dark;
     AdaptiveTheme.of(context).setDark();
@@ -107,6 +115,13 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
             Navigator.pop(context);
           }
         },
+        subtitlesConfiguration: BetterPlayerSubtitlesConfiguration(
+          outlineEnabled: subBackground ?? false,
+          bottomPadding: subPosition?.toDouble() ?? 20,
+          fontSize: subFontSize?.toDouble() ?? 14,
+          backgroundColor:
+              (subBackground ?? false) ? Colors.black : Colors.transparent,
+        ),
         controlsConfiguration: BetterPlayerControlsConfiguration(
           playerTheme: BetterPlayerTheme.custom,
           customControlsBuilder: (controller, onPlayerVisibilityChanged) =>
@@ -125,6 +140,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
             detailsStore: widget.detailsStore,
             initialDark: initalDark,
             showHistory: widget.showHistory,
+            torrentStreamer: torrentStreamer,
           ),
         ));
 
@@ -133,19 +149,25 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
 
   void _getUrl() {
     if (widget.extensionStream.magnet != null) {
-      channel.receiveBroadcastStream({
-        "url": widget.extensionStream.magnet,
-        "index": widget.extensionStream.fileIndex,
-      }).handleError((error) {
-        Style.showToast(context: context, text: "Error: ${error}");
-      }).listen((event) {
-        if (event is String) {
-          _setController(event);
+      torrentStreamer = TorrentStreamer(
+        magnetLink: widget.extensionStream.magnet!,
+        fileIndex: widget.extensionStream.fileIndex,
+        onError: (error) {
+          Style.showToast(context: context, text: "Error: ${error.toString()}");
+        },
+        onProgress: (progress) {
+          setState(() {
+            this.progress = progress;
+          });
+        },
+        onServerReady: (url) {
+          _setController(url);
           setState(() {
             loading = false;
           });
-        }
-      });
+        },
+      );
+      torrentStreamer?.startStream();
       return;
     }
     _setController(widget.extensionStream.url!);
@@ -189,7 +211,28 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
 
   Widget _buildBody() {
     if (loading) {
-      return Center(child: CircularProgressIndicator());
+      return Stack(
+        children: [
+          Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(),
+                Text("Progress ${progress != null ? progress : ""}"),
+              ],
+            ),
+          ),
+          Align(
+            alignment: Alignment.topLeft,
+            child: CustomBackButton(
+              onClick: () {
+                torrentStreamer?.stopStream();
+              },
+            ),
+          ),
+        ],
+      );
     }
     return BetterPlayer(
       key: betterPlayerKey,

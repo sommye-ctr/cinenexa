@@ -5,14 +5,14 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import com.github.se_bastiaan.torrentstream.StreamStatus;
 import com.github.se_bastiaan.torrentstream.Torrent;
 import com.github.se_bastiaan.torrentstream.TorrentOptions;
 import com.github.se_bastiaan.torrentstreamserver.TorrentServerListener;
 import com.github.se_bastiaan.torrentstreamserver.TorrentStreamNotInitializedException;
 import com.github.se_bastiaan.torrentstreamserver.TorrentStreamServer;
-import io.flutter.plugin.common.EventChannel;
+import io.flutter.plugin.common.MethodChannel;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -20,27 +20,25 @@ import java.net.UnknownHostException;
 
 public class TorrentStreamHandler implements TorrentServerListener {
 
-  private static final String TAG = "Torrent";
-
   private final String streamUrl;
   private final int fileIndex;
-  private final EventChannel.EventSink eventSink;
+  private final MethodChannel methodChannel;
   private final File fileDir;
   private final Context context;
 
-  private Handler handler = new Handler(Looper.getMainLooper());
+  private final Handler handler = new Handler(Looper.getMainLooper());
 
   private TorrentStreamServer torrentStreamServer;
 
   public TorrentStreamHandler(
     String streamUrl,
     int fileIndex,
-    EventChannel.EventSink eventSink,
+    MethodChannel methodChannel,
     File fileDir,
     Context context
   ) {
     this.streamUrl = streamUrl;
-    this.eventSink = eventSink;
+    this.methodChannel = methodChannel;
     this.fileDir = fileDir;
     this.context = context;
     this.fileIndex = fileIndex;
@@ -54,7 +52,7 @@ public class TorrentStreamHandler implements TorrentServerListener {
 
   private void startStream() {
     TorrentOptions torrentOptions = new TorrentOptions.Builder()
-      .saveLocation(fileDir)
+      .saveLocation(fileDir).autoDownload(true)
       .build();
 
     String ipAddress = "127.0.0.1";
@@ -79,19 +77,21 @@ public class TorrentStreamHandler implements TorrentServerListener {
         torrentStreamServer.startStream(streamUrl);
       } catch (IOException | TorrentStreamNotInitializedException e) {
         e.printStackTrace();
-        eventSink.error(e.getMessage(), e.getMessage(), e);
+        methodChannel.invokeMethod("onError", e);
       }
     });
   }
 
   @Override
   public void onServerReady(String url) {
-    handler.post(() -> eventSink.success(url));
+    handler.post(() -> methodChannel.invokeMethod("onServerReady", url));
   }
 
   @Override
   public void onStreamPrepared(Torrent torrent) {
-    
+    if (fileIndex >= 0){
+      torrent.setSelectedFileIndex(fileIndex);
+    }
   }
 
   @Override
@@ -99,14 +99,16 @@ public class TorrentStreamHandler implements TorrentServerListener {
 
   @Override
   public void onStreamError(Torrent torrent, Exception e) {
-    handler.post(() -> eventSink.error(e.getMessage(), e.getMessage(), e));
+    handler.post(() -> methodChannel.invokeMethod("onError", e.getMessage()));
   }
 
   @Override
   public void onStreamReady(Torrent torrent) {}
 
   @Override
-  public void onStreamProgress(Torrent torrent, StreamStatus status) {}
+  public void onStreamProgress(Torrent torrent, StreamStatus status) {
+    handler.post(() -> methodChannel.invokeMethod("onProgress", status.bufferProgress));
+  }
 
   @Override
   public void onStreamStopped() {}

@@ -49,6 +49,10 @@ class _CustomCheckBoxListState extends State<CustomCheckBoxList> {
 
   @override
   Widget build(BuildContext context) {
+    if (notifiers.length != widget.children.length) {
+      notifiers.clear();
+      notifiers = createNotifiers();
+    }
     if (widget.type == CheckBoxListType.list) {
       return Container(
         height: 50,
@@ -144,5 +148,13 @@ class _CustomCheckBoxListState extends State<CustomCheckBoxList> {
       }
     }
     widget.onSelectionChanged?.call(selectedItems);
+  }
+
+  @override
+  void dispose() {
+    for (var element in notifiers) {
+      element.dispose();
+    }
+    super.dispose();
   }
 }

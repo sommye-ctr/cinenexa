@@ -2,21 +2,23 @@ package com.example.watrix;
 
 import com.google.android.gms.cast.framework.CastContext;
 import android.content.Intent;
-import android.util.Log;
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterFragmentActivity;
 import io.flutter.embedding.engine.FlutterEngine;
-import io.flutter.plugin.common.EventChannel;
+import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.MethodChannel;
+
 import java.util.Map;
 
 public class MainActivity
   extends FlutterFragmentActivity
-  implements EventChannel.StreamHandler {
+  implements MethodChannel.MethodCallHandler {
 
   private static final String TORRENT_STREAM_EVENT_NAME =
-    "watrix/torrentStream";
+    "cinenexa/torrentStream";
 
   private TorrentStreamHandler torrentStreamHandler;
+  private MethodChannel methodChannel;
 
   @Override
   public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
@@ -24,11 +26,9 @@ public class MainActivity
 
     CastContext.getSharedInstance(getApplicationContext());
     startService(new Intent(this, NotificationService.class));
-    new EventChannel(
-      flutterEngine.getDartExecutor().getBinaryMessenger(),
-      TORRENT_STREAM_EVENT_NAME
-    )
-      .setStreamHandler(this);
+
+    methodChannel = new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), TORRENT_STREAM_EVENT_NAME);
+   methodChannel.setMethodCallHandler(this);
   }
 
   @Override
@@ -40,19 +40,21 @@ public class MainActivity
   }
 
   @Override
-  public void onListen(Object arguments, EventChannel.EventSink events) {
-    Map<String, Object> map = ((Map<String, Object>) arguments);
-    String url = (String) map.get("url");
-    int index = -1;
-    if (map.containsKey("index") && map.get("index") != null) {
-      index = Integer.parseInt(String.valueOf(map.get("index")));
+  public void onMethodCall(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
+    if (call.method.equals("start")){
+      Map<String, Object> map = call.arguments();
+      String url = null;
+      if (map != null) {
+        url = (String) map.get("url");
+      }
+      int index = -1;
+      if (map != null && map.containsKey("index") && map.get("index") != null) {
+        index = Integer.parseInt(String.valueOf(map.get("index")));
+      }
+      torrentStreamHandler =
+              new TorrentStreamHandler(url, index,methodChannel, getFilesDir(), this);
+    } else if (call.method.equals("stop")){
+      torrentStreamHandler.stopStream();
     }
-    torrentStreamHandler =
-      new TorrentStreamHandler(url, index, events, getFilesDir(), this);
-  }
-
-  @Override
-  public void onCancel(Object arguments) {
-    torrentStreamHandler.stopStream();
   }
 }

@@ -6,7 +6,6 @@ import 'package:cinenexa/services/network/utils.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:dio_cache_interceptor_hive_store/dio_cache_interceptor_hive_store.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:cinenexa/utils/date_time_formatter.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -40,21 +39,26 @@ class ExtensionsRepository {
       int? episode}) {
     late StreamController<List<ExtensionStream>> streamController;
 
+    int countReceived = 0;
+
     void fetch() async {
       await _init();
       for (int i = 0; i < installedExtensions.length; i++) {
-        var stream = await _getStream(
+        _getStream(
           baseModel: baseModel,
           extension: installedExtensions[i],
           imdbId: imdbId,
           traktId: traktId,
           season: season,
           episode: episode,
-        );
-        streamController.add(stream);
-        if (i == installedExtensions.length - 1) {
-          streamController.close();
-        }
+        ).then((value) {
+          countReceived++;
+          streamController.add(value);
+
+          if (countReceived == installedExtensions.length) {
+            streamController.close();
+          }
+        });
       }
     }
 
@@ -70,38 +74,42 @@ class ExtensionsRepository {
     int? season,
     int? episode,
   }) async {
-    final query = {
-      "type": baseModel.type!.getString(),
-      "name": baseModel.title,
-      "releaseYear":
-          DateTimeFormatter.getYearFromString(baseModel.releaseDate!),
-      "tmdbId": baseModel.id,
-      "season": season,
-      "episode": episode,
-      "traktId": traktId,
-      "imdbId": imdbId,
-    };
-
-    Response response;
     try {
-      if (extension.userData != null && extension.userData!.isNotEmpty) {
-        response = await putResponse(extension, query);
-      } else {
-        response = await getResponse(extension, query);
-      }
-    } on DioError catch (e, trace) {
-      if (e.type == DioErrorType) {
+      final query = {
+        "type": baseModel.type!.getString(),
+        "name": baseModel.title,
+        "releaseYear":
+            DateTimeFormatter.getYearFromString(baseModel.releaseDate!),
+        "tmdbId": baseModel.id,
+        "season": season,
+        "episode": episode,
+        "traktId": traktId,
+        "imdbId": imdbId,
+      };
+
+      Response? response;
+      try {
+        if (extension.userData != null && extension.userData!.isNotEmpty) {
+          response = await putResponse(extension, query);
+        } else {
+          response = await getResponse(extension, query);
+        }
+      } on DioError catch (e) {
+        if (e.type == DioErrorType) {
+          return [];
+        }
         return [];
       }
-      FirebaseCrashlytics.instance.recordError(e, trace);
+      var data = _handleResponse(response, extension);
+      return data;
+    } catch (e) {
       return [];
     }
-    return _handleResponse(response.data, extension);
   }
 
   Future<Response> putResponse(
-      InstalledExtensions extension, Map<String, dynamic> query) {
-    return dio.put(
+      InstalledExtensions extension, Map<String, dynamic> query) async {
+    var result = dio.put(
       extension.endpoint!,
       queryParameters: query,
       data: {
@@ -111,39 +119,46 @@ class ExtensionsRepository {
         receiveTimeout: 30000,
       ),
     );
+    return result;
   }
 
   Future<Response> getResponse(
-      InstalledExtensions extension, Map<String, dynamic> query) {
-    return dio.get(
+      InstalledExtensions extension, Map<String, dynamic> query) async {
+    var resp = dio.get(
       extension.endpoint!,
       queryParameters: query,
       options: Options(
         receiveTimeout: 30000,
       ),
     );
+    return resp;
   }
 
   List<ExtensionStream> _handleResponse(
-      String response, InstalledExtensions extension) {
-    if (response.isNotEmpty) {
-      try {
-        Map sources = Utils.parseJson(response);
+      Response response, InstalledExtensions extension) {
+    try {
+      if ((response.statusCode == 200 || response.statusCode == 304) &&
+          response.data != null) {
+        var data;
+        if (response.data is Map) {
+          data = response.data as Map<String, dynamic>;
+        } else if (response.data is String) {
+          data = Utils.parseJson(response.data);
+        }
+        var list = data['streams'] as List;
 
         //List<ExtensionStream> list = sources['streams']
         //  .map((e) => ExtensionStream.fromMap(e)..extension = extension)
         //.toList();
-        List list = sources['streams'];
         List<ExtensionStream> modLIst = list
             .map((e) => ExtensionStream.fromMap(e)
               ..extension = extension.getExtension())
             .toList();
         return modLIst;
-      } catch (e, trace) {
-        FirebaseCrashlytics.instance.recordError(e, trace);
-        return [];
       }
+      return [];
+    } catch (e) {
+      return [];
     }
-    return [];
   }
 }

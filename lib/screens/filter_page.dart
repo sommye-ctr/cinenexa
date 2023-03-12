@@ -15,7 +15,7 @@ import '../models/network/certification.dart';
 import '../models/network/discover.dart';
 import '../models/network/genre.dart';
 
-class FilterPage extends StatelessWidget {
+class FilterPage extends StatefulWidget {
   static const POPULARITY_INDEX = 0;
   static const VOTE_AVERAGE_INDEX = 1;
   static const DATE_INDEX = 2;
@@ -36,6 +36,13 @@ class FilterPage extends StatelessWidget {
         super(key: key);
 
   @override
+  State<FilterPage> createState() => _FilterPageState();
+}
+
+class _FilterPageState extends State<FilterPage> {
+  late bool yearsMore = false;
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(
@@ -53,6 +60,16 @@ class FilterPage extends StatelessWidget {
               ..._buildVoteAverage(context),
               Divider(),
               ..._buildReleaseYear(context),
+              Style.getVerticalSpacing(context: context),
+              if (!yearsMore)
+                TextButton(
+                  child: Text("More"),
+                  onPressed: () {
+                    setState(() {
+                      yearsMore = true;
+                    });
+                  },
+                ),
               Divider(),
               ..._buildLanguages(context),
               Divider(),
@@ -84,41 +101,43 @@ class FilterPage extends StatelessWidget {
         children: [
           Strings.popularity,
           Strings.voteAverage,
-          type == EntityType.movie ? Strings.releaseDate : Strings.airDate,
+          widget.type == EntityType.movie
+              ? Strings.releaseDate
+              : Strings.airDate,
         ],
         onSelectionAdded: (values) {
-          if (type == EntityType.movie) {
+          if (widget.type == EntityType.movie) {
             switch (values.first) {
               // as it is single select only 1 item will be there
               case Strings.popularity:
-                discover.sortMoviesBy = SortMoviesBy.popularity;
+                widget.discover.sortMoviesBy = SortMoviesBy.popularity;
                 break;
               case Strings.voteAverage:
-                discover.sortMoviesBy = SortMoviesBy.voteAverage;
+                widget.discover.sortMoviesBy = SortMoviesBy.voteAverage;
                 break;
               case Strings.releaseDate:
-                discover.sortMoviesBy = SortMoviesBy.releaseDate;
+                widget.discover.sortMoviesBy = SortMoviesBy.releaseDate;
                 break;
             }
-          } else if (type == EntityType.tv) {
+          } else if (widget.type == EntityType.tv) {
             switch (values.first) {
               case Strings.popularity:
-                discover.sortTvBy = SortTvBy.popularity;
+                widget.discover.sortTvBy = SortTvBy.popularity;
                 break;
               case Strings.voteAverage:
-                discover.sortTvBy = SortTvBy.voteAverage;
+                widget.discover.sortTvBy = SortTvBy.voteAverage;
                 break;
               case Strings.airDate:
-                discover.sortTvBy = SortTvBy.firstAirDate;
+                widget.discover.sortTvBy = SortTvBy.firstAirDate;
                 break;
             } // as it is single select only 1 item will be there
           }
         },
         onSelectionRemoved: (values) {
-          if (type == EntityType.movie) {
-            discover.sortMoviesBy = null;
-          } else if (type == EntityType.tv) {
-            discover.sortTvBy = null;
+          if (widget.type == EntityType.movie) {
+            widget.discover.sortMoviesBy = null;
+          } else if (widget.type == EntityType.tv) {
+            widget.discover.sortTvBy = null;
           }
         },
         onSelectionChanged: (values) {},
@@ -127,7 +146,7 @@ class FilterPage extends StatelessWidget {
   }
 
   List<Widget> _buildCertification(context) {
-    if (type == EntityType.movie) {
+    if (widget.type == EntityType.movie) {
       return [
         Text.rich(
           TextSpan(
@@ -149,7 +168,7 @@ class FilterPage extends StatelessWidget {
         Style.getVerticalSpacing(context: context),
         FutureBuilder<List<Certification>>(
           future: Repository.getCertification(
-            Requests.certifications(type),
+            Requests.certifications(widget.type),
           ),
           builder: _buildCertificationList,
         ),
@@ -167,10 +186,10 @@ class FilterPage extends StatelessWidget {
       Style.getVerticalSpacing(context: context),
       CustomRangeSlider(
         values: getDefaultVoteAverage(),
-        min: DEFAULT_VOTE_AVERAGE.start,
-        max: DEFAULT_VOTE_AVERAGE.end,
+        min: FilterPage.DEFAULT_VOTE_AVERAGE.start,
+        max: FilterPage.DEFAULT_VOTE_AVERAGE.end,
         onChanged: (changedValue) {
-          discover.voteAverage = changedValue;
+          widget.discover.voteAverage = changedValue;
         },
       ),
     ];
@@ -178,10 +197,13 @@ class FilterPage extends StatelessWidget {
 
   List<Widget> _buildReleaseYear(context) {
     List<String> years = [];
-    for (int i = 0; i < 11; i++) {
+    int totalCount = 12;
+    if (yearsMore) {
+      totalCount = 40;
+    }
+    for (int i = 0; i < totalCount; i++) {
       years.add((DateTime.now().year - i).toString());
     }
-    years.add("Older");
 
     return [
       Text(
@@ -189,25 +211,20 @@ class FilterPage extends StatelessWidget {
         style: Style.headingStyle,
       ),
       Style.getVerticalSpacing(context: context),
-      CustomCheckBoxList(
+      new CustomCheckBoxList(
         children: years,
         type: CheckBoxListType.grid,
-        singleSelect: true,
         selectedItems: _getSelectedDate(),
         delegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
+          crossAxisCount: 4,
           childAspectRatio: 16 / 9,
           crossAxisSpacing: ScreenSize.getPercentOfWidth(context, 0.025),
           mainAxisSpacing: ScreenSize.getPercentOfWidth(context, 0.025),
         ),
-        onSelectionAdded: (values) {
-          if (values.first == "Older") {
-            discover.releaseDateRange = DateTimeRange(
-                start: DateTime(DEFAULT_YEAR.start.toInt()),
-                end: DateTime(DEFAULT_YEAR.end.toInt()));
-            return;
-          }
-          discover.releaseDate = DateTime(int.parse(values.first));
+        onSelectionChanged: (values) {
+          widget.discover.releaseYears
+            ..clear()
+            ..addAll(values.map((e) => int.parse(e)));
         },
       ),
     ];
@@ -223,7 +240,7 @@ class FilterPage extends StatelessWidget {
         height: ScreenSize.getPercentOfHeight(context, 0.01),
       ),
       FutureBuilder<List<Genre>>(
-        future: Repository.getGenre(Requests.genres(type)),
+        future: Repository.getGenre(Requests.genres(widget.type)),
         builder: _buildGenresGrid,
       ),
     ];
@@ -247,7 +264,7 @@ class FilterPage extends StatelessWidget {
         type: CheckBoxListType.grid,
         selectedItems: getSelectedLanguages(Languages.values),
         onSelectionChanged: (values) {
-          discover.languages
+          widget.discover.languages
             ..clear()
             ..addAll(values.map((e) => e.getLanguage()).toList());
         },
@@ -307,10 +324,10 @@ class FilterPage extends StatelessWidget {
               ],
         tooltips: snapshot.data!.map((e) => e.meaning).toList(),
         onSelectionAdded: (values) {
-          discover.certification = values.first; //as it is single select
+          widget.discover.certification = values.first; //as it is single select
         },
         onSelectionRemoved: (values) {
-          discover.certification = null;
+          widget.discover.certification = null;
         },
       );
     }
@@ -328,7 +345,7 @@ class FilterPage extends StatelessWidget {
         children: snapshot.data!.map((e) => e.name!).toList(),
         selectedItems: getSelectedGenres(snapshot.data!),
         onSelectionChanged: (values) {
-          discover.genres
+          widget.discover.genres
             ..clear()
             ..addAll(snapshot.data!
                 .where((element) => values.contains(element.name)));
@@ -348,16 +365,16 @@ class FilterPage extends StatelessWidget {
   }
 
   void onSubmitClick(BuildContext context) {
-    if (discover.certification == null &&
-        (discover.sortMoviesBy == null && discover.sortTvBy == null) &&
-        discover.releaseDateRange == null &&
-        discover.releaseDate == null &&
-        discover.voteAverage == null &&
-        discover.genres.isEmpty &&
-        discover.languages.isEmpty) {
+    if (widget.discover.certification == null &&
+        (widget.discover.sortMoviesBy == null &&
+            widget.discover.sortTvBy == null) &&
+        widget.discover.releaseYears.isEmpty &&
+        widget.discover.voteAverage == null &&
+        widget.discover.genres.isEmpty &&
+        widget.discover.languages.isEmpty) {
       return;
     }
-    Navigator.pop(context, discover);
+    Navigator.pop(context, widget.discover);
   }
 
   void onResetClick(BuildContext context) {
@@ -365,12 +382,6 @@ class FilterPage extends StatelessWidget {
   }
 
   RangeValues getDefaultYearValues() {
-    if (discover.releaseDateRange != null) {
-      return RangeValues(
-        discover.releaseDateRange!.start.year.toDouble(),
-        discover.releaseDateRange!.end.year.toDouble(),
-      );
-    }
     return RangeValues(
       DateTime.now().year - 100,
       DateTime.now().year.toDouble(),
@@ -378,20 +389,26 @@ class FilterPage extends StatelessWidget {
   }
 
   List<int> _getSelectedDate() {
-    if (discover.releaseDate != null) {
-      return [DateTime.now().year - discover.releaseDate!.year];
+    List<int> indexes = [];
+
+    for (var element in widget.discover.releaseYears) {
+      indexes.add(DateTime.now().year - element);
     }
-    if (discover.releaseDateRange != null) {
+    return indexes;
+    /* if (widget.discover.releaseDate != null) {
+      return [DateTime.now().year - widget.discover.releaseDate!.year];
+    }
+    if (widget.discover.releaseDateRange != null) {
       return [10];
     }
-    return [];
+    return []; */
   }
 
   RangeValues getDefaultVoteAverage() {
-    if (discover.voteAverage != null) {
+    if (widget.discover.voteAverage != null) {
       return RangeValues(
-        discover.voteAverage!.start,
-        discover.voteAverage!.end,
+        widget.discover.voteAverage!.start,
+        widget.discover.voteAverage!.end,
       );
     }
     return RangeValues(0, 10);
@@ -399,7 +416,7 @@ class FilterPage extends StatelessWidget {
 
   List<int> getSelectedGenres(List<Genre> list) {
     List<int> indexes = [];
-    for (Genre genre in discover.genres) {
+    for (Genre genre in widget.discover.genres) {
       if (list.contains(genre)) {
         indexes.add(list.indexOf(genre));
       }
@@ -409,7 +426,7 @@ class FilterPage extends StatelessWidget {
 
   List<int> getSelectedLanguages(List<Languages> list) {
     List<int> indexes = [];
-    for (var element in discover.languages) {
+    for (var element in widget.discover.languages) {
       if (list.contains(element)) {
         indexes.add(list.indexOf(element));
       }
@@ -418,33 +435,33 @@ class FilterPage extends StatelessWidget {
   }
 
   int? getSelectedCertification(List<String> list) {
-    if (discover.certification != null &&
-        list.contains(discover.certification)) {
-      return list.indexOf(discover.certification!);
+    if (widget.discover.certification != null &&
+        list.contains(widget.discover.certification)) {
+      return list.indexOf(widget.discover.certification!);
     }
     return null;
   }
 
   int? getSelectedSortBy() {
-    if (type == EntityType.movie) {
-      switch (discover.sortMoviesBy) {
+    if (widget.type == EntityType.movie) {
+      switch (widget.discover.sortMoviesBy) {
         case SortMoviesBy.popularity:
-          return POPULARITY_INDEX;
+          return FilterPage.POPULARITY_INDEX;
         case SortMoviesBy.voteAverage:
-          return VOTE_AVERAGE_INDEX;
+          return FilterPage.VOTE_AVERAGE_INDEX;
         case SortMoviesBy.releaseDate:
-          return DATE_INDEX;
+          return FilterPage.DATE_INDEX;
         default:
           return null;
       }
-    } else if (type == EntityType.tv) {
-      switch (discover.sortTvBy) {
+    } else if (widget.type == EntityType.tv) {
+      switch (widget.discover.sortTvBy) {
         case SortTvBy.popularity:
-          return POPULARITY_INDEX;
+          return FilterPage.POPULARITY_INDEX;
         case SortTvBy.voteAverage:
-          return VOTE_AVERAGE_INDEX;
+          return FilterPage.VOTE_AVERAGE_INDEX;
         case SortTvBy.firstAirDate:
-          return DATE_INDEX;
+          return FilterPage.DATE_INDEX;
         default:
           return null;
       }
@@ -453,13 +470,13 @@ class FilterPage extends StatelessWidget {
   }
 
   int? getIndexOfSelectedSort() {
-    switch (discover.sortMoviesBy) {
+    switch (widget.discover.sortMoviesBy) {
       case SortMoviesBy.popularity:
-        return POPULARITY_INDEX;
+        return FilterPage.POPULARITY_INDEX;
       case SortMoviesBy.voteAverage:
-        return VOTE_AVERAGE_INDEX;
+        return FilterPage.VOTE_AVERAGE_INDEX;
       case SortMoviesBy.releaseDate:
-        return DATE_INDEX;
+        return FilterPage.DATE_INDEX;
       default:
         return null;
     }

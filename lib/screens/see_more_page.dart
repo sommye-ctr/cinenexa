@@ -10,6 +10,7 @@ import '../services/constants.dart';
 import '../utils/screen_size.dart';
 import 'actor_details_page.dart';
 import 'details_page.dart';
+import 'package:glass/glass.dart';
 
 enum SeeMoreChildType {
   squicircle,
@@ -57,9 +58,6 @@ class _SeeMorePageState extends State<SeeMorePage> {
           widget.heading,
           style: Style.headingStyle,
         ),
-        Divider(
-          color: Theme.of(context).colorScheme.onBackground,
-        ),
         SizedBox(
           height: ScreenSize.getPercentOfHeight(context, 0.02),
         ),
@@ -87,6 +85,8 @@ class _SeeMorePageState extends State<SeeMorePage> {
           ),
         ),
       ],
+    ).asGlass(
+      clipBorderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
     );
   }
 

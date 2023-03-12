@@ -1,7 +1,9 @@
 import 'package:badges/badges.dart';
+import 'package:cinenexa/resources/asset.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:cinenexa/components/favorites_entity_tile.dart';
 import 'package:cinenexa/resources/strings.dart';
@@ -57,6 +59,18 @@ class _HomeFavoritesState extends State<HomeFavorites>
           builder: (_) {
             store.multiSelectEnabled;
 
+            if (store.currentFav.isEmpty) {
+              return Column(
+                children: [
+                  SvgPicture.asset(
+                    Asset.notFound,
+                    width: ScreenSize.getPercentOfWidth(context, 0.75),
+                  ),
+                  Style.getVerticalSpacing(context: context),
+                  Text(Strings.noResultsFound),
+                ],
+              );
+            }
             return Expanded(
               child: GridView.builder(
                 shrinkWrap: true,

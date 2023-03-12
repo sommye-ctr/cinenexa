@@ -167,10 +167,10 @@ class _RegisterPageState extends State<RegisterPage> {
 
     try {
       final AuthResponse res = await Supabase.instance.client.auth.signUp(
-        password: passController.text,
-        email: emailController.text,
+        password: passController.text.trim(),
+        email: emailController.text.trim(),
         data: {
-          "name": nameController.text,
+          "name": nameController.text.trim(),
         },
       );
       Navigator.pop(context);

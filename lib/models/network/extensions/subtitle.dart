@@ -34,8 +34,8 @@ class Subtitle {
 
   factory Subtitle.fromMap(Map<String, dynamic> map) {
     return Subtitle.def(
-      title: map['title'] as String,
-      url: map['url'] as String,
+      title: map['title'] != null ? map['title'] as String : "Unknown",
+      url: map['url'] != null ? map['url'] as String : "",
     );
   }
 

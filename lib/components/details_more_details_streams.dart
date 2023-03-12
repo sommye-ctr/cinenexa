@@ -94,9 +94,9 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
           if (widget.detailsStore.noOfExtensions == 0) {
             return _buildInstallExtensionsHelp();
           }
-          if (widget.detailsStore.isStreamLoading) {
-            return Center(child: CircularProgressIndicator());
-          } else if (widget.detailsStore.loadedStreams.isEmpty) {
+
+          if (!widget.detailsStore.isStreamLoading &&
+              widget.detailsStore.loadedStreams.isEmpty) {
             return Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -116,7 +116,12 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
           }
           return Column(
             children: [
-              Style.getVerticalSpacing(context: context),
+              if (widget.detailsStore.isStreamLoading)
+                Center(
+                  child: CircularProgressIndicator(),
+                ),
+              if (widget.detailsStore.isStreamLoading)
+                Style.getVerticalSpacing(context: context),
               _buildStreamsList(),
             ],
           );

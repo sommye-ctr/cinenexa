@@ -31,6 +31,10 @@ class Database {
   static const String _AUTOPLAY = "AUTOPLAY";
   static const String _GUEST_SIGNUP = "GUEST_SIGNUP";
 
+  static const String _SUBTITLE_FONT_SIZE = "SUBTITLE_FONT_SIZE";
+  static const String _SUBTITLE_POSITION = "SUBTITLE_POSITION";
+  static const String _SUBTITLE_BG = "SUBTITLE_BG";
+
   late Isar isar;
 
   Database() {
@@ -87,6 +91,21 @@ class Database {
     await prefs.setInt(_MAX_CACHE_SIZE, index);
   }
 
+  Future addSubFontSize(int size) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_SUBTITLE_FONT_SIZE, size);
+  }
+
+  Future addSubPosition(int position) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_SUBTITLE_POSITION, position);
+  }
+
+  Future addSubBgEnabled(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_SUBTITLE_BG, enabled);
+  }
+
   Future addDefaultFit(int indexFit) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_DEFAULT_FIT, indexFit);
@@ -132,6 +151,21 @@ class Database {
     return (prefs.getInt(_MAX_CACHE_SIZE) ?? 0);
   }
 
+  Future<int> getSubPosition() async {
+    final prefs = await SharedPreferences.getInstance();
+    return (prefs.getInt(_SUBTITLE_POSITION) ?? 20);
+  }
+
+  Future<int> getSubFontSize() async {
+    final prefs = await SharedPreferences.getInstance();
+    return (prefs.getInt(_SUBTITLE_FONT_SIZE) ?? 14);
+  }
+
+  Future<bool> getSubBg() async {
+    final prefs = await SharedPreferences.getInstance();
+    return (prefs.getBool(_SUBTITLE_BG) ?? false);
+  }
+
   Future<int> getDefaultFit() async {
     final prefs = await SharedPreferences.getInstance();
     return (prefs.getInt(_DEFAULT_FIT) ?? 0);
@@ -154,7 +188,11 @@ class Database {
 
   Future<Country?> getTmdbRegion() async {
     final prefs = await SharedPreferences.getInstance();
-    return Country.tryParse(prefs.getString(_TMDB_REGION) ?? "");
+    try {
+      return Country.tryParse(prefs.getString(_TMDB_REGION) ?? "");
+    } catch (e) {
+      return null;
+    }
   }
 
   Future removeTmdbRegion() async {
@@ -164,7 +202,11 @@ class Database {
 
   Future<Country?> getProviderCountry() async {
     final prefs = await SharedPreferences.getInstance();
-    return Country.tryParse(prefs.getString(_PROVIDER_COUNTRY) ?? "");
+    try {
+      return Country.tryParse(prefs.getString(_PROVIDER_COUNTRY) ?? "");
+    } catch (e) {
+      return null;
+    }
   }
 
   Future<LastActivities?> getLastActivities() async {

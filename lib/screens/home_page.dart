@@ -222,6 +222,7 @@ class _HomePageState extends State<HomePage>
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
       ),
+      backgroundColor: Colors.transparent,
       builder: (context) {
         return FractionallySizedBox(
           heightFactor: 0.75,
