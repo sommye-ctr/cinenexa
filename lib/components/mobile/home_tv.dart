@@ -1,31 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:cinenexa/resources/strings.dart';
+import 'package:cinenexa/services/network/repository.dart';
 
-import '../models/network/base_model.dart';
-import '../models/network/enums/duration_type.dart';
-import '../models/network/enums/entity_type.dart';
-import '../resources/style.dart';
-import '../services/network/repository.dart';
-import '../services/network/requests.dart';
-import '../widgets/horizontal_list.dart';
+import '../../models/network/base_model.dart';
+import '../../resources/strings.dart';
+import '../../models/network/enums/duration_type.dart';
+import '../../models/network/enums/entity_type.dart';
+import '../../resources/style.dart';
+import '../../services/network/requests.dart';
+import '../../widgets/horizontal_list.dart';
 
-class HomeMovies extends StatefulWidget {
+class HomeTv extends StatefulWidget {
   final Function(BaseModel data) onItemClicked;
   final Function(String future, List<BaseModel> items, String heading)?
       onSeeMoreClicked;
 
-  const HomeMovies({
+  const HomeTv({
     Key? key,
     required this.onItemClicked,
     this.onSeeMoreClicked,
   }) : super(key: key);
 
   @override
-  State<HomeMovies> createState() => _HomeMoviesState();
+  State<HomeTv> createState() => _HomeTvState();
 }
 
-class _HomeMoviesState extends State<HomeMovies>
-    with AutomaticKeepAliveClientMixin {
+class _HomeTvState extends State<HomeTv> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
@@ -34,11 +33,11 @@ class _HomeMoviesState extends State<HomeMovies>
     super.build(context);
     return ListView(
       physics: BouncingScrollPhysics(),
-      shrinkWrap: true,
       children: [
+        Style.getVerticalSpacing(context: context),
         HorizontalList<BaseModel>(
           future: Repository.getTitles(
-              Requests.trending(EntityType.movie, DurationType.day)),
+              Requests.trending(EntityType.tv, DurationType.day)),
           heading: Strings.trendingToday,
           buildPlaceHolder: () => Style.getMovieTilePlaceHolder(
               context: context, widthPercent: 0.3),
@@ -53,7 +52,7 @@ class _HomeMoviesState extends State<HomeMovies>
           onRightTrailClicked: (items) {
             if (widget.onSeeMoreClicked != null) {
               widget.onSeeMoreClicked!(
-                Requests.trending(EntityType.movie, DurationType.day),
+                Requests.trending(EntityType.tv, DurationType.day),
                 items,
                 Strings.trendingToday,
               );
@@ -62,7 +61,7 @@ class _HomeMoviesState extends State<HomeMovies>
         ),
         Style.getVerticalSpacing(context: context),
         HorizontalList<BaseModel>(
-          future: Repository.getTitles(Requests.topRated(EntityType.movie)),
+          future: Repository.getTitles(Requests.topRated(EntityType.tv)),
           heading: Strings.topRated,
           buildPlaceHolder: () => Style.getMovieTilePlaceHolder(
               context: context, widthPercent: 0.3),
@@ -77,7 +76,7 @@ class _HomeMoviesState extends State<HomeMovies>
           onRightTrailClicked: (items) {
             if (widget.onSeeMoreClicked != null) {
               widget.onSeeMoreClicked!(
-                Requests.topRated(EntityType.movie),
+                Requests.topRated(EntityType.tv),
                 items,
                 Strings.topRated,
               );
@@ -86,7 +85,7 @@ class _HomeMoviesState extends State<HomeMovies>
         ),
         Style.getVerticalSpacing(context: context),
         HorizontalList<BaseModel>(
-          future: Repository.getTitles(Requests.popular(EntityType.movie)),
+          future: Repository.getTitles(Requests.popular(EntityType.tv)),
           heading: Strings.popular,
           buildPlaceHolder: () => Style.getMovieTilePlaceHolder(
               context: context, widthPercent: 0.3),
@@ -101,7 +100,7 @@ class _HomeMoviesState extends State<HomeMovies>
           onRightTrailClicked: (items) {
             if (widget.onSeeMoreClicked != null) {
               widget.onSeeMoreClicked!(
-                Requests.popular(EntityType.movie),
+                Requests.popular(EntityType.tv),
                 items,
                 Strings.popular,
               );
@@ -111,9 +110,7 @@ class _HomeMoviesState extends State<HomeMovies>
         Style.getVerticalSpacing(context: context),
         HorizontalList<BaseModel>(
           future: Repository.getTitles(
-            Requests.trending(EntityType.movie, DurationType.week),
-            shuffle: true,
-          ),
+              Requests.trending(EntityType.tv, DurationType.week)),
           heading: Strings.trendingThisWeek,
           buildPlaceHolder: () => Style.getMovieTilePlaceHolder(
               context: context, widthPercent: 0.3),
@@ -128,7 +125,7 @@ class _HomeMoviesState extends State<HomeMovies>
           onRightTrailClicked: (items) {
             if (widget.onSeeMoreClicked != null) {
               widget.onSeeMoreClicked!(
-                Requests.trending(EntityType.movie, DurationType.week),
+                Requests.trending(EntityType.tv, DurationType.week),
                 items,
                 Strings.trendingThisWeek,
               );

@@ -8,7 +8,7 @@ import 'package:cinenexa/screens/search_page.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-import '../components/home_bottom_nav_bar.dart';
+import '../components/mobile/home_bottom_nav_bar.dart';
 
 class HomeFirstScreen extends StatefulWidget {
   static const String routeName = "/home";

@@ -6,8 +6,8 @@ import 'package:lottie/lottie.dart';
 import 'package:mobx/mobx.dart';
 import 'package:cinenexa/store/details/details_store.dart';
 
-import '../resources/asset.dart';
-import '../utils/screen_size.dart';
+import '../../resources/asset.dart';
+import '../../utils/screen_size.dart';
 import 'details_review_tile.dart';
 
 class DetailsMoreDetailsReviews extends StatefulWidget {

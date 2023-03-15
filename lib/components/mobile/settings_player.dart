@@ -1,4 +1,4 @@
-import 'package:cinenexa/components/settings_subtitle_setting.dart';
+import 'package:cinenexa/components/mobile/settings_subtitle_setting.dart';
 import 'package:cinenexa/utils/screen_size.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cinenexa/resources/strings.dart';

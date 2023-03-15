@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:cinenexa/components/details_more_details_info.dart';
-import 'package:cinenexa/components/details_more_details_reviews.dart';
-import 'package:cinenexa/components/details_more_details_streams.dart';
+import 'package:cinenexa/components/mobile/details_more_details_info.dart';
+import 'package:cinenexa/components/mobile/details_more_details_reviews.dart';
+import 'package:cinenexa/components/mobile/details_more_details_streams.dart';
 import 'package:cinenexa/models/network/base_model.dart';
 import 'package:cinenexa/resources/strings.dart';
 import 'package:cinenexa/store/details/details_store.dart';
 
-import '../resources/style.dart';
-import '../utils/screen_size.dart';
+import '../../resources/style.dart';
+import '../../utils/screen_size.dart';
 
 class DetailsMoreDetails extends StatefulWidget {
   final DetailsStore detailsStore;

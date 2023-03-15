@@ -9,7 +9,7 @@ import 'package:cinenexa/resources/strings.dart';
 import 'package:cinenexa/utils/link_opener.dart';
 import 'package:cinenexa/utils/screen_size.dart';
 
-import '../components/movie_tile.dart';
+import '../components/mobile/movie_tile.dart';
 import '../components/tv/tv_movie_tile.dart';
 import '../services/constants.dart';
 import '../services/network/utils.dart';

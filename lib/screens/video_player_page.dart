@@ -11,7 +11,7 @@ import 'package:cinenexa/utils/settings_indexer.dart';
 import 'package:cinenexa/widgets/custom_back_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:cinenexa/components/video_player_controls.dart';
+import 'package:cinenexa/components/mobile/video_player_controls.dart';
 
 import '../models/network/base_model.dart';
 import '../models/network/extensions/extension_stream.dart';

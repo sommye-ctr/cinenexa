@@ -4,7 +4,7 @@ import 'package:cinenexa/models/network/review.dart';
 import 'package:cinenexa/utils/date_time_formatter.dart';
 import 'package:cinenexa/utils/screen_size.dart';
 
-import '../resources/style.dart';
+import '../../resources/style.dart';
 
 class DetailsReviewTile extends StatelessWidget {
   final Review review;

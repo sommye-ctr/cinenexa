@@ -5,7 +5,7 @@ import 'package:cinenexa/services/network/utils.dart';
 import 'package:cinenexa/utils/screen_size.dart';
 import 'package:cinenexa/widgets/rounded_image.dart';
 
-import '../resources/style.dart';
+import '../../resources/style.dart';
 
 class SearchResultTile extends StatelessWidget {
   final String image, year, overview, title, type;

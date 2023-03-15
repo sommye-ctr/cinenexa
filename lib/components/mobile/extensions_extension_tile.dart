@@ -13,7 +13,7 @@ import 'package:cinenexa/utils/screen_size.dart';
 import 'package:cinenexa/widgets/rounded_button.dart';
 import 'package:cinenexa/widgets/rounded_image.dart';
 
-import '../resources/style.dart';
+import '../../resources/style.dart';
 
 class ExtensionTile extends StatefulWidget {
   final Extension extension;

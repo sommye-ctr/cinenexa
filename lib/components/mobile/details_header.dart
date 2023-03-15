@@ -14,12 +14,12 @@ import 'package:cinenexa/store/favorites/favorites_store.dart';
 import 'package:cinenexa/utils/screen_size.dart';
 import 'package:cinenexa/widgets/custom_back_button.dart';
 
-import '../models/network/base_model.dart';
-import '../resources/strings.dart';
-import '../services/network/utils.dart';
-import '../utils/date_time_formatter.dart';
-import '../widgets/rounded_button.dart';
-import '../widgets/screen_background_image.dart';
+import '../../models/network/base_model.dart';
+import '../../resources/strings.dart';
+import '../../services/network/utils.dart';
+import '../../utils/date_time_formatter.dart';
+import '../../widgets/rounded_button.dart';
+import '../../widgets/screen_background_image.dart';
 
 class DetailsHeader extends SliverPersistentHeaderDelegate {
   final double maxHeight, minHeight;

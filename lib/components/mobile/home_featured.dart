@@ -9,17 +9,17 @@ import 'package:cinenexa/screens/see_more_page.dart';
 import 'package:cinenexa/services/network/repository.dart';
 import 'package:cinenexa/widgets/custom_progress_indicator.dart';
 
-import '../models/network/base_model.dart';
-import '../models/network/enums/duration_type.dart';
-import '../models/network/enums/entity_type.dart';
-import '../models/network/trakt/trakt_progress.dart';
-import '../services/constants.dart';
-import '../services/network/requests.dart';
-import '../services/network/utils.dart';
-import '../store/user/user_store.dart';
-import '../utils/screen_size.dart';
-import '../widgets/horizontal_list.dart';
-import '../widgets/image_carousel.dart';
+import '../../models/network/base_model.dart';
+import '../../models/network/enums/duration_type.dart';
+import '../../models/network/enums/entity_type.dart';
+import '../../models/network/trakt/trakt_progress.dart';
+import '../../services/constants.dart';
+import '../../services/network/requests.dart';
+import '../../services/network/utils.dart';
+import '../../store/user/user_store.dart';
+import '../../utils/screen_size.dart';
+import '../../widgets/horizontal_list.dart';
+import '../../widgets/image_carousel.dart';
 import 'movie_tile.dart';
 
 class HomeFeatured extends StatefulWidget {

@@ -5,7 +5,7 @@ import 'package:cinenexa/widgets/custom_back_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../services/local/database.dart';
+import '../../services/local/database.dart';
 
 class SubtitleSettings extends StatefulWidget {
   static const String routeName = "/subtitle_settings";

@@ -3,22 +3,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:mobx/mobx.dart';
-import 'package:cinenexa/components/home_favourites.dart';
+import 'package:cinenexa/components/mobile/home_favourites.dart';
 import 'package:cinenexa/resources/strings.dart';
 import 'package:cinenexa/resources/style.dart';
 import 'package:cinenexa/screens/filter_page.dart';
 import 'package:cinenexa/screens/see_more_page.dart';
 import 'package:cinenexa/models/network/enums/entity_type.dart';
 import 'package:cinenexa/utils/screen_size.dart';
-import 'package:cinenexa/components/home_bottom_nav_bar.dart';
-import 'package:cinenexa/components/home_featured.dart';
-import 'package:cinenexa/components/home_movies.dart';
-import 'package:cinenexa/components/home_tv.dart';
+import 'package:cinenexa/components/mobile/home_movies.dart';
 
+import '../components/mobile/home_bottom_nav_bar.dart';
+import '../components/mobile/home_featured.dart';
+import '../components/mobile/home_tv.dart';
 import '../models/network/base_model.dart';
 import '../models/network/discover.dart';
 import '../services/constants.dart';
-import '../components/movie_tile.dart';
+import '../components/mobile/movie_tile.dart';
 import '../store/home/home_store.dart';
 
 class HomePage extends StatefulWidget {

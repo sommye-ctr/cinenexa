@@ -1,8 +1,8 @@
 import 'package:cinenexa/store/user/user_store.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cinenexa/components/details_header.dart';
-import 'package:cinenexa/components/details_more_details.dart';
+import 'package:cinenexa/components/mobile/details_header.dart';
+import 'package:cinenexa/components/mobile/details_more_details.dart';
 
 import 'package:cinenexa/services/constants.dart';
 import 'package:cinenexa/store/details/details_store.dart';

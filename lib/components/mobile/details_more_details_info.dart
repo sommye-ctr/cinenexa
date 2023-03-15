@@ -5,14 +5,14 @@ import 'package:cinenexa/store/details/details_store.dart';
 import 'package:cinenexa/widgets/rounded_image.dart';
 import 'package:youtube/youtube_thumbnail.dart';
 
-import '../models/network/base_model.dart';
-import '../resources/strings.dart';
-import '../resources/style.dart';
-import '../screens/actor_details_page.dart';
-import '../screens/details_page.dart';
-import '../screens/see_more_page.dart';
-import '../utils/screen_size.dart';
-import '../widgets/horizontal_list.dart';
+import '../../models/network/base_model.dart';
+import '../../resources/strings.dart';
+import '../../resources/style.dart';
+import '../../screens/actor_details_page.dart';
+import '../../screens/details_page.dart';
+import '../../screens/see_more_page.dart';
+import '../../utils/screen_size.dart';
+import '../../widgets/horizontal_list.dart';
 
 class DetailsMoreDetailsInfo extends StatefulWidget {
   final DetailsStore detailsStore;

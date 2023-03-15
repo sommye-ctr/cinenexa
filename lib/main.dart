@@ -1,6 +1,5 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:amplitude_flutter/amplitude.dart';
-import 'package:cinenexa/components/settings_subtitle_setting.dart';
 import 'package:cinenexa/screens/extension_config_page.dart';
 import 'package:cinenexa/services/local/database.dart';
 import 'package:cinenexa/services/network/analytics.dart';
@@ -38,6 +37,7 @@ import 'package:cinenexa/store/extensions/extensions_store.dart';
 import 'package:cinenexa/store/favorites/favorites_store.dart';
 import 'package:cinenexa/store/user/user_store.dart';
 
+import 'components/mobile/settings_subtitle_setting.dart';
 import 'models/network/base_model.dart';
 
 void main() async {

@@ -5,13 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:cinenexa/store/actor_details/actor_details_store.dart';
 
-import '../resources/strings.dart';
-import '../resources/style.dart';
-import '../services/network/utils.dart';
-import '../utils/date_time_formatter.dart';
-import '../utils/screen_size.dart';
-import '../widgets/custom_back_button.dart';
-import '../widgets/screen_background_image.dart';
+import '../../resources/strings.dart';
+import '../../resources/style.dart';
+import '../../services/network/utils.dart';
+import '../../utils/date_time_formatter.dart';
+import '../../utils/screen_size.dart';
+import '../../widgets/custom_back_button.dart';
+import '../../widgets/screen_background_image.dart';
 
 class ActorDetailsHeader extends SliverPersistentHeaderDelegate {
   final double maxHeight, minHeight;

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:cinenexa/services/network/utils.dart';
 import 'package:cinenexa/utils/date_time_formatter.dart';
 
-import '../models/network/tv_episode.dart';
-import '../resources/style.dart';
-import '../services/constants.dart';
-import '../utils/screen_size.dart';
-import '../widgets/rounded_image.dart';
+import '../../models/network/tv_episode.dart';
+import '../../resources/style.dart';
+import '../../services/constants.dart';
+import '../../utils/screen_size.dart';
+import '../../widgets/rounded_image.dart';
 
 class EpisodeTile extends StatelessWidget {
   final TvEpisode episode;

@@ -5,7 +5,7 @@ import 'package:cinenexa/models/network/extensions/extension_stream.dart';
 import 'package:cinenexa/models/network/watch_provider.dart';
 import 'package:cinenexa/utils/screen_size.dart';
 import 'package:cinenexa/utils/size_formatter.dart';
-import '../resources/style.dart';
+import '../../resources/style.dart';
 
 class DetailsStreamTile extends StatelessWidget {
   final ExtensionStream? extensionStream;

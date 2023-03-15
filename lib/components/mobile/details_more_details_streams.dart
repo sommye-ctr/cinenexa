@@ -14,16 +14,16 @@ import 'package:cinenexa/screens/youtube_video_player.dart';
 import 'package:cinenexa/store/details/details_store.dart';
 import 'package:cinenexa/widgets/rounded_button.dart';
 
-import '../models/network/base_model.dart';
-import '../models/network/trakt/trakt_show_history_season.dart';
-import '../models/network/trakt/trakt_show_history_season_ep.dart';
-import '../models/network/tv_episode.dart';
-import '../models/network/tv_season.dart';
-import '../models/network/watch_provider.dart';
-import '../resources/strings.dart';
-import '../resources/style.dart';
-import '../utils/screen_size.dart';
-import '../widgets/horizontal_list.dart';
+import '../../models/network/base_model.dart';
+import '../../models/network/trakt/trakt_show_history_season.dart';
+import '../../models/network/trakt/trakt_show_history_season_ep.dart';
+import '../../models/network/tv_episode.dart';
+import '../../models/network/tv_season.dart';
+import '../../models/network/watch_provider.dart';
+import '../../resources/strings.dart';
+import '../../resources/style.dart';
+import '../../utils/screen_size.dart';
+import '../../widgets/horizontal_list.dart';
 import 'details_episode_tile.dart';
 import 'details_stream_tile.dart';
 

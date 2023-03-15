@@ -1,7 +1,7 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:cinenexa/components/actor_details_header.dart';
+import 'package:cinenexa/components/mobile/actor_details_header.dart';
 import 'package:cinenexa/resources/strings.dart';
 import 'package:cinenexa/screens/see_more_page.dart';
 import 'package:cinenexa/store/actor_details/actor_details_store.dart';

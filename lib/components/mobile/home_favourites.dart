@@ -5,7 +5,6 @@ import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import 'package:cinenexa/components/favorites_entity_tile.dart';
 import 'package:cinenexa/resources/strings.dart';
 import 'package:cinenexa/resources/style.dart';
 import 'package:cinenexa/services/network/utils.dart';
@@ -13,8 +12,9 @@ import 'package:cinenexa/store/favorites/favorites_store.dart';
 import 'package:cinenexa/store/user/user_store.dart';
 import 'package:cinenexa/utils/screen_size.dart';
 
-import '../models/network/base_model.dart';
-import '../screens/details_page.dart';
+import '../../models/network/base_model.dart';
+import '../../screens/details_page.dart';
+import 'favorites_entity_tile.dart';
 import 'home_bottom_nav_bar.dart';
 
 class HomeFavorites extends StatefulWidget {

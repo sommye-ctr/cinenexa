@@ -13,7 +13,7 @@ import 'package:cinenexa/store/search/search_store.dart';
 import 'package:cinenexa/utils/screen_size.dart';
 import 'package:cinenexa/widgets/search_input.dart';
 
-import '../components/search_result_tile.dart';
+import '../components/mobile/search_result_tile.dart';
 import '../models/network/base_model.dart';
 import '../services/network/utils.dart';
 import 'details_page.dart';

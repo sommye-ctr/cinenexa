@@ -3,7 +3,7 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:better_player/better_player.dart';
-import 'package:cinenexa/components/video_player_next_episode.dart';
+import 'package:cinenexa/components/mobile/video_player_next_episode.dart';
 import 'package:cinenexa/models/local/show_history.dart';
 import 'package:cinenexa/services/local/torrent_streamer.dart';
 import 'package:cinenexa/services/network/utils.dart';
@@ -21,14 +21,14 @@ import 'package:video_cast/chrome_cast_media_type.dart';
 import 'package:video_cast/chrome_cast_subtitle.dart';
 import 'package:video_cast/video_cast.dart';
 
-import '../models/local/progress.dart';
-import '../models/network/base_model.dart';
-import '../models/network/extensions/extension_stream.dart';
-import '../models/network/movie.dart';
-import '../models/network/tv.dart';
-import '../services/local/scrobble_manager.dart';
-import '../store/player/player_store.dart';
-import '../store/user/user_store.dart';
+import '../../models/local/progress.dart';
+import '../../models/network/base_model.dart';
+import '../../models/network/extensions/extension_stream.dart';
+import '../../models/network/movie.dart';
+import '../../models/network/tv.dart';
+import '../../services/local/scrobble_manager.dart';
+import '../../store/player/player_store.dart';
+import '../../store/user/user_store.dart';
 
 class VideoPlayerControls extends StatefulWidget {
   final BetterPlayerController controller;
