@@ -1,9 +1,12 @@
+import 'package:cinenexa/screens/tv/tv_home_first.dart';
+import 'package:cinenexa/store/platform/platform_store.dart';
 import 'package:flutter/material.dart';
 import 'package:cinenexa/screens/extensions_page.dart';
 import 'package:cinenexa/screens/home_page.dart';
 import 'package:cinenexa/screens/profile_page.dart';
 import 'package:cinenexa/screens/search_page.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 import '../components/home_bottom_nav_bar.dart';
 
@@ -21,7 +24,15 @@ class _HomeFirstScreenState extends State<HomeFirstScreen> {
   int _pageIndex = 0;
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (Provider.of<PlatformStore>(context, listen: false).isAndroidTv) {
+      return TvHomeFirst();
+    }
     return Material(
       child: Scaffold(
         extendBody: true,

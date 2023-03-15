@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cinenexa/resources/style.dart';
-import 'package:cinenexa/utils/screen_size.dart';
 import 'package:cinenexa/widgets/rounded_image.dart';
 
 import '../services/constants.dart';

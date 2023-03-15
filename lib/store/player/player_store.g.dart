@@ -105,6 +105,22 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
     });
   }
 
+  late final _$nextEpCancelAtom =
+      Atom(name: '_PlayerStoreBase.nextEpCancel', context: context);
+
+  @override
+  bool get nextEpCancel {
+    _$nextEpCancelAtom.reportRead();
+    return super.nextEpCancel;
+  }
+
+  @override
+  set nextEpCancel(bool value) {
+    _$nextEpCancelAtom.reportWrite(value, super.nextEpCancel, () {
+      super.nextEpCancel = value;
+    });
+  }
+
   late final _$speedIndexAtom =
       Atom(name: '_PlayerStoreBase.speedIndex', context: context);
 
@@ -217,22 +233,6 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
     });
   }
 
-  late final _$seekDurationAtom =
-      Atom(name: '_PlayerStoreBase.seekDuration', context: context);
-
-  @override
-  int get seekDuration {
-    _$seekDurationAtom.reportRead();
-    return super.seekDuration;
-  }
-
-  @override
-  set seekDuration(int value) {
-    _$seekDurationAtom.reportWrite(value, super.seekDuration, () {
-      super.seekDuration = value;
-    });
-  }
-
   late final _$initAsyncAction =
       AsyncAction('_PlayerStoreBase.init', context: context);
 
@@ -245,7 +245,7 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
       AsyncAction('_PlayerStoreBase.fetchNewEps', context: context);
 
   @override
-  Future fetchNewEps() {
+  Future<dynamic> fetchNewEps() {
     return _$fetchNewEpsAsyncAction.run(() => super.fetchNewEps());
   }
 
@@ -253,7 +253,7 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
       AsyncAction('_PlayerStoreBase.fetchStreams', context: context);
 
   @override
-  Future fetchStreams() {
+  Future<dynamic> fetchStreams() {
     return _$fetchStreamsAsyncAction.run(() => super.fetchStreams());
   }
 
@@ -285,6 +285,17 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
         name: '_PlayerStoreBase.setNextEpFlag');
     try {
       return super.setNextEpFlag(value);
+    } finally {
+      _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setNextEpCancel(bool value) {
+    final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
+        name: '_PlayerStoreBase.setNextEpCancel');
+    try {
+      return super.setNextEpCancel(value);
     } finally {
       _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
     }
@@ -420,14 +431,14 @@ locked: ${locked},
 casting: ${casting},
 nextEp: ${nextEp},
 nextEpInit: ${nextEpInit},
+nextEpCancel: ${nextEpCancel},
 speedIndex: ${speedIndex},
 fitIndex: ${fitIndex},
 subtitleDelay: ${subtitleDelay},
 position: ${position},
 buffered: ${buffered},
 selectedSubtitle: ${selectedSubtitle},
-episodes: ${episodes},
-seekDuration: ${seekDuration}
+episodes: ${episodes}
     ''';
   }
 }

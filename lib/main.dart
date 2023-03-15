@@ -4,6 +4,7 @@ import 'package:cinenexa/components/settings_subtitle_setting.dart';
 import 'package:cinenexa/screens/extension_config_page.dart';
 import 'package:cinenexa/services/local/database.dart';
 import 'package:cinenexa/services/network/analytics.dart';
+import 'package:cinenexa/store/platform/platform_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -50,11 +51,6 @@ void main() async {
     anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? "",
   );
 
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
-
   final Amplitude amplitude = Amplitude.getInstance();
   amplitude.init(dotenv.env['AMPLITUDE_KEY'] ?? "");
 
@@ -73,6 +69,8 @@ void main() async {
   final savedThemeMode = await AdaptiveTheme.getThemeMode();
   final anonStatus = await Database().getGuestSignupStatus();
 
+  final platformStore = PlatformStore();
+
   await SentryFlutter.init(
     (options) {
       options.dsn = dotenv.env['SENTRY_KEY'];
@@ -83,6 +81,7 @@ void main() async {
     appRunner: () => runApp(MyApp(
       savedThemeMode: savedThemeMode,
       anonStatus: anonStatus,
+      platformStore: platformStore,
     )),
   );
 }
@@ -90,10 +89,12 @@ void main() async {
 class MyApp extends StatefulWidget {
   final AdaptiveThemeMode? savedThemeMode;
   final bool? anonStatus;
+  final PlatformStore? platformStore;
   const MyApp({
     Key? key,
     this.savedThemeMode,
     this.anonStatus,
+    this.platformStore,
   }) : super(key: key);
 
   @override
@@ -124,19 +125,27 @@ class _MyAppState extends State<MyApp> {
         Provider.Provider(
           create: (_) => ExtensionsStore(),
         ),
+        Provider.Provider(
+          create: (_) => widget.platformStore,
+        ),
       ],
       child: AdaptiveTheme(
         light: Style.themeData,
         dark: Style.darkThemeData(context),
-        initial: widget.savedThemeMode ?? AdaptiveThemeMode.light,
-        builder: (light, dark) => MaterialApp(
-          title: Strings.appName,
-          debugShowCheckedModeBanner: false,
-          theme: light,
-          darkTheme: dark,
-          scrollBehavior: ScrollBehaviorModified(),
-          onGenerateRoute: _handleRoutes,
-          home: homeWidget,
+        initial: widget.savedThemeMode ?? AdaptiveThemeMode.dark,
+        builder: (light, dark) => Shortcuts(
+          shortcuts: <LogicalKeySet, Intent>{
+            LogicalKeySet(LogicalKeyboardKey.select): ActivateIntent(),
+          },
+          child: MaterialApp(
+            title: Strings.appName,
+            debugShowCheckedModeBanner: false,
+            theme: light,
+            darkTheme: dark,
+            scrollBehavior: ScrollBehaviorModified(),
+            onGenerateRoute: _handleRoutes,
+            home: homeWidget,
+          ),
         ),
       ),
     );

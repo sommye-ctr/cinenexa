@@ -1,6 +1,5 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cinenexa/resources/asset.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -11,6 +10,7 @@ import 'package:cinenexa/utils/link_opener.dart';
 import 'package:cinenexa/utils/screen_size.dart';
 
 import '../components/movie_tile.dart';
+import '../components/tv/tv_movie_tile.dart';
 import '../services/constants.dart';
 import '../services/network/utils.dart';
 import '../widgets/rounded_image_placeholder.dart';
@@ -40,11 +40,15 @@ class Style {
     fontSize: 20,
   );
 
+  static TextStyle largeHeadingStyle = TextStyle(
+    fontSize: 25,
+  );
+
   static ThemeData darkThemeData(BuildContext context) => ThemeData(
         primarySwatch: Colors.orange,
         brightness: Brightness.dark,
         fontFamily: GoogleFonts.poppins().fontFamily,
-        focusColor: Colors.white,
+        //focusColor: Colors.white,
         scaffoldBackgroundColor: Color.fromARGB(255, 27, 27, 27),
         backgroundColor: Color.fromARGB(255, 27, 27, 27),
         floatingActionButtonTheme: FloatingActionButtonThemeData(
@@ -181,12 +185,38 @@ class Style {
     );
   }
 
+  static Widget getTvMovieTile({
+    required BaseModel item,
+    required double widhtPercent,
+    required bool showTitle,
+    required BuildContext context,
+    required Function(BaseModel) onClick,
+    Function(bool hasFocus)? onFocusChange,
+  }) {
+    return TvMovieTile(
+      image: Utils.getBackdropUrl(item.backdropPath ?? ""),
+      text: item.title!,
+      width: ScreenSize.getPercentOfWidth(context, widhtPercent),
+      showTitle: showTitle,
+      onClick: () => onClick(item),
+      onFocusChange: onFocusChange,
+    );
+  }
+
   static double getMovieTileHeight({
     required BuildContext context,
     required double widthPercent,
   }) {
     return ScreenSize.getPercentOfWidth(context, widthPercent) /
         Constants.posterAspectRatio;
+  }
+
+  static double getMovieTileBackdropHeight({
+    required BuildContext context,
+    required double widthPercent,
+  }) {
+    return ScreenSize.getPercentOfWidth(context, widthPercent) /
+        Constants.backdropAspectRatio;
   }
 
   static Widget getMovieTilePlaceHolder({
@@ -196,6 +226,16 @@ class Style {
     return RoundedImagePlaceholder(
       width: ScreenSize.getPercentOfWidth(context, widthPercent),
       ratio: Constants.posterAspectRatio,
+    );
+  }
+
+  static Widget getMovieTileBackdropPlaceHolder({
+    required BuildContext context,
+    required double widthPercent,
+  }) {
+    return RoundedImagePlaceholder(
+      width: ScreenSize.getPercentOfWidth(context, widthPercent),
+      ratio: Constants.backdropAspectRatio,
     );
   }
 

@@ -8,12 +8,16 @@ class ScreenBackgroundImage extends StatelessWidget {
   final String image;
   final String? placeHolder;
   final double heightPercent;
+  final List<Color>? colors;
+  final List<double>? stops;
   const ScreenBackgroundImage({
     Key? key,
     required this.child,
     required this.image,
     this.placeHolder,
     this.heightPercent = 1,
+    this.stops,
+    this.colors,
   }) : super(key: key);
 
   @override
@@ -23,21 +27,22 @@ class ScreenBackgroundImage extends StatelessWidget {
       builder: (context, value, child) {
         bool isDarkMode = value == AdaptiveThemeMode.dark;
 
-        List<Color> colors = isDarkMode
-            ? [
-                Colors.transparent,
-                Colors.black.withOpacity(0.26),
-                Colors.black.withOpacity(0.38),
-                Colors.black.withOpacity(0.45),
-                Colors.black
-              ]
-            : [
-                Colors.transparent,
-                Colors.white.withOpacity(0.26),
-                Colors.white.withOpacity(0.48),
-                Colors.white.withOpacity(0.6),
-                Colors.white
-              ];
+        List<Color> colorStop = colors ??
+            (isDarkMode
+                ? [
+                    Colors.transparent,
+                    Colors.black.withOpacity(0.26),
+                    Colors.black.withOpacity(0.38),
+                    Colors.black.withOpacity(0.45),
+                    Colors.black
+                  ]
+                : [
+                    Colors.transparent,
+                    Colors.white.withOpacity(0.26),
+                    Colors.white.withOpacity(0.48),
+                    Colors.white.withOpacity(0.6),
+                    Colors.white
+                  ]);
 
         return Container(
           height: ScreenSize.getPercentOfHeight(context, heightPercent),
@@ -47,14 +52,15 @@ class ScreenBackgroundImage extends StatelessWidget {
                 blendMode: isDarkMode ? BlendMode.darken : BlendMode.lighten,
                 shaderCallback: (bounds) {
                   return LinearGradient(
-                    colors: colors,
-                    stops: [
-                      0,
-                      0.35,
-                      0.45,
-                      0.5,
-                      0.95,
-                    ],
+                    colors: colorStop,
+                    stops: stops ??
+                        [
+                          0,
+                          0.35,
+                          0.45,
+                          0.5,
+                          0.95,
+                        ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ).createShader(bounds);

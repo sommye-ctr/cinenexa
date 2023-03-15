@@ -9,7 +9,8 @@ class HorizontalList<T> extends StatefulWidget {
 
   final String heading;
   final Function(List<T> items)? onRightTrailClicked;
-  final Widget Function(T item) buildWidget;
+  final Widget Function(T item)? buildWidget;
+  final Widget Function(T item, int index)? buildWidgetWithIndex;
   final Widget Function() buildPlaceHolder;
   final double height;
 
@@ -17,10 +18,11 @@ class HorizontalList<T> extends StatefulWidget {
     Key? key,
     required this.future,
     required this.heading,
-    required this.buildWidget,
+    this.buildWidget,
     required this.buildPlaceHolder,
     required this.height,
     this.onRightTrailClicked,
+    this.buildWidgetWithIndex,
   })  : limitItems = null,
         items = null,
         super(key: key);
@@ -29,10 +31,11 @@ class HorizontalList<T> extends StatefulWidget {
     Key? key,
     required this.items,
     required this.heading,
-    required this.buildWidget,
+    this.buildWidget,
     required this.buildPlaceHolder,
     required this.height,
     this.onRightTrailClicked,
+    this.buildWidgetWithIndex,
     this.limitItems,
   })  : future = null,
         super(key: key);
@@ -105,7 +108,9 @@ class _HorizontalListState<T> extends State<HorizontalList<T>> {
     }
     return _buildList(
       (context, index) {
-        return widget.buildWidget(items[index]);
+        if (widget.buildWidget != null)
+          return widget.buildWidget!.call(items[index]);
+        return widget.buildWidgetWithIndex!.call(items[index], index);
       },
       _getLength(),
     );

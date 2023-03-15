@@ -1,4 +1,4 @@
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as Badge;
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
@@ -148,7 +148,7 @@ class _HomePageState extends State<HomePage>
                 4,
             right: HomeBottomNavBar.bottomNavPadding,
             child: FloatingActionButton(
-              child: Badge(
+              child: Badge.Badge(
                 alignment: Alignment.topRight,
                 showBadge: homeStore.isFilterApplied,
                 child: Icon(
