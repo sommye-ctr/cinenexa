@@ -23,7 +23,6 @@ public class MainActivity
     super.configureFlutterEngine(flutterEngine);
 
     CastContext.getSharedInstance(getApplicationContext());
-    startService(new Intent(this, NotificationService.class));
     new EventChannel(
       flutterEngine.getDartExecutor().getBinaryMessenger(),
       TORRENT_STREAM_EVENT_NAME

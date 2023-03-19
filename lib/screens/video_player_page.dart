@@ -164,13 +164,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
           maxCacheSize:
               SettingsIndexer.getMaxCache(maxCacheIndex!) * 1024 * 1024,
         ),
-        notificationConfiguration: BetterPlayerNotificationConfiguration(
-          showNotification: true,
-          title: widget.baseModel!.title!,
-          author: Strings.appName,
-          imageUrl: Utils.getPosterUrl(widget.baseModel!.posterPath!),
-          activityName: "MainActivity",
-        ),
       ),
     );
   }
