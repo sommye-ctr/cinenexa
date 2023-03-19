@@ -1,4 +1,4 @@
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as Badge;
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -165,7 +165,7 @@ class _HomeFavoritesState extends State<HomeFavorites>
   }
 
   Widget _buildFab() {
-    Widget widget = Badge(
+    Widget widget = Badge.Badge(
       badgeContent: Text("${store.checkedFavoritesIds.length}"),
       child: Icon(Icons.more_vert_rounded),
     );
