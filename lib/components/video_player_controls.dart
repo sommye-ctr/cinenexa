@@ -250,7 +250,9 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
     if (widget.initialDark != null && !widget.initialDark!)
       AdaptiveTheme.of(context).setLight();
     if (playerStore.casting) chromeCastController?.endSession();
-    widget.controller.exitFullScreen();
+    try {
+      widget.controller.exitFullScreen();
+    } catch (e) {}
     await SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
