@@ -21,9 +21,10 @@ abstract class _PlatformStoreBase with Store {
     isAndroidTv =
         deviceInfo!.systemFeatures.contains('android.software.leanback');
 
-    await SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
+    if (!isAndroidTv)
+      await SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ]);
   }
 }

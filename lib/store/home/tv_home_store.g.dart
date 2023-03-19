@@ -57,6 +57,42 @@ mixin _$TvHomeStore on _TvHomeStoreBase, Store {
     });
   }
 
+  late final _$_TvHomeStoreBaseActionController =
+      ActionController(name: '_TvHomeStoreBase', context: context);
+
+  @override
+  void changeIndex(int index) {
+    final _$actionInfo = _$_TvHomeStoreBaseActionController.startAction(
+        name: '_TvHomeStoreBase.changeIndex');
+    try {
+      return super.changeIndex(index);
+    } finally {
+      _$_TvHomeStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void changeCurrentFocused(BaseModel baseModel) {
+    final _$actionInfo = _$_TvHomeStoreBaseActionController.startAction(
+        name: '_TvHomeStoreBase.changeCurrentFocused');
+    try {
+      return super.changeCurrentFocused(baseModel);
+    } finally {
+      _$_TvHomeStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void changeRailFocus(bool focus) {
+    final _$actionInfo = _$_TvHomeStoreBaseActionController.startAction(
+        name: '_TvHomeStoreBase.changeRailFocus');
+    try {
+      return super.changeRailFocus(focus);
+    } finally {
+      _$_TvHomeStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
   @override
   String toString() {
     return '''

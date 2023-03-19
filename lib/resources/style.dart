@@ -191,15 +191,15 @@ class Style {
     required bool showTitle,
     required BuildContext context,
     required Function(BaseModel) onClick,
-    Function(bool hasFocus)? onFocusChange,
+    required double scale,
   }) {
     return TvMovieTile(
-      image: Utils.getBackdropUrl(item.backdropPath ?? ""),
+      image: Utils.getPosterUrl(item.posterPath ?? ""),
       text: item.title!,
       width: ScreenSize.getPercentOfWidth(context, widhtPercent),
       showTitle: showTitle,
       onClick: () => onClick(item),
-      onFocusChange: onFocusChange,
+      scale: scale,
     );
   }
 
