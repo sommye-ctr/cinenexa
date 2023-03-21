@@ -17,7 +17,7 @@ class VoteIndicator extends StatelessWidget {
           strokeWidth: 2,
           backgroundColor: Theme.of(context).hintColor,
         ),
-        Text("${(vote * 10).toInt()}%")
+        Text("${(vote * 10).toInt()}")
       ],
     );
   }

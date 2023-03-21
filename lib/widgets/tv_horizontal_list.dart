@@ -54,12 +54,10 @@ class _TvHorizontalListState<T> extends State<TvHorizontalList<T>> {
     return Observer(
       builder: (context) {
         widget.tvListStore.items;
-        print("update");
         if (widget.tvListStore.items == null ||
             (widget.tvListStore.items?.isEmpty ?? true)) {
           return Container();
         }
-        print("after update");
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -149,6 +147,7 @@ class _TvHorizontalListState<T> extends State<TvHorizontalList<T>> {
               width: 8,
             );
           },
+
           itemCount: count,
           itemBuilder: builder,
         ),

@@ -18,9 +18,13 @@ abstract class _TvListStoreBase<T> with Store {
   int focusedIndex = 0;
 
   @observable
-  bool isListFocused = false;
+  bool isListFocused;
 
-  _TvListStoreBase({required this.focusChange, this.future, this.items}) {
+  _TvListStoreBase(
+      {required this.focusChange,
+      this.future,
+      this.items,
+      this.isListFocused = false}) {
     _init();
   }
 
@@ -33,6 +37,9 @@ abstract class _TvListStoreBase<T> with Store {
     if (future != null) {
       items = <T>[].asObservable();
       items!.addAll(await future!);
+    }
+    if (isListFocused) {
+      focusChange.call(items![focusedIndex]);
     }
   }
 

@@ -25,22 +25,6 @@ mixin _$TvHomeStore on _TvHomeStoreBase, Store {
     });
   }
 
-  late final _$railHasFocusAtom =
-      Atom(name: '_TvHomeStoreBase.railHasFocus', context: context);
-
-  @override
-  bool get railHasFocus {
-    _$railHasFocusAtom.reportRead();
-    return super.railHasFocus;
-  }
-
-  @override
-  set railHasFocus(bool value) {
-    _$railHasFocusAtom.reportWrite(value, super.railHasFocus, () {
-      super.railHasFocus = value;
-    });
-  }
-
   late final _$currentFocusedAtom =
       Atom(name: '_TvHomeStoreBase.currentFocused', context: context);
 
@@ -83,21 +67,9 @@ mixin _$TvHomeStore on _TvHomeStoreBase, Store {
   }
 
   @override
-  void changeRailFocus(bool focus) {
-    final _$actionInfo = _$_TvHomeStoreBaseActionController.startAction(
-        name: '_TvHomeStoreBase.changeRailFocus');
-    try {
-      return super.changeRailFocus(focus);
-    } finally {
-      _$_TvHomeStoreBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   String toString() {
     return '''
 tabIndex: ${tabIndex},
-railHasFocus: ${railHasFocus},
 currentFocused: ${currentFocused}
     ''';
   }

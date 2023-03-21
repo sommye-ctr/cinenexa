@@ -16,7 +16,7 @@ class Constants {
   };
 
   static String posterSize = "/w300";
-  static String backdropSize = "/w780";
+  static String backdropSize = "/w300";
   static String stillSize = "/w300";
   static String profileSize = "/w92";
   static String watchProviderSize = "/original";

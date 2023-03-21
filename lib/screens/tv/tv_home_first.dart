@@ -6,6 +6,7 @@ import 'package:cinenexa/utils/screen_size.dart';
 import 'package:cinenexa/widgets/rounded_button.dart';
 import 'package:cinenexa/widgets/screen_background_image.dart';
 import 'package:cinenexa/widgets/tv_horizontal_list.dart';
+import 'package:cinenexa/widgets/vote_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -37,26 +38,34 @@ class _TvHomeFirstState extends State<TvHomeFirst> {
   final Duration animationDuration = Duration(milliseconds: 500);
 
   final FocusNode homeFocus = FocusNode();
+  final FocusNode railFocus = FocusNode();
   final ItemScrollController homeScrollController = ItemScrollController();
 
   late TvHomeStore store;
   final List<TvListStore> controllers = [];
+  final List<Widget> listWidgets = [];
   int yFocus = 0;
 
   @override
   void initState() {
     store = TvHomeStore();
-    _init();
+
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       FocusScope.of(context).requestFocus(homeFocus);
       controllers[0].changeFocus(true);
+      FocusScope.of(context).requestFocus(homeFocus);
     });
   }
 
   @override
+  void didChangeDependencies() {
+    _init();
+    super.didChangeDependencies();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    print("building");
     return Material(
       child: SafeArea(
         child: Scaffold(
@@ -74,13 +83,24 @@ class _TvHomeFirstState extends State<TvHomeFirst> {
                         store.currentFocused?.backdropPath ?? ""),
                   );
                 }),
+                Container(
+                  height: ScreenSize.getPercentOfHeight(context, 1),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.topRight,
+                      colors: [
+                        Colors.black87,
+                        Colors.black45,
+                        Colors.transparent,
+                        Colors.transparent
+                      ],
+                    ),
+                  ),
+                ),
                 Row(
                   children: [
-                    Observer(builder: (contex) {
-                      store.railHasFocus;
-                      store.tabIndex;
-                      return _buildNavigationRail();
-                    }),
+                    _buildNavigationRail(),
                     Expanded(
                       child: Padding(
                         padding: EdgeInsets.only(
@@ -92,7 +112,10 @@ class _TvHomeFirstState extends State<TvHomeFirst> {
                           children: [
                             Observer(builder: (context) {
                               store.currentFocused;
-                              return _buildCurrentSelectedInfo();
+                              return AnimatedSwitcher(
+                                child: _buildCurrentSelectedInfo(),
+                                duration: animationDuration,
+                              );
                             }),
                             Style.getVerticalSpacing(
                               context: context,
@@ -102,7 +125,7 @@ class _TvHomeFirstState extends State<TvHomeFirst> {
                               child: Expanded(
                                 child: ScrollablePositionedList.separated(
                                   itemBuilder: (context, index) =>
-                                      _buildLists(index),
+                                      listWidgets[index],
                                   separatorBuilder: (context, index) =>
                                       Style.getVerticalSpacing(
                                           context: context),
@@ -111,6 +134,7 @@ class _TvHomeFirstState extends State<TvHomeFirst> {
                                 ),
                               ),
                             ),
+                            Style.getVerticalSpacing(context: context),
                           ],
                         ),
                       ),
@@ -135,7 +159,6 @@ class _TvHomeFirstState extends State<TvHomeFirst> {
     switch (rawKeyEventData.keyCode) {
       case KEY_UP:
         if (yFocus > 0) {
-          print("up");
           controllers[yFocus].changeFocus(false);
           yFocus--;
           controllers[yFocus].changeFocus(true);
@@ -157,21 +180,21 @@ class _TvHomeFirstState extends State<TvHomeFirst> {
         }
         break;
       case KEY_LEFT:
-        if (controllers[yFocus].focusedIndex == 0 && !store.railHasFocus) {
-          store.changeRailFocus(true);
+        if (controllers[yFocus].focusedIndex == 0) {
+          railFocus.requestFocus();
           break;
         }
         controllers[yFocus].changeIndex(KEY_LEFT);
         break;
       case KEY_RIGHT:
-        if (controllers[yFocus].focusedIndex == 0 && store.railHasFocus) {
-          store.changeRailFocus(false);
+        /* if (controllers[yFocus].focusedIndex == 0) {
           break;
-        }
+        } */
         controllers[yFocus].changeIndex(KEY_RIGHT);
         break;
       default:
     }
+    SystemSound.play(SystemSoundType.click);
   }
 
   void _init() {
@@ -181,6 +204,7 @@ class _TvHomeFirstState extends State<TvHomeFirst> {
           Requests.popular(EntityType.movie),
           shuffle: true,
         ),
+        initialFocus: true,
       ),
       _createController(
         Repository.getTitles(
@@ -201,57 +225,49 @@ class _TvHomeFirstState extends State<TvHomeFirst> {
         ),
       ),
     ]);
+
+    listWidgets.addAll([
+      TvHorizontalList(
+        heading: Strings.popularMovies,
+        height: Style.getMovieTileHeight(
+          context: context,
+          widthPercent: TILE_WIDTH_PERCENT,
+        ),
+        widthPercentItem: TILE_WIDTH_PERCENT,
+        tvListStore: controllers[0],
+      ),
+      TvHorizontalList(
+        heading: Strings.popularTv,
+        height: Style.getMovieTileHeight(
+          context: context,
+          widthPercent: TILE_WIDTH_PERCENT,
+        ),
+        widthPercentItem: TILE_WIDTH_PERCENT,
+        tvListStore: controllers[1],
+      ),
+      TvHorizontalList(
+        heading: Strings.weeklyTrendingMovies,
+        height: Style.getMovieTileHeight(
+          context: context,
+          widthPercent: TILE_WIDTH_PERCENT,
+        ),
+        widthPercentItem: TILE_WIDTH_PERCENT,
+        tvListStore: controllers[2],
+      ),
+      TvHorizontalList(
+        heading: Strings.weeklyTrendingTv,
+        height: Style.getMovieTileHeight(
+          context: context,
+          widthPercent: TILE_WIDTH_PERCENT,
+        ),
+        widthPercentItem: TILE_WIDTH_PERCENT,
+        tvListStore: controllers[3],
+      )
+    ]);
   }
 
-  Widget _buildLists(int index) {
-    print("list");
-    switch (index) {
-      case 0:
-        return TvHorizontalList(
-          heading: Strings.popularMovies,
-          height: Style.getMovieTileHeight(
-            context: context,
-            widthPercent: TILE_WIDTH_PERCENT,
-          ),
-          widthPercentItem: TILE_WIDTH_PERCENT,
-          tvListStore: controllers[0],
-        );
-      case 1:
-        return TvHorizontalList(
-          heading: Strings.popularTv,
-          height: Style.getMovieTileHeight(
-            context: context,
-            widthPercent: TILE_WIDTH_PERCENT,
-          ),
-          widthPercentItem: TILE_WIDTH_PERCENT,
-          tvListStore: controllers[1],
-        );
-      case 2:
-        return TvHorizontalList(
-          heading: Strings.weeklyTrendingMovies,
-          height: Style.getMovieTileHeight(
-            context: context,
-            widthPercent: TILE_WIDTH_PERCENT,
-          ),
-          widthPercentItem: TILE_WIDTH_PERCENT,
-          tvListStore: controllers[2],
-        );
-      case 3:
-        return TvHorizontalList(
-          heading: Strings.weeklyTrendingTv,
-          height: Style.getMovieTileHeight(
-            context: context,
-            widthPercent: TILE_WIDTH_PERCENT,
-          ),
-          widthPercentItem: TILE_WIDTH_PERCENT,
-          tvListStore: controllers[3],
-        );
-      default:
-        return Container();
-    }
-  }
-
-  TvListStore _createController(Future<List<BaseModel>> future) {
+  TvListStore _createController(Future<List<BaseModel>> future,
+      {bool initialFocus = false}) {
     return TvListStore<BaseModel>(
       future: future,
       focusChange: (item) {
@@ -261,70 +277,115 @@ class _TvHomeFirstState extends State<TvHomeFirst> {
   }
 
   Widget _buildNavigationRail() {
-    return NavigationRail(
-      groupAlignment: 0,
-      minWidth: NAVIGATION_RAIL_WIDTH,
-      backgroundColor: Colors.transparent,
-      extended: store.railHasFocus,
-      minExtendedWidth: ScreenSize.getPercentOfWidth(context, 0.15),
-      onDestinationSelected: (value) {
-        store.changeIndex(value);
+    return Focus(
+      onFocusChange: (value) {
+        print(value);
       },
-      leading: AnimatedContainer(
-        duration: Duration(milliseconds: 500),
-        width: store.railHasFocus
-            ? ScreenSize.getPercentOfWidth(context, 0.15) * 0.4
-            : 40,
-        child: Image.asset(Asset.icon),
-      ),
-      destinations: _getNavigationTrails(),
-      selectedIndex: store.tabIndex,
-    ).asGlass(
-      clipBorderRadius: BorderRadius.only(
-        bottomRight: Radius.circular(Style.largeRoundEdgeRadius),
-        topRight: Radius.circular(Style.largeRoundEdgeRadius),
+      focusNode: railFocus,
+      skipTraversal: true,
+      child: NavigationRail(
+        groupAlignment: 0,
+        minWidth: NAVIGATION_RAIL_WIDTH,
+        backgroundColor: Colors.transparent,
+        minExtendedWidth: ScreenSize.getPercentOfWidth(context, 0.15),
+        onDestinationSelected: (value) {
+          store.changeIndex(value);
+        },
+        leading: Container(
+          width: 40,
+          child: Image.asset(Asset.icon),
+        ),
+        destinations: _getNavigationTrails(),
+        selectedIndex: store.tabIndex,
+      ).asGlass(
+        clipBorderRadius: BorderRadius.only(
+          bottomRight: Radius.circular(Style.largeRoundEdgeRadius),
+          topRight: Radius.circular(Style.largeRoundEdgeRadius),
+        ),
       ),
     );
   }
 
   Widget _buildCurrentSelectedInfo() {
-    String year = "";
-    if (store.currentFocused != null) {
-      year =
-          "(${DateTimeFormatter.getYearFromString(store.currentFocused!.releaseDate!)})";
+    if (store.currentFocused == null) {
+      return Container();
     }
+    String year =
+        "(${DateTimeFormatter.getYearFromString(store.currentFocused!.releaseDate!)})";
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          child: Text(
-            "${store.currentFocused?.title} $year",
-            style: Style.largeHeadingStyle.copyWith(
-              fontWeight: FontWeight.bold,
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              child: Text(
+                "${store.currentFocused?.title} $year",
+                style: Style.largeHeadingStyle.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
-          ),
+            Style.getVerticalHorizontalSpacing(context: context),
+            VoteIndicator(vote: store.currentFocused?.voteAverage ?? 0),
+          ],
         ),
         Style.getVerticalSpacing(context: context),
         Container(
           constraints: BoxConstraints(
             maxWidth: ScreenSize.getPercentOfWidth(context, 0.5),
           ),
-          child: Text(
-            store.currentFocused?.overview ?? "",
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(color: Colors.white70),
+          child: LayoutBuilder(
+            builder: (p0, p1) {
+              final span = TextSpan(
+                  text: store.currentFocused?.overview,
+                  style: TextStyle(color: Colors.white70));
+              final tp =
+                  TextPainter(text: span, textDirection: TextDirection.ltr);
+              tp.layout(maxWidth: p1.maxWidth);
+              final numLines = tp.computeLineMetrics().length;
+
+              String string;
+
+              if (numLines == 0) {
+                string = "\n \n \n";
+              } else if (numLines == 1) {
+                string = "${span.text} \n \n";
+              } else if (numLines == 2) {
+                string = "${span.text} \n";
+              } else {
+                string = span.text ?? "\n \n \n";
+              }
+
+              return Text(
+                string,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: Colors.white70),
+              );
+            },
           ),
         ),
         Style.getVerticalSpacing(context: context),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            RoundedButton(
-              child: Text(Strings.play),
-              onPressed: () {},
-              type: RoundedButtonType.outlined,
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                RoundedButton(
+                  child: Text(Strings.play),
+                  onPressed: () {},
+                  type: RoundedButtonType.filled,
+                ),
+                Style.getVerticalHorizontalSpacing(context: context),
+                RoundedButton(
+                  child: Text(Strings.moreInfo),
+                  onPressed: () {},
+                  type: RoundedButtonType.outlined,
+                ),
+              ],
             ),
             Container(
               width: 200,
