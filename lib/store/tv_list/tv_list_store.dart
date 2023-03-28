@@ -69,6 +69,8 @@ abstract class _TvListStoreBase<T> with Store {
   @action
   void changeFocus(bool focused) {
     isListFocused = focused;
-    if (focused) focusChange.call(items![focusedIndex]);
+
+    if (focused && items != null && items!.isNotEmpty)
+      focusChange.call(items![focusedIndex]);
   }
 }

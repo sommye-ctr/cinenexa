@@ -1,5 +1,6 @@
 import 'package:cinenexa/resources/asset.dart';
 import 'package:cinenexa/resources/strings.dart';
+import 'package:cinenexa/screens/details_page.dart';
 import 'package:cinenexa/services/network/utils.dart';
 import 'package:cinenexa/store/tv_list/tv_list_store.dart';
 import 'package:cinenexa/utils/screen_size.dart';
@@ -49,7 +50,6 @@ class _TvHomeFirstState extends State<TvHomeFirst> {
   @override
   void initState() {
     store = TvHomeStore();
-
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       FocusScope.of(context).requestFocus(homeFocus);
@@ -192,6 +192,15 @@ class _TvHomeFirstState extends State<TvHomeFirst> {
         } */
         controllers[yFocus].changeIndex(KEY_RIGHT);
         break;
+      case KEY_CENTER:
+        if (store.currentFocused != null) {
+          Navigator.pushNamed(
+            context,
+            DetailsPage.routeName,
+            arguments: store.currentFocused,
+          );
+        }
+        break;
       default:
     }
     SystemSound.play(SystemSoundType.click);
@@ -316,10 +325,10 @@ class _TvHomeFirstState extends State<TvHomeFirst> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisSize: MainAxisSize.min,
+        Wrap(
           children: [
-            Container(
+            Hero(
+              tag: "tag-title",
               child: Text(
                 "${store.currentFocused?.title} $year",
                 style: Style.largeHeadingStyle.copyWith(

@@ -16,8 +16,8 @@ class Utils {
     return "${Constants.tmdbImageBase}${posterSize ?? Constants.posterSize}${url}";
   }
 
-  static String getBackdropUrl(String url) {
-    return "${Constants.tmdbImageBase}${Constants.backdropSize}${url}";
+  static String getBackdropUrl(String url, {bool hq = false}) {
+    return "${Constants.tmdbImageBase}${hq ? Constants.backdropSizeHq : Constants.backdropSize}${url}";
   }
 
   static String getStillUrl(String url) {

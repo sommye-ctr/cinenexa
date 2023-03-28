@@ -15,6 +15,8 @@ class TvHorizontalList<T> extends StatefulWidget {
   final double widthPercentItem;
   final TvListStore<T> tvListStore;
 
+  final Widget Function(T item)? onWidgetBuild;
+
   TvHorizontalList({
     Key? key,
     required this.heading,
@@ -22,6 +24,7 @@ class TvHorizontalList<T> extends StatefulWidget {
     required this.widthPercentItem,
     required this.tvListStore,
     this.onRightTrailClicked,
+    this.onWidgetBuild,
   })  : limitItems = null,
         super(key: key);
 
@@ -33,6 +36,7 @@ class TvHorizontalList<T> extends StatefulWidget {
     required this.widthPercentItem,
     required this.tvListStore,
     this.limitItems,
+    this.onWidgetBuild,
   }) : super(key: key);
 
   @override
@@ -63,25 +67,27 @@ class _TvHorizontalListState<T> extends State<TvHorizontalList<T>> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  widget.heading,
-                  style: Style.headingStyle,
-                ),
-                if (_showRightTrail())
-                  IconButton(
-                    onPressed: () {
-                      if (widget.onRightTrailClicked != null)
-                        widget.onRightTrailClicked!(widget.tvListStore.items!);
-                    },
-                    icon: Icon(
-                      Icons.keyboard_arrow_right_rounded,
-                    ),
+            if (widget.heading.isNotEmpty)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    widget.heading,
+                    style: Style.headingStyle,
                   ),
-              ],
-            ),
+                  if (_showRightTrail())
+                    IconButton(
+                      onPressed: () {
+                        if (widget.onRightTrailClicked != null)
+                          widget
+                              .onRightTrailClicked!(widget.tvListStore.items!);
+                      },
+                      icon: Icon(
+                        Icons.keyboard_arrow_right_rounded,
+                      ),
+                    ),
+                ],
+              ),
             SizedBox(
               height: 4,
             ),
@@ -112,6 +118,9 @@ class _TvHorizontalListState<T> extends State<TvHorizontalList<T>> {
 
         return _buildList(
           (context, index) {
+            if (widget.onWidgetBuild != null) {
+              return widget.onWidgetBuild!(widget.tvListStore.items![index]);
+            }
             return Style.getTvMovieTile(
               item: widget.tvListStore.items![index] as BaseModel,
               widhtPercent: widget.widthPercentItem,
@@ -147,7 +156,6 @@ class _TvHorizontalListState<T> extends State<TvHorizontalList<T>> {
               width: 8,
             );
           },
-
           itemCount: count,
           itemBuilder: builder,
         ),

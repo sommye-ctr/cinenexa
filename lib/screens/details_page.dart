@@ -1,3 +1,4 @@
+import 'package:cinenexa/screens/tv/tv_details_page.dart';
 import 'package:cinenexa/store/user/user_store.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +11,7 @@ import 'package:cinenexa/store/extensions/extensions_store.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '../models/network/base_model.dart';
+import '../store/platform/platform_store.dart';
 import '../utils/screen_size.dart';
 
 class DetailsPage extends StatefulWidget {
@@ -51,6 +53,12 @@ class _DetailsPageState extends State<DetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (Provider.of<PlatformStore>(context, listen: false).isAndroidTv) {
+      return TvDetailsPage(
+        detailsStore: detailsStore,
+      );
+    }
+
     return WillPopScope(
       onWillPop: () async {
         detailsStore.cancelStreams();

@@ -155,8 +155,12 @@ class _MyAppState extends State<MyApp> {
     switch (settings.name) {
       case DetailsPage.routeName:
         final value = settings.arguments as BaseModel;
-        SystemChrome.setPreferredOrientations(
-            [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
+
+        /*  if (!Provider.Provider.of<PlatformStore>(context, listen: false).isAndroidTv) {
+          SystemChrome.setPreferredOrientations(
+              [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
+        } */ //TODO MANAGE ORIENTATION
+
         return MaterialPageRoute(
           builder: (context) => DetailsPage(baseModel: value),
           maintainState: true,

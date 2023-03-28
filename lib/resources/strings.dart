@@ -139,6 +139,7 @@ class Strings {
   static const String removeFromFav = "Remove from";
   static const String play = "Play";
   static const String resume = "Resume";
+  static const String watchTrailer = "Watch Trailer";
 
   static const String cast = "Cast";
   static const String recommendedMovies = "Recommended Movies";

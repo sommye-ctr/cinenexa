@@ -17,6 +17,8 @@ class Constants {
 
   static String posterSize = "/w300";
   static String backdropSize = "/w300";
+  static String backdropSizeHq = "/w780";
+
   static String stillSize = "/w300";
   static String profileSize = "/w92";
   static String watchProviderSize = "/original";
@@ -50,6 +52,7 @@ class Constants {
   static const double posterAspectRatio = 2 / 3;
   static const double backdropAspectRatio = 16 / 9;
   static const double stillAspectRatio = 16 / 9;
+  static const double profileAspectRatio = 2 / 3;
 
   static const int homeLimit = 10;
   static const int skipLimit = 5;

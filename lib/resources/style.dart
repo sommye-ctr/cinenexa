@@ -192,6 +192,7 @@ class Style {
     required BuildContext context,
     required Function(BaseModel) onClick,
     required double scale,
+    double? aspectRatio,
   }) {
     return TvMovieTile(
       image: Utils.getPosterUrl(item.posterPath ?? ""),
@@ -200,6 +201,7 @@ class Style {
       showTitle: showTitle,
       onClick: () => onClick(item),
       scale: scale,
+      aspectRatio: aspectRatio,
     );
   }
 
@@ -244,6 +246,7 @@ class Style {
     required String? poster,
     required String? title,
     required VoidCallback callback,
+    double? widthPercent,
   }) {
     int length = title?.length ?? 0;
     return GestureDetector(
@@ -254,7 +257,7 @@ class Style {
           CircleAvatar(
             backgroundImage:
                 CachedNetworkImageProvider(Utils.getPosterUrl(poster ?? "")),
-            radius: ScreenSize.getPercentOfWidth(context, 0.15),
+            radius: ScreenSize.getPercentOfWidth(context, widthPercent ?? 0.15),
           ),
           Text(
             (length >= 15 ? "${title?.substring(0, 10)}..." : title) ?? "",

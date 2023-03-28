@@ -6,12 +6,14 @@ class RoundedButton extends StatelessWidget {
   final void Function()? onPressed;
   final Widget child;
   final RoundedButtonType type;
+  final FocusNode? focusNode;
 
   const RoundedButton({
     Key? key,
     required this.child,
     required this.onPressed,
     required this.type,
+    this.focusNode,
   }) : super(key: key);
 
   @override
@@ -20,6 +22,7 @@ class RoundedButton extends StatelessWidget {
       return ElevatedButton(
         onPressed: onPressed,
         child: child,
+        focusNode: focusNode,
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
@@ -30,6 +33,7 @@ class RoundedButton extends StatelessWidget {
       return OutlinedButton(
         onPressed: onPressed,
         child: child,
+        focusNode: focusNode,
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),

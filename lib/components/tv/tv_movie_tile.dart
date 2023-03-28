@@ -26,9 +26,11 @@ class TvMovieTile extends StatelessWidget {
     this.onLongClick,
     this.darken = false,
     this.requestFocusOnBuild = false,
+    double? aspectRatio,
     double? height,
     Key? key,
-  })  : this.height = height ?? width / Constants.posterAspectRatio,
+  })  : this.height =
+            height ?? width / (aspectRatio ?? Constants.posterAspectRatio),
         super(key: key);
 
   @override
