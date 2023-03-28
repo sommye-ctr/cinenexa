@@ -276,6 +276,10 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
       AdaptiveTheme.of(context).setLight();
     if (playerStore.casting) chromeCastController?.endSession();
 
+    try {
+      widget.controller.exitFullScreen();
+    } catch (e) {}
+
     widget.torrentStreamer?.stopStream();
     widget.controller.exitFullScreen();
     await SystemChrome.setPreferredOrientations([

@@ -2,10 +2,7 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:better_player/better_player.dart';
 import 'package:cinenexa/models/local/progress.dart';
 import 'package:cinenexa/models/local/show_history.dart';
-import 'package:cinenexa/resources/strings.dart';
 import 'package:cinenexa/services/local/database.dart';
-import 'package:cinenexa/services/local/torrent_streamer.dart';
-import 'package:cinenexa/services/network/utils.dart';
 import 'package:cinenexa/store/details/details_store.dart';
 import 'package:cinenexa/utils/settings_indexer.dart';
 import 'package:cinenexa/widgets/custom_back_button.dart';
@@ -186,13 +183,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
           maxCacheSize:
               SettingsIndexer.getMaxCache(maxCacheIndex!) * 1024 * 1024,
         ),
-        notificationConfiguration: BetterPlayerNotificationConfiguration(
-          showNotification: true,
-          title: widget.baseModel!.title!,
-          author: Strings.appName,
-          imageUrl: Utils.getPosterUrl(widget.baseModel!.posterPath!),
-          activityName: "MainActivity",
-        ),
       ),
     );
   }
@@ -200,6 +190,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   @override
   Widget build(BuildContext context) {
     return Material(
+      color: Theme.of(context).colorScheme.background,
       child: Container(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
