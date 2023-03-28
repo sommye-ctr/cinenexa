@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 class CustomBackButton extends StatelessWidget {
+  final VoidCallback? onClick;
   const CustomBackButton({
     Key? key,
+    this.onClick,
   }) : super(key: key);
 
   @override
@@ -14,7 +16,10 @@ class CustomBackButton extends StatelessWidget {
         child: InkResponse(
           splashColor: Theme.of(context).colorScheme.primary,
           highlightColor: Theme.of(context).colorScheme.primary,
-          onTap: () => Navigator.maybePop(context),
+          onTap: () {
+            onClick?.call();
+            Navigator.maybePop(context);
+          },
           child: Container(
             color: Colors.white.withOpacity(0.5),
             height: 50,

@@ -1,11 +1,11 @@
 import 'dart:async';
-
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:better_player/better_player.dart';
 import 'package:cinenexa/components/video_player_next_episode.dart';
 import 'package:cinenexa/models/local/show_history.dart';
+import 'package:cinenexa/services/local/torrent_streamer.dart';
 import 'package:cinenexa/services/network/utils.dart';
 import 'package:cinenexa/store/details/details_store.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +15,7 @@ import 'package:cinenexa/resources/strings.dart';
 import 'package:cinenexa/resources/style.dart';
 import 'package:cinenexa/utils/screen_size.dart';
 import 'package:cinenexa/widgets/custom_checkbox_list.dart';
+import 'package:glass/glass.dart';
 import 'package:provider/provider.dart';
 import 'package:video_cast/chrome_cast_media_type.dart';
 import 'package:video_cast/chrome_cast_subtitle.dart';
@@ -43,6 +44,7 @@ class VideoPlayerControls extends StatefulWidget {
   final DetailsStore? detailsStore;
   final bool? initialDark;
   final ShowHistory? showHistory;
+  final TorrentStreamer? torrentStreamer;
 
   final GlobalKey? playerKey;
 
@@ -64,6 +66,7 @@ class VideoPlayerControls extends StatefulWidget {
     this.detailsStore,
     this.initialDark,
     this.showHistory,
+    this.torrentStreamer,
   }) : super(key: key);
 
   @override
@@ -73,10 +76,13 @@ class VideoPlayerControls extends StatefulWidget {
 class _VideoPlayerControlsState extends State<VideoPlayerControls> {
   static const Duration hideDuration = Duration(seconds: 5);
 
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
   Timer? hideTimer;
   ScrobbleManager? scrobbleManager;
   late PlayerStore playerStore;
   ChromeCastController? chromeCastController;
+  Widget drawerWidget = Container();
 
   @override
   void initState() {
@@ -123,93 +129,112 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: _onBack,
-      child: Observer(
-        builder: (_) {
-          return GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            onTap: () {
-              playerStore.showControls
-                  ? _hideControls()
-                  : _cancelAndRestartTimer();
-            },
-            child: Observer(
-              builder: (context) {
-                playerStore.nextEp;
-                if (playerStore.showControls) {
-                  if (playerStore.locked) {
-                    return Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Align(
-                        alignment: Alignment.bottomCenter,
-                        child: _buildControlButton(
-                          icon: Icons.lock_outline_rounded,
-                          onTap: () {
-                            setState(() {
-                              playerStore.setLocked(false);
-                            });
-                          },
-                          size: 25,
-                          overlay: true,
+      child: Scaffold(
+        key: scaffoldKey,
+        drawerEnableOpenDragGesture: false,
+        endDrawerEnableOpenDragGesture: false,
+        endDrawer: Drawer(
+          backgroundColor: Colors.transparent,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: drawerWidget,
+          ),
+        ).asGlass(
+          blurX: 20,
+          blurY: 20,
+          clipBorderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
+        ),
+        backgroundColor: Colors.transparent,
+        body: Observer(
+          builder: (_) {
+            return GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () {
+                playerStore.showControls
+                    ? _hideControls()
+                    : _cancelAndRestartTimer();
+              },
+              child: Observer(
+                builder: (context) {
+                  playerStore.nextEp;
+                  if (playerStore.showControls) {
+                    if (playerStore.locked) {
+                      return Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Align(
+                          alignment: Alignment.bottomCenter,
+                          child: _buildControlButton(
+                            icon: Icons.lock_outline_rounded,
+                            onTap: () {
+                              setState(() {
+                                playerStore.setLocked(false);
+                              });
+                            },
+                            size: 25,
+                            overlay: true,
+                            text: Strings.locked,
+                          ),
                         ),
-                      ),
-                    );
-                  }
-                  return Stack(
-                    children: [
-                      Container(
-                        height: double.infinity,
-                        width: double.infinity,
-                        color: Colors.black54,
-                      ),
-                      LayoutBuilder(
-                        builder: (p0, p1) {
-                          if (playerStore.casting) {
-                            return Stack(
+                      );
+                    }
+                    return Stack(
+                      children: [
+                        Container(
+                          height: double.infinity,
+                          width: double.infinity,
+                          color: Colors.black54,
+                        ),
+                        LayoutBuilder(
+                          builder: (p0, p1) {
+                            if (playerStore.casting) {
+                              return Stack(
+                                children: [
+                                  Center(
+                                    child: Text("Casting on another device..."),
+                                  ),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      _buildTopPanel(),
+                                      _castingControls(),
+                                    ],
+                                  ),
+                                ],
+                              );
+                            }
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Center(
-                                  child: Text("Casting on another device..."),
-                                ),
+                                _buildTopPanel(),
+                                _buildMainControls(),
                                 Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    _buildTopPanel(),
-                                    _castingControls(),
+                                    _buildProgressBar(),
+                                    _buildBottomControls(),
                                   ],
                                 ),
                               ],
                             );
-                          }
-                          return Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              _buildTopPanel(),
-                              _buildMainControls(),
-                              Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  _buildProgressBar(),
-                                  _buildBottomControls(),
-                                ],
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                      _buildPopup(),
-                    ],
-                  );
-                }
-                return _buildPopup();
-              },
-            ),
-          );
-        },
+                          },
+                        ),
+                        _buildPopup(),
+                      ],
+                    );
+                  }
+                  return _buildPopup();
+                },
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -250,9 +275,13 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
     if (widget.initialDark != null && !widget.initialDark!)
       AdaptiveTheme.of(context).setLight();
     if (playerStore.casting) chromeCastController?.endSession();
+
     try {
       widget.controller.exitFullScreen();
     } catch (e) {}
+
+    widget.torrentStreamer?.stopStream();
+    widget.controller.exitFullScreen();
     await SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -427,7 +456,7 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
               widget.controller.seekTo(Duration());
             },
             size: 25,
-            overlay: true,
+            text: Strings.restart,
           ),
           Style.getVerticalHorizontalSpacing(context: context),
           _buildControlButton(
@@ -436,47 +465,36 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
               playerStore.setLocked(!playerStore.locked);
             },
             size: 25,
-            overlay: true,
+            text: Strings.lock,
           ),
           Style.getVerticalHorizontalSpacing(context: context),
           _buildControlButton(
             icon: Icons.closed_caption_off,
             onTap: () {
-              AwesomeDialog(
-                context: context,
-                dialogType: DialogType.noHeader,
-                width: ScreenSize.getPercentOfWidth(context, 0.7),
-                title: Strings.settings,
-                body: _buildSubtitlePopup(),
-                showCloseIcon: true,
-                padding: EdgeInsets.all(8),
-                animType: AnimType.bottomSlide,
-              ).show();
+              drawerWidget = _buildSubtitlePopup();
+              openDrawer();
             },
             size: 25,
-            overlay: true,
+            text: Strings.subtitle,
           ),
           Style.getVerticalHorizontalSpacing(context: context),
           _buildControlButton(
             icon: Icons.settings,
             onTap: () {
-              AwesomeDialog(
-                context: context,
-                width: ScreenSize.getPercentOfWidth(context, 0.7),
-                dialogType: DialogType.noHeader,
-                title: Strings.settings,
-                body: _buildSettingsPopup(),
-                showCloseIcon: true,
-                padding: EdgeInsets.all(8),
-                animType: AnimType.bottomSlide,
-              ).show();
+              drawerWidget = _buildSettingsPopup();
+              openDrawer();
             },
             size: 25,
-            overlay: true,
+            text: Strings.settings,
           ),
         ],
       ),
     );
+  }
+
+  void openDrawer() {
+    setState(() {});
+    scaffoldKey.currentState?.openEndDrawer();
   }
 
   Widget _buildSubtitlePopup() {
@@ -506,6 +524,7 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
       delegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 1,
         mainAxisExtent: 35,
+        mainAxisSpacing: 8,
       ),
       onSelectionAdded: (values) {
         if (values.first == Strings.none) {
@@ -550,8 +569,10 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
               type: CheckBoxListType.grid,
               singleSelect: true,
               delegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 8,
+                crossAxisCount: 3,
                 mainAxisExtent: 35,
+                mainAxisSpacing: 8,
+                crossAxisSpacing: 8,
               ),
               selectedItems: [playerStore.speedIndex],
               alwaysEnabled: true,
@@ -571,6 +592,8 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
               delegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
                 mainAxisExtent: 35,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
               ),
               singleSelect: true,
               selectedItems: [playerStore.fitIndex],
@@ -684,35 +707,33 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
     );
   }
 
-  Future<IconData> _playingIcon() async {
-    if (playerStore.casting) {
-      bool? playing = (await chromeCastController?.isPlaying());
-      if (playing != null && playing) {
-        return Icons.pause_rounded;
-      }
-      return Icons.play_arrow_rounded;
-    }
-    if (widget.controller.isPlaying()!) {
-      return Icons.pause_rounded;
-    }
-    return Icons.play_arrow_rounded;
-  }
-
   Widget _buildControlButton(
       {required IconData icon,
       required Function() onTap,
       double? size,
+      String? text,
       bool overlay = false}) {
-    return ClipOval(
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
       child: Material(
         color: overlay ? Colors.white.withOpacity(0.1) : Colors.transparent,
         child: InkWell(
           splashColor: Colors.white30,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Icon(
-              icon,
-              size: size ?? Style.iconSize,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  icon,
+                  size: size ?? Style.iconSize,
+                ),
+                if (text != null)
+                  SizedBox(
+                    width: 8,
+                  ),
+                if (text != null) Text(text),
+              ],
             ),
           ),
           onTap: onTap,

@@ -45,9 +45,10 @@ abstract class _ExtensionsStoreBase with Store {
     }
 
     database.watchInstalledExtensions().listen((event) async {
-      print("here");
       installedExtensions.clear();
-      installedExtensions.addAll(await database.getInstalledExtensions());
+      installedExtensions.addAll([
+        ...(await database.getInstalledExtensions()),
+      ]);
     });
   }
 

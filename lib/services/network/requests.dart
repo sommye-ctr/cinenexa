@@ -105,9 +105,7 @@ class Requests {
     SortTvBy? sortTvBy,
     SortMoviesBy? sortMoviesBy,
     int page = 1,
-    DateTime? releaseDateLessThan,
-    DateTime? releaseDateMoreThan,
-    DateTime? releaseDateEqual,
+    List<int>? releaseYears,
     int? voteAverageLessThan,
     int? voteAverageGreaterThan,
     List<Genre>? withGenres,
@@ -140,22 +138,11 @@ class Requests {
       queries.add('vote_average.lte=$voteAverageLessThan');
     }
 
-    String dateBase =
-        type == EntityType.movie ? "release_date" : "first_air_date";
-
-    if (releaseDateMoreThan != null) {
-      queries.add('$dateBase.gte=${releaseDateMoreThan.toIso8601String()}');
-    }
-
-    if (releaseDateLessThan != null) {
-      queries.add('$dateBase.lte=${releaseDateLessThan.toIso8601String()}');
-    }
-
     String yearBase = type == EntityType.movie
         ? "primary_release_year"
         : "first_air_date_year";
-    if (releaseDateEqual != null) {
-      queries.add('$yearBase=${releaseDateEqual.year}');
+    if (releaseYears != null) {
+      queries.add('$yearBase=${releaseYears.join("|")}');
     }
 
     if (withPeople != null) {

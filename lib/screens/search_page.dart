@@ -291,9 +291,15 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     if (searchStore.fetchItemsFuture.status == FutureStatus.fulfilled &&
         list.isEmpty) {
       return Center(
-        child: SvgPicture.asset(
-          Asset.notFound,
-          width: ScreenSize.getPercentOfWidth(context, 0.75),
+        child: Column(
+          children: [
+            SvgPicture.asset(
+              Asset.notFound,
+              width: ScreenSize.getPercentOfWidth(context, 0.75),
+            ),
+            Style.getVerticalSpacing(context: context),
+            Text(Strings.noResultsFound),
+          ],
         ),
       );
     }
@@ -343,9 +349,15 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     if (searchStore.fetchItemsFuture.status == FutureStatus.fulfilled &&
         list.isEmpty) {
       return Center(
-        child: SvgPicture.asset(
-          Asset.notFound,
-          width: ScreenSize.getPercentOfWidth(context, 0.75),
+        child: Column(
+          children: [
+            SvgPicture.asset(
+              Asset.notFound,
+              width: ScreenSize.getPercentOfWidth(context, 0.75),
+            ),
+            Style.getVerticalSpacing(context: context),
+            Text(Strings.noResultsFound),
+          ],
         ),
       );
     }

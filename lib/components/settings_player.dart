@@ -1,3 +1,4 @@
+import 'package:cinenexa/components/settings_subtitle_setting.dart';
 import 'package:cinenexa/utils/screen_size.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cinenexa/resources/strings.dart';
@@ -5,7 +6,6 @@ import 'package:cinenexa/resources/style.dart';
 import 'package:cinenexa/services/local/database.dart';
 import 'package:cinenexa/widgets/custom_checkbox_list.dart';
 import 'package:flutter/material.dart';
-import 'package:numberpicker/numberpicker.dart';
 
 class SettingsPlayer extends StatefulWidget {
   const SettingsPlayer({Key? key}) : super(key: key);
@@ -15,7 +15,7 @@ class SettingsPlayer extends StatefulWidget {
 }
 
 class _SettingsPlayerState extends State<SettingsPlayer> {
-  bool autoSubtitle = false, autoPlay = false;
+  bool autoPlay = false;
   int? seekDuration, nextEpDuration;
   int? defaultFit, maxCache;
 
@@ -29,7 +29,6 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
   }
 
   void _fetch() async {
-    autoSubtitle = await database.getAutoSelectSubtitle();
     seekDuration = await database.getSeekDuration();
     autoPlay = await database.getAutoPlay();
     defaultFit = await database.getDefaultFit();
@@ -49,19 +48,6 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
         Expanded(
           child: ListView(
             children: [
-              Style.getListTile(
-                context: context,
-                title: Strings.autoSelectSubtitle,
-                subtitle: Strings.autoSelectSubtitleSub,
-                trailing: CupertinoSwitch(
-                  value: autoSubtitle,
-                  onChanged: (value) async {
-                    autoSubtitle = value;
-                    await database.addAutoSelectSubtitle(value);
-                    setState(() {});
-                  },
-                ),
-              ),
               Style.getListTile(
                 context: context,
                 title: Strings.seekDuration,
@@ -230,7 +216,15 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                     ),
                   ],
                 ),
-              )
+              ),
+              Style.getListTile(
+                context: context,
+                title: Strings.subtitleSettings,
+                trailing: Icon(Icons.arrow_right_outlined),
+                onTap: () {
+                  Navigator.pushNamed(context, SubtitleSettings.routeName);
+                },
+              ),
             ],
           ),
         ),

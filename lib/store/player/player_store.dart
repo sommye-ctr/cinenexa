@@ -131,7 +131,7 @@ abstract class _PlayerStoreBase with Store {
   Future initSeek() async {
     controller.videoPlayerController!.seekTo(position);
     duration = controller.videoPlayerController!.value.duration!;
-    int seconds = (duration.inMilliseconds * progress!) ~/ 100;
+    int seconds = (duration.inMilliseconds * (progress ?? 0)) ~/ 100;
 
     await controller.play();
     await controller.seekTo(Duration(milliseconds: seconds));

@@ -36,6 +36,8 @@ class _DetailsMoreDetailsInfoState extends State<DetailsMoreDetailsInfo> {
       physics: BouncingScrollPhysics(),
       shrinkWrap: true,
       children: [
+        _buildTrailer(),
+        Style.getVerticalSpacing(context: context),
         Observer(
           builder: (_) => _buildList(
             Strings.cast,
@@ -56,8 +58,6 @@ class _DetailsMoreDetailsInfoState extends State<DetailsMoreDetailsInfo> {
             DetailsPage.routeName,
           ),
         ),
-        Style.getVerticalSpacing(context: context),
-        _buildTrailer(),
         Style.getVerticalSpacing(context: context),
       ],
     );

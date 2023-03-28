@@ -66,8 +66,18 @@ class Style {
   }
 
   static void showToast(
-      {required BuildContext context, required String text, bool? long}) {
-    Widget toast = Card(
+      {required BuildContext context,
+      required String text,
+      bool long = false}) {
+    Fluttertoast.showToast(
+      msg: text,
+      toastLength: long ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      fontSize: 16.0,
+    );
+
+    /* Widget toast = Card(
       elevation: 15,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
@@ -91,7 +101,7 @@ class Style {
           child: toast,
           gravity: ToastGravity.BOTTOM,
           toastDuration: Duration(seconds: long != null ? 4 : 2),
-        );
+        ); */
   }
 
   static Widget getChip(context, String text) {

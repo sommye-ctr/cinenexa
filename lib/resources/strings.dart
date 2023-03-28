@@ -233,9 +233,20 @@ class Strings {
   static const String autoPlayDurationSub =
       "Duration from the end of video, before which the popup should be shown";
 
+  static const String subtitle = "Subtitle";
+  static const String subtitleSettings = "Subtitle Settings";
+  static const String subtitlePreview = "Subtitles look like this";
+  static const String backGround = "Background";
+  static const String position = "Position";
+  static const String fontSize = "Font Size";
+
   //video player
   static const String playBackSpeed = "Playback Speed";
   static const String settings = "Settings";
+  static const String lock = "Lock";
+  static const String subtitles = "Subtitles";
+  static const String locked = "Locked";
+  static const String restart = "Restart";
   static const String none = "None";
   static const String tapToSee = "Tap to see";
   static const String castDevices = "Cast Devices";

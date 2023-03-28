@@ -20,6 +20,23 @@ class CustomCheckBox extends StatefulWidget {
 }
 
 class _CustomCheckBoxState extends State<CustomCheckBox> {
+  late bool value;
+  late Function() listener;
+
+  @override
+  void initState() {
+    if (mounted) {
+      value = widget.controller.value;
+      listener = () {
+        setState(() {
+          value = widget.controller.value;
+        });
+      };
+      widget.controller.addListener(listener);
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -27,37 +44,33 @@ class _CustomCheckBoxState extends State<CustomCheckBox> {
       splashColor: Theme.of(context).colorScheme.inverseSurface,
       focusColor: Theme.of(context).colorScheme.inverseSurface,
       onTap: () {
-        widget.controller.value = !widget.controller.value;
-        widget.onSelected?.call();
+        if (mounted) {
+          widget.controller.value = !widget.controller.value;
+          widget.onSelected?.call();
+        }
       },
-      child: ValueListenableBuilder(
-        valueListenable: widget.controller,
-        builder: (context, bool value, child) {
-          return Ink(
-            decoration: BoxDecoration(
-              color: value
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.surfaceVariant,
-              borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
+      child: Ink(
+        decoration: BoxDecoration(
+          color: value
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).colorScheme.surfaceVariant,
+          borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(4),
+          child: Center(
+            child: Text(
+              widget.text,
+              textAlign: TextAlign.center,
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(4),
-              child: Center(
-                child: Text(
-                  widget.text,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }
 
   @override
   void dispose() {
-    widget.controller.dispose();
     super.dispose();
   }
 }
