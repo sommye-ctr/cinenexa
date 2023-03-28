@@ -15,6 +15,7 @@ import '../models/network/extensions/extension_stream.dart';
 import '../models/network/movie.dart';
 import '../models/network/tv.dart';
 import '../resources/style.dart';
+import '../services/local/torrent_streamer.dart';
 
 class VideoPlayerPage extends StatefulWidget {
   static const routeName = "/videoPlayer";
