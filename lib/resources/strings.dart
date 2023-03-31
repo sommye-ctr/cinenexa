@@ -10,6 +10,7 @@ class Strings {
   static const String movie = "Movie";
   static const String show = "Show";
   static const String actor = "Actor";
+  static const String lists = "Lists";
   static const String all = "All";
   static const String moreInfo = "More Info";
   static const String unexpecedError = "Unexpected error occurred!";

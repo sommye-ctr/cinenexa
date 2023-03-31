@@ -2,6 +2,7 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:amplitude_flutter/amplitude.dart';
 import 'package:cinenexa/components/settings_subtitle_setting.dart';
 import 'package:cinenexa/screens/extension_config_page.dart';
+import 'package:cinenexa/screens/list_details_page.dart';
 import 'package:cinenexa/services/local/database.dart';
 import 'package:cinenexa/services/network/analytics.dart';
 import 'package:flutter/material.dart';
@@ -161,7 +162,12 @@ class _MyAppState extends State<MyApp> {
         return MaterialPageRoute(
           builder: (context) => HomeFirstScreen(),
         );
-
+      case ListDetailsPage.routeName:
+        return MaterialPageRoute(
+          builder: (context) => ListDetailsPage(
+            traktList: settings.arguments,
+          ),
+        );
       case SettingsPage.routeName:
         return MaterialPageRoute(
           builder: (context) => SettingsPage(

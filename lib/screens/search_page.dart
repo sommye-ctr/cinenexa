@@ -1,5 +1,7 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:avatar_glow/avatar_glow.dart';
+import 'package:cinenexa/components/trakt_list_tile.dart';
+import 'package:cinenexa/models/network/trakt/trakt_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -17,6 +19,7 @@ import '../components/search_result_tile.dart';
 import '../models/network/base_model.dart';
 import '../services/network/utils.dart';
 import 'details_page.dart';
+import 'list_details_page.dart';
 
 class SearchPage extends StatefulWidget {
   final Function({int? index})? onBack;
@@ -39,7 +42,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     searchStore = SearchStore();
     textEditingController = TextEditingController();
     focusNode = FocusNode();
-    tabController = TabController(length: 3, vsync: this);
+    tabController = TabController(length: 4, vsync: this);
     super.initState();
   }
 
@@ -240,6 +243,9 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     if (searchStore.searchType == SearchType.people) {
       return _buildActors();
     }
+    if (searchStore.searchType == SearchType.lists) {
+      return _buildLists();
+    }
     return _buildMoviesOrTv();
   }
 
@@ -248,7 +254,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       builder: (_) {
         if (searchStore.searchDone) {
           return DefaultTabController(
-            length: 3,
+            length: 4,
             child: TabBar(
               indicator: ShapeDecoration(
                 shape: RoundedRectangleBorder(
@@ -273,12 +279,57 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                 Tab(
                   text: Strings.actor,
                 ),
+                Tab(
+                  text: Strings.lists,
+                ),
               ],
             ),
           );
         }
         return Container();
       },
+    );
+  }
+
+  Widget _buildLists() {
+    if (searchStore.fetchListsFuture.status == FutureStatus.pending &&
+        searchStore.listResults.isEmpty) {
+      return CircularProgressIndicator();
+    }
+    List<TraktList> list = searchStore.listResults;
+    if (searchStore.fetchListsFuture.status == FutureStatus.fulfilled &&
+        list.isEmpty) {
+      return Center(
+        child: Column(
+          children: [
+            SvgPicture.asset(
+              Asset.notFound,
+              width: ScreenSize.getPercentOfWidth(context, 0.75),
+            ),
+            Style.getVerticalSpacing(context: context),
+            Text(Strings.noResultsFound),
+          ],
+        ),
+      );
+    }
+
+    return Expanded(
+      child: LazyLoadScrollView(
+        onEndOfPage: () => searchStore.onEndOfPageReached(),
+        child: ListView.builder(
+          itemCount: list.length,
+          itemBuilder: (context, index) {
+            return TraktListTile(
+              list: list[index],
+              onClick: () => Navigator.pushNamed(
+                context,
+                ListDetailsPage.routeName,
+                arguments: list[index],
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 
@@ -426,6 +477,8 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         tabController.animateTo(1);
         break;
       default:
+        searchStore.changeSearchType(SearchType.movie);
+        tabController.animateTo(0);
     }
 
     searchStore.searchClicked(baseModel.title!);
@@ -442,6 +495,8 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       case 2:
         searchStore.searchTypeChanged(SearchType.people);
         break;
+      case 3:
+        searchStore.searchTypeChanged(SearchType.lists);
     }
   }
 }

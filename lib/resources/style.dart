@@ -31,12 +31,12 @@ class Style {
     focusColor: Colors.black,
     scaffoldBackgroundColor: Color.fromARGB(255, 249, 246, 246),
     backgroundColor: Color.fromARGB(255, 249, 246, 246),
+    primaryColor: Colors.orange,
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: Colors.orange,
     ),
     colorScheme: ColorScheme.light(
-      background: Color.fromARGB(255, 249, 246, 246),
-    ),
+        background: Color.fromARGB(255, 249, 246, 246), primary: Colors.orange),
   );
 
   static TextStyle headingStyle = TextStyle(
@@ -50,12 +50,13 @@ class Style {
         focusColor: Colors.white,
         scaffoldBackgroundColor: Color.fromARGB(255, 27, 27, 27),
         backgroundColor: Color.fromARGB(255, 27, 27, 27),
+        primaryColor: Colors.orange,
         floatingActionButtonTheme: FloatingActionButtonThemeData(
           backgroundColor: Colors.orange,
         ),
         colorScheme: ColorScheme.dark(
-          background: Color.fromARGB(255, 27, 27, 27),
-        ),
+            background: Color.fromARGB(255, 27, 27, 27),
+            primary: Colors.orange),
       );
 
   static BottomNavigationBarItem getbottomNavItem(String label, IconData icon) {

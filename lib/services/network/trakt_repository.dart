@@ -14,8 +14,11 @@ import 'package:cinenexa/services/network/utils.dart';
 import 'package:cinenexa/utils/date_time_formatter.dart';
 
 import '../../models/network/enums/entity_type.dart';
+import '../../models/network/trakt/trakt_list.dart';
 import '../../models/network/tv.dart';
 import '../constants.dart';
+
+import 'package:http/http.dart' as https;
 
 class TraktRepository {
   final OAuth2Helper helper;
@@ -88,6 +91,64 @@ class TraktRepository {
       basemodels.add(BaseModel.fromTv(tv));
     });
     return basemodels;
+  }
+
+  /// doesnt require trakt login
+  Future<List<TraktList>> getSearchList(
+      {required String searchTerm, int page = 1}) async {
+    Response response = await https.get(
+      Uri.parse(
+          "https://api.trakt.tv/search/list?query=$searchTerm&page=$page"),
+      headers: {
+        "Content-type": "application/json",
+        "trakt-api-key": Constants.traktApi,
+        "trakt-api-version": "2",
+      },
+    );
+
+    List<TraktList> items = [];
+
+    if (response.statusCode == 200) {
+      List list = Utils.parseJson(response.body);
+
+      for (var element in list) {
+        items.add(TraktList.fromMap(element));
+      }
+    }
+    return items;
+  }
+
+  Future<List<BaseModel>> getListItems({
+    required int listId,
+    int page = 1,
+  }) async {
+    Response response = await https.get(
+      Uri.parse(
+          "https://api.trakt.tv/lists/$listId/items/movie,show?page=$page&limit=15"),
+      headers: {
+        "Content-type": "application/json",
+        "trakt-api-key": Constants.traktApi,
+        "trakt-api-version": "2",
+      },
+    );
+
+    List list = Utils.parseJson(response.body);
+    List<BaseModel> baseModels = [];
+
+    await Future.forEach(list, (element) async {
+      element as Map;
+      if (element['type'] == "movie") {
+        Movie movie = await Repository.getMovieDetails(
+            id: (element)['movie']['ids']['tmdb']);
+        baseModels.add(BaseModel.fromMovie(movie));
+        return;
+      }
+      Tv tv = await Repository.getTvDetails(
+        id: (element)['show']['ids']['tmdb'],
+      );
+      baseModels.add(BaseModel.fromTv(tv));
+    });
+    return baseModels;
   }
 
   Future<List<TraktProgress>> getUserProgress() async {
