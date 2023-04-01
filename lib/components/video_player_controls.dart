@@ -655,56 +655,64 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
 
   Widget _buildMainControls() {
     int interval = playerStore.seekDuration == 30 ? 30 : 10;
-    return Align(
-      alignment: Alignment.center,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildControlButton(
-            icon: playerStore.seekDuration == 30
-                ? Icons.replay_30_rounded
-                : Icons.replay_10_rounded,
-            onTap: () {
-              Duration rewind = Duration(
-                seconds: playerStore.position.inSeconds - interval,
-              );
+    return Observer(builder: (_) {
+      if (playerStore.buffering) {
+        hideTimer?.cancel();
+      }
 
-              widget.controller.seekTo(rewind);
-            },
-          ),
-          _buildControlButton(
-            icon: widget.controller.isPlaying()!
-                ? Icons.pause_rounded
-                : Icons.play_arrow_rounded,
-            onTap: () {
-              setState(() {
-                widget.controller.isPlaying()!
-                    ? widget.controller.pause()
-                    : widget.controller.play();
-              });
-            },
-          ),
-          _buildControlButton(
-            icon: playerStore.seekDuration == 30
-                ? Icons.forward_30_rounded
-                : Icons.forward_10_rounded,
-            onTap: () {
-              Duration forward = Duration(
-                seconds: playerStore.position.inSeconds + interval,
-              );
+      return Align(
+        alignment: Alignment.center,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildControlButton(
+              icon: playerStore.seekDuration == 30
+                  ? Icons.replay_30_rounded
+                  : Icons.replay_10_rounded,
+              onTap: () {
+                Duration rewind = Duration(
+                  seconds: playerStore.position.inSeconds - interval,
+                );
 
-              if (forward >
-                  widget.controller.videoPlayerController!.value.duration!) {
-                widget.controller.seekTo(Duration(seconds: 0));
-              } else {
-                widget.controller.seekTo(forward);
-              }
-            },
-          ),
-        ],
-      ),
-    );
+                widget.controller.seekTo(rewind);
+              },
+            ),
+            if (playerStore.buffering) CircularProgressIndicator(),
+            if (!playerStore.buffering)
+              _buildControlButton(
+                icon: widget.controller.isPlaying()!
+                    ? Icons.pause_rounded
+                    : Icons.play_arrow_rounded,
+                onTap: () {
+                  setState(() {
+                    widget.controller.isPlaying()!
+                        ? widget.controller.pause()
+                        : widget.controller.play();
+                  });
+                },
+              ),
+            _buildControlButton(
+              icon: playerStore.seekDuration == 30
+                  ? Icons.forward_30_rounded
+                  : Icons.forward_10_rounded,
+              onTap: () {
+                Duration forward = Duration(
+                  seconds: playerStore.position.inSeconds + interval,
+                );
+
+                if (forward >
+                    widget.controller.videoPlayerController!.value.duration!) {
+                  widget.controller.seekTo(Duration(seconds: 0));
+                } else {
+                  widget.controller.seekTo(forward);
+                }
+              },
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   Widget _buildControlButton(

@@ -100,9 +100,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
             child: Text(errorMessage ?? "The player encountered an error"),
           );
         },
-        placeholder: Center(
-          child: CircularProgressIndicator(),
-        ),
         deviceOrientationsOnFullScreen: [
           DeviceOrientation.landscapeLeft,
           DeviceOrientation.landscapeRight
