@@ -3,8 +3,6 @@ import 'dart:async';
 import 'package:mobx/mobx.dart';
 import 'package:cinenexa/models/network/extensions/extension_stream.dart';
 import 'package:cinenexa/models/network/review.dart';
-import 'package:cinenexa/models/network/trakt/trakt_show_history_season.dart';
-import 'package:cinenexa/models/network/trakt/trakt_show_history_season_ep.dart';
 import 'package:cinenexa/models/network/watch_provider.dart';
 import 'package:cinenexa/services/local/database.dart';
 import 'package:cinenexa/services/network/requests.dart';

@@ -188,7 +188,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Theme.of(context).colorScheme.background,
+      color: Colors.black,
       child: Container(
         child: Padding(
           padding: const EdgeInsets.all(8.0),

@@ -91,6 +91,9 @@ abstract class _PlayerStoreBase with Store {
           initSeek();
           break;
         case BetterPlayerEventType.progress:
+          if (buffering == true) {
+            setBuffering(false);
+          }
           setBuffered(
               controller.videoPlayerController!.value.buffered.first.end);
           setPosition(controller.videoPlayerController!.value.position);

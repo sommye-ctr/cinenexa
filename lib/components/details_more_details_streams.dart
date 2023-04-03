@@ -7,7 +7,6 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
-import 'package:lottie/lottie.dart';
 import 'package:cinenexa/models/network/extensions/extension_stream.dart';
 import 'package:cinenexa/resources/asset.dart';
 import 'package:cinenexa/screens/youtube_video_player.dart';

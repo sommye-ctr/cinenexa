@@ -16,6 +16,7 @@ import 'package:cinenexa/models/network/trakt/trakt_show_history_season_ep.dart'
 import 'package:cinenexa/utils/date_time_formatter.dart';
 
 import '../../models/network/trakt/trakt_progress.dart';
+import '../../utils/show_episodes_utils.dart';
 
 class Database {
   static const String _TRAKT_LOGGED_IN = "TRAKT_LOGGED_IN";
@@ -458,7 +459,7 @@ class Database {
   }
 
   Future updateShowHistory({required ShowHistory item}) async {
-    Map map = _calculateLastWatchedEp(item.seasons!);
+    Map map = ShowEpisodesUtils.calculateLastWatchedEp(item.seasons!);
     item = item
       ..lastWatched = map['ep']
       ..lastWatchedSeason = map['seasonNo'];
@@ -484,7 +485,7 @@ class Database {
     }
 
     for (var element in items) {
-      Map map = _calculateLastWatchedEp(element.seasons!);
+      Map map = ShowEpisodesUtils.calculateLastWatchedEp(element.seasons!);
       element = element
         ..lastWatched = map['ep']
         ..lastWatchedSeason = map['seasonNo'];
@@ -626,33 +627,5 @@ class Database {
     }
     await Future.wait(futures);
     return showHistory;
-  }
-
-  Map _calculateLastWatchedEp(List<TraktShowHistorySeason> items) {
-    Map<int, TraktShowHistorySeasonEp> latestEps = {};
-
-    for (var season in items) {
-      latestEps.putIfAbsent(
-          season.number!,
-          () => season.episodes!.reduce((value, element) {
-                DateTime valueDate =
-                    DateTimeFormatter.parseDate(value.lastWatchedAt)!;
-                DateTime elementDate =
-                    DateTimeFormatter.parseDate(element.lastWatchedAt)!;
-                return valueDate.compareTo(elementDate) > 0 ? value : element;
-              }));
-    }
-    TraktShowHistorySeasonEp t = latestEps.values.reduce((value, element) {
-      return DateTimeFormatter.parseDate(value.lastWatchedAt)!
-              .isAfter(DateTimeFormatter.parseDate(element.lastWatchedAt)!)
-          ? value
-          : element;
-    });
-
-    return {
-      "ep": t,
-      "seasonNo":
-          latestEps.keys.firstWhere((element) => latestEps[element] == t),
-    };
   }
 }

@@ -8,6 +8,7 @@ import 'package:cinenexa/models/local/show_history.dart';
 import 'package:cinenexa/services/local/torrent_streamer.dart';
 import 'package:cinenexa/services/network/utils.dart';
 import 'package:cinenexa/store/details/details_store.dart';
+import 'package:cinenexa/utils/show_episodes_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -25,10 +26,13 @@ import '../models/local/progress.dart';
 import '../models/network/base_model.dart';
 import '../models/network/extensions/extension_stream.dart';
 import '../models/network/movie.dart';
+import '../models/network/trakt/trakt_show_history_season.dart';
+import '../models/network/trakt/trakt_show_history_season_ep.dart';
 import '../models/network/tv.dart';
 import '../services/local/scrobble_manager.dart';
 import '../store/player/player_store.dart';
 import '../store/user/user_store.dart';
+import 'details_episode_tile.dart';
 
 class VideoPlayerControls extends StatefulWidget {
   final BetterPlayerController controller;
@@ -281,7 +285,6 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
     } catch (e) {}
 
     widget.torrentStreamer?.stopStream();
-    widget.controller.exitFullScreen();
     await SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -344,46 +347,115 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
               _buildTitle(),
             ],
           ),
-          ChromeCastButton(
-            onButtonCreated: (controller) {
-              chromeCastController = controller;
-              chromeCastController?.addSessionListener();
-            },
-            onSessionStarted: () {
-              playerStore.setCasting(true);
-              widget.controller.pause();
-              chromeCastController?.loadMedia(
-                type: widget.baseModel!.type == BaseModelType.movie
-                    ? ChromeCastMediaType.movie
-                    : ChromeCastMediaType.show,
-                url: widget.controller.betterPlayerDataSource!.url,
-                title: widget.baseModel!.title!,
-                autoplay: true,
-                image: Utils.getPosterUrl(widget.baseModel!.posterPath!),
-                position: playerStore.position.inMilliseconds.toDouble(),
-                showEpisode: widget.episode,
-                showSeason: widget.season,
-                subtitles: _getCastSubtitles(),
-              );
-              playerStore.setShowControls(false);
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (widget.baseModel?.type == BaseModelType.tv)
+                IconButton(
+                  onPressed: () => _showEpisodes(),
+                  iconSize: 30,
+                  icon: Icon(Icons.list_rounded),
+                ),
+              SizedBox(
+                width: 8,
+              ),
+              ChromeCastButton(
+                onButtonCreated: (controller) {
+                  chromeCastController = controller;
+                  chromeCastController?.addSessionListener();
+                },
+                onSessionStarted: () {
+                  playerStore.setCasting(true);
+                  widget.controller.pause();
+                  chromeCastController?.loadMedia(
+                    type: widget.baseModel!.type == BaseModelType.movie
+                        ? ChromeCastMediaType.movie
+                        : ChromeCastMediaType.show,
+                    url: widget.controller.betterPlayerDataSource!.url,
+                    title: widget.baseModel!.title!,
+                    autoplay: true,
+                    image: Utils.getPosterUrl(widget.baseModel!.posterPath!),
+                    position: playerStore.position.inMilliseconds.toDouble(),
+                    showEpisode: widget.episode,
+                    showSeason: widget.season,
+                    subtitles: _getCastSubtitles(),
+                  );
+                  playerStore.setShowControls(false);
 
-              if (playerStore.selectedSubtitle != null) {
-                chromeCastController?.setTrack(
-                    subId: playerStore.selectedSubtitle!.toDouble());
-              }
-            },
-            onSessionEnding: (position) {
-              playerStore.setCasting(false);
-              scrobbleManager?.paused();
-              if (position != null)
-                widget.controller.seekTo(Duration(milliseconds: position));
+                  if (playerStore.selectedSubtitle != null) {
+                    chromeCastController?.setTrack(
+                        subId: playerStore.selectedSubtitle!.toDouble());
+                  }
+                },
+                onSessionEnding: (position) {
+                  playerStore.setCasting(false);
+                  scrobbleManager?.paused();
+                  if (position != null)
+                    widget.controller.seekTo(Duration(milliseconds: position));
 
-              widget.controller.play();
-            },
+                  widget.controller.play();
+                },
+              ),
+            ],
           ),
         ],
       ),
     );
+  }
+
+  void _showEpisodes() {
+    drawerWidget = ListView.builder(
+      shrinkWrap: true,
+      itemCount: widget.detailsStore?.episodes.length,
+      itemBuilder: (context, index) {
+        bool? watched = false;
+
+        Iterable<TraktShowHistorySeason>? iterable =
+            widget.detailsStore!.showHistory?.seasons?.where(
+          (element) =>
+              element.number ==
+              widget.detailsStore!.tv!
+                  .seasons![widget.detailsStore!.chosenSeason!].seasonNumber,
+        );
+        if (iterable != null && iterable.isNotEmpty) {
+          TraktShowHistorySeason? historySeason = iterable.elementAt(0);
+          Iterable<TraktShowHistorySeasonEp>? list = historySeason.episodes
+              ?.where((element) =>
+                  element.number ==
+                  widget.detailsStore!.episodes[index].episodeNumber);
+          watched = list != null && list.isNotEmpty;
+        }
+
+        return EpisodeTile(
+          episode: widget.detailsStore!.episodes[index],
+          watched: watched,
+          widthPercent: 0.1,
+          showMoreInfo: false,
+          onTap: () async {
+            widget.detailsStore!.onEpBackClicked();
+            widget.detailsStore!.onEpiodeClicked(index);
+            widget.detailsStore!.fetchStreams();
+
+            scrobbleManager?.exit();
+            if (widget.initialDark != null && !widget.initialDark!)
+              AdaptiveTheme.of(context).setLight();
+            if (playerStore.casting) chromeCastController?.endSession();
+
+            try {
+              widget.controller.exitFullScreen();
+            } catch (e) {}
+
+            widget.torrentStreamer?.stopStream();
+            await SystemChrome.setPreferredOrientations([
+              DeviceOrientation.portraitUp,
+              DeviceOrientation.portraitDown,
+            ]);
+            Navigator.pop(context);
+          },
+        );
+      },
+    );
+    openDrawer();
   }
 
   List<ChromeCastSubtitle> _getCastSubtitles() {
@@ -458,7 +530,7 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
             size: 25,
             text: Strings.restart,
           ),
-          Style.getVerticalHorizontalSpacing(context: context),
+          Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
           _buildControlButton(
             icon: Icons.lock_open_rounded,
             onTap: () {
@@ -467,7 +539,7 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
             size: 25,
             text: Strings.lock,
           ),
-          Style.getVerticalHorizontalSpacing(context: context),
+          Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
           _buildControlButton(
             icon: Icons.closed_caption_off,
             onTap: () {
@@ -477,7 +549,7 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
             size: 25,
             text: Strings.subtitle,
           ),
-          Style.getVerticalHorizontalSpacing(context: context),
+          Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
           _buildControlButton(
             icon: Icons.settings,
             onTap: () {
@@ -487,6 +559,14 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
             size: 25,
             text: Strings.settings,
           ),
+          Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
+          if (widget.baseModel?.type == BaseModelType.tv)
+            _buildControlButton(
+              icon: Icons.skip_next_rounded,
+              onTap: () {},
+              size: 25,
+              text: "Next",
+            ),
         ],
       ),
     );
@@ -738,7 +818,7 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
                 ),
                 if (text != null)
                   SizedBox(
-                    width: 8,
+                    width: 4,
                   ),
                 if (text != null) Text(text),
               ],
