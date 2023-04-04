@@ -5,7 +5,9 @@ import 'package:cinenexa/services/network/utils.dart';
 import 'package:cinenexa/utils/screen_size.dart';
 import 'package:cinenexa/widgets/rounded_image.dart';
 
+import '../resources/strings.dart';
 import '../resources/style.dart';
+import '../utils/date_time_formatter.dart';
 
 class SearchResultTile extends StatelessWidget {
   final String image, year, overview, title, type;
@@ -28,17 +30,17 @@ class SearchResultTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onClick,
-      child: Container(
-        width: ScreenSize.getPercentOfWidth(context, 0.8),
-        height: ScreenSize.getPercentOfWidth(context, 0.22) /
-            Constants.posterAspectRatio,
-        child: Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
-          ),
-          elevation: 0,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 4,
+          vertical: 6,
+        ),
+        child: Container(
+          height: ScreenSize.getPercentOfWidth(context, 0.22) /
+              Constants.posterAspectRatio,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
               RoundedImage(
                 image: Utils.getPosterUrl(image),
@@ -47,12 +49,11 @@ class SearchResultTile extends StatelessWidget {
                 radius: Style.smallRoundEdgeRadius,
               ),
               SizedBox(
-                width: ScreenSize.getPercentOfWidth(context, 0.01),
+                width: 12,
               ),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -63,6 +64,30 @@ class SearchResultTile extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    type == Strings.movie
+                                        ? Icons.movie_creation_outlined
+                                        : Icons.live_tv_rounded,
+                                    size: 20,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
+                                  SizedBox(
+                                    width: 2,
+                                  ),
+                                  Text(
+                                    "${DateTimeFormatter.getYearFromString(year)}",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
+                                  ),
+                                ],
+                              ),
                               Text(
                                 title,
                                 overflow: TextOverflow.ellipsis,
@@ -70,28 +95,16 @@ class SearchResultTile extends StatelessWidget {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              Text(
-                                "($year)",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                ),
+                              SizedBox(
+                                height: 8,
                               ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(
-                                    Style.smallRoundEdgeRadius,
-                                  ),
-                                  color: typeColor,
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(2),
-                                  child: Text(
-                                    "$type",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                    ),
-                                  ),
+                              Text(
+                                "$overview",
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey,
                                 ),
                               ),
                             ],
@@ -109,13 +122,6 @@ class SearchResultTile extends StatelessWidget {
                             ),
                           ),
                       ],
-                    ),
-                    Text(
-                      "$overview",
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 13,
-                      ),
                     ),
                   ],
                 ),

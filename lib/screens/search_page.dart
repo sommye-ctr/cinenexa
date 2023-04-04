@@ -359,9 +359,10 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         onEndOfPage: () {
           searchStore.onEndOfPageReached();
         },
-        child: ListView.builder(
+        child: ListView.separated(
           physics: BouncingScrollPhysics(),
           itemCount: list.length,
+          separatorBuilder: (context, index) => Divider(),
           itemBuilder: (context, index) {
             BaseModel baseModel = list[index];
             return SearchResultTile(

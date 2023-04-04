@@ -33,89 +33,85 @@ class EpisodeTile extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: ScreenSize.getPercentOfWidth(context, widthPercent ?? 0.99),
-        child: Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 4,
+            vertical: 8,
           ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    if (showMoreInfo)
-                      RoundedImage(
-                        image: Utils.getStillUrl(episode.stillPath),
-                        width: ScreenSize.getPercentOfWidth(context,
-                            widthPercent == null ? 0.3 : widthPercent! / 3),
-                        ratio: Constants.stillAspectRatio,
-                        radius: Style.smallRoundEdgeRadius,
-                      ),
-                    if (showMoreInfo)
-                      SizedBox(
-                        width: ScreenSize.getPercentOfWidth(context, 0.01),
-                      ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "${episode.episodeNumber}. ${episode.name}",
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "${DateTimeFormatter.getDateMonthYearFromString(
-                                      episode.airDate,
-                                    )}",
-                                    style: TextStyle(
-                                        color: Theme.of(context).hintColor),
-                                  ),
-                                  Text(
-                                    "${episode.runtime} minutes",
-                                    style: TextStyle(
-                                        color: Theme.of(context).hintColor),
-                                  ),
-                                ],
-                              ),
-                              if (watched)
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                      right: ScreenSize.getPercentOfWidth(
-                                          context, 0.01)),
-                                  child: Icon(
-                                    Icons.check_box_rounded,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ],
-                      ),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  if (showMoreInfo)
+                    RoundedImage(
+                      image: Utils.getStillUrl(episode.stillPath),
+                      width: ScreenSize.getPercentOfWidth(context,
+                          widthPercent == null ? 0.3 : widthPercent! / 3),
+                      ratio: Constants.stillAspectRatio,
+                      radius: Style.smallRoundEdgeRadius,
                     ),
-                  ],
-                ),
-                SizedBox(
-                  height: ScreenSize.getPercentOfHeight(context, 0.01),
-                ),
-                if (showMoreInfo)
-                  Text(
-                    episode.overview,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Theme.of(context).hintColor),
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
+                  if (showMoreInfo)
+                    SizedBox(
+                      width: ScreenSize.getPercentOfWidth(context, 0.01),
+                    ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "${episode.episodeNumber}. ${episode.name}",
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "${DateTimeFormatter.getDateMonthYearFromString(
+                                    episode.airDate,
+                                  )}",
+                                  style: TextStyle(
+                                      color: Theme.of(context).hintColor),
+                                ),
+                                Text(
+                                  "${episode.runtime} minutes",
+                                  style: TextStyle(
+                                      color: Theme.of(context).hintColor),
+                                ),
+                              ],
+                            ),
+                            if (watched)
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  right: 8,
+                                ),
+                                child: Icon(
+                                  Icons.check_box_rounded,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-              ],
-            ),
+                ],
+              ),
+              SizedBox(
+                height: ScreenSize.getPercentOfHeight(context, 0.01),
+              ),
+              if (showMoreInfo)
+                Text(
+                  episode.overview,
+                  style: TextStyle(color: Theme.of(context).hintColor),
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                ),
+            ],
           ),
         ),
       ),

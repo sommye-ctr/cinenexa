@@ -319,10 +319,13 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
         builder: (context1) {
           widget.detailsStore.showHistory;
 
-          return ListView.builder(
+          return ListView.separated(
             shrinkWrap: true,
             itemCount: widget.detailsStore.episodes.length,
             physics: ClampingScrollPhysics(),
+            separatorBuilder: (context, index) {
+              return Divider();
+            },
             itemBuilder: _buildEpisodeTile,
           );
         },
