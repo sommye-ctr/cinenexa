@@ -379,6 +379,17 @@ mixin _$DetailsStore on _DetailsStore, Store {
   }
 
   @override
+  void cancelStreams() {
+    final _$actionInfo = _$_DetailsStoreActionController.startAction(
+        name: '_DetailsStore.cancelStreams');
+    try {
+      return super.cancelStreams();
+    } finally {
+      _$_DetailsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   Future<List<TvEpisode>> onSeasonChanged(int index) {
     final _$actionInfo = _$_DetailsStoreActionController.startAction(
         name: '_DetailsStore.onSeasonChanged');

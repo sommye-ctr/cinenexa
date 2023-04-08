@@ -5,6 +5,7 @@ import 'package:cinenexa/screens/extension_config_page.dart';
 import 'package:cinenexa/screens/list_details_page.dart';
 import 'package:cinenexa/services/local/database.dart';
 import 'package:cinenexa/services/network/analytics.dart';
+import 'package:cinenexa/store/watchlist/watchlist_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -38,6 +39,7 @@ import 'package:cinenexa/store/extensions/extensions_store.dart';
 import 'package:cinenexa/store/favorites/favorites_store.dart';
 import 'package:cinenexa/store/user/user_store.dart';
 
+import 'models/local/lists.dart';
 import 'models/network/base_model.dart';
 
 void main() async {
@@ -67,6 +69,7 @@ void main() async {
       ShowHistorySchema,
       LastActivitiesSchema,
       InstalledExtensionsSchema,
+      ListsSchema,
     ],
     directory: (await getApplicationSupportDirectory()).path,
   );
@@ -105,6 +108,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     FavoritesStore favoritesStore = FavoritesStore();
+    WatchListStore watchListStore = WatchListStore();
     Widget homeWidget;
 
     if (Supabase.instance.client.auth.currentUser != null ||
@@ -120,10 +124,16 @@ class _MyAppState extends State<MyApp> {
       providers: [
         Provider.Provider(create: (_) => favoritesStore),
         Provider.Provider(
-          create: (_) => UserStore(favoritesStore: favoritesStore),
+          create: (_) => UserStore(
+            favoritesStore: favoritesStore,
+            watchListsStore: watchListStore,
+          ),
         ),
         Provider.Provider(
           create: (_) => ExtensionsStore(),
+        ),
+        Provider.Provider(
+          create: (_) => watchListStore,
         ),
       ],
       child: AdaptiveTheme(
@@ -165,7 +175,8 @@ class _MyAppState extends State<MyApp> {
       case ListDetailsPage.routeName:
         return MaterialPageRoute(
           builder: (context) => ListDetailsPage(
-            traktList: settings.arguments,
+            traktList: settings.arguments['list'],
+            isPersonal: settings.arguments['personal'] ?? false,
           ),
         );
       case SettingsPage.routeName:

@@ -13,4 +13,6 @@ class LastActivities {
   DateTime? epCollectedAt;
 
   DateTime? extensionsSyncedAt;
+
+  DateTime? listsUpdatedAt;
 }

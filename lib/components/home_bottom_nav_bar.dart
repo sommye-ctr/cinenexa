@@ -63,8 +63,7 @@ class _HomeBottomNavBarState extends State<HomeBottomNavBar> {
               onTap: onBottomNavChanged,
               items: [
                 Style.getbottomNavItem(Strings.home, Icons.home_rounded),
-                Style.getbottomNavItem(
-                    Strings.extensions, Icons.extension_rounded),
+                Style.getbottomNavItem(Strings.lists, Icons.list_alt_rounded),
                 Style.getbottomNavItem(Strings.search, Icons.search_rounded),
                 Style.getbottomNavItem(Strings.profile, Icons.person_rounded),
               ],

@@ -1,7 +1,10 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:cinenexa/models/local/lists_basemodel.dart';
 import 'package:cinenexa/models/network/base_model.dart';
+
+import '../../local/lists.dart';
 
 class TraktList {
   final String name;
@@ -72,6 +75,18 @@ class TraktList {
     );
   }
 
+  factory TraktList.fromPersonalMap(Map<String, dynamic> map) {
+    return TraktList(
+      name: map['name'] as String,
+      desc: map['description'] as String,
+      itemCount: map['item_count'] as int,
+      likes: map['likes'] as int,
+      traktId: map['ids']['trakt'] as int,
+      userName: map['user']['username'] as String,
+      createdAt: DateTime.parse(map['created_at'] as String),
+    );
+  }
+
   String toJson() => json.encode(toMap());
 
   factory TraktList.fromJson(String source) =>
@@ -104,5 +119,19 @@ class TraktList {
         traktId.hashCode ^
         userName.hashCode ^
         createdAt.hashCode;
+  }
+}
+
+extension TraktListConverter on TraktList {
+  Lists getList() {
+    return Lists()
+      ..createdAt = createdAt
+      ..desc = desc
+      ..id = traktId
+      ..itemCount = itemCount
+      ..items = items.map((e) => e.getListBaseModel()).toList()
+      ..likes = likes
+      ..name = name
+      ..userName = userName;
   }
 }

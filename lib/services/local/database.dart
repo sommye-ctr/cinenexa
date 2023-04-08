@@ -1,3 +1,4 @@
+import 'package:cinenexa/models/local/lists.dart';
 import 'package:cinenexa/models/network/tv.dart';
 import 'package:cinenexa/services/network/trakt_repository.dart';
 import 'package:country_picker/country_picker.dart';
@@ -13,8 +14,8 @@ import 'package:cinenexa/models/network/base_model.dart';
 import 'package:cinenexa/models/network/extensions/extension.dart';
 import 'package:cinenexa/models/network/trakt/trakt_show_history_season.dart';
 import 'package:cinenexa/models/network/trakt/trakt_show_history_season_ep.dart';
-import 'package:cinenexa/utils/date_time_formatter.dart';
 
+import '../../models/network/trakt/trakt_list.dart';
 import '../../models/network/trakt/trakt_progress.dart';
 import '../../utils/show_episodes_utils.dart';
 
@@ -627,5 +628,18 @@ class Database {
     }
     await Future.wait(futures);
     return showHistory;
+  }
+
+  Future<List<TraktList>> getLists() async {
+    return (await isar.lists.where().findAll())
+        .map((e) => e.getTraktList())
+        .toList();
+  }
+
+  Future updateLists({required List<TraktList> lists}) async {
+    await isar.writeTxn(() async {
+      await isar.lists.clear();
+      await isar.lists.putAll(lists.map((e) => e.getList()).toList());
+    });
   }
 }

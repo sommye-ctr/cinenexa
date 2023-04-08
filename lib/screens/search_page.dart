@@ -316,15 +316,16 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     return Expanded(
       child: LazyLoadScrollView(
         onEndOfPage: () => searchStore.onEndOfPageReached(),
-        child: ListView.builder(
+        child: ListView.separated(
           itemCount: list.length,
+          separatorBuilder: (context, index) => Divider(),
           itemBuilder: (context, index) {
             return TraktListTile(
               list: list[index],
               onClick: () => Navigator.pushNamed(
                 context,
                 ListDetailsPage.routeName,
-                arguments: list[index],
+                arguments: {"list": list[index]},
               ),
             );
           },

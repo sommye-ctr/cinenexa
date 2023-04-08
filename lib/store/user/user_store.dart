@@ -12,6 +12,8 @@ import 'package:cinenexa/services/local/database.dart';
 import 'package:cinenexa/services/network/trakt_oauth_client.dart';
 import 'package:cinenexa/services/network/trakt_repository.dart';
 import 'package:cinenexa/store/favorites/favorites_store.dart';
+
+import '../watchlist/watchlist_store.dart';
 part 'user_store.g.dart';
 
 class UserStore = _UserStoreBase with _$UserStore;
@@ -43,15 +45,17 @@ abstract class _UserStoreBase with Store {
   bool traktStatus = false;
   bool guestLogin = false;
 
-  _UserStoreBase({FavoritesStore? favoritesStore}) {
-    init(favoritesStore: favoritesStore);
+  _UserStoreBase(
+      {FavoritesStore? favoritesStore, WatchListStore? watchListsStore}) {
+    init(favoritesStore: favoritesStore, watchListsStore: watchListsStore);
     localDb.watchProgress().listen((event) {
       fetchUserProgress(fromApi: false);
     });
   }
 
   @action
-  Future init({FavoritesStore? favoritesStore}) async {
+  Future init(
+      {FavoritesStore? favoritesStore, WatchListStore? watchListsStore}) async {
     traktStatus = await localDb.getUserTraktStatus();
     guestLogin = await localDb.getGuestSignupStatus();
 
@@ -93,6 +97,14 @@ abstract class _UserStoreBase with Store {
         } else {
           listFutures.add(favoritesStore?.fetchFavorites() ?? Future.value());
         }
+
+        if ((lastActivities.listsUpdatedAt ?? DateTime.now())
+            .isAfter(localLast.listsUpdatedAt ?? DateTime.now())) {
+          listFutures.add(watchListsStore?.fetchWatchLists(fromApi: true) ??
+              Future.value());
+        } else {
+          listFutures.add(watchListsStore?.fetchWatchLists() ?? Future.value());
+        }
       } else {
         futures.addAll([
           fetchUserWatchedShows(
@@ -101,6 +113,7 @@ abstract class _UserStoreBase with Store {
             fromApi: true,
           ),
           favoritesStore?.fetchFavorites(fromApi: true),
+          watchListsStore?.fetchWatchLists(fromApi: true),
         ]);
       }
       Future.wait(listFutures).whenComplete(() => localDb.addLastActivities(
@@ -108,6 +121,7 @@ abstract class _UserStoreBase with Store {
             ..extensionsSyncedAt = localLast?.extensionsSyncedAt));
     } else {
       favoritesStore?.fetchFavorites(fromApi: false);
+      watchListsStore?.fetchWatchLists(fromApi: false);
     }
   }
 

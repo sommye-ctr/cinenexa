@@ -1,3 +1,4 @@
+import 'package:cinenexa/screens/watchlist_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cinenexa/screens/extensions_page.dart';
 import 'package:cinenexa/screens/home_page.dart';
@@ -38,7 +39,7 @@ class _HomeFirstScreenState extends State<HomeFirstScreen> {
                       _changeBottomNavIndex(1);
                     },
                   ),
-                  ExtensionsPage(),
+                  WatchListPage(),
                   SearchPage(
                     onBack: ({index}) async {
                       if (_pageIndex != 0) {
