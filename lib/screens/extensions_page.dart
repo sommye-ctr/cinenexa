@@ -1,3 +1,4 @@
+import 'package:cinenexa/widgets/custom_back_button.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +10,7 @@ import '../resources/strings.dart';
 import '../resources/style.dart';
 
 class ExtensionsPage extends StatefulWidget {
+  static const String routeName = "/extensions";
   const ExtensionsPage({Key? key}) : super(key: key);
 
   @override
@@ -58,38 +60,51 @@ class _ExtensionsPageState extends State<ExtensionsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: DefaultTabController(
-        length: 2,
-        child: Column(
+    return Scaffold(
+      body: SafeArea(
+        child: Stack(
           children: [
-            TabBar(
-              indicator: ShapeDecoration(
-                shape: RoundedRectangleBorder(
-                  borderRadius:
-                      BorderRadius.circular(Style.largeRoundEdgeRadius),
-                ),
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              indicatorSize: TabBarIndicatorSize.tab,
-              indicatorPadding: EdgeInsets.all(8),
-              splashBorderRadius: BorderRadius.circular(40),
-              isScrollable: true,
-              tabs: [
-                Tab(
-                  text: Strings.discover,
-                ),
-                Tab(
-                  text: Strings.installed,
-                ),
-              ],
+            Align(
+              alignment: Alignment.topLeft,
+              child: CustomBackButton(),
             ),
-            Expanded(
-              child: TabBarView(
-                physics: NeverScrollableScrollPhysics(),
+            DefaultTabController(
+              length: 2,
+              child: Column(
                 children: [
-                  ExtensionsDiscover(extensionsStore: extensionsStore),
-                  ExtensionsInstalled(extensionsStore: extensionsStore),
+                  TabBar(
+                    indicator: ShapeDecoration(
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(Style.largeRoundEdgeRadius),
+                      ),
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    indicatorPadding: EdgeInsets.all(8),
+                    splashBorderRadius: BorderRadius.circular(40),
+                    isScrollable: true,
+                    tabs: [
+                      Tab(
+                        text: Strings.discover,
+                      ),
+                      Tab(
+                        text: Strings.installed,
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 24),
+                      child: TabBarView(
+                        physics: NeverScrollableScrollPhysics(),
+                        children: [
+                          ExtensionsDiscover(extensionsStore: extensionsStore),
+                          ExtensionsInstalled(extensionsStore: extensionsStore),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

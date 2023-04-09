@@ -2,6 +2,7 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:amplitude_flutter/amplitude.dart';
 import 'package:cinenexa/components/settings_subtitle_setting.dart';
 import 'package:cinenexa/screens/extension_config_page.dart';
+import 'package:cinenexa/screens/extensions_page.dart';
 import 'package:cinenexa/screens/list_details_page.dart';
 import 'package:cinenexa/services/local/database.dart';
 import 'package:cinenexa/services/network/analytics.dart';
@@ -184,6 +185,10 @@ class _MyAppState extends State<MyApp> {
           builder: (context) => SettingsPage(
             type: settings.arguments as int,
           ),
+        );
+      case ExtensionsPage.routeName:
+        return MaterialPageRoute(
+          builder: (context) => ExtensionsPage(),
         );
       case RegisterPage.routeName:
         return MaterialPageRoute(

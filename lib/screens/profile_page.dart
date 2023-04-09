@@ -1,5 +1,6 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:cinenexa/resources/asset.dart';
+import 'package:cinenexa/screens/extensions_page.dart';
 import 'package:cinenexa/utils/size_formatter.dart';
 import 'package:cinenexa/widgets/rounded_button.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -18,6 +19,8 @@ import 'package:cinenexa/screens/intro_page.dart';
 import 'package:cinenexa/screens/settings_page.dart';
 import 'package:cinenexa/store/user/user_store.dart';
 import 'package:cinenexa/utils/screen_size.dart';
+
+import '../components/home_bottom_nav_bar.dart';
 
 class ProfilePage extends StatefulWidget {
   final Function()? onBack;
@@ -46,18 +49,18 @@ class _ProfilePageState extends State<ProfilePage> {
         }
         return true;
       },
-      child: Scaffold(
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+      child: Padding(
+        padding: EdgeInsets.only(
+            bottom: HomeBottomNavBar.bottomNavHeight, right: 4, left: 4),
+        child: Scaffold(
+          body: ListView(
             children: [
               Style.getVerticalHorizontalSpacing(context: context),
               _buildProfileTile(),
               Style.getVerticalHorizontalSpacing(context: context),
               _buildStatCardsTile(),
               Style.getVerticalHorizontalSpacing(context: context),
-              _buildSettingsTabs(),
+              ..._buildSettingsTabs(),
             ],
           ),
         ),
@@ -86,77 +89,124 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildSettingsTabs() {
-    return Expanded(
-      child: ListView(
-        physics: BouncingScrollPhysics(),
-        padding: EdgeInsets.only(bottom: kBottomNavigationBarHeight),
-        children: [
-          ListTile(
-            title: Text(Strings.general),
-            leading: Icon(Icons.settings),
-            trailing: Icon(Icons.arrow_right_outlined),
-            tileColor: Theme.of(context).cardColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
-            ),
-            onTap: () => _navigateToSettings(SettingsPage.GENERAL),
+  List<Widget> _buildSettingsTabs() {
+    return [
+      ListTile(
+        title: Text(Strings.general),
+        leading: CircleAvatar(
+          child: Icon(
+            Icons.settings,
+            color: Colors.black,
           ),
-          Style.getVerticalSpacing(context: context, percent: 0.01),
-          ListTile(
-            title: Text(Strings.integrations),
-            leading: Icon(Icons.merge),
-            trailing: Icon(Icons.arrow_right_outlined),
-            tileColor: Theme.of(context).cardColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
-            ),
-            onTap: () => _navigateToSettings(SettingsPage.INTEGRATIONS),
-          ),
-          Style.getVerticalSpacing(context: context, percent: 0.01),
-          ListTile(
-            title: Text(Strings.player),
-            leading: Icon(Icons.play_arrow_rounded),
-            trailing: Icon(Icons.arrow_right_outlined),
-            tileColor: Theme.of(context).cardColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
-            ),
-            onTap: () => _navigateToSettings(SettingsPage.PLAYER),
-          ),
-          Style.getVerticalSpacing(context: context, percent: 0.01),
-          ListTile(
-            title: Text(Strings.more),
-            leading: Icon(Icons.more_horiz),
-            trailing: Icon(Icons.arrow_right_outlined),
-            tileColor: Theme.of(context).cardColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
-            ),
-            onTap: () => _navigateToSettings(SettingsPage.MORE),
-          ),
-          Style.getVerticalSpacing(context: context, percent: 0.01),
-          Style.getListTile(
-            context: context,
-            title: Strings.reportBug,
-            trailing: Icon(Icons.arrow_right_outlined),
-            leading: Icon(Icons.bug_report_rounded),
-            onTap: _reportBug,
-          ),
-          Style.getListTile(
-            context: context,
-            title: "Rate CineNexa",
-            leading: Icon(Icons.star_rounded),
-            trailing: Icon(Icons.arrow_right_outlined),
-            onTap: () {
-              InAppReview.instance.openStoreListing();
-            },
-          ),
-          Style.getVerticalSpacing(context: context),
-          _buildAttribution(),
-        ],
+          backgroundColor: Color.fromRGBO(46, 196, 182, 1),
+        ),
+        trailing: Icon(Icons.arrow_right_outlined),
+        tileColor: Theme.of(context).cardColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
+        ),
+        onTap: () => _navigateToSettings(SettingsPage.GENERAL),
       ),
-    );
+      Style.getVerticalSpacing(context: context, percent: 0.01),
+      ListTile(
+        title: Text(Strings.extensions),
+        leading: CircleAvatar(
+          child: Icon(
+            Icons.extension_rounded,
+            color: Colors.black,
+          ),
+          backgroundColor: Color.fromRGBO(255, 159, 28, 1),
+        ),
+        trailing: Icon(Icons.arrow_right_outlined),
+        tileColor: Theme.of(context).cardColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
+        ),
+        onTap: () => Navigator.pushNamed(context, ExtensionsPage.routeName),
+      ),
+      Style.getVerticalSpacing(context: context, percent: 0.01),
+      ListTile(
+        title: Text(Strings.integrations),
+        leading: CircleAvatar(
+          child: Icon(
+            Icons.merge,
+            color: Colors.black,
+          ),
+          backgroundColor: Color.fromRGBO(255, 191, 105, 1),
+        ),
+        trailing: Icon(Icons.arrow_right_outlined),
+        tileColor: Theme.of(context).cardColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
+        ),
+        onTap: () => _navigateToSettings(SettingsPage.INTEGRATIONS),
+      ),
+      Style.getVerticalSpacing(context: context, percent: 0.01),
+      ListTile(
+        title: Text(Strings.player),
+        leading: CircleAvatar(
+          child: Icon(
+            Icons.play_arrow_rounded,
+            color: Colors.black,
+          ),
+          backgroundColor: Color.fromRGBO(203, 243, 240, 1),
+        ),
+        trailing: Icon(Icons.arrow_right_outlined),
+        tileColor: Theme.of(context).cardColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
+        ),
+        onTap: () => _navigateToSettings(SettingsPage.PLAYER),
+      ),
+      Style.getVerticalSpacing(context: context, percent: 0.01),
+      ListTile(
+        title: Text(Strings.more),
+        leading: CircleAvatar(
+          child: Icon(
+            Icons.more_horiz,
+            color: Colors.black,
+          ),
+          backgroundColor: Color.fromRGBO(233, 196, 106, 1),
+        ),
+        trailing: Icon(Icons.arrow_right_outlined),
+        tileColor: Theme.of(context).cardColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
+        ),
+        onTap: () => _navigateToSettings(SettingsPage.MORE),
+      ),
+      Style.getVerticalSpacing(context: context, percent: 0.01),
+      Style.getListTile(
+        context: context,
+        title: Strings.reportBug,
+        trailing: Icon(Icons.arrow_right_outlined),
+        leading: CircleAvatar(
+          child: Icon(
+            Icons.bug_report_rounded,
+            color: Colors.black,
+          ),
+          backgroundColor: Color.fromRGBO(231, 111, 81, 1),
+        ),
+        onTap: _reportBug,
+      ),
+      Style.getListTile(
+        context: context,
+        title: "Rate CineNexa",
+        leading: CircleAvatar(
+          child: Icon(
+            Icons.star_rounded,
+            color: Colors.black,
+          ),
+          backgroundColor: Color.fromRGBO(255, 159, 28, 1),
+        ),
+        trailing: Icon(Icons.arrow_right_outlined),
+        onTap: () {
+          InAppReview.instance.openStoreListing();
+        },
+      ),
+      Style.getVerticalSpacing(context: context),
+      _buildAttribution(),
+    ];
   }
 
   void _reportBug() {

@@ -5,7 +5,7 @@ import 'package:cinenexa/resources/strings.dart';
 import 'package:cinenexa/resources/style.dart';
 
 class HomeBottomNavBar extends StatefulWidget {
-  static const double bottomNavHeight = 56;
+  static const double bottomNavHeight = 66;
   static const double bottomNavPadding = 8;
 
   final Function(int index) onChanged;
