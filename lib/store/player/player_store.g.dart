@@ -401,6 +401,17 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
   }
 
   @override
+  void addSubtitle(Subtitle sub) {
+    final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
+        name: '_PlayerStoreBase.addSubtitle');
+    try {
+      return super.addSubtitle(sub);
+    } finally {
+      _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setSelectedSubtitle(int? subtitle) {
     final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
         name: '_PlayerStoreBase.setSelectedSubtitle');

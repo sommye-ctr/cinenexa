@@ -25,6 +25,7 @@ import 'package:video_cast/video_cast.dart';
 import '../models/local/progress.dart';
 import '../models/network/base_model.dart';
 import '../models/network/extensions/extension_stream.dart';
+import '../models/network/extensions/subtitle.dart';
 import '../models/network/movie.dart';
 import '../models/network/trakt/trakt_show_history_season.dart';
 import '../models/network/trakt/trakt_show_history_season_ep.dart';
@@ -32,6 +33,8 @@ import '../models/network/tv.dart';
 import '../services/local/scrobble_manager.dart';
 import '../store/player/player_store.dart';
 import '../store/user/user_store.dart';
+import '../utils/file_opener.dart';
+import '../widgets/rounded_button.dart';
 import 'details_episode_tile.dart';
 
 class VideoPlayerControls extends StatefulWidget {
@@ -595,44 +598,64 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
           widget.stream.subtitles!.map((e) => e.title.toString()).toList());
     }
 
-    return CustomCheckBoxList(
-      children: allSubtitles,
-      selectedItems: [selected],
-      type: CheckBoxListType.grid,
-      alwaysEnabled: true,
-      singleSelect: true,
-      delegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 1,
-        mainAxisExtent: 35,
-        mainAxisSpacing: 8,
-      ),
-      onSelectionAdded: (values) {
-        if (values.first == Strings.none) {
-          if (playerStore.casting) {
-            chromeCastController?.disableTrack();
-            playerStore.setSelectedSubtitle(null);
-            Navigator.pop(context);
-            return;
-          }
-          playerStore.changeSubtitle(-1);
-          return;
-        }
-        int selectedIndex = widget.stream.subtitles!
-            .indexWhere((element) => element.title == values.first);
+    return ListView(
+      children: [
+        RoundedButton(
+          child: Text(Strings.addSubtitle),
+          onPressed: () async {
+            Map? data = await FileOpener.openSrtFile();
 
-        if (playerStore.casting) {
-          if (selectedIndex < 0) {
-            chromeCastController?.disableTrack();
-            playerStore.setSelectedSubtitle(null);
-          } else {
-            chromeCastController?.setTrack(subId: selectedIndex.toDouble());
-            playerStore.setSelectedSubtitle(selectedIndex);
-          }
-        } else {
-          playerStore.changeSubtitle(selectedIndex);
-        }
-        Navigator.pop(context);
-      },
+            if (data != null) {
+              playerStore.addSubtitle(Subtitle.def(
+                title: data['name'],
+                path: data['path'],
+              ));
+              Navigator.pop(context);
+            }
+          },
+          type: RoundedButtonType.outlined,
+        ),
+        Style.getVerticalSpacing(context: context),
+        CustomCheckBoxList(
+          children: allSubtitles,
+          selectedItems: [selected],
+          type: CheckBoxListType.grid,
+          alwaysEnabled: true,
+          singleSelect: true,
+          delegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 1,
+            mainAxisExtent: 35,
+            mainAxisSpacing: 8,
+          ),
+          onSelectionAdded: (values) {
+            if (values.first == Strings.none) {
+              if (playerStore.casting) {
+                chromeCastController?.disableTrack();
+                playerStore.setSelectedSubtitle(null);
+                Navigator.pop(context);
+                return;
+              }
+              playerStore.changeSubtitle(-1);
+              return;
+            }
+            int selectedIndex = widget.stream.subtitles!
+                .indexWhere((element) => element.title == values.first);
+
+            if (playerStore.casting) {
+              if (selectedIndex < 0) {
+                chromeCastController?.disableTrack();
+                playerStore.setSelectedSubtitle(null);
+              } else {
+                chromeCastController?.setTrack(subId: selectedIndex.toDouble());
+                playerStore.setSelectedSubtitle(selectedIndex);
+              }
+            } else {
+              playerStore.changeSubtitle(selectedIndex);
+            }
+            Navigator.pop(context);
+          },
+        ),
+      ],
     );
   }
 

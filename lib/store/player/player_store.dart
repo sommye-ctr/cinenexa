@@ -228,6 +228,12 @@ abstract class _PlayerStoreBase with Store {
   }
 
   @action
+  void addSubtitle(Subtitle sub) {
+    extensionStream.addSubtitle(sub);
+    changeSubtitle(extensionStream.subtitles!.length - 1);
+  }
+
+  @action
   Future changeSubtitle(int index) async {
     if (index < 0) {
       await controller.setupSubtitleSource(BetterPlayerSubtitlesSource());
@@ -238,8 +244,10 @@ abstract class _PlayerStoreBase with Store {
     await controller.setupSubtitleSource(
       BetterPlayerSubtitlesSource(
         name: sub.title,
-        type: BetterPlayerSubtitlesSourceType.network,
-        urls: [sub.url],
+        type: sub.path != null
+            ? BetterPlayerSubtitlesSourceType.file
+            : BetterPlayerSubtitlesSourceType.network,
+        urls: [sub.url ?? sub.path],
         selectedByDefault: true,
       ),
     );

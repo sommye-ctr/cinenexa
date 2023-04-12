@@ -216,6 +216,15 @@ class ExtensionStream {
     return ExtensionStream.fromMap(source as Map<String, dynamic>);
   }
 
+  void addSubtitle(Subtitle subtitle) {
+    if (subtitles == null) {
+      subtitles = [subtitle];
+      return;
+    }
+    List<Subtitle> temp = subtitles!;
+    subtitles = [...temp, subtitle];
+  }
+
   @override
   String toString() {
     return 'ExtensionStream(url: $url, ytId: $ytId, magnet: $magnet, fileIndex: $fileIndex, external: $external, name: $name, quality: $quality, country: $country, dubbed: $dubbed, subbed: $subbed, torrent: $torrent, size: $size, seeds: $seeds, streamGroup: $streamGroup, subtitles: $subtitles, extension: $extension)';
