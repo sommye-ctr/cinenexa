@@ -21,13 +21,6 @@ abstract class _PlayerStoreBase with Store {
   bool casting = false;
 
   @observable
-  bool nextEp = false;
-  @observable
-  bool nextEpInit = false;
-  @observable
-  bool nextEpCancel = false;
-
-  @observable
   int speedIndex = 0;
   @observable
   int fitIndex = 0;
@@ -45,11 +38,8 @@ abstract class _PlayerStoreBase with Store {
   @observable
   ObservableList<TvEpisode> episodes = <TvEpisode>[].asObservable();
   late int? currentEpIndex, season;
-  int? nextEpIndex;
 
   int seekDuration = 30;
-  int nextEpPopupDuration = 30;
-  bool autoPlay = false;
 
   Duration duration = Duration();
 
@@ -64,11 +54,8 @@ abstract class _PlayerStoreBase with Store {
     required this.detailsStore,
     this.progress,
     this.season,
-    int? episode,
   }) {
     episodes.addAll(detailsStore.episodes);
-    currentEpIndex = detailsStore.episodes
-        .indexWhere((element) => element.episodeNumber == episode);
 
     init();
   }
@@ -76,8 +63,6 @@ abstract class _PlayerStoreBase with Store {
   @action
   Future init() async {
     seekDuration = await Database().getSeekDuration();
-    nextEpPopupDuration = await Database().getNextEpDuration();
-    autoPlay = await Database().getAutoPlay();
 
     controller.addEventsListener((event) {
       switch (event.betterPlayerEventType) {
@@ -97,7 +82,6 @@ abstract class _PlayerStoreBase with Store {
           setBuffered(
               controller.videoPlayerController!.value.buffered.first.end);
           setPosition(controller.videoPlayerController!.value.position);
-          _handleNextEpPopup();
           break;
         case BetterPlayerEventType.play:
           if (casting) controller.pause();
@@ -105,30 +89,6 @@ abstract class _PlayerStoreBase with Store {
         default:
       }
     });
-  }
-
-  void _handleNextEpPopup() {
-    if (!autoPlay || season == null) {
-      return;
-    }
-    Duration? duration = controller.videoPlayerController!.value.duration;
-    int diff = duration == null ? 0 : (duration.inSeconds - position.inSeconds);
-
-    if (position.inSeconds >= 1 &&
-        diff <= (nextEpPopupDuration + 15) &&
-        !nextEpInit) {
-      nextEpInit = true;
-      if (currentEpIndex == episodes.length - 1) {
-        fetchNewEps();
-      } else {
-        setEpisode();
-      }
-    } else {
-      setNextEpFlag(false);
-    }
-    if (position.inSeconds >= 1 && diff <= nextEpPopupDuration && !nextEp) {
-      setNextEpFlag(true);
-    }
   }
 
   Future initSeek() async {
@@ -149,7 +109,6 @@ abstract class _PlayerStoreBase with Store {
           await detailsStore.onSeasonChanged(detailsStore.chosenSeason! + 1);
       detailsStore.onEpBackClicked();
       detailsStore.onEpiodeClicked(0);
-      nextEpIndex = 0;
       season =
           detailsStore.tv?.seasons?[detailsStore.chosenSeason!].seasonNumber ??
               0;
@@ -161,25 +120,15 @@ abstract class _PlayerStoreBase with Store {
 
   @action
   void setEpisode() {
-    nextEpIndex = currentEpIndex! + 1;
+    int ep = detailsStore.chosenEpisode!;
     detailsStore.onEpBackClicked();
-    detailsStore.onEpiodeClicked(nextEpIndex!);
+    detailsStore.onEpiodeClicked(ep + 1);
     fetchStreams();
   }
 
   @action
   Future fetchStreams() async {
     detailsStore.fetchStreams();
-  }
-
-  @action
-  void setNextEpFlag(bool value) {
-    this.nextEp = value;
-  }
-
-  @action
-  void setNextEpCancel(bool value) {
-    this.nextEpCancel = value;
   }
 
   @action

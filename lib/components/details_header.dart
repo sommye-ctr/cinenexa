@@ -422,6 +422,22 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
         detailsStore.progress?.stream != null) {
       if (detailsStore.progress?.seasonNo != null &&
           detailsStore.progress?.episodeNo != null) {
+        Style.showLoadingDialog(context: context);
+
+        int progressSeason = detailsStore.progress!.seasonNo!;
+
+        if (detailsStore
+                .tv!.seasons![detailsStore.chosenSeason!].seasonNumber !=
+            progressSeason) {
+          await detailsStore.onSeasonChanged(detailsStore.tv!.seasons!
+              .indexWhere((element) =>
+                  element.seasonNumber == detailsStore.progress!.seasonNo));
+        }
+        detailsStore.onEpiodeClicked(detailsStore.episodes.indexWhere(
+            (element) =>
+                element.episodeNumber == detailsStore.progress!.episodeNo));
+        Navigator.pop(context);
+
         await LinkOpener.navigateToVideoPlayer(
           baseModel: detailsStore.baseModel,
           id: detailsStore.baseModel.id!,
@@ -435,6 +451,7 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
           detailsStore: detailsStore,
           showHistory: detailsStore.showHistory,
         );
+
         scrollTop();
         await detailsStore.fetchProgress();
 

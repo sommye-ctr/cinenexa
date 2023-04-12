@@ -3,12 +3,10 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:better_player/better_player.dart';
-import 'package:cinenexa/components/video_player_next_episode.dart';
 import 'package:cinenexa/models/local/show_history.dart';
 import 'package:cinenexa/services/local/torrent_streamer.dart';
 import 'package:cinenexa/services/network/utils.dart';
 import 'package:cinenexa/store/details/details_store.dart';
-import 'package:cinenexa/utils/show_episodes_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -102,7 +100,6 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
       extensionStream: widget.stream,
       progress: widget.progress?.progress,
       detailsStore: widget.detailsStore!,
-      episode: widget.episode,
       season: widget.season,
     );
 
@@ -163,7 +160,6 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
               },
               child: Observer(
                 builder: (context) {
-                  playerStore.nextEp;
                   if (playerStore.showControls) {
                     if (playerStore.locked) {
                       return Padding(
@@ -232,47 +228,15 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
                             );
                           },
                         ),
-                        _buildPopup(),
                       ],
                     );
                   }
-                  return _buildPopup();
+                  return Container();
                 },
               ),
             );
           },
         ),
-      ),
-    );
-  }
-
-  Widget _buildPopup() {
-    return Align(
-      alignment: Alignment.bottomRight,
-      child: LayoutBuilder(
-        builder: (p0, p1) {
-          if (playerStore.nextEp &&
-              !playerStore.nextEpCancel &&
-              playerStore.season != null)
-            return Container(
-              width: ScreenSize.getPercentOfWidth(context, 0.35),
-              child: VideoPlayerNextEpisode(
-                season: playerStore.season!,
-                episode: playerStore.episodes[playerStore.nextEpIndex ?? 0],
-                onCancel: () {
-                  playerStore.setNextEpCancel(true);
-                },
-                onNext: (episode, season) {
-                  scrobbleManager?.exit();
-                  if (widget.initialDark != null && !widget.initialDark!)
-                    AdaptiveTheme.of(context).setLight();
-                  if (playerStore.casting) chromeCastController?.endSession();
-                  widget.controller.exitFullScreen();
-                },
-              ),
-            );
-          return Container();
-        },
       ),
     );
   }
@@ -439,21 +403,8 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
             widget.detailsStore!.onEpiodeClicked(index);
             widget.detailsStore!.fetchStreams();
 
-            scrobbleManager?.exit();
-            if (widget.initialDark != null && !widget.initialDark!)
-              AdaptiveTheme.of(context).setLight();
-            if (playerStore.casting) chromeCastController?.endSession();
-
-            try {
-              widget.controller.exitFullScreen();
-            } catch (e) {}
-
-            widget.torrentStreamer?.stopStream();
-            await SystemChrome.setPreferredOrientations([
-              DeviceOrientation.portraitUp,
-              DeviceOrientation.portraitDown,
-            ]);
             Navigator.pop(context);
+            Navigator.maybePop(context);
           },
         );
       },
@@ -563,16 +514,38 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
             text: Strings.settings,
           ),
           Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
-          if (widget.baseModel?.type == BaseModelType.tv)
-            _buildControlButton(
-              icon: Icons.skip_next_rounded,
-              onTap: () {},
-              size: 25,
-              text: "Next",
-            ),
+          _buildNextButton(),
         ],
       ),
     );
+  }
+
+  Widget _buildNextButton() {
+    if (widget.baseModel?.type == BaseModelType.tv &&
+        !(widget.detailsStore!.chosenSeason ==
+                widget.detailsStore!.tv!.seasons!.length - 1 &&
+            widget.detailsStore!.chosenEpisode ==
+                widget.detailsStore!.episodes.length - 1)) {
+      return _buildControlButton(
+        icon: Icons.skip_next_rounded,
+        onTap: () async {
+          if (widget.detailsStore!.chosenEpisode ==
+              widget.detailsStore!.episodes.length - 1) {
+            Style.showLoadingDialog(context: context);
+            await playerStore.fetchNewEps();
+            Navigator.pop(context);
+            Navigator.maybePop(context);
+            return;
+          }
+
+          playerStore.setEpisode();
+          Navigator.maybePop(context);
+        },
+        size: 25,
+        text: Strings.next,
+      );
+    }
+    return Container();
   }
 
   void openDrawer() {

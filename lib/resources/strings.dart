@@ -253,6 +253,7 @@ class Strings {
   static const String castDevices = "Cast Devices";
   static const String noDeviceFound = "No Devices Found for casting!";
   static const String disconnect = "Disconnect";
+  static const String next = "Next";
   static const String addSubtitle = "Add Subtitle";
   static const playbackSpeeds = [
     "1x",
