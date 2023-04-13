@@ -22,10 +22,8 @@ import '../components/movie_tile.dart';
 import '../store/home/home_store.dart';
 
 class HomePage extends StatefulWidget {
-  final VoidCallback? onBack;
   const HomePage({
     Key? key,
-    this.onBack,
   }) : super(key: key);
 
   @override
@@ -199,10 +197,7 @@ class _HomePageState extends State<HomePage>
   }
 
   void _onItemClicked(BaseModel baseModel) async {
-    var isRedirect = await homeStore.onItemClicked(context, baseModel);
-    if (isRedirect != null && isRedirect) {
-      widget.onBack?.call();
-    }
+    homeStore.onItemClicked(context, baseModel);
   }
 
   void _onSeeMoreClicked(String future, List<BaseModel> items, String heading,

@@ -1,10 +1,8 @@
 import 'package:cinenexa/screens/watchlist_page.dart';
 import 'package:flutter/material.dart';
-import 'package:cinenexa/screens/extensions_page.dart';
 import 'package:cinenexa/screens/home_page.dart';
 import 'package:cinenexa/screens/profile_page.dart';
 import 'package:cinenexa/screens/search_page.dart';
-import 'package:flutter/services.dart';
 
 import '../components/home_bottom_nav_bar.dart';
 
@@ -33,28 +31,10 @@ class _HomeFirstScreenState extends State<HomeFirstScreen> {
               IndexedStack(
                 index: _pageIndex,
                 children: [
-                  HomePage(
-                    onBack: () async {
-                      await Future.delayed(Duration(milliseconds: 500));
-                      _changeBottomNavIndex(1);
-                    },
-                  ),
+                  HomePage(),
                   WatchListPage(),
-                  SearchPage(
-                    onBack: ({index}) async {
-                      if (_pageIndex != 0) {
-                        await Future.delayed(Duration(milliseconds: 500));
-                        _changeBottomNavIndex(index ?? 0);
-                        return;
-                      }
-                      SystemNavigator.pop();
-                    },
-                  ),
-                  ProfilePage(
-                    onBack: () {
-                      _changeBottomNavIndex(0);
-                    },
-                  ),
+                  SearchPage(),
+                  ProfilePage(),
                 ],
               ),
               Align(
@@ -70,12 +50,5 @@ class _HomeFirstScreenState extends State<HomeFirstScreen> {
         ),
       ),
     );
-  }
-
-  void _changeBottomNavIndex(int index) {
-    setState(() {
-      _pageIndex = index;
-      (bottomNavigationKey.currentWidget as BottomNavigationBar).onTap!(index);
-    });
   }
 }

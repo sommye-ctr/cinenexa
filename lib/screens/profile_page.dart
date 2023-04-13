@@ -23,8 +23,7 @@ import 'package:cinenexa/utils/screen_size.dart';
 import '../components/home_bottom_nav_bar.dart';
 
 class ProfilePage extends StatefulWidget {
-  final Function()? onBack;
-  const ProfilePage({Key? key, this.onBack}) : super(key: key);
+  const ProfilePage({Key? key}) : super(key: key);
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -41,28 +40,19 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        if (widget.onBack != null) {
-          widget.onBack!();
-          return false;
-        }
-        return true;
-      },
-      child: Padding(
-        padding: EdgeInsets.only(
-            bottom: HomeBottomNavBar.bottomNavHeight, right: 4, left: 4),
-        child: Scaffold(
-          body: ListView(
-            children: [
-              Style.getVerticalHorizontalSpacing(context: context),
-              _buildProfileTile(),
-              Style.getVerticalHorizontalSpacing(context: context),
-              _buildStatCardsTile(),
-              Style.getVerticalHorizontalSpacing(context: context),
-              ..._buildSettingsTabs(),
-            ],
-          ),
+    return Padding(
+      padding: EdgeInsets.only(
+          bottom: HomeBottomNavBar.bottomNavHeight, right: 4, left: 4),
+      child: Scaffold(
+        body: ListView(
+          children: [
+            Style.getVerticalHorizontalSpacing(context: context),
+            _buildProfileTile(),
+            Style.getVerticalHorizontalSpacing(context: context),
+            _buildStatCardsTile(),
+            Style.getVerticalHorizontalSpacing(context: context),
+            ..._buildSettingsTabs(),
+          ],
         ),
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:cinenexa/models/local/progress.dart';
+import 'package:cinenexa/screens/extensions_page.dart';
 import 'package:cinenexa/utils/link_opener.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -169,7 +170,7 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
   Widget _buildInstallExtensionsButton() {
     return RoundedButton(
       type: RoundedButtonType.outlined,
-      onPressed: () => Navigator.pop(context, true),
+      onPressed: () => Navigator.pushNamed(context, ExtensionsPage.routeName),
       child: Text(Strings.installExtensions),
     );
   }

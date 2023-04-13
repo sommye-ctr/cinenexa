@@ -22,9 +22,7 @@ import 'details_page.dart';
 import 'list_details_page.dart';
 
 class SearchPage extends StatefulWidget {
-  final Function({int? index})? onBack;
-
-  SearchPage({Key? key, this.onBack}) : super(key: key);
+  SearchPage({Key? key}) : super(key: key);
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -72,10 +70,6 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     if (searchStore.searchDone) {
       searchStore.backClicked();
       textEditingController.clear();
-      return false;
-    }
-    if (widget.onBack != null) {
-      widget.onBack!();
       return false;
     }
     return true;
@@ -377,14 +371,11 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                   ? 0
                   : baseModel.voteAverage!,
               onClick: () async {
-                var isRedirect = await Navigator.pushNamed(
+                Navigator.pushNamed(
                   context,
                   DetailsPage.routeName,
                   arguments: baseModel,
                 );
-                if (isRedirect != null && isRedirect as bool) {
-                  widget.onBack?.call(index: 1);
-                }
               },
             );
           },
