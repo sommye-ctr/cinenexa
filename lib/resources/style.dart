@@ -25,49 +25,57 @@ class Style {
   static const double smallIconSize = 40;
 
   static ThemeData themeData = ThemeData(
-    primarySwatch: Colors.orange,
-    brightness: Brightness.light,
-    fontFamily: GoogleFonts.poppins().fontFamily,
-    focusColor: Colors.black,
-    scaffoldBackgroundColor: Colors.white,
-    primaryColor: Colors.orange,
-    floatingActionButtonTheme: FloatingActionButtonThemeData(
-      backgroundColor: Colors.orange,
-    ),
-    tabBarTheme: TabBarTheme(
-      unselectedLabelColor: Colors.black,
-    ),
-    listTileTheme: ListTileThemeData(
-      tileColor: Colors.white,
-    ),
-    colorScheme:
-        ColorScheme.light(background: Colors.white, primary: Colors.orange),
-  );
+      primarySwatch: Colors.orange,
+      brightness: Brightness.light,
+      fontFamily: GoogleFonts.poppins().fontFamily,
+      focusColor: Colors.black,
+      scaffoldBackgroundColor: Colors.white,
+      primaryColor: Colors.orange,
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: Colors.orange,
+      ),
+      tabBarTheme: TabBarTheme(
+        unselectedLabelColor: Colors.black,
+      ),
+      listTileTheme: ListTileThemeData(
+        tileColor: Colors.white,
+      ),
+      colorScheme: ColorScheme.light(
+        background: Colors.white,
+        primary: Colors.orange,
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: Colors.white,
+      ));
 
   static TextStyle headingStyle = TextStyle(
     fontSize: 20,
   );
 
   static ThemeData darkThemeData(BuildContext context) => ThemeData(
-        primarySwatch: Colors.orange,
-        brightness: Brightness.dark,
-        fontFamily: GoogleFonts.poppins().fontFamily,
-        focusColor: Colors.white,
-        scaffoldBackgroundColor: Colors.black,
-        primaryColor: Colors.orange,
-        floatingActionButtonTheme: FloatingActionButtonThemeData(
-          backgroundColor: Colors.orange,
-        ),
-        tabBarTheme: TabBarTheme(
-          unselectedLabelColor: Colors.white,
-        ),
-        listTileTheme: ListTileThemeData(
-          tileColor: Colors.black,
-          selectedTileColor: Colors.black,
-        ),
-        colorScheme:
-            ColorScheme.dark(background: Colors.black, primary: Colors.orange),
-      );
+      primarySwatch: Colors.orange,
+      brightness: Brightness.dark,
+      fontFamily: GoogleFonts.poppins().fontFamily,
+      focusColor: Colors.white,
+      scaffoldBackgroundColor: Colors.black,
+      primaryColor: Colors.orange,
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: Colors.orange,
+      ),
+      tabBarTheme: TabBarTheme(
+        unselectedLabelColor: Colors.white,
+      ),
+      listTileTheme: ListTileThemeData(
+        tileColor: Colors.black,
+        selectedTileColor: Colors.black,
+      ),
+      colorScheme: ColorScheme.dark(
+        background: Colors.black,
+        primary: Colors.orange,
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: Colors.black,
+      ));
 
   static BottomNavigationBarItem getbottomNavItem(String label, IconData icon) {
     return BottomNavigationBarItem(

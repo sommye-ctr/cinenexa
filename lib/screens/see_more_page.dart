@@ -10,7 +10,6 @@ import '../services/constants.dart';
 import '../utils/screen_size.dart';
 import 'actor_details_page.dart';
 import 'details_page.dart';
-import 'package:glass/glass.dart';
 
 enum SeeMoreChildType {
   squicircle,
@@ -85,8 +84,6 @@ class _SeeMorePageState extends State<SeeMorePage> {
           ),
         ),
       ],
-    ).asGlass(
-      clipBorderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
     );
   }
 

@@ -41,7 +41,7 @@ class _FavoritesPageState extends State<FavoritesPage>
 
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.only(top: 8.0, right: 8, left: 8),
         child: _buildBody(),
       ),
       floatingActionButton: Observer(builder: (context) => _buildFab()),
@@ -112,10 +112,6 @@ class _FavoritesPageState extends State<FavoritesPage>
               ),
             );
           },
-        ),
-        Style.getVerticalSpacing(
-          context: context,
-          percent: 0.08,
         ),
       ],
     );
