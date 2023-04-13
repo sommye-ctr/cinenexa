@@ -80,6 +80,7 @@ class _ExtensionsPageState extends State<ExtensionsPage> {
                       ),
                       color: Theme.of(context).colorScheme.primary,
                     ),
+                    labelColor: Colors.black,
                     indicatorSize: TabBarIndicatorSize.tab,
                     indicatorPadding: EdgeInsets.all(8),
                     splashBorderRadius: BorderRadius.circular(40),

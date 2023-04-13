@@ -91,7 +91,6 @@ class _ProfilePageState extends State<ProfilePage> {
           backgroundColor: Color.fromRGBO(46, 196, 182, 1),
         ),
         trailing: Icon(Icons.arrow_right_outlined),
-        tileColor: Theme.of(context).cardColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
         ),
@@ -108,7 +107,6 @@ class _ProfilePageState extends State<ProfilePage> {
           backgroundColor: Color.fromRGBO(255, 159, 28, 1),
         ),
         trailing: Icon(Icons.arrow_right_outlined),
-        tileColor: Theme.of(context).cardColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
         ),
@@ -125,7 +123,6 @@ class _ProfilePageState extends State<ProfilePage> {
           backgroundColor: Color.fromRGBO(255, 191, 105, 1),
         ),
         trailing: Icon(Icons.arrow_right_outlined),
-        tileColor: Theme.of(context).cardColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
         ),
@@ -142,7 +139,6 @@ class _ProfilePageState extends State<ProfilePage> {
           backgroundColor: Color.fromRGBO(203, 243, 240, 1),
         ),
         trailing: Icon(Icons.arrow_right_outlined),
-        tileColor: Theme.of(context).cardColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
         ),
@@ -159,7 +155,6 @@ class _ProfilePageState extends State<ProfilePage> {
           backgroundColor: Color.fromRGBO(233, 196, 106, 1),
         ),
         trailing: Icon(Icons.arrow_right_outlined),
-        tileColor: Theme.of(context).cardColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
         ),

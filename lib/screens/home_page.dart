@@ -76,6 +76,7 @@ class _HomePageState extends State<HomePage>
             ),
             indicatorSize: TabBarIndicatorSize.tab,
             indicatorPadding: EdgeInsets.all(8),
+            labelColor: Colors.black,
             splashBorderRadius: BorderRadius.circular(40),
             isScrollable: true,
             onTap: homeStore.tabChanged,

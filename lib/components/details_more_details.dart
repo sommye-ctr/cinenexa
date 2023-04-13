@@ -54,6 +54,7 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
               ),
               color: Theme.of(context).colorScheme.primary,
             ),
+            labelColor: Colors.black,
             indicatorSize: TabBarIndicatorSize.tab,
             indicatorPadding: EdgeInsets.all(8),
             splashBorderRadius: BorderRadius.circular(40),

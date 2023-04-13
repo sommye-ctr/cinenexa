@@ -29,14 +29,19 @@ class Style {
     brightness: Brightness.light,
     fontFamily: GoogleFonts.poppins().fontFamily,
     focusColor: Colors.black,
-    scaffoldBackgroundColor: Color.fromARGB(255, 249, 246, 246),
-    backgroundColor: Color.fromARGB(255, 249, 246, 246),
+    scaffoldBackgroundColor: Colors.white,
     primaryColor: Colors.orange,
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: Colors.orange,
     ),
-    colorScheme: ColorScheme.light(
-        background: Color.fromARGB(255, 249, 246, 246), primary: Colors.orange),
+    tabBarTheme: TabBarTheme(
+      unselectedLabelColor: Colors.black,
+    ),
+    listTileTheme: ListTileThemeData(
+      tileColor: Colors.white,
+    ),
+    colorScheme:
+        ColorScheme.light(background: Colors.white, primary: Colors.orange),
   );
 
   static TextStyle headingStyle = TextStyle(
@@ -48,15 +53,20 @@ class Style {
         brightness: Brightness.dark,
         fontFamily: GoogleFonts.poppins().fontFamily,
         focusColor: Colors.white,
-        scaffoldBackgroundColor: Color.fromARGB(255, 27, 27, 27),
-        backgroundColor: Color.fromARGB(255, 27, 27, 27),
+        scaffoldBackgroundColor: Colors.black,
         primaryColor: Colors.orange,
         floatingActionButtonTheme: FloatingActionButtonThemeData(
           backgroundColor: Colors.orange,
         ),
-        colorScheme: ColorScheme.dark(
-            background: Color.fromARGB(255, 27, 27, 27),
-            primary: Colors.orange),
+        tabBarTheme: TabBarTheme(
+          unselectedLabelColor: Colors.white,
+        ),
+        listTileTheme: ListTileThemeData(
+          tileColor: Colors.black,
+          selectedTileColor: Colors.black,
+        ),
+        colorScheme:
+            ColorScheme.dark(background: Colors.black, primary: Colors.orange),
       );
 
   static BottomNavigationBarItem getbottomNavItem(String label, IconData icon) {
@@ -163,11 +173,7 @@ class Style {
         leading: leading,
         trailing: trailing,
         enabled: enabled,
-        tileColor: Theme.of(context).cardColor,
         onTap: onTap,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
-        ),
       ),
     );
   }
