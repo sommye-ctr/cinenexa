@@ -28,12 +28,8 @@ abstract class _ExtensionsStoreBase with Store {
 
   Database database = Database();
 
-  _ExtensionsStoreBase() {
-    _init();
-  }
-
   @action
-  Future _init() async {
+  Future init() async {
     bool status = await database.getGuestSignupStatus();
     _isGuestLogin = Supabase.instance.client.auth.currentUser == null && status;
 
@@ -192,7 +188,7 @@ abstract class _ExtensionsStoreBase with Store {
         successMessage = Strings.successfulyRated;
         return Future.wait([
           database.rateExtension(extension, rating),
-          _init(),
+          init(),
         ]);
       },
       (err) {

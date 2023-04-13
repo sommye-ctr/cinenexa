@@ -21,13 +21,13 @@ class _ExtensionsDiscoverState extends State<ExtensionsDiscover>
     with AutomaticKeepAliveClientMixin {
   @override
   void initState() {
+    widget.extensionsStore.fetch();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    widget.extensionsStore.fetch();
 
     return Observer(builder: (_) {
       if (widget.extensionsStore.discoverExtensions == null ||

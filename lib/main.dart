@@ -110,7 +110,10 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     FavoritesStore favoritesStore = FavoritesStore();
     WatchListStore watchListStore = WatchListStore();
+    ExtensionsStore extensionsStore = ExtensionsStore();
     Widget homeWidget;
+
+    extensionsStore.init();
 
     if (Supabase.instance.client.auth.currentUser != null ||
         (widget.anonStatus ?? false)) {
@@ -131,7 +134,7 @@ class _MyAppState extends State<MyApp> {
           ),
         ),
         Provider.Provider(
-          create: (_) => ExtensionsStore(),
+          create: (_) => extensionsStore,
         ),
         Provider.Provider(
           create: (_) => watchListStore,

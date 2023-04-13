@@ -40,6 +40,7 @@ class _DetailsPageState extends State<DetailsPage> {
     var list = Provider.of<ExtensionsStore>(context, listen: false)
         .installedExtensions;
     bool trakt = Provider.of<UserStore>(context, listen: false).isTraktLogged;
+
     detailsStore = DetailsStore(
       baseModel: widget.baseModel,
       noOfExtensions: list.length,
