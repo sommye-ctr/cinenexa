@@ -1,10 +1,10 @@
-import 'package:cinenexa/screens/watchlist_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cinenexa/screens/home_page.dart';
 import 'package:cinenexa/screens/profile_page.dart';
 import 'package:cinenexa/screens/search_page.dart';
 
 import '../components/home_bottom_nav_bar.dart';
+import 'favourites_page.dart';
 
 class HomeFirstScreen extends StatefulWidget {
   static const String routeName = "/home";
@@ -32,7 +32,7 @@ class _HomeFirstScreenState extends State<HomeFirstScreen> {
                 index: _pageIndex,
                 children: [
                   HomePage(),
-                  WatchListPage(),
+                  FavoritesPage(),
                   SearchPage(),
                   ProfilePage(),
                 ],

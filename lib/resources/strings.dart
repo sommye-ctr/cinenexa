@@ -85,6 +85,10 @@ class Strings {
   static const String remove = "Remove";
   static const String noItemsSelected = "No items selected";
 
+  // Lists
+  static const String loginToSeeList =
+      "Login into Trakt to access your created lists";
+
 //Search
   static const String searchHint = "You can search for";
   static const String moviesTvShows = "Movies, Shows...";

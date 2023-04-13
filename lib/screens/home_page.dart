@@ -1,9 +1,10 @@
 import 'package:badges/badges.dart' as Badge;
+import 'package:cinenexa/screens/watchlist_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:mobx/mobx.dart';
-import 'package:cinenexa/components/home_favourites.dart';
+import 'package:cinenexa/screens/favourites_page.dart';
 import 'package:cinenexa/resources/strings.dart';
 import 'package:cinenexa/resources/style.dart';
 import 'package:cinenexa/screens/filter_page.dart';
@@ -36,7 +37,7 @@ class _HomePageState extends State<HomePage>
     defaultMovieIndex: 1,
     defaultTvIndex: 2,
   );
-  late final Widget myList = HomeFavorites();
+  late final Widget myList = FavoritesPage();
 
   late final Widget featured = HomeFeatured(
       onItemClicked: _onItemClicked, onSeeMoreClicked: _onSeeMoreClicked);
@@ -91,7 +92,7 @@ class _HomePageState extends State<HomePage>
                 text: Strings.shows,
               ),
               Tab(
-                text: Strings.favorites,
+                text: Strings.lists,
               ),
             ],
           ),
@@ -102,7 +103,7 @@ class _HomePageState extends State<HomePage>
                 featured,
                 _buildMovieBody(),
                 _buildTvBody(),
-                myList,
+                WatchListPage(),
               ],
             ),
           ),
