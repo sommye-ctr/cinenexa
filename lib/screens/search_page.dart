@@ -77,8 +77,11 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
 
   Widget _buildSearchBar() {
     return SearchInput(
-      onEditingComplete: () =>
-          searchStore.searchClicked(textEditingController.text),
+      onEditingComplete: () {
+        searchStore.changeSearchType(SearchType.movie);
+        tabController.animateTo(0);
+        searchStore.searchClicked(textEditingController.text);
+      },
       controller: textEditingController,
       focus: focusNode,
       onChanged: searchStore.searchTermChanged,

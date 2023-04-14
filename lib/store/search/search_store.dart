@@ -135,6 +135,7 @@ abstract class _SearchStore with Store {
   @action
   void searchClicked(String? term) {
     page = 1;
+    changeSearchType(SearchType.movie);
     if (speaking) {
       speakToTextClicked(false);
     }
@@ -225,7 +226,7 @@ abstract class _SearchStore with Store {
   @action
   void searchHistoryTermClicked(String term) {
     searchTerm = term;
-    searchClicked(null);
+    searchClicked(term);
   }
 
   @action
