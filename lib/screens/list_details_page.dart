@@ -9,6 +9,7 @@ import 'package:cinenexa/services/network/trakt_oauth_client.dart';
 import 'package:cinenexa/services/network/trakt_repository.dart';
 import 'package:cinenexa/services/network/utils.dart';
 import 'package:cinenexa/utils/screen_size.dart';
+import 'package:cinenexa/widgets/custom_back_button.dart';
 import 'package:cinenexa/widgets/rounded_image.dart';
 import 'package:flutter/material.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
@@ -129,13 +130,17 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
           ),
           child: Center(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                UnconstrainedBox(
-                  child: RoundedImage(
-                    image: Utils.getBackdropUrl(
-                        widget.traktList.items[0].backdropPath!),
-                    width: ScreenSize.getPercentOfWidth(context, 0.95),
-                    ratio: Constants.backdropAspectRatio,
+                CustomBackButton(),
+                Center(
+                  child: UnconstrainedBox(
+                    child: RoundedImage(
+                      image: Utils.getBackdropUrl(
+                          widget.traktList.items[0].backdropPath!),
+                      width: ScreenSize.getPercentOfWidth(context, 0.95),
+                      ratio: Constants.backdropAspectRatio,
+                    ),
                   ),
                 ),
                 Padding(
