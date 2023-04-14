@@ -79,7 +79,7 @@ class _SettingsGeneralState extends State<SettingsGeneral> {
                 title: Strings.justwatchProvidersShow,
                 subtitle: Strings.countryProvidersSub,
                 trailing: CupertinoSwitch(
-                  value: providersEnabled ?? true,
+                  value: providersEnabled ?? false,
                   onChanged: (value) {
                     providersEnabled = !providersEnabled!;
                     providerCountry = null;

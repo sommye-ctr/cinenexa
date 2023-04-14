@@ -233,12 +233,7 @@ class Strings {
   static const String seekDurationSub = "Duration to seek in video player";
   static const String autoSelectSubtitleSub =
       "Automatically select the subtitle that was selected during previous playback";
-  static const String autoPlayPopup = "Autoplay Popup";
-  static const String autoPlayPopupSub =
-      "Popup at the end of episode. Fetches streams for the next episode beforehand";
   static const String autoPlayDuration = "Autoplay Duration";
-  static const String autoPlayDurationSub =
-      "Duration from the end of video, before which the popup should be shown";
 
   static const String subtitle = "Subtitle";
   static const String subtitleSettings = "Subtitle Settings";
