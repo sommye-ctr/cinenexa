@@ -25,6 +25,38 @@ mixin _$WatchListStore on _WatchListStoreBase, Store {
     });
   }
 
+  late final _$likedListsAtom =
+      Atom(name: '_WatchListStoreBase.likedLists', context: context);
+
+  @override
+  ObservableList<TraktList> get likedLists {
+    _$likedListsAtom.reportRead();
+    return super.likedLists;
+  }
+
+  @override
+  set likedLists(ObservableList<TraktList> value) {
+    _$likedListsAtom.reportWrite(value, super.likedLists, () {
+      super.likedLists = value;
+    });
+  }
+
+  late final _$currentIsLikedAtom =
+      Atom(name: '_WatchListStoreBase.currentIsLiked', context: context);
+
+  @override
+  bool get currentIsLiked {
+    _$currentIsLikedAtom.reportRead();
+    return super.currentIsLiked;
+  }
+
+  @override
+  set currentIsLiked(bool value) {
+    _$currentIsLikedAtom.reportWrite(value, super.currentIsLiked, () {
+      super.currentIsLiked = value;
+    });
+  }
+
   late final _$fetchWatchListsAsyncAction =
       AsyncAction('_WatchListStoreBase.fetchWatchLists', context: context);
 
@@ -34,10 +66,35 @@ mixin _$WatchListStore on _WatchListStoreBase, Store {
         .run(() => super.fetchWatchLists(fromApi: fromApi));
   }
 
+  late final _$fetchLikedListsAsyncAction =
+      AsyncAction('_WatchListStoreBase.fetchLikedLists', context: context);
+
+  @override
+  Future<dynamic> fetchLikedLists({bool fromApi = false}) {
+    return _$fetchLikedListsAsyncAction
+        .run(() => super.fetchLikedLists(fromApi: fromApi));
+  }
+
+  late final _$_WatchListStoreBaseActionController =
+      ActionController(name: '_WatchListStoreBase', context: context);
+
+  @override
+  void changeSelection(bool currentLiked) {
+    final _$actionInfo = _$_WatchListStoreBaseActionController.startAction(
+        name: '_WatchListStoreBase.changeSelection');
+    try {
+      return super.changeSelection(currentLiked);
+    } finally {
+      _$_WatchListStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
   @override
   String toString() {
     return '''
-watchLists: ${watchLists}
+watchLists: ${watchLists},
+likedLists: ${likedLists},
+currentIsLiked: ${currentIsLiked}
     ''';
   }
 }

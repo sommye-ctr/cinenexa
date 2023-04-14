@@ -58,8 +58,8 @@ class TraktRepository {
           DateTimeFormatter.parseDate(map['movies']['collected_at'])
       ..movieWatchedAt =
           DateTimeFormatter.parseDate(map['movies']['watched_at'])
-      ..listsUpdatedAt =
-          DateTimeFormatter.parseDate(map['lists']['updated_at']);
+      ..listsUpdatedAt = DateTimeFormatter.parseDate(map['lists']['updated_at'])
+      ..listsLikedAt = DateTimeFormatter.parseDate(map['lists']['liked_at']);
   }
 
   Future<UserStats> getUserStats() async {
@@ -264,6 +264,21 @@ class TraktRepository {
 
       for (var element in list) {
         items.add(TraktList.fromPersonalMap(element));
+      }
+    }
+    return items;
+  }
+
+  //requires oauth
+  Future<List<TraktList>> getUserLikedTraktLists() async {
+    Response response = await get("https://api.trakt.tv/users/me/likes/lists");
+    List<TraktList> items = [];
+
+    if (response.statusCode == 200) {
+      List list = Utils.parseJson(response.body);
+
+      for (var element in list) {
+        items.add(TraktList.fromPersonalMap(element['list']));
       }
     }
     return items;

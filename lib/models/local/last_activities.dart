@@ -15,4 +15,5 @@ class LastActivities {
   DateTime? extensionsSyncedAt;
 
   DateTime? listsUpdatedAt;
+  DateTime? listsLikedAt;
 }

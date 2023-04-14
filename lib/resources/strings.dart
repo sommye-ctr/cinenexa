@@ -88,6 +88,8 @@ class Strings {
   // Lists
   static const String loginToSeeList =
       "Login into Trakt to access your created lists";
+  static const String liked = "Liked";
+  static const String personal = "Personal";
 
 //Search
   static const String searchHint = "You can search for";

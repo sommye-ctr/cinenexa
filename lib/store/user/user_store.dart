@@ -105,6 +105,14 @@ abstract class _UserStoreBase with Store {
         } else {
           listFutures.add(watchListsStore?.fetchWatchLists() ?? Future.value());
         }
+
+        if ((lastActivities.listsLikedAt ?? DateTime.now())
+            .isAfter(localLast.listsLikedAt ?? DateTime.now())) {
+          listFutures.add(watchListsStore?.fetchLikedLists(fromApi: true) ??
+              Future.value());
+        } else {
+          listFutures.add(watchListsStore?.fetchLikedLists() ?? Future.value());
+        }
       } else {
         futures.addAll([
           fetchUserWatchedShows(
@@ -114,6 +122,7 @@ abstract class _UserStoreBase with Store {
           ),
           favoritesStore?.fetchFavorites(fromApi: true),
           watchListsStore?.fetchWatchLists(fromApi: true),
+          watchListsStore?.fetchLikedLists(fromApi: true),
         ]);
       }
       Future.wait(listFutures).whenComplete(() => localDb.addLastActivities(
@@ -122,6 +131,7 @@ abstract class _UserStoreBase with Store {
     } else {
       favoritesStore?.fetchFavorites(fromApi: false);
       watchListsStore?.fetchWatchLists(fromApi: false);
+      watchListsStore?.fetchLikedLists(fromApi: true);
     }
   }
 

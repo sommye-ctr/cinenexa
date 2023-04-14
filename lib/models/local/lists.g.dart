@@ -38,18 +38,23 @@ const ListsSchema = CollectionSchema(
       type: IsarType.objectList,
       target: r'ListsBaseModel',
     ),
-    r'likes': PropertySchema(
+    r'liked': PropertySchema(
       id: 4,
+      name: r'liked',
+      type: IsarType.bool,
+    ),
+    r'likes': PropertySchema(
+      id: 5,
       name: r'likes',
       type: IsarType.long,
     ),
     r'name': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'name',
       type: IsarType.string,
     ),
     r'userName': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'userName',
       type: IsarType.string,
     )
@@ -124,9 +129,10 @@ void _listsSerialize(
     ListsBaseModelSchema.serialize,
     object.items,
   );
-  writer.writeLong(offsets[4], object.likes);
-  writer.writeString(offsets[5], object.name);
-  writer.writeString(offsets[6], object.userName);
+  writer.writeBool(offsets[4], object.liked);
+  writer.writeLong(offsets[5], object.likes);
+  writer.writeString(offsets[6], object.name);
+  writer.writeString(offsets[7], object.userName);
 }
 
 Lists _listsDeserialize(
@@ -146,9 +152,10 @@ Lists _listsDeserialize(
     allOffsets,
     ListsBaseModel(),
   );
-  object.likes = reader.readLongOrNull(offsets[4]);
-  object.name = reader.readStringOrNull(offsets[5]);
-  object.userName = reader.readStringOrNull(offsets[6]);
+  object.liked = reader.readBoolOrNull(offsets[4]);
+  object.likes = reader.readLongOrNull(offsets[5]);
+  object.name = reader.readStringOrNull(offsets[6]);
+  object.userName = reader.readStringOrNull(offsets[7]);
   return object;
 }
 
@@ -173,10 +180,12 @@ P _listsDeserializeProp<P>(
         ListsBaseModel(),
       )) as P;
     case 4:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readBoolOrNull(offset)) as P;
     case 5:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 6:
+      return (reader.readStringOrNull(offset)) as P;
+    case 7:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -721,6 +730,31 @@ extension ListsQueryFilter on QueryBuilder<Lists, Lists, QFilterCondition> {
     });
   }
 
+  QueryBuilder<Lists, Lists, QAfterFilterCondition> likedIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'liked',
+      ));
+    });
+  }
+
+  QueryBuilder<Lists, Lists, QAfterFilterCondition> likedIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'liked',
+      ));
+    });
+  }
+
+  QueryBuilder<Lists, Lists, QAfterFilterCondition> likedEqualTo(bool? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'liked',
+        value: value,
+      ));
+    });
+  }
+
   QueryBuilder<Lists, Lists, QAfterFilterCondition> likesIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -1128,6 +1162,18 @@ extension ListsQuerySortBy on QueryBuilder<Lists, Lists, QSortBy> {
     });
   }
 
+  QueryBuilder<Lists, Lists, QAfterSortBy> sortByLiked() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'liked', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Lists, Lists, QAfterSortBy> sortByLikedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'liked', Sort.desc);
+    });
+  }
+
   QueryBuilder<Lists, Lists, QAfterSortBy> sortByLikes() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'likes', Sort.asc);
@@ -1214,6 +1260,18 @@ extension ListsQuerySortThenBy on QueryBuilder<Lists, Lists, QSortThenBy> {
     });
   }
 
+  QueryBuilder<Lists, Lists, QAfterSortBy> thenByLiked() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'liked', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Lists, Lists, QAfterSortBy> thenByLikedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'liked', Sort.desc);
+    });
+  }
+
   QueryBuilder<Lists, Lists, QAfterSortBy> thenByLikes() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'likes', Sort.asc);
@@ -1271,6 +1329,12 @@ extension ListsQueryWhereDistinct on QueryBuilder<Lists, Lists, QDistinct> {
     });
   }
 
+  QueryBuilder<Lists, Lists, QDistinct> distinctByLiked() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'liked');
+    });
+  }
+
   QueryBuilder<Lists, Lists, QDistinct> distinctByLikes() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'likes');
@@ -1320,6 +1384,12 @@ extension ListsQueryProperty on QueryBuilder<Lists, Lists, QQueryProperty> {
   QueryBuilder<Lists, List<ListsBaseModel>?, QQueryOperations> itemsProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'items');
+    });
+  }
+
+  QueryBuilder<Lists, bool?, QQueryOperations> likedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'liked');
     });
   }
 

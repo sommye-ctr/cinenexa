@@ -32,18 +32,23 @@ const LastActivitiesSchema = CollectionSchema(
       name: r'extensionsSyncedAt',
       type: IsarType.dateTime,
     ),
-    r'listsUpdatedAt': PropertySchema(
+    r'listsLikedAt': PropertySchema(
       id: 3,
+      name: r'listsLikedAt',
+      type: IsarType.dateTime,
+    ),
+    r'listsUpdatedAt': PropertySchema(
+      id: 4,
       name: r'listsUpdatedAt',
       type: IsarType.dateTime,
     ),
     r'movieCollectedAt': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'movieCollectedAt',
       type: IsarType.dateTime,
     ),
     r'movieWatchedAt': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'movieWatchedAt',
       type: IsarType.dateTime,
     )
@@ -80,9 +85,10 @@ void _lastActivitiesSerialize(
   writer.writeDateTime(offsets[0], object.epCollectedAt);
   writer.writeDateTime(offsets[1], object.epWatchedAt);
   writer.writeDateTime(offsets[2], object.extensionsSyncedAt);
-  writer.writeDateTime(offsets[3], object.listsUpdatedAt);
-  writer.writeDateTime(offsets[4], object.movieCollectedAt);
-  writer.writeDateTime(offsets[5], object.movieWatchedAt);
+  writer.writeDateTime(offsets[3], object.listsLikedAt);
+  writer.writeDateTime(offsets[4], object.listsUpdatedAt);
+  writer.writeDateTime(offsets[5], object.movieCollectedAt);
+  writer.writeDateTime(offsets[6], object.movieWatchedAt);
 }
 
 LastActivities _lastActivitiesDeserialize(
@@ -96,9 +102,10 @@ LastActivities _lastActivitiesDeserialize(
   object.epWatchedAt = reader.readDateTimeOrNull(offsets[1]);
   object.extensionsSyncedAt = reader.readDateTimeOrNull(offsets[2]);
   object.id = id;
-  object.listsUpdatedAt = reader.readDateTimeOrNull(offsets[3]);
-  object.movieCollectedAt = reader.readDateTimeOrNull(offsets[4]);
-  object.movieWatchedAt = reader.readDateTimeOrNull(offsets[5]);
+  object.listsLikedAt = reader.readDateTimeOrNull(offsets[3]);
+  object.listsUpdatedAt = reader.readDateTimeOrNull(offsets[4]);
+  object.movieCollectedAt = reader.readDateTimeOrNull(offsets[5]);
+  object.movieWatchedAt = reader.readDateTimeOrNull(offsets[6]);
   return object;
 }
 
@@ -120,6 +127,8 @@ P _lastActivitiesDeserializeProp<P>(
     case 4:
       return (reader.readDateTimeOrNull(offset)) as P;
     case 5:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 6:
       return (reader.readDateTimeOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -518,6 +527,80 @@ extension LastActivitiesQueryFilter
   }
 
   QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
+      listsLikedAtIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'listsLikedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
+      listsLikedAtIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'listsLikedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
+      listsLikedAtEqualTo(DateTime? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'listsLikedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
+      listsLikedAtGreaterThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'listsLikedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
+      listsLikedAtLessThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'listsLikedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
+      listsLikedAtBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'listsLikedAt',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<LastActivities, LastActivities, QAfterFilterCondition>
       listsUpdatedAtIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -791,6 +874,20 @@ extension LastActivitiesQuerySortBy
   }
 
   QueryBuilder<LastActivities, LastActivities, QAfterSortBy>
+      sortByListsLikedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'listsLikedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<LastActivities, LastActivities, QAfterSortBy>
+      sortByListsLikedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'listsLikedAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<LastActivities, LastActivities, QAfterSortBy>
       sortByListsUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'listsUpdatedAt', Sort.asc);
@@ -890,6 +987,20 @@ extension LastActivitiesQuerySortThenBy
   }
 
   QueryBuilder<LastActivities, LastActivities, QAfterSortBy>
+      thenByListsLikedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'listsLikedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<LastActivities, LastActivities, QAfterSortBy>
+      thenByListsLikedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'listsLikedAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<LastActivities, LastActivities, QAfterSortBy>
       thenByListsUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'listsUpdatedAt', Sort.asc);
@@ -956,6 +1067,13 @@ extension LastActivitiesQueryWhereDistinct
   }
 
   QueryBuilder<LastActivities, LastActivities, QDistinct>
+      distinctByListsLikedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'listsLikedAt');
+    });
+  }
+
+  QueryBuilder<LastActivities, LastActivities, QDistinct>
       distinctByListsUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'listsUpdatedAt');
@@ -1003,6 +1121,13 @@ extension LastActivitiesQueryProperty
       extensionsSyncedAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'extensionsSyncedAt');
+    });
+  }
+
+  QueryBuilder<LastActivities, DateTime?, QQueryOperations>
+      listsLikedAtProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'listsLikedAt');
     });
   }
 

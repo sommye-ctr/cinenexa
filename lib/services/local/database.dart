@@ -631,15 +631,22 @@ class Database {
   }
 
   Future<List<TraktList>> getLists() async {
-    return (await isar.lists.where().findAll())
+    return (await isar.lists.filter().likedEqualTo(false).findAll())
         .map((e) => e.getTraktList())
         .toList();
   }
 
-  Future updateLists({required List<TraktList> lists}) async {
+  Future<List<TraktList>> getLikedLists() async {
+    List<Lists> list = await isar.lists.filter().likedEqualTo(true).findAll();
+
+    return list.map((e) => e.getTraktList()).toList();
+  }
+
+  Future updateLists(
+      {required List<TraktList> lists, bool liked = false}) async {
     await isar.writeTxn(() async {
-      await isar.lists.clear();
-      await isar.lists.putAll(lists.map((e) => e.getList()).toList());
+      await isar.lists
+          .putAll(lists.map((e) => e.getList()..liked = liked).toList());
     });
   }
 }

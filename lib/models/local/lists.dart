@@ -16,6 +16,7 @@ class Lists {
   DateTime? createdAt;
 
   List<ListsBaseModel>? items;
+  bool? liked = false;
 }
 
 extension ListsConverter on Lists {

@@ -12,8 +12,19 @@ abstract class _WatchListStoreBase with Store {
   @observable
   ObservableList<TraktList> watchLists = <TraktList>[].asObservable();
 
+  @observable
+  ObservableList<TraktList> likedLists = <TraktList>[].asObservable();
+
+  @observable
+  bool currentIsLiked = false;
+
   TraktRepository traktRepository = TraktRepository(client: TraktOAuthClient());
   Database localDb = Database();
+
+  @action
+  void changeSelection(bool currentLiked) {
+    currentIsLiked = currentLiked;
+  }
 
   @action
   Future fetchWatchLists({bool fromApi = false}) async {
@@ -35,6 +46,20 @@ abstract class _WatchListStoreBase with Store {
         List<TraktList> newList = List.from(watchLists);
         watchLists.clear();
         watchLists = newList.asObservable();
+      });
+    }
+  }
+
+  @action
+  Future fetchLikedLists({bool fromApi = false}) async {
+    likedLists.addAll(await localDb.getLikedLists());
+
+    if (fromApi) {
+      print("object");
+      traktRepository.getUserLikedTraktLists().then((value) async {
+        await localDb.updateLists(lists: value, liked: true);
+        likedLists.clear();
+        likedLists.addAll(value);
       });
     }
   }
