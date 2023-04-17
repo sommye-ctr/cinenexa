@@ -1,6 +1,7 @@
 import 'package:cinenexa/models/network/trakt/trakt_list.dart';
 import 'package:mobx/mobx.dart';
 
+import '../../models/network/base_model.dart';
 import '../../services/local/database.dart';
 import '../../services/network/trakt_oauth_client.dart';
 import '../../services/network/trakt_repository.dart';
@@ -40,9 +41,11 @@ abstract class _WatchListStoreBase with Store {
           element.setItems(await traktRepository.getListItems(
             listId: element.traktId,
             personal: true,
+            limit: false,
           ));
         });
         await localDb.updateLists(lists: watchLists);
+        localDb.updateLastActivities(listUpdatedAt: DateTime.now());
         List<TraktList> newList = List.from(watchLists);
         watchLists.clear();
         watchLists = newList.asObservable();
@@ -55,12 +58,48 @@ abstract class _WatchListStoreBase with Store {
     likedLists.addAll(await localDb.getLikedLists());
 
     if (fromApi) {
-      print("object");
       traktRepository.getUserLikedTraktLists().then((value) async {
         await localDb.updateLists(lists: value, liked: true);
+        localDb.updateLastActivities(listLikedAt: DateTime.now());
         likedLists.clear();
         likedLists.addAll(value);
       });
     }
+  }
+
+  @action
+  Future addItemtoList(
+      {required BaseModel baseModel, required int listId}) async {
+    int index = watchLists.indexWhere((element) => element.traktId == listId);
+    TraktList list = watchLists[index];
+    watchLists[index] = list..addItem(baseModel);
+
+    localDb.addToList(listId: listId, item: baseModel);
+    traktRepository
+        .addItemsToList(
+      item: baseModel,
+      listId: listId,
+    )
+        .then((value) {
+      localDb.updateLastActivities(listUpdatedAt: DateTime.now());
+    });
+  }
+
+  @action
+  Future removeItemtoList(
+      {required BaseModel baseModel, required int listId}) async {
+    int index = watchLists.indexWhere((element) => element.traktId == listId);
+    TraktList list = watchLists[index];
+    watchLists[index] = list..removeItem(baseModel);
+
+    localDb.removeFromList(listId: listId, item: baseModel);
+    traktRepository
+        .removeItemsToList(
+      item: baseModel,
+      listId: listId,
+    )
+        .then((value) {
+      localDb.updateLastActivities(listUpdatedAt: DateTime.now());
+    });
   }
 }

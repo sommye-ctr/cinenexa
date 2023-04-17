@@ -9,7 +9,7 @@ import '../../local/lists.dart';
 class TraktList {
   final String name;
   final String desc;
-  final int itemCount;
+  int itemCount;
   final int likes;
   final int traktId;
   final String userName;
@@ -29,6 +29,16 @@ class TraktList {
 
   void setItems(List<BaseModel> items) {
     this.items = items;
+  }
+
+  void addItem(BaseModel item) {
+    items.add(item);
+    itemCount++;
+  }
+
+  void removeItem(BaseModel item) {
+    items.removeWhere((element) => element.id == item.id);
+    itemCount--;
   }
 
   TraktList copyWith({

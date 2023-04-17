@@ -144,7 +144,8 @@ abstract class _DetailsStore with Store {
   }
 
   @action
-  void removeFromListCLicked(FavoritesStore store, UserStore userStore) {
+  Future removeFromListCLicked(
+      FavoritesStore store, UserStore userStore) async {
     store
         .removeFavorite(baseModel, userStore)
         .whenComplete(() => isAddedToFav = false);

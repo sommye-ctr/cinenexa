@@ -175,6 +175,10 @@ class Strings {
   static const String birthPlace = "BirthPlace";
   static const String birthday = "Birthday";
 
+  // Manage Lists
+  static const String manageList = "Manage Lists";
+  static const String manageListSubheading = "Click to add/remove item";
+
 //Profile
   static const String anonymous = "Anonymous";
   static const String watchedMovies = "Movies\nWatched";

@@ -123,6 +123,22 @@ class Style {
         ); */
   }
 
+  static void showBottomSheet(context, Widget child) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
+      ),
+      builder: (context) {
+        return FractionallySizedBox(
+          heightFactor: 0.75,
+          child: child,
+        );
+      },
+    );
+  }
+
   static Widget getChip(context, String text) {
     return Padding(
       padding: EdgeInsets.only(

@@ -313,16 +313,18 @@ class TraktRepository {
     required int listId,
     int page = 1,
     bool personal = false,
+    bool limit = true,
   }) async {
     Response response;
 
+    String limitText = limit ? "?page=$page&limit=15" : "";
     if (personal) {
       response = await get(
-          "https://api.trakt.tv/users/me/lists/$listId/items/movie,show?page=$page&limit=15");
+          "https://api.trakt.tv/users/me/lists/$listId/items/movie,show$limitText");
     } else {
       response = await https.get(
         Uri.parse(
-            "https://api.trakt.tv/lists/$listId/items/movie,show?page=$page&limit=15"),
+            "https://api.trakt.tv/lists/$listId/items/movie,show$limitText"),
         headers: {
           "Content-type": "application/json",
           "trakt-api-key": Constants.traktApi,
@@ -348,6 +350,41 @@ class TraktRepository {
       baseModels.add(BaseModel.fromTv(tv));
     });
     return baseModels;
+  }
+
+  Future addItemsToList({required BaseModel item, required int listId}) async {
+    Map itemBodies = {
+      item.type == BaseModelType.movie ? "movies" : "shows": [
+        {
+          "ids": {
+            "tmdb": item.id,
+          }
+        }
+      ],
+    };
+
+    await post(
+      "https://api.trakt.tv/users/me/lists/$listId/items",
+      data: Utils.encodeJson(itemBodies),
+    );
+  }
+
+  Future removeItemsToList(
+      {required BaseModel item, required int listId}) async {
+    Map itemBodies = {
+      item.type == BaseModelType.movie ? "movies" : "shows": [
+        {
+          "ids": {
+            "tmdb": item.id,
+          }
+        }
+      ],
+    };
+
+    await post(
+      "https://api.trakt.tv/users/me/lists/$listId/items/remove",
+      data: Utils.encodeJson(itemBodies),
+    );
   }
 
   Future<TraktUser> getUserProfile() async {

@@ -15,6 +15,7 @@ import 'package:cinenexa/models/network/extensions/extension.dart';
 import 'package:cinenexa/models/network/trakt/trakt_show_history_season.dart';
 import 'package:cinenexa/models/network/trakt/trakt_show_history_season_ep.dart';
 
+import '../../models/local/lists_basemodel.dart';
 import '../../models/network/trakt/trakt_list.dart';
 import '../../models/network/trakt/trakt_progress.dart';
 import '../../utils/show_episodes_utils.dart';
@@ -219,6 +220,8 @@ class Database {
     DateTime? epWatchedAt,
     DateTime? epCollectedAt,
     DateTime? extensionSyncedAt,
+    DateTime? listUpdatedAt,
+    DateTime? listLikedAt,
   }) async {
     LastActivities? lastActivities = await isar.lastActivities.get(0);
     LastActivities newLastActivities = LastActivities()
@@ -228,7 +231,9 @@ class Database {
       ..movieCollectedAt = movieCollectedAt ?? lastActivities?.movieCollectedAt
       ..movieWatchedAt = movieWatchedAt ?? lastActivities?.movieWatchedAt
       ..extensionsSyncedAt =
-          extensionSyncedAt ?? lastActivities?.extensionsSyncedAt;
+          extensionSyncedAt ?? lastActivities?.extensionsSyncedAt
+      ..listsUpdatedAt = listUpdatedAt ?? lastActivities?.listsUpdatedAt
+      ..listsLikedAt = listLikedAt ?? lastActivities?.listsLikedAt;
 
     await isar.writeTxn(() async {
       await isar.lastActivities.put(newLastActivities);
@@ -625,6 +630,43 @@ class Database {
     await isar.writeTxn(() async {
       await isar.lists
           .putAll(lists.map((e) => e.getList()..liked = liked).toList());
+    });
+  }
+
+  Future addToList({
+    required int listId,
+    required BaseModel item,
+  }) async {
+    await isar.writeTxn(() async {
+      Lists? listItem = await isar.lists.get(listId);
+
+      if (listItem == null) {
+        return;
+      }
+      List<ListsBaseModel>? items = listItem.items;
+      listItem.items = [...items ?? [], item.getListBaseModel()];
+      listItem.itemCount = (listItem.itemCount ?? 0) + 1;
+
+      await isar.lists.put(listItem);
+    });
+  }
+
+  Future removeFromList({
+    required int listId,
+    required BaseModel item,
+  }) async {
+    await isar.writeTxn(() async {
+      Lists? listItem = await isar.lists.get(listId);
+
+      if (listItem == null) {
+        return;
+      }
+      List<ListsBaseModel>? items = listItem.items;
+      items?.removeWhere((element) => element.id == item.id);
+      listItem.itemCount = (listItem.itemCount ?? 0) - 1;
+
+      listItem.items = items;
+      await isar.lists.put(listItem);
     });
   }
 }

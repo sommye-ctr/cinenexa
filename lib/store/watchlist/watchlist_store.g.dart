@@ -75,6 +75,26 @@ mixin _$WatchListStore on _WatchListStoreBase, Store {
         .run(() => super.fetchLikedLists(fromApi: fromApi));
   }
 
+  late final _$addItemtoListAsyncAction =
+      AsyncAction('_WatchListStoreBase.addItemtoList', context: context);
+
+  @override
+  Future<dynamic> addItemtoList(
+      {required BaseModel baseModel, required int listId}) {
+    return _$addItemtoListAsyncAction
+        .run(() => super.addItemtoList(baseModel: baseModel, listId: listId));
+  }
+
+  late final _$removeItemtoListAsyncAction =
+      AsyncAction('_WatchListStoreBase.removeItemtoList', context: context);
+
+  @override
+  Future<dynamic> removeItemtoList(
+      {required BaseModel baseModel, required int listId}) {
+    return _$removeItemtoListAsyncAction.run(
+        () => super.removeItemtoList(baseModel: baseModel, listId: listId));
+  }
+
   late final _$_WatchListStoreBaseActionController =
       ActionController(name: '_WatchListStoreBase', context: context);
 

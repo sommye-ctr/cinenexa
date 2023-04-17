@@ -213,23 +213,14 @@ class _HomePageState extends State<HomePage>
       List<BaseModel> items,
       String heading,
       SeeMoreChildType seeMoreChildType) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
+    Style.showBottomSheet(
+      context,
+      SeeMorePage(
+        future: future,
+        initialItems: items,
+        heading: heading,
+        type: seeMoreChildType,
       ),
-      builder: (context) {
-        return FractionallySizedBox(
-          heightFactor: 0.75,
-          child: SeeMorePage(
-            future: future,
-            initialItems: items,
-            heading: heading,
-            type: seeMoreChildType,
-          ),
-        );
-      },
     );
   }
 
