@@ -161,33 +161,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.center,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text("${widget.traktList.itemCount} items"),
-                          LikeButton(
-                            likeCount: widget.traktList.likes,
-                            likeBuilder: (isLiked) => Icon(
-                              Icons.thumb_up_alt_rounded,
-                              color: isLiked ? Colors.blue : Colors.grey,
-                            ),
-                            bubblesColor: BubblesColor(
-                              dotPrimaryColor: Colors.blue,
-                              dotSecondaryColor: Colors.cyanAccent,
-                            ),
-                            circleColor: CircleColor(
-                              start: Colors.blueGrey,
-                              end: Colors.cyanAccent,
-                            ),
-                            countBuilder: (likeCount, isLiked, text) => Text(
-                              text,
-                              style: TextStyle(
-                                color: isLiked ? Colors.blue : Colors.grey,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                      Text("${widget.traktList.itemCount} items"),
                     ],
                   ),
                 ),

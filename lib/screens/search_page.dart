@@ -460,23 +460,6 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   void _onAutocompleteClicked(BaseModel baseModel) {
     focusNode.requestFocus();
     textEditingController.value = TextEditingValue(text: baseModel.title!);
-    switch (baseModel.type) {
-      case BaseModelType.movie:
-        searchStore.changeSearchType(SearchType.movie);
-        tabController.animateTo(0);
-        break;
-      case BaseModelType.people:
-        searchStore.changeSearchType(SearchType.people);
-        tabController.animateTo(2);
-        break;
-      case BaseModelType.tv:
-        searchStore.changeSearchType(SearchType.tv);
-        tabController.animateTo(1);
-        break;
-      default:
-        searchStore.changeSearchType(SearchType.movie);
-        tabController.animateTo(0);
-    }
 
     searchStore.searchClicked(baseModel.title!);
   }
