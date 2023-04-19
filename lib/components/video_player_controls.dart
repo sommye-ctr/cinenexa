@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:better_player/better_player.dart';
 import 'package:cinenexa/models/local/show_history.dart';
 import 'package:cinenexa/services/local/torrent_streamer.dart';
@@ -281,16 +280,8 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
       child: _buildControlButton(
         icon: Icons.closed_caption_off,
         onTap: () {
-          AwesomeDialog(
-            context: context,
-            dialogType: DialogType.noHeader,
-            width: ScreenSize.getPercentOfWidth(context, 0.7),
-            title: Strings.settings,
-            body: _buildSubtitlePopup(),
-            showCloseIcon: true,
-            padding: EdgeInsets.all(8),
-            animType: AnimType.bottomSlide,
-          ).show();
+          drawerWidget = _buildSubtitlePopup();
+          openDrawer();
         },
         size: 25,
         overlay: true,
