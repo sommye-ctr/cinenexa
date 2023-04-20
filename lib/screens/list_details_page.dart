@@ -148,21 +148,24 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                     horizontal: 8.0,
                     vertical: 4,
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.traktList.name,
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
+                  child: Center(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          widget.traktList.name,
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                      ),
-                      Text("${widget.traktList.itemCount} items"),
-                    ],
+                        Style.getVerticalSpacing(context: context),
+                        Text("${widget.traktList.itemCount} items"),
+                      ],
+                    ),
                   ),
                 ),
                 Style.getVerticalSpacing(context: context),
