@@ -131,7 +131,7 @@ abstract class _UserStoreBase with Store {
     } else {
       favoritesStore?.fetchFavorites(fromApi: false);
       watchListsStore?.fetchWatchLists(fromApi: false);
-      watchListsStore?.fetchLikedLists(fromApi: true);
+      watchListsStore?.fetchLikedLists(fromApi: false);
     }
   }
 

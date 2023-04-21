@@ -38,13 +38,17 @@ abstract class _WatchListStoreBase with Store {
         watchLists.addAll(value);
 
         await Future.forEach<TraktList>(watchLists, (element) async {
-          element.setItems(await traktRepository.getListItems(
-            listId: element.traktId,
-            personal: true,
-            limit: false,
-          ));
+          try {
+            var item = await traktRepository.getListItems(
+              listId: element.traktId,
+              personal: true,
+              limit: false,
+            );
+            element.setItems(item);
+            await localDb.updateListItem(id: element.traktId, items: item);
+          } catch (e) {}
         });
-        await localDb.updateLists(lists: watchLists);
+
         localDb.updateLastActivities(listUpdatedAt: DateTime.now());
         List<TraktList> newList = List.from(watchLists);
         watchLists.clear();

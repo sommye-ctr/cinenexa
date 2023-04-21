@@ -199,11 +199,25 @@ class Database {
   }
 
   Future clearTraktInfo() async {
-    isar.writeTxn(() async {
-      return Future.wait([
+    print("clearing info");
+    await isar.writeTxn(() async {
+      LastActivities? lastActivities = await isar.lastActivities.get(0);
+      LastActivities newLastActivities = LastActivities()
+        ..id = 0
+        ..epCollectedAt = null
+        ..epWatchedAt = null
+        ..listsLikedAt = null
+        ..listsUpdatedAt = null
+        ..movieCollectedAt = null
+        ..movieWatchedAt = null
+        ..extensionsSyncedAt = lastActivities?.extensionsSyncedAt;
+
+      await Future.wait([
         isar.favorites.clear(),
         isar.progress.clear(),
         isar.showHistorys.clear(),
+        isar.lists.clear(),
+        isar.lastActivities.put(newLastActivities),
       ]);
     });
   }
@@ -630,6 +644,18 @@ class Database {
     await isar.writeTxn(() async {
       await isar.lists
           .putAll(lists.map((e) => e.getList()..liked = liked).toList());
+    });
+  }
+
+  Future updateListItem(
+      {required int id, required List<BaseModel> items}) async {
+    await isar.writeTxn(() async {
+      Lists? list = await isar.lists.get(id);
+      if (list == null) {
+        return;
+      }
+      list.items = items.map((e) => e.getListBaseModel()).toList();
+      await isar.lists.put(list);
     });
   }
 

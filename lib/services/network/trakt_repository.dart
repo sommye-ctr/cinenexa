@@ -338,15 +338,24 @@ class TraktRepository {
 
     await Future.forEach(list, (element) async {
       element as Map;
+
       if (element['type'] == "movie") {
-        Movie movie = await Repository.getMovieDetails(
-            id: (element)['movie']['ids']['tmdb']);
+        int? id = (element)['movie']['ids']['tmdb'];
+
+        if (id == null) {
+          return;
+        }
+        Movie movie = await Repository.getMovieDetails(id: id);
         baseModels.add(BaseModel.fromMovie(movie));
         return;
       }
-      Tv tv = await Repository.getTvDetails(
-        id: (element)['show']['ids']['tmdb'],
-      );
+      int? id = (element)['show']['ids']['tmdb'];
+
+      if (id == null) {
+        return;
+      }
+
+      Tv tv = await Repository.getTvDetails(id: id);
       baseModels.add(BaseModel.fromTv(tv));
     });
     return baseModels;
