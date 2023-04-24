@@ -3,8 +3,6 @@ import 'dart:async';
 import 'package:mobx/mobx.dart';
 import 'package:cinenexa/models/network/extensions/extension_stream.dart';
 import 'package:cinenexa/models/network/review.dart';
-import 'package:cinenexa/models/network/trakt/trakt_show_history_season.dart';
-import 'package:cinenexa/models/network/trakt/trakt_show_history_season_ep.dart';
 import 'package:cinenexa/models/network/watch_provider.dart';
 import 'package:cinenexa/services/local/database.dart';
 import 'package:cinenexa/services/network/requests.dart';
@@ -146,7 +144,8 @@ abstract class _DetailsStore with Store {
   }
 
   @action
-  void removeFromListCLicked(FavoritesStore store, UserStore userStore) {
+  Future removeFromListCLicked(
+      FavoritesStore store, UserStore userStore) async {
     store
         .removeFavorite(baseModel, userStore)
         .whenComplete(() => isAddedToFav = false);

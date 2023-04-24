@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:better_player/better_player.dart';
-import 'package:cinenexa/components/video_player_next_episode.dart';
 import 'package:cinenexa/models/local/show_history.dart';
 import 'package:cinenexa/services/local/torrent_streamer.dart';
 import 'package:cinenexa/services/network/utils.dart';
@@ -24,11 +22,17 @@ import 'package:video_cast/video_cast.dart';
 import '../models/local/progress.dart';
 import '../models/network/base_model.dart';
 import '../models/network/extensions/extension_stream.dart';
+import '../models/network/extensions/subtitle.dart';
 import '../models/network/movie.dart';
+import '../models/network/trakt/trakt_show_history_season.dart';
+import '../models/network/trakt/trakt_show_history_season_ep.dart';
 import '../models/network/tv.dart';
 import '../services/local/scrobble_manager.dart';
 import '../store/player/player_store.dart';
 import '../store/user/user_store.dart';
+import '../utils/file_opener.dart';
+import '../widgets/rounded_button.dart';
+import 'details_episode_tile.dart';
 
 class VideoPlayerControls extends StatefulWidget {
   final BetterPlayerController controller;
@@ -95,7 +99,6 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
       extensionStream: widget.stream,
       progress: widget.progress?.progress,
       detailsStore: widget.detailsStore!,
-      episode: widget.episode,
       season: widget.season,
     );
 
@@ -156,7 +159,6 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
               },
               child: Observer(
                 builder: (context) {
-                  playerStore.nextEp;
                   if (playerStore.showControls) {
                     if (playerStore.locked) {
                       return Padding(
@@ -225,47 +227,15 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
                             );
                           },
                         ),
-                        _buildPopup(),
                       ],
                     );
                   }
-                  return _buildPopup();
+                  return Container();
                 },
               ),
             );
           },
         ),
-      ),
-    );
-  }
-
-  Widget _buildPopup() {
-    return Align(
-      alignment: Alignment.bottomRight,
-      child: LayoutBuilder(
-        builder: (p0, p1) {
-          if (playerStore.nextEp &&
-              !playerStore.nextEpCancel &&
-              playerStore.season != null)
-            return Container(
-              width: ScreenSize.getPercentOfWidth(context, 0.35),
-              child: VideoPlayerNextEpisode(
-                season: playerStore.season!,
-                episode: playerStore.episodes[playerStore.nextEpIndex ?? 0],
-                onCancel: () {
-                  playerStore.setNextEpCancel(true);
-                },
-                onNext: (episode, season) {
-                  scrobbleManager?.exit();
-                  if (widget.initialDark != null && !widget.initialDark!)
-                    AdaptiveTheme.of(context).setLight();
-                  if (playerStore.casting) chromeCastController?.endSession();
-                  widget.controller.exitFullScreen();
-                },
-              ),
-            );
-          return Container();
-        },
       ),
     );
   }
@@ -281,7 +251,6 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
     } catch (e) {}
 
     widget.torrentStreamer?.stopStream();
-    widget.controller.exitFullScreen();
     await SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -311,16 +280,8 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
       child: _buildControlButton(
         icon: Icons.closed_caption_off,
         onTap: () {
-          AwesomeDialog(
-            context: context,
-            dialogType: DialogType.noHeader,
-            width: ScreenSize.getPercentOfWidth(context, 0.7),
-            title: Strings.settings,
-            body: _buildSubtitlePopup(),
-            showCloseIcon: true,
-            padding: EdgeInsets.all(8),
-            animType: AnimType.bottomSlide,
-          ).show();
+          drawerWidget = _buildSubtitlePopup();
+          openDrawer();
         },
         size: 25,
         overlay: true,
@@ -344,46 +305,102 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
               _buildTitle(),
             ],
           ),
-          ChromeCastButton(
-            onButtonCreated: (controller) {
-              chromeCastController = controller;
-              chromeCastController?.addSessionListener();
-            },
-            onSessionStarted: () {
-              playerStore.setCasting(true);
-              widget.controller.pause();
-              chromeCastController?.loadMedia(
-                type: widget.baseModel!.type == BaseModelType.movie
-                    ? ChromeCastMediaType.movie
-                    : ChromeCastMediaType.show,
-                url: widget.controller.betterPlayerDataSource!.url,
-                title: widget.baseModel!.title!,
-                autoplay: true,
-                image: Utils.getPosterUrl(widget.baseModel!.posterPath!),
-                position: playerStore.position.inMilliseconds.toDouble(),
-                showEpisode: widget.episode,
-                showSeason: widget.season,
-                subtitles: _getCastSubtitles(),
-              );
-              playerStore.setShowControls(false);
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (widget.baseModel?.type == BaseModelType.tv)
+                IconButton(
+                  onPressed: () => _showEpisodes(),
+                  iconSize: 30,
+                  icon: Icon(Icons.list_rounded),
+                ),
+              SizedBox(
+                width: 8,
+              ),
+              ChromeCastButton(
+                onButtonCreated: (controller) {
+                  chromeCastController = controller;
+                  chromeCastController?.addSessionListener();
+                },
+                onSessionStarted: () {
+                  playerStore.setCasting(true);
+                  widget.controller.pause();
+                  chromeCastController?.loadMedia(
+                    type: widget.baseModel!.type == BaseModelType.movie
+                        ? ChromeCastMediaType.movie
+                        : ChromeCastMediaType.show,
+                    url: widget.controller.betterPlayerDataSource!.url,
+                    title: widget.baseModel!.title!,
+                    autoplay: true,
+                    image: Utils.getPosterUrl(widget.baseModel!.posterPath!),
+                    position: playerStore.position.inMilliseconds.toDouble(),
+                    showEpisode: widget.episode,
+                    showSeason: widget.season,
+                    subtitles: _getCastSubtitles(),
+                  );
+                  playerStore.setShowControls(false);
 
-              if (playerStore.selectedSubtitle != null) {
-                chromeCastController?.setTrack(
-                    subId: playerStore.selectedSubtitle!.toDouble());
-              }
-            },
-            onSessionEnding: (position) {
-              playerStore.setCasting(false);
-              scrobbleManager?.paused();
-              if (position != null)
-                widget.controller.seekTo(Duration(milliseconds: position));
+                  if (playerStore.selectedSubtitle != null) {
+                    chromeCastController?.setTrack(
+                        subId: playerStore.selectedSubtitle!.toDouble());
+                  }
+                },
+                onSessionEnding: (position) {
+                  playerStore.setCasting(false);
+                  scrobbleManager?.paused();
+                  if (position != null)
+                    widget.controller.seekTo(Duration(milliseconds: position));
 
-              widget.controller.play();
-            },
+                  widget.controller.play();
+                },
+              ),
+            ],
           ),
         ],
       ),
     );
+  }
+
+  void _showEpisodes() {
+    drawerWidget = ListView.builder(
+      shrinkWrap: true,
+      itemCount: widget.detailsStore?.episodes.length,
+      itemBuilder: (context, index) {
+        bool? watched = false;
+
+        Iterable<TraktShowHistorySeason>? iterable =
+            widget.detailsStore!.showHistory?.seasons?.where(
+          (element) =>
+              element.number ==
+              widget.detailsStore!.tv!
+                  .seasons![widget.detailsStore!.chosenSeason!].seasonNumber,
+        );
+        if (iterable != null && iterable.isNotEmpty) {
+          TraktShowHistorySeason? historySeason = iterable.elementAt(0);
+          Iterable<TraktShowHistorySeasonEp>? list = historySeason.episodes
+              ?.where((element) =>
+                  element.number ==
+                  widget.detailsStore!.episodes[index].episodeNumber);
+          watched = list != null && list.isNotEmpty;
+        }
+
+        return EpisodeTile(
+          episode: widget.detailsStore!.episodes[index],
+          watched: watched,
+          widthPercent: 0.1,
+          showMoreInfo: false,
+          onTap: () async {
+            widget.detailsStore!.onEpBackClicked();
+            widget.detailsStore!.onEpiodeClicked(index);
+            widget.detailsStore!.fetchStreams();
+
+            Navigator.pop(context);
+            Navigator.maybePop(context);
+          },
+        );
+      },
+    );
+    openDrawer();
   }
 
   List<ChromeCastSubtitle> _getCastSubtitles() {
@@ -458,7 +475,7 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
             size: 25,
             text: Strings.restart,
           ),
-          Style.getVerticalHorizontalSpacing(context: context),
+          Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
           _buildControlButton(
             icon: Icons.lock_open_rounded,
             onTap: () {
@@ -467,7 +484,7 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
             size: 25,
             text: Strings.lock,
           ),
-          Style.getVerticalHorizontalSpacing(context: context),
+          Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
           _buildControlButton(
             icon: Icons.closed_caption_off,
             onTap: () {
@@ -477,7 +494,7 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
             size: 25,
             text: Strings.subtitle,
           ),
-          Style.getVerticalHorizontalSpacing(context: context),
+          Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
           _buildControlButton(
             icon: Icons.settings,
             onTap: () {
@@ -487,9 +504,39 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
             size: 25,
             text: Strings.settings,
           ),
+          Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
+          _buildNextButton(),
         ],
       ),
     );
+  }
+
+  Widget _buildNextButton() {
+    if (widget.baseModel?.type == BaseModelType.tv &&
+        !(widget.detailsStore!.chosenSeason ==
+                widget.detailsStore!.tv!.seasons!.length - 1 &&
+            widget.detailsStore!.chosenEpisode ==
+                widget.detailsStore!.episodes.length - 1)) {
+      return _buildControlButton(
+        icon: Icons.skip_next_rounded,
+        onTap: () async {
+          if (widget.detailsStore!.chosenEpisode ==
+              widget.detailsStore!.episodes.length - 1) {
+            Style.showLoadingDialog(context: context);
+            await playerStore.fetchNewEps();
+            Navigator.pop(context);
+            Navigator.maybePop(context);
+            return;
+          }
+
+          playerStore.setEpisode();
+          Navigator.maybePop(context);
+        },
+        size: 25,
+        text: Strings.next,
+      );
+    }
+    return Container();
   }
 
   void openDrawer() {
@@ -515,44 +562,64 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
           widget.stream.subtitles!.map((e) => e.title.toString()).toList());
     }
 
-    return CustomCheckBoxList(
-      children: allSubtitles,
-      selectedItems: [selected],
-      type: CheckBoxListType.grid,
-      alwaysEnabled: true,
-      singleSelect: true,
-      delegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 1,
-        mainAxisExtent: 35,
-        mainAxisSpacing: 8,
-      ),
-      onSelectionAdded: (values) {
-        if (values.first == Strings.none) {
-          if (playerStore.casting) {
-            chromeCastController?.disableTrack();
-            playerStore.setSelectedSubtitle(null);
-            Navigator.pop(context);
-            return;
-          }
-          playerStore.changeSubtitle(-1);
-          return;
-        }
-        int selectedIndex = widget.stream.subtitles!
-            .indexWhere((element) => element.title == values.first);
+    return ListView(
+      children: [
+        RoundedButton(
+          child: Text(Strings.addSubtitle),
+          onPressed: () async {
+            Map? data = await FileOpener.openSrtFile();
 
-        if (playerStore.casting) {
-          if (selectedIndex < 0) {
-            chromeCastController?.disableTrack();
-            playerStore.setSelectedSubtitle(null);
-          } else {
-            chromeCastController?.setTrack(subId: selectedIndex.toDouble());
-            playerStore.setSelectedSubtitle(selectedIndex);
-          }
-        } else {
-          playerStore.changeSubtitle(selectedIndex);
-        }
-        Navigator.pop(context);
-      },
+            if (data != null) {
+              playerStore.addSubtitle(Subtitle.def(
+                title: data['name'],
+                path: data['path'],
+              ));
+              Navigator.pop(context);
+            }
+          },
+          type: RoundedButtonType.outlined,
+        ),
+        Style.getVerticalSpacing(context: context),
+        CustomCheckBoxList(
+          children: allSubtitles,
+          selectedItems: [selected],
+          type: CheckBoxListType.grid,
+          alwaysEnabled: true,
+          singleSelect: true,
+          delegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 1,
+            mainAxisExtent: 35,
+            mainAxisSpacing: 8,
+          ),
+          onSelectionAdded: (values) {
+            if (values.first == Strings.none) {
+              if (playerStore.casting) {
+                chromeCastController?.disableTrack();
+                playerStore.setSelectedSubtitle(null);
+                Navigator.pop(context);
+                return;
+              }
+              playerStore.changeSubtitle(-1);
+              return;
+            }
+            int selectedIndex = widget.stream.subtitles!
+                .indexWhere((element) => element.title == values.first);
+
+            if (playerStore.casting) {
+              if (selectedIndex < 0) {
+                chromeCastController?.disableTrack();
+                playerStore.setSelectedSubtitle(null);
+              } else {
+                chromeCastController?.setTrack(subId: selectedIndex.toDouble());
+                playerStore.setSelectedSubtitle(selectedIndex);
+              }
+            } else {
+              playerStore.changeSubtitle(selectedIndex);
+            }
+            Navigator.pop(context);
+          },
+        ),
+      ],
     );
   }
 
@@ -655,56 +722,64 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
 
   Widget _buildMainControls() {
     int interval = playerStore.seekDuration == 30 ? 30 : 10;
-    return Align(
-      alignment: Alignment.center,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildControlButton(
-            icon: playerStore.seekDuration == 30
-                ? Icons.replay_30_rounded
-                : Icons.replay_10_rounded,
-            onTap: () {
-              Duration rewind = Duration(
-                seconds: playerStore.position.inSeconds - interval,
-              );
+    return Observer(builder: (_) {
+      if (playerStore.buffering) {
+        hideTimer?.cancel();
+      }
 
-              widget.controller.seekTo(rewind);
-            },
-          ),
-          _buildControlButton(
-            icon: widget.controller.isPlaying()!
-                ? Icons.pause_rounded
-                : Icons.play_arrow_rounded,
-            onTap: () {
-              setState(() {
-                widget.controller.isPlaying()!
-                    ? widget.controller.pause()
-                    : widget.controller.play();
-              });
-            },
-          ),
-          _buildControlButton(
-            icon: playerStore.seekDuration == 30
-                ? Icons.forward_30_rounded
-                : Icons.forward_10_rounded,
-            onTap: () {
-              Duration forward = Duration(
-                seconds: playerStore.position.inSeconds + interval,
-              );
+      return Align(
+        alignment: Alignment.center,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildControlButton(
+              icon: playerStore.seekDuration == 30
+                  ? Icons.replay_30_rounded
+                  : Icons.replay_10_rounded,
+              onTap: () {
+                Duration rewind = Duration(
+                  seconds: playerStore.position.inSeconds - interval,
+                );
 
-              if (forward >
-                  widget.controller.videoPlayerController!.value.duration!) {
-                widget.controller.seekTo(Duration(seconds: 0));
-              } else {
-                widget.controller.seekTo(forward);
-              }
-            },
-          ),
-        ],
-      ),
-    );
+                widget.controller.seekTo(rewind);
+              },
+            ),
+            if (playerStore.buffering) CircularProgressIndicator(),
+            if (!playerStore.buffering)
+              _buildControlButton(
+                icon: widget.controller.isPlaying()!
+                    ? Icons.pause_rounded
+                    : Icons.play_arrow_rounded,
+                onTap: () {
+                  setState(() {
+                    widget.controller.isPlaying()!
+                        ? widget.controller.pause()
+                        : widget.controller.play();
+                  });
+                },
+              ),
+            _buildControlButton(
+              icon: playerStore.seekDuration == 30
+                  ? Icons.forward_30_rounded
+                  : Icons.forward_10_rounded,
+              onTap: () {
+                Duration forward = Duration(
+                  seconds: playerStore.position.inSeconds + interval,
+                );
+
+                if (forward >
+                    widget.controller.videoPlayerController!.value.duration!) {
+                  widget.controller.seekTo(Duration(seconds: 0));
+                } else {
+                  widget.controller.seekTo(forward);
+                }
+              },
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   Widget _buildControlButton(
@@ -730,7 +805,7 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
                 ),
                 if (text != null)
                   SizedBox(
-                    width: 8,
+                    width: 4,
                   ),
                 if (text != null) Text(text),
               ],

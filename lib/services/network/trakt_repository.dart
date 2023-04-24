@@ -14,8 +14,11 @@ import 'package:cinenexa/services/network/utils.dart';
 import 'package:cinenexa/utils/date_time_formatter.dart';
 
 import '../../models/network/enums/entity_type.dart';
+import '../../models/network/trakt/trakt_list.dart';
 import '../../models/network/tv.dart';
 import '../constants.dart';
+
+import 'package:http/http.dart' as https;
 
 class TraktRepository {
   final OAuth2Helper helper;
@@ -48,14 +51,15 @@ class TraktRepository {
     Map map = Utils.parseJson(resp.body) as Map;
 
     return LastActivities()
-      ..epWatchedAt =
-          DateTimeFormatter.parseDate(map['episodes']['watched_at'])!
+      ..epWatchedAt = DateTimeFormatter.parseDate(map['episodes']['watched_at'])
       ..epCollectedAt =
-          DateTimeFormatter.parseDate(map['episodes']['collected_at'])!
+          DateTimeFormatter.parseDate(map['episodes']['collected_at'])
       ..movieCollectedAt =
-          DateTimeFormatter.parseDate(map['movies']['collected_at'])!
+          DateTimeFormatter.parseDate(map['movies']['collected_at'])
       ..movieWatchedAt =
-          DateTimeFormatter.parseDate(map['movies']['watched_at'])!;
+          DateTimeFormatter.parseDate(map['movies']['watched_at'])
+      ..listsUpdatedAt = DateTimeFormatter.parseDate(map['lists']['updated_at'])
+      ..listsLikedAt = DateTimeFormatter.parseDate(map['lists']['liked_at']);
   }
 
   Future<UserStats> getUserStats() async {
@@ -242,6 +246,154 @@ class TraktRepository {
     }
     await post("https://api.trakt.tv/sync/collection",
         data: Utils.encodeJson(body));
+  }
+
+  // requires oauth
+  Future likeList({required int listId}) async {
+    await post("https://api.trakt.tv/users/me/lists/$listId/like");
+  }
+
+  //requires oauth
+  Future<List<TraktList>> getUserTraktLists() async {
+    Response response = await get("https://api.trakt.tv/users/me/lists");
+
+    List<TraktList> items = [];
+
+    if (response.statusCode == 200) {
+      List list = Utils.parseJson(response.body);
+
+      for (var element in list) {
+        items.add(TraktList.fromPersonalMap(element));
+      }
+    }
+    return items;
+  }
+
+  //requires oauth
+  Future<List<TraktList>> getUserLikedTraktLists() async {
+    Response response = await get("https://api.trakt.tv/users/me/likes/lists");
+    List<TraktList> items = [];
+
+    if (response.statusCode == 200) {
+      List list = Utils.parseJson(response.body);
+
+      for (var element in list) {
+        items.add(TraktList.fromPersonalMap(element['list']));
+      }
+    }
+    return items;
+  }
+
+  /// doesnt require trakt login
+  Future<List<TraktList>> getSearchList(
+      {required String searchTerm, int page = 1}) async {
+    Response response = await https.get(
+      Uri.parse(
+          "https://api.trakt.tv/search/list?query=$searchTerm&page=$page"),
+      headers: {
+        "Content-type": "application/json",
+        "trakt-api-key": Constants.traktApi,
+        "trakt-api-version": "2",
+      },
+    );
+
+    List<TraktList> items = [];
+
+    if (response.statusCode == 200) {
+      List list = Utils.parseJson(response.body);
+
+      for (var element in list) {
+        items.add(TraktList.fromMap(element));
+      }
+    }
+    return items;
+  }
+
+  Future<List<BaseModel>> getListItems({
+    required int listId,
+    int page = 1,
+    bool personal = false,
+    bool limit = true,
+  }) async {
+    Response response;
+
+    String limitText = limit ? "?page=$page&limit=15" : "";
+    if (personal) {
+      response = await get(
+          "https://api.trakt.tv/users/me/lists/$listId/items/movie,show$limitText");
+    } else {
+      response = await https.get(
+        Uri.parse(
+            "https://api.trakt.tv/lists/$listId/items/movie,show$limitText"),
+        headers: {
+          "Content-type": "application/json",
+          "trakt-api-key": Constants.traktApi,
+          "trakt-api-version": "2",
+        },
+      );
+    }
+
+    List list = Utils.parseJson(response.body);
+    List<BaseModel> baseModels = [];
+
+    await Future.forEach(list, (element) async {
+      element as Map;
+
+      if (element['type'] == "movie") {
+        int? id = (element)['movie']['ids']['tmdb'];
+
+        if (id == null) {
+          return;
+        }
+        Movie movie = await Repository.getMovieDetails(id: id);
+        baseModels.add(BaseModel.fromMovie(movie));
+        return;
+      }
+      int? id = (element)['show']['ids']['tmdb'];
+
+      if (id == null) {
+        return;
+      }
+
+      Tv tv = await Repository.getTvDetails(id: id);
+      baseModels.add(BaseModel.fromTv(tv));
+    });
+    return baseModels;
+  }
+
+  Future addItemsToList({required BaseModel item, required int listId}) async {
+    Map itemBodies = {
+      item.type == BaseModelType.movie ? "movies" : "shows": [
+        {
+          "ids": {
+            "tmdb": item.id,
+          }
+        }
+      ],
+    };
+
+    await post(
+      "https://api.trakt.tv/users/me/lists/$listId/items",
+      data: Utils.encodeJson(itemBodies),
+    );
+  }
+
+  Future removeItemsToList(
+      {required BaseModel item, required int listId}) async {
+    Map itemBodies = {
+      item.type == BaseModelType.movie ? "movies" : "shows": [
+        {
+          "ids": {
+            "tmdb": item.id,
+          }
+        }
+      ],
+    };
+
+    await post(
+      "https://api.trakt.tv/users/me/lists/$listId/items/remove",
+      data: Utils.encodeJson(itemBodies),
+    );
   }
 
   Future<TraktUser> getUserProfile() async {

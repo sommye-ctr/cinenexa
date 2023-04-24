@@ -73,38 +73,6 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
     });
   }
 
-  late final _$nextEpAtom =
-      Atom(name: '_PlayerStoreBase.nextEp', context: context);
-
-  @override
-  bool get nextEp {
-    _$nextEpAtom.reportRead();
-    return super.nextEp;
-  }
-
-  @override
-  set nextEp(bool value) {
-    _$nextEpAtom.reportWrite(value, super.nextEp, () {
-      super.nextEp = value;
-    });
-  }
-
-  late final _$nextEpInitAtom =
-      Atom(name: '_PlayerStoreBase.nextEpInit', context: context);
-
-  @override
-  bool get nextEpInit {
-    _$nextEpInitAtom.reportRead();
-    return super.nextEpInit;
-  }
-
-  @override
-  set nextEpInit(bool value) {
-    _$nextEpInitAtom.reportWrite(value, super.nextEpInit, () {
-      super.nextEpInit = value;
-    });
-  }
-
   late final _$speedIndexAtom =
       Atom(name: '_PlayerStoreBase.speedIndex', context: context);
 
@@ -217,22 +185,6 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
     });
   }
 
-  late final _$seekDurationAtom =
-      Atom(name: '_PlayerStoreBase.seekDuration', context: context);
-
-  @override
-  int get seekDuration {
-    _$seekDurationAtom.reportRead();
-    return super.seekDuration;
-  }
-
-  @override
-  set seekDuration(int value) {
-    _$seekDurationAtom.reportWrite(value, super.seekDuration, () {
-      super.seekDuration = value;
-    });
-  }
-
   late final _$initAsyncAction =
       AsyncAction('_PlayerStoreBase.init', context: context);
 
@@ -245,7 +197,7 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
       AsyncAction('_PlayerStoreBase.fetchNewEps', context: context);
 
   @override
-  Future fetchNewEps() {
+  Future<dynamic> fetchNewEps() {
     return _$fetchNewEpsAsyncAction.run(() => super.fetchNewEps());
   }
 
@@ -253,7 +205,7 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
       AsyncAction('_PlayerStoreBase.fetchStreams', context: context);
 
   @override
-  Future fetchStreams() {
+  Future<dynamic> fetchStreams() {
     return _$fetchStreamsAsyncAction.run(() => super.fetchStreams());
   }
 
@@ -274,17 +226,6 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
         name: '_PlayerStoreBase.setEpisode');
     try {
       return super.setEpisode();
-    } finally {
-      _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void setNextEpFlag(bool value) {
-    final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
-        name: '_PlayerStoreBase.setNextEpFlag');
-    try {
-      return super.setNextEpFlag(value);
     } finally {
       _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
     }
@@ -390,6 +331,17 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
   }
 
   @override
+  void addSubtitle(Subtitle sub) {
+    final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
+        name: '_PlayerStoreBase.addSubtitle');
+    try {
+      return super.addSubtitle(sub);
+    } finally {
+      _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setSelectedSubtitle(int? subtitle) {
     final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
         name: '_PlayerStoreBase.setSelectedSubtitle');
@@ -418,16 +370,13 @@ showControls: ${showControls},
 buffering: ${buffering},
 locked: ${locked},
 casting: ${casting},
-nextEp: ${nextEp},
-nextEpInit: ${nextEpInit},
 speedIndex: ${speedIndex},
 fitIndex: ${fitIndex},
 subtitleDelay: ${subtitleDelay},
 position: ${position},
 buffered: ${buffered},
 selectedSubtitle: ${selectedSubtitle},
-episodes: ${episodes},
-seekDuration: ${seekDuration}
+episodes: ${episodes}
     ''';
   }
 }

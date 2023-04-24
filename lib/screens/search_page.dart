@@ -1,5 +1,7 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:avatar_glow/avatar_glow.dart';
+import 'package:cinenexa/components/trakt_list_tile.dart';
+import 'package:cinenexa/models/network/trakt/trakt_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -17,11 +19,10 @@ import '../components/search_result_tile.dart';
 import '../models/network/base_model.dart';
 import '../services/network/utils.dart';
 import 'details_page.dart';
+import 'list_details_page.dart';
 
 class SearchPage extends StatefulWidget {
-  final Function({int? index})? onBack;
-
-  SearchPage({Key? key, this.onBack}) : super(key: key);
+  SearchPage({Key? key}) : super(key: key);
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -39,7 +40,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     searchStore = SearchStore();
     textEditingController = TextEditingController();
     focusNode = FocusNode();
-    tabController = TabController(length: 3, vsync: this);
+    tabController = TabController(length: 4, vsync: this);
     super.initState();
   }
 
@@ -71,17 +72,16 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       textEditingController.clear();
       return false;
     }
-    if (widget.onBack != null) {
-      widget.onBack!();
-      return false;
-    }
     return true;
   }
 
   Widget _buildSearchBar() {
     return SearchInput(
-      onEditingComplete: () =>
-          searchStore.searchClicked(textEditingController.text),
+      onEditingComplete: () {
+        searchStore.changeSearchType(SearchType.movie);
+        tabController.animateTo(0);
+        searchStore.searchClicked(textEditingController.text);
+      },
       controller: textEditingController,
       focus: focusNode,
       onChanged: searchStore.searchTermChanged,
@@ -240,6 +240,9 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     if (searchStore.searchType == SearchType.people) {
       return _buildActors();
     }
+    if (searchStore.searchType == SearchType.lists) {
+      return _buildLists();
+    }
     return _buildMoviesOrTv();
   }
 
@@ -248,7 +251,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       builder: (_) {
         if (searchStore.searchDone) {
           return DefaultTabController(
-            length: 3,
+            length: 4,
             child: TabBar(
               indicator: ShapeDecoration(
                 shape: RoundedRectangleBorder(
@@ -257,6 +260,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                 ),
                 color: Theme.of(context).colorScheme.primary,
               ),
+              labelColor: Colors.black,
               indicatorSize: TabBarIndicatorSize.tab,
               indicatorPadding: EdgeInsets.all(8),
               splashBorderRadius: BorderRadius.circular(40),
@@ -273,12 +277,58 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                 Tab(
                   text: Strings.actor,
                 ),
+                Tab(
+                  text: Strings.lists,
+                ),
               ],
             ),
           );
         }
         return Container();
       },
+    );
+  }
+
+  Widget _buildLists() {
+    if (searchStore.fetchListsFuture.status == FutureStatus.pending &&
+        searchStore.listResults.isEmpty) {
+      return CircularProgressIndicator();
+    }
+    List<TraktList> list = searchStore.listResults;
+    if (searchStore.fetchListsFuture.status == FutureStatus.fulfilled &&
+        list.isEmpty) {
+      return Center(
+        child: Column(
+          children: [
+            SvgPicture.asset(
+              Asset.notFound,
+              width: ScreenSize.getPercentOfWidth(context, 0.75),
+            ),
+            Style.getVerticalSpacing(context: context),
+            Text(Strings.noResultsFound),
+          ],
+        ),
+      );
+    }
+
+    return Expanded(
+      child: LazyLoadScrollView(
+        onEndOfPage: () => searchStore.onEndOfPageReached(),
+        child: ListView.separated(
+          itemCount: list.length,
+          separatorBuilder: (context, index) => Divider(),
+          itemBuilder: (context, index) {
+            return TraktListTile(
+              list: list[index],
+              onClick: () => Navigator.pushNamed(
+                context,
+                ListDetailsPage.routeName,
+                arguments: {"list": list[index]},
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 
@@ -308,9 +358,10 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         onEndOfPage: () {
           searchStore.onEndOfPageReached();
         },
-        child: ListView.builder(
+        child: ListView.separated(
           physics: BouncingScrollPhysics(),
           itemCount: list.length,
+          separatorBuilder: (context, index) => Divider(),
           itemBuilder: (context, index) {
             BaseModel baseModel = list[index];
             return SearchResultTile(
@@ -324,14 +375,11 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                   ? 0
                   : baseModel.voteAverage!,
               onClick: () async {
-                var isRedirect = await Navigator.pushNamed(
+                Navigator.pushNamed(
                   context,
                   DetailsPage.routeName,
                   arguments: baseModel,
                 );
-                if (isRedirect != null && isRedirect as bool) {
-                  widget.onBack?.call(index: 1);
-                }
               },
             );
           },
@@ -412,21 +460,6 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   void _onAutocompleteClicked(BaseModel baseModel) {
     focusNode.requestFocus();
     textEditingController.value = TextEditingValue(text: baseModel.title!);
-    switch (baseModel.type) {
-      case BaseModelType.movie:
-        searchStore.changeSearchType(SearchType.movie);
-        tabController.animateTo(0);
-        break;
-      case BaseModelType.people:
-        searchStore.changeSearchType(SearchType.people);
-        tabController.animateTo(2);
-        break;
-      case BaseModelType.tv:
-        searchStore.changeSearchType(SearchType.tv);
-        tabController.animateTo(1);
-        break;
-      default:
-    }
 
     searchStore.searchClicked(baseModel.title!);
   }
@@ -442,6 +475,8 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       case 2:
         searchStore.searchTypeChanged(SearchType.people);
         break;
+      case 3:
+        searchStore.searchTypeChanged(SearchType.lists);
     }
   }
 }

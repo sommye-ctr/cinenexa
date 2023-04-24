@@ -8,12 +8,15 @@ class ScreenBackgroundImage extends StatelessWidget {
   final String image;
   final String? placeHolder;
   final double heightPercent;
+
+  final List<double>? stops;
   const ScreenBackgroundImage({
     Key? key,
     required this.child,
     required this.image,
     this.placeHolder,
     this.heightPercent = 1,
+    this.stops,
   }) : super(key: key);
 
   @override
@@ -48,13 +51,14 @@ class ScreenBackgroundImage extends StatelessWidget {
                 shaderCallback: (bounds) {
                   return LinearGradient(
                     colors: colors,
-                    stops: [
-                      0,
-                      0.35,
-                      0.45,
-                      0.5,
-                      0.95,
-                    ],
+                    stops: stops ??
+                        [
+                          0,
+                          0.35,
+                          0.45,
+                          0.5,
+                          0.95,
+                        ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ).createShader(bounds);

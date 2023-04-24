@@ -20,6 +20,7 @@ import '../services/network/utils.dart';
 import '../utils/date_time_formatter.dart';
 import '../widgets/rounded_button.dart';
 import '../widgets/screen_background_image.dart';
+import 'details_add_list.dart';
 
 class DetailsHeader extends SliverPersistentHeaderDelegate {
   final double maxHeight, minHeight;
@@ -28,8 +29,6 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
 
   late double progress;
   late Duration duration;
-
-  bool isDialogShowing = false;
 
   DetailsHeader({
     required this.maxHeight,
@@ -326,10 +325,6 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
 
   Widget _buildButtons(context) {
     return Observer(builder: (_) {
-      if (isDialogShowing) {
-        Navigator.pop(context);
-        isDialogShowing = false;
-      }
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
@@ -345,76 +340,102 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
             type: RoundedButtonType.filled,
           ),
           Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
-          AnimatedCrossFade(
-            duration: Duration(milliseconds: 500),
-            sizeCurve: Curves.decelerate,
-            firstChild: RoundedButton(
-              onPressed: () => _onAddRemFavoritesClicked(context),
-              type: RoundedButtonType.filled,
-              child: Row(
-                children: [
-                  Text(Strings.addToFav),
-                  Icon(Icons.favorite, size: 20),
-                ],
-              ),
-            ),
-            secondChild: RoundedButton(
-              onPressed: () => _onAddRemFavoritesClicked(
-                context,
-                remove: true,
-              ),
-              type: RoundedButtonType.outlined,
-              child: Row(
-                children: [
-                  Text(Strings.removeFromFav),
-                  Icon(Icons.favorite),
-                ],
-              ),
-            ),
-            layoutBuilder: (topChild, topKey, bottomChild, bottomKey) {
-              return Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Positioned(
-                    top: 0,
-                    child: bottomChild,
-                    key: bottomKey,
-                  ),
-                  Positioned(
-                    child: topChild,
-                    key: topKey,
-                  ),
-                ],
-              );
-            },
-            crossFadeState: detailsStore.isAddedToFav
-                ? CrossFadeState.showSecond
-                : CrossFadeState.showFirst,
-          ),
+          _buildAddButton(context),
         ],
       );
     });
   }
 
-  void _onAddRemFavoritesClicked(context, {bool remove = false}) {
-    if (remove) {
-      detailsStore.removeFromListCLicked(
-        Provider.of<FavoritesStore>(context, listen: false),
-        Provider.of<UserStore>(context, listen: false),
+  Widget _buildAddButton(context) {
+    if (detailsStore.isTraktLogged) {
+      return RoundedButton(
+        onPressed: () => _onAddList(context),
+        child: Row(
+          children: [
+            Text("Add"),
+            Icon(Icons.playlist_add_rounded),
+          ],
+        ),
+        type: RoundedButtonType.filled,
       );
-      _showLoadingDialog(context);
-      return;
     }
-    detailsStore.addToListClicked(
-      Provider.of<FavoritesStore>(context, listen: false),
-      Provider.of<UserStore>(context, listen: false),
+    return AnimatedCrossFade(
+      duration: Duration(milliseconds: 500),
+      sizeCurve: Curves.decelerate,
+      firstChild: RoundedButton(
+        onPressed: () => _onAddRemFavoritesClicked(context),
+        type: RoundedButtonType.filled,
+        child: Row(
+          children: [
+            Text(Strings.addToFav),
+            Icon(Icons.favorite, size: 20),
+          ],
+        ),
+      ),
+      secondChild: RoundedButton(
+        onPressed: () => _onAddRemFavoritesClicked(
+          context,
+          remove: true,
+        ),
+        type: RoundedButtonType.outlined,
+        child: Row(
+          children: [
+            Text(Strings.removeFromFav),
+            Icon(Icons.favorite),
+          ],
+        ),
+      ),
+      layoutBuilder: (topChild, topKey, bottomChild, bottomKey) {
+        return Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Positioned(
+              top: 0,
+              child: bottomChild,
+              key: bottomKey,
+            ),
+            Positioned(
+              child: topChild,
+              key: topKey,
+            ),
+          ],
+        );
+      },
+      crossFadeState: detailsStore.isAddedToFav
+          ? CrossFadeState.showSecond
+          : CrossFadeState.showFirst,
     );
-    _showLoadingDialog(context);
   }
 
-  void _showLoadingDialog(context) {
+  void _onAddList(context) {
+    Style.showBottomSheet(
+        context,
+        DetailsAddList(
+          baseModel: detailsStore.baseModel,
+          isInFavs: detailsStore.isAddedToFav,
+          onFavAdded: () => _onAddRemFavoritesClicked(context),
+          onFavRemoved: () => _onAddRemFavoritesClicked(context, remove: true),
+        ));
+  }
+
+  void _onAddRemFavoritesClicked(context, {bool remove = false}) {
+    if (remove) {
+      Style.showLoadingDialog(context: context);
+      detailsStore
+          .removeFromListCLicked(
+            Provider.of<FavoritesStore>(context, listen: false),
+            Provider.of<UserStore>(context, listen: false),
+          )
+          .then((value) => Navigator.pop(context));
+      return;
+    }
     Style.showLoadingDialog(context: context);
-    isDialogShowing = true;
+    detailsStore
+        .addToListClicked(
+          Provider.of<FavoritesStore>(context, listen: false),
+          Provider.of<UserStore>(context, listen: false),
+        )
+        .then((value) => Navigator.pop(context));
   }
 
   void _onPlayPressed(context) async {
@@ -422,6 +443,22 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
         detailsStore.progress?.stream != null) {
       if (detailsStore.progress?.seasonNo != null &&
           detailsStore.progress?.episodeNo != null) {
+        Style.showLoadingDialog(context: context);
+
+        int progressSeason = detailsStore.progress!.seasonNo!;
+
+        if (detailsStore
+                .tv!.seasons![detailsStore.chosenSeason!].seasonNumber !=
+            progressSeason) {
+          await detailsStore.onSeasonChanged(detailsStore.tv!.seasons!
+              .indexWhere((element) =>
+                  element.seasonNumber == detailsStore.progress!.seasonNo));
+        }
+        detailsStore.onEpiodeClicked(detailsStore.episodes.indexWhere(
+            (element) =>
+                element.episodeNumber == detailsStore.progress!.episodeNo));
+        Navigator.pop(context);
+
         await LinkOpener.navigateToVideoPlayer(
           baseModel: detailsStore.baseModel,
           id: detailsStore.baseModel.id!,
@@ -435,6 +472,7 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
           detailsStore: detailsStore,
           showHistory: detailsStore.showHistory,
         );
+
         scrollTop();
         await detailsStore.fetchProgress();
 

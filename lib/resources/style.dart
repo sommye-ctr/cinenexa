@@ -25,38 +25,57 @@ class Style {
   static const double smallIconSize = 40;
 
   static ThemeData themeData = ThemeData(
-    primarySwatch: Colors.orange,
-    brightness: Brightness.light,
-    fontFamily: GoogleFonts.poppins().fontFamily,
-    focusColor: Colors.black,
-    scaffoldBackgroundColor: Color.fromARGB(255, 249, 246, 246),
-    backgroundColor: Color.fromARGB(255, 249, 246, 246),
-    floatingActionButtonTheme: FloatingActionButtonThemeData(
-      backgroundColor: Colors.orange,
-    ),
-    colorScheme: ColorScheme.light(
-      background: Color.fromARGB(255, 249, 246, 246),
-    ),
-  );
+      primarySwatch: Colors.orange,
+      brightness: Brightness.light,
+      fontFamily: GoogleFonts.poppins().fontFamily,
+      focusColor: Colors.black,
+      scaffoldBackgroundColor: Colors.white,
+      primaryColor: Colors.orange,
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: Colors.orange,
+      ),
+      tabBarTheme: TabBarTheme(
+        unselectedLabelColor: Colors.black,
+      ),
+      listTileTheme: ListTileThemeData(
+        tileColor: Colors.white,
+      ),
+      colorScheme: ColorScheme.light(
+        background: Colors.white,
+        primary: Colors.orange,
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: Colors.white,
+      ));
 
   static TextStyle headingStyle = TextStyle(
     fontSize: 20,
   );
 
   static ThemeData darkThemeData(BuildContext context) => ThemeData(
-        primarySwatch: Colors.orange,
-        brightness: Brightness.dark,
-        fontFamily: GoogleFonts.poppins().fontFamily,
-        focusColor: Colors.white,
-        scaffoldBackgroundColor: Color.fromARGB(255, 27, 27, 27),
-        backgroundColor: Color.fromARGB(255, 27, 27, 27),
-        floatingActionButtonTheme: FloatingActionButtonThemeData(
-          backgroundColor: Colors.orange,
-        ),
-        colorScheme: ColorScheme.dark(
-          background: Color.fromARGB(255, 27, 27, 27),
-        ),
-      );
+      primarySwatch: Colors.orange,
+      brightness: Brightness.dark,
+      fontFamily: GoogleFonts.poppins().fontFamily,
+      focusColor: Colors.white,
+      scaffoldBackgroundColor: Colors.black,
+      primaryColor: Colors.orange,
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: Colors.orange,
+      ),
+      tabBarTheme: TabBarTheme(
+        unselectedLabelColor: Colors.white,
+      ),
+      listTileTheme: ListTileThemeData(
+        tileColor: Colors.black,
+        selectedTileColor: Colors.black,
+      ),
+      colorScheme: ColorScheme.dark(
+        background: Colors.black,
+        primary: Colors.orange,
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: Colors.black,
+      ));
 
   static BottomNavigationBarItem getbottomNavItem(String label, IconData icon) {
     return BottomNavigationBarItem(
@@ -102,6 +121,22 @@ class Style {
           gravity: ToastGravity.BOTTOM,
           toastDuration: Duration(seconds: long != null ? 4 : 2),
         ); */
+  }
+
+  static void showBottomSheet(context, Widget child) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
+      ),
+      builder: (context) {
+        return FractionallySizedBox(
+          heightFactor: 0.75,
+          child: child,
+        );
+      },
+    );
   }
 
   static Widget getChip(context, String text) {
@@ -162,11 +197,7 @@ class Style {
         leading: leading,
         trailing: trailing,
         enabled: enabled,
-        tileColor: Theme.of(context).cardColor,
         onTap: onTap,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
-        ),
       ),
     );
   }

@@ -14,17 +14,17 @@ import 'package:cinenexa/store/user/user_store.dart';
 import 'package:cinenexa/utils/screen_size.dart';
 
 import '../models/network/base_model.dart';
-import '../screens/details_page.dart';
-import 'home_bottom_nav_bar.dart';
+import 'details_page.dart';
+import '../components/home_bottom_nav_bar.dart';
 
-class HomeFavorites extends StatefulWidget {
-  const HomeFavorites({Key? key}) : super(key: key);
+class FavoritesPage extends StatefulWidget {
+  const FavoritesPage({Key? key}) : super(key: key);
 
   @override
-  State<HomeFavorites> createState() => _HomeFavoritesState();
+  State<FavoritesPage> createState() => _FavoritesPageState();
 }
 
-class _HomeFavoritesState extends State<HomeFavorites>
+class _FavoritesPageState extends State<FavoritesPage>
     with AutomaticKeepAliveClientMixin {
   late FavoritesStore store;
   final List<GlobalKey<FavoritesEntityTileState>> keys = [];
@@ -40,7 +40,10 @@ class _HomeFavoritesState extends State<HomeFavorites>
     super.build(context);
 
     return Scaffold(
-      body: _buildBody(),
+      body: Padding(
+        padding: const EdgeInsets.only(top: 8.0, right: 8, left: 8),
+        child: _buildBody(),
+      ),
       floatingActionButton: Observer(builder: (context) => _buildFab()),
       floatingActionButtonLocation: ExpandableFab.location,
     );
@@ -110,10 +113,6 @@ class _HomeFavoritesState extends State<HomeFavorites>
             );
           },
         ),
-        Style.getVerticalSpacing(
-          context: context,
-          percent: 0.08,
-        ),
       ],
     );
   }
@@ -128,9 +127,8 @@ class _HomeFavoritesState extends State<HomeFavorites>
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          "${store.currentFav.length} Results",
+          "${store.currentFav.length} Items",
           style: TextStyle(
-            fontWeight: FontWeight.bold,
             fontSize: 18,
           ),
         ),

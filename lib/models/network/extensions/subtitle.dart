@@ -9,10 +9,15 @@ part 'subtitle.g.dart';
 class Subtitle {
   String? title;
   String? url;
+
+  @Name("zPath")
+  String? path;
+
   Subtitle();
   Subtitle.def({
     required this.title,
-    required this.url,
+    this.url,
+    this.path,
   });
 
   Subtitle copyWith({
@@ -22,6 +27,7 @@ class Subtitle {
     return Subtitle.def(
       title: title ?? this.title,
       url: url ?? this.url,
+      path: path ?? this.path,
     );
   }
 
@@ -29,6 +35,7 @@ class Subtitle {
     return <String, dynamic>{
       'title': title,
       'url': url,
+      'path': path,
     };
   }
 

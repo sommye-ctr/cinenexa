@@ -12,18 +12,53 @@ import 'package:path_provider/path_provider.dart';
 import '../../models/network/extensions/extension.dart';
 
 class Api {
-  Future<dynamic> getRequest(String url, {bool haveQueries = false}) async {
+  late Dio dio;
+
+  Api() {
+    _init();
+  }
+
+  _init() async {
+    var cacheDir = await getTemporaryDirectory();
+    dio = Dio()
+      ..interceptors.add(
+        DioCacheInterceptor(
+          options: CacheOptions(
+            store: HiveCacheStore(cacheDir.path),
+            priority: CachePriority.normal,
+            maxStale: Duration(days: 2),
+            policy: CachePolicy.forceCache,
+            keyBuilder: CacheOptions.defaultCacheKeyBuilder,
+          ),
+        ),
+      );
+  }
+
+  Future<dynamic> getRequest(String url,
+      {bool haveQueries = false, bool cache = false}) async {
     var responseJson;
+
     try {
-      final response = await http.get(
-        Uri.parse(Constants.tmdbBase +
+      if (cache) {
+        final response = await dio.getUri(Uri.parse(Constants.tmdbBase +
             url +
             (haveQueries ? "&" : "?") +
-            "api_key=${Constants.apiKey}&language=en-US"),
-      );
-      responseJson = json.decode(_invalidate(response).body);
+            "api_key=${Constants.apiKey}&language=en-US"));
+
+        responseJson = _invalidateDio(response).data;
+      } else {
+        final response = await http.get(
+          Uri.parse(Constants.tmdbBase +
+              url +
+              (haveQueries ? "&" : "?") +
+              "api_key=${Constants.apiKey}&language=en-US"),
+        );
+        responseJson = json.decode(_invalidate(response).body);
+      }
     } on SocketException {
       throw FetchException("No internet connection");
+    } catch (e) {
+      throw Exception(e);
     }
     return responseJson;
   }
@@ -74,6 +109,25 @@ class Api {
         return response;
       default:
         throw UnimplementedError(response.reasonPhrase);
+    }
+  }
+
+  Response _invalidateDio(Response response) {
+    switch (response.statusCode) {
+      case 400:
+        throw BadRequestException(response.data);
+      case 401:
+        throw UnauthorisedException(response.data);
+      case 404:
+        throw NotFoundException(response.data);
+      case 500:
+        throw FetchException(response.data);
+      case 200:
+        return response;
+      case 304:
+        return response;
+      default:
+        throw UnimplementedError(response.statusMessage);
     }
   }
 }

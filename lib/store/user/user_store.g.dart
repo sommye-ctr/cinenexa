@@ -109,9 +109,10 @@ mixin _$UserStore on _UserStoreBase, Store {
       AsyncAction('_UserStoreBase.init', context: context);
 
   @override
-  Future<dynamic> init({FavoritesStore? favoritesStore}) {
-    return _$initAsyncAction
-        .run(() => super.init(favoritesStore: favoritesStore));
+  Future<dynamic> init(
+      {FavoritesStore? favoritesStore, WatchListStore? watchListsStore}) {
+    return _$initAsyncAction.run(() => super.init(
+        favoritesStore: favoritesStore, watchListsStore: watchListsStore));
   }
 
   late final _$fetchUserStatsAsyncAction =

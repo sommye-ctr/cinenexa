@@ -311,6 +311,16 @@ mixin _$DetailsStore on _DetailsStore, Store {
         .run(() => super.addToListClicked(store, userStore));
   }
 
+  late final _$removeFromListCLickedAsyncAction =
+      AsyncAction('_DetailsStore.removeFromListCLicked', context: context);
+
+  @override
+  Future<dynamic> removeFromListCLicked(
+      FavoritesStore store, UserStore userStore) {
+    return _$removeFromListCLickedAsyncAction
+        .run(() => super.removeFromListCLicked(store, userStore));
+  }
+
   late final _$markWatchedClickedAsyncAction =
       AsyncAction('_DetailsStore.markWatchedClicked', context: context);
 
@@ -368,11 +378,11 @@ mixin _$DetailsStore on _DetailsStore, Store {
   }
 
   @override
-  void removeFromListCLicked(FavoritesStore store, UserStore userStore) {
+  void cancelStreams() {
     final _$actionInfo = _$_DetailsStoreActionController.startAction(
-        name: '_DetailsStore.removeFromListCLicked');
+        name: '_DetailsStore.cancelStreams');
     try {
-      return super.removeFromListCLicked(store, userStore);
+      return super.cancelStreams();
     } finally {
       _$_DetailsStoreActionController.endAction(_$actionInfo);
     }

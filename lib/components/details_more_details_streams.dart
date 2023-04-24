@@ -1,4 +1,5 @@
 import 'package:cinenexa/models/local/progress.dart';
+import 'package:cinenexa/screens/extensions_page.dart';
 import 'package:cinenexa/utils/link_opener.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,7 +8,6 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
-import 'package:lottie/lottie.dart';
 import 'package:cinenexa/models/network/extensions/extension_stream.dart';
 import 'package:cinenexa/resources/asset.dart';
 import 'package:cinenexa/screens/youtube_video_player.dart';
@@ -170,7 +170,7 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
   Widget _buildInstallExtensionsButton() {
     return RoundedButton(
       type: RoundedButtonType.outlined,
-      onPressed: () => Navigator.pop(context, true),
+      onPressed: () => Navigator.pushNamed(context, ExtensionsPage.routeName),
       child: Text(Strings.installExtensions),
     );
   }
@@ -320,10 +320,13 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
         builder: (context1) {
           widget.detailsStore.showHistory;
 
-          return ListView.builder(
+          return ListView.separated(
             shrinkWrap: true,
             itemCount: widget.detailsStore.episodes.length,
             physics: ClampingScrollPhysics(),
+            separatorBuilder: (context, index) {
+              return Divider();
+            },
             itemBuilder: _buildEpisodeTile,
           );
         },

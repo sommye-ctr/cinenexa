@@ -10,6 +10,7 @@ class Strings {
   static const String movie = "Movie";
   static const String show = "Show";
   static const String actor = "Actor";
+  static const String lists = "Lists";
   static const String all = "All";
   static const String moreInfo = "More Info";
   static const String unexpecedError = "Unexpected error occurred!";
@@ -83,6 +84,12 @@ class Strings {
   static const String cancel = "Cancel";
   static const String remove = "Remove";
   static const String noItemsSelected = "No items selected";
+
+  // Lists
+  static const String loginToSeeList =
+      "Login into Trakt to access your created lists";
+  static const String liked = "Liked";
+  static const String personal = "Personal";
 
 //Search
   static const String searchHint = "You can search for";
@@ -168,6 +175,10 @@ class Strings {
   static const String birthPlace = "BirthPlace";
   static const String birthday = "Birthday";
 
+  // Manage Lists
+  static const String manageList = "Manage Lists";
+  static const String manageListSubheading = "Click to add/remove item";
+
 //Profile
   static const String anonymous = "Anonymous";
   static const String watchedMovies = "Movies\nWatched";
@@ -226,12 +237,7 @@ class Strings {
   static const String seekDurationSub = "Duration to seek in video player";
   static const String autoSelectSubtitleSub =
       "Automatically select the subtitle that was selected during previous playback";
-  static const String autoPlayPopup = "Autoplay Popup";
-  static const String autoPlayPopupSub =
-      "Popup at the end of episode. Fetches streams for the next episode beforehand";
   static const String autoPlayDuration = "Autoplay Duration";
-  static const String autoPlayDurationSub =
-      "Duration from the end of video, before which the popup should be shown";
 
   static const String subtitle = "Subtitle";
   static const String subtitleSettings = "Subtitle Settings";
@@ -252,6 +258,8 @@ class Strings {
   static const String castDevices = "Cast Devices";
   static const String noDeviceFound = "No Devices Found for casting!";
   static const String disconnect = "Disconnect";
+  static const String next = "Next";
+  static const String addSubtitle = "Add Subtitle";
   static const playbackSpeeds = [
     "1x",
     "0.25x",
