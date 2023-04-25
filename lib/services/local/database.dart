@@ -123,7 +123,7 @@ class Database {
 
   Future<bool> getJustwatchProvidersStatus() async {
     final prefs = await SharedPreferences.getInstance();
-    return (prefs.getBool(_JUSTWATCH_PROVIDERS_ENABLED) ?? false);
+    return (prefs.getBool(_JUSTWATCH_PROVIDERS_ENABLED) ?? true);
   }
 
   Future<bool> getAutoSelectSubtitle() async {

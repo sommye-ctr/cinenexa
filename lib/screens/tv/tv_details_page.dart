@@ -32,6 +32,8 @@ class TvDetailsPage extends StatefulWidget {
 }
 
 class _TvDetailsPageState extends State<TvDetailsPage> {
+  static const double widthPercent = 0.6;
+
   FocusNode homefocus = FocusNode();
 
   int yFocus = -1;
@@ -68,6 +70,7 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
             hq: true),
         placeHolder:
             Utils.getBackdropUrl(widget.detailsStore.baseModel.backdropPath!),
+        stops: [0, 0.35, 0.6, 0.75, 1],
         child: Container(
           height: ScreenSize.getPercentOfHeight(context, 1),
           decoration: BoxDecoration(
@@ -84,7 +87,7 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
                 stops: [
                   0,
                   0.3,
-                  0.65,
+                  0.5,
                   0.75,
                   1
                 ]),
@@ -92,20 +95,16 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
           child: Padding(
             padding: EdgeInsets.only(
               right: 8,
-              left: 8,
+              left: ScreenSize.getPercentOfWidth(context, 0.05),
               top: ScreenSize.getPercentOfHeight(context, 0.05),
               bottom: 8,
             ),
             child: Stack(
               children: [
+                _buildHeadingInfo(),
                 Align(
-                  alignment: Alignment(-0.85, -0.75),
-                  child: _buildHeadingInfo(),
-                ),
-                _buildStreams(),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Icon(Icons.keyboard_arrow_down),
+                  alignment: Alignment.bottomLeft,
+                  child: _buildCast(),
                 ),
               ],
             ),
@@ -190,17 +189,33 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
           type: RoundedButtonType.outlined,
         ),
         Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
-        RoundedButton(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Text(Strings.watchTrailer),
-              Icon(Icons.movie_filter_rounded),
-            ],
+        if (widget.detailsStore.baseModel.type == BaseModelType.movie)
+          RoundedButton(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Text(Strings.watchTrailer),
+                Icon(Icons.movie_filter_rounded),
+              ],
+            ),
+            onPressed: () {},
+            type: RoundedButtonType.outlined,
           ),
-          onPressed: () {},
-          type: RoundedButtonType.outlined,
-        ),
+        if (widget.detailsStore.baseModel.type == BaseModelType.tv)
+          RoundedButton(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Text(Strings.seasons),
+                SizedBox(
+                  width: 2,
+                ),
+                Icon(Icons.tv_rounded),
+              ],
+            ),
+            onPressed: () {},
+            type: RoundedButtonType.outlined,
+          ),
       ],
     );
   }
@@ -217,7 +232,7 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
           alignment: Alignment.topLeft,
           child: Container(
             constraints: BoxConstraints(
-              maxWidth: ScreenSize.getPercentOfWidth(context, 0.55),
+              maxWidth: ScreenSize.getPercentOfWidth(context, widthPercent),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -267,48 +282,84 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
             ),
           ),
         ),
-        RawKeyboardListener(
-          focusNode: homefocus,
-          onKey: _handleKeyBoard,
-          child: Column(
-            children: [
-              Style.getVerticalSpacing(context: context, percent: 0.04),
-              if (widget.detailsStore.baseModel.type == BaseModelType.tv)
-                _buildSeasonHeading(context),
-              if (widget.detailsStore.baseModel.type == BaseModelType.movie)
-                _buildCast(),
-            ],
-          ),
-        ),
       ],
     );
   }
 
   Widget _buildCast() {
     return Observer(builder: (_) {
-      if (widget.detailsStore.credits.isEmpty) {
+      if (widget.detailsStore.credits.isEmpty ||
+          widget.detailsStore.reviewList.isEmpty ||
+          widget.detailsStore.watchProviders.isEmpty) {
         return Container();
       }
-      return TvHorizontalList<BaseModel>(
-        heading: "",
-        height: ScreenSize.getPercentOfWidth(context, 0.05) /
-            Constants.profileAspectRatio,
-        widthPercentItem: 0.025,
-        tvListStore: TvListStore(
-          focusChange: (item) {},
-          items: widget.detailsStore.credits,
+      return Container(
+        height: ScreenSize.getPercentOfHeight(context, 0.3),
+        child: Flex(
+          direction: Axis.horizontal,
+          children: [
+            _buildBottomInfoCard(
+              title: Strings.cast,
+              child: Text(
+                widget.detailsStore.credits
+                    .map((element) => element.title)
+                    .join(", "),
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
+            _buildBottomInfoCard(
+              title: Strings.reviews,
+              child: Text(
+                widget.detailsStore.reviewList.first.comment ?? "",
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
+            _buildBottomInfoCard(
+              title: Strings.availableAt,
+              child: Text(
+                widget.detailsStore.watchProviders
+                    .map((element) => element.name)
+                    .join(", "),
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
+          ],
         ),
-        onWidgetBuild: (item) {
-          return Style.getActorTile(
-            context: context,
-            poster: item.posterPath,
-            title: item.title,
-            widthPercent: 0.025,
-            callback: () {},
-          );
-        },
       );
     });
+  }
+
+  Widget _buildBottomInfoCard({required String title, required Text child}) {
+    return Flexible(
+      flex: 1,
+      fit: FlexFit.tight,
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Text(
+            title,
+            style: TextStyle(color: Colors.grey),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                width: double.infinity,
+                child: Card(
+                  color: Colors.transparent,
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: child,
+                  ),
+                ).asGlass(
+                    clipBorderRadius:
+                        BorderRadius.circular(Style.smallRoundEdgeRadius)),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildSeasonHeading(context) {
