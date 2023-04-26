@@ -156,6 +156,8 @@ class Strings {
   static const String availableAt = "Available at";
   static const String streams = "Streams";
   static const String reviews = "Reviews";
+
+  static const String review = "Review";
   static const String otherInfo = "Other Info";
   static const String installExtensions = "Install Extensions";
 

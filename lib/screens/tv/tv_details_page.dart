@@ -18,6 +18,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:glass/glass.dart';
 
 import '../../components/tv/tv_episode_tile.dart';
+import '../../components/tv/tv_info_card.dart';
 import '../../models/network/base_model.dart';
 
 class TvDetailsPage extends StatefulWidget {
@@ -66,10 +67,11 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: ScreenBackgroundImage(
-        image: Utils.getBackdropUrl(widget.detailsStore.baseModel.backdropPath!,
+        image: Utils.getBackdropUrl(
+            widget.detailsStore.baseModel.backdropPath ?? "",
             hq: true),
-        placeHolder:
-            Utils.getBackdropUrl(widget.detailsStore.baseModel.backdropPath!),
+        placeHolder: Utils.getBackdropUrl(
+            widget.detailsStore.baseModel.backdropPath ?? ""),
         stops: [0, 0.35, 0.6, 0.75, 1],
         child: Container(
           height: ScreenSize.getPercentOfHeight(context, 1),
@@ -104,7 +106,7 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
                 _buildHeadingInfo(),
                 Align(
                   alignment: Alignment.bottomLeft,
-                  child: _buildCast(),
+                  child: _buildBottomInfo(),
                 ),
               ],
             ),
@@ -286,44 +288,51 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
     );
   }
 
-  Widget _buildCast() {
+  Widget _buildBottomInfo() {
     return Observer(builder: (_) {
-      if (widget.detailsStore.credits.isEmpty ||
-          widget.detailsStore.reviewList.isEmpty ||
-          widget.detailsStore.watchProviders.isEmpty) {
-        return Container();
-      }
-      return Container(
-        height: ScreenSize.getPercentOfHeight(context, 0.3),
-        child: Flex(
-          direction: Axis.horizontal,
-          children: [
-            _buildBottomInfoCard(
-              title: Strings.cast,
-              child: Text(
-                widget.detailsStore.credits
-                    .map((element) => element.title)
-                    .join(", "),
-                style: TextStyle(color: Colors.grey),
+      return AnimatedCrossFade(
+        firstCurve: Curves.easeIn,
+        crossFadeState: widget.detailsStore.credits.isEmpty ||
+                widget.detailsStore.reviewList.isEmpty
+            ? CrossFadeState.showFirst
+            : CrossFadeState.showSecond,
+        duration: Duration(milliseconds: 200),
+        firstChild: Container(),
+        secondChild: Container(
+          height: ScreenSize.getPercentOfHeight(context, 0.3),
+          child: Flex(
+            direction: Axis.horizontal,
+            children: [
+              _buildBottomInfoCard(
+                title: Strings.cast,
+                child: Text(
+                  widget.detailsStore.credits
+                      .map((element) => element.title)
+                      .join(", "),
+                  style: TextStyle(color: Colors.grey),
+                ),
               ),
-            ),
-            _buildBottomInfoCard(
-              title: Strings.reviews,
-              child: Text(
-                widget.detailsStore.reviewList.first.comment ?? "",
-                style: TextStyle(color: Colors.grey),
+              _buildBottomInfoCard(
+                title: Strings.review,
+                child: Text(
+                  widget.detailsStore.reviewList.isEmpty
+                      ? Strings.noResultsFound
+                      : widget.detailsStore.reviewList.first.comment ?? "",
+                  style: TextStyle(color: Colors.grey),
+                ),
               ),
-            ),
-            _buildBottomInfoCard(
-              title: Strings.availableAt,
-              child: Text(
-                widget.detailsStore.watchProviders
-                    .map((element) => element.name)
-                    .join(", "),
-                style: TextStyle(color: Colors.grey),
-              ),
-            ),
-          ],
+              if (widget.detailsStore.watchProviders.isNotEmpty)
+                _buildBottomInfoCard(
+                  title: Strings.availableAt,
+                  child: Text(
+                    widget.detailsStore.watchProviders
+                        .map((element) => element.name)
+                        .join(", "),
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ),
+            ],
+          ),
         ),
       );
     });
@@ -338,22 +347,18 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
         children: [
           Text(
             title,
-            style: TextStyle(color: Colors.grey),
           ),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Container(
                 width: double.infinity,
-                child: Card(
-                  color: Colors.transparent,
-                  child: Padding(
+                child: TvInfoCard(
+                  text: Padding(
                     padding: const EdgeInsets.all(4),
                     child: child,
                   ),
-                ).asGlass(
-                    clipBorderRadius:
-                        BorderRadius.circular(Style.smallRoundEdgeRadius)),
+                ),
               ),
             ),
           ),
@@ -361,7 +366,7 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
       ),
     );
   }
-
+/* 
   Widget _buildSeasonHeading(context) {
     return Observer(builder: (_) {
       widget.detailsStore.chosenSeason;
@@ -430,4 +435,6 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
       );
     });
   }
+
+ */
 }
