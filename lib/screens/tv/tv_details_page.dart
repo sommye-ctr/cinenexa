@@ -1,23 +1,19 @@
-import 'package:cinenexa/models/network/tv_episode.dart';
 import 'package:cinenexa/resources/strings.dart';
 import 'package:cinenexa/resources/style.dart';
-import 'package:cinenexa/services/constants.dart';
 import 'package:cinenexa/services/network/utils.dart';
 import 'package:cinenexa/store/details/details_store.dart';
-import 'package:cinenexa/store/tv_list/tv_list_store.dart';
 import 'package:cinenexa/utils/date_time_formatter.dart';
 import 'package:cinenexa/utils/keycode.dart';
 import 'package:cinenexa/utils/screen_size.dart';
+import 'package:cinenexa/widgets/custom_back_button.dart';
 import 'package:cinenexa/widgets/rounded_button.dart';
 import 'package:cinenexa/widgets/screen_background_image.dart';
-import 'package:cinenexa/widgets/tv_horizontal_list.dart';
 import 'package:cinenexa/widgets/vote_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:glass/glass.dart';
 
-import '../../components/tv/tv_episode_tile.dart';
 import '../../components/tv/tv_info_card.dart';
 import '../../models/network/base_model.dart';
 
@@ -33,82 +29,92 @@ class TvDetailsPage extends StatefulWidget {
 }
 
 class _TvDetailsPageState extends State<TvDetailsPage> {
+  static const int BACK_BUTTON = -1;
+  static const int PLAY_BUTTON = 0;
+  static const int ADD_BUTTON = 1;
+  static const int SEASON_TRAILER_BUTTON = 2;
+
   static const double widthPercent = 0.6;
 
   FocusNode homefocus = FocusNode();
+  FocusNode backFocus = FocusNode();
 
-  int yFocus = -1;
-  List<TvListStore<TvEpisode>> controllers = [];
-  FocusNode playFocusNode = FocusNode();
+  int xFocus = PLAY_BUTTON;
+  List<RoundedButtonController> controllers = [
+    RoundedButtonController(type: RoundedButtonType.filled),
+    RoundedButtonController(type: RoundedButtonType.outlined),
+    RoundedButtonController(type: RoundedButtonType.outlined)
+  ];
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    /*  WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       FocusScope.of(context).requestFocus(homefocus);
-      playFocusNode.requestFocus();
       FocusScope.of(context).requestFocus(homefocus);
-    });
-  }
-
-  @override
-  void didChangeDependencies() {
-    controllers.add(
-      TvListStore(
-        focusChange: (item) {},
-        items: widget.detailsStore.episodes,
-        isListFocused: true,
-      ),
-    );
-    super.didChangeDependencies();
+    }); */
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ScreenBackgroundImage(
-        image: Utils.getBackdropUrl(
-            widget.detailsStore.baseModel.backdropPath ?? "",
-            hq: true),
-        placeHolder: Utils.getBackdropUrl(
-            widget.detailsStore.baseModel.backdropPath ?? ""),
-        stops: [0, 0.35, 0.6, 0.75, 1],
-        child: Container(
-          height: ScreenSize.getPercentOfHeight(context, 1),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.topRight,
-                colors: [
-                  Colors.black87,
-                  Colors.black45,
-                  Colors.black38,
-                  Colors.transparent,
-                  Colors.transparent
-                ],
-                stops: [
-                  0,
-                  0.3,
-                  0.5,
-                  0.75,
-                  1
-                ]),
-          ),
-          child: Padding(
-            padding: EdgeInsets.only(
-              right: 8,
-              left: ScreenSize.getPercentOfWidth(context, 0.05),
-              top: ScreenSize.getPercentOfHeight(context, 0.05),
-              bottom: 8,
+    return RawKeyboardListener(
+      onKey: _handleKeyBoard,
+      focusNode: homefocus,
+      child: Scaffold(
+        body: ScreenBackgroundImage(
+          image: Utils.getBackdropUrl(
+              widget.detailsStore.baseModel.backdropPath ?? "",
+              hq: true),
+          placeHolder: Utils.getBackdropUrl(
+              widget.detailsStore.baseModel.backdropPath ?? ""),
+          stops: [0, 0.35, 0.6, 0.75, 1],
+          child: Container(
+            height: ScreenSize.getPercentOfHeight(context, 1),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.topRight,
+                  colors: [
+                    Colors.black87,
+                    Colors.black45,
+                    Colors.black38,
+                    Colors.transparent,
+                    Colors.transparent
+                  ],
+                  stops: [
+                    0,
+                    0.3,
+                    0.5,
+                    0.75,
+                    1
+                  ]),
             ),
-            child: Stack(
-              children: [
-                _buildHeadingInfo(),
-                Align(
-                  alignment: Alignment.bottomLeft,
-                  child: _buildBottomInfo(),
-                ),
-              ],
+            child: Padding(
+              padding: EdgeInsets.only(
+                top: ScreenSize.getPercentOfHeight(context, 0.05),
+                bottom: 8,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomBackButton(focusNode: backFocus),
+                  SizedBox(width: 6),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 8),
+                      child: Stack(
+                        children: [
+                          _buildHeadingInfo(),
+                          Align(
+                            alignment: Alignment.bottomLeft,
+                            child: _buildBottomInfo(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -123,16 +129,34 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
     RawKeyEventDataAndroid rawKeyEventData =
         event.data as RawKeyEventDataAndroid;
 
-    print("yfocus is $yFocus ");
     switch (rawKeyEventData.keyCode) {
-      case KEY_DOWN:
-        if (yFocus == -1) {
-          yFocus++;
-          print("changing focus $yFocus");
-          controllers[yFocus].changeFocus(true);
-        }
-        break;
       case KEY_RIGHT:
+        if (xFocus == SEASON_TRAILER_BUTTON) {
+          return;
+        }
+        if (xFocus == BACK_BUTTON) {
+          backFocus.unfocus();
+          xFocus++;
+          controllers[xFocus].changeType(RoundedButtonType.filled);
+          return;
+        }
+        controllers[xFocus].changeType(RoundedButtonType.outlined);
+        xFocus++;
+        controllers[xFocus].changeType(RoundedButtonType.filled);
+        break;
+      case KEY_LEFT:
+        if (xFocus == BACK_BUTTON) {
+          return;
+        }
+        if (xFocus == PLAY_BUTTON) {
+          backFocus.requestFocus();
+          controllers[xFocus].changeType(RoundedButtonType.outlined);
+          xFocus--;
+          return;
+        }
+        controllers[xFocus].changeType(RoundedButtonType.outlined);
+        xFocus--;
+        controllers[xFocus].changeType(RoundedButtonType.filled);
         break;
       default:
     }
@@ -166,7 +190,7 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
   Widget _buildButtons() {
     return Row(
       children: [
-        RoundedButton(
+        RoundedButton.controller(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -175,11 +199,10 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
             ],
           ),
           onPressed: () {},
-          type: RoundedButtonType.filled,
-          focusNode: playFocusNode,
+          controller: controllers[PLAY_BUTTON],
         ),
         Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
-        RoundedButton(
+        RoundedButton.controller(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -188,11 +211,11 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
             ],
           ),
           onPressed: () {},
-          type: RoundedButtonType.outlined,
+          controller: controllers[ADD_BUTTON],
         ),
         Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
         if (widget.detailsStore.baseModel.type == BaseModelType.movie)
-          RoundedButton(
+          RoundedButton.controller(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -201,10 +224,10 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
               ],
             ),
             onPressed: () {},
-            type: RoundedButtonType.outlined,
+            controller: controllers[SEASON_TRAILER_BUTTON],
           ),
         if (widget.detailsStore.baseModel.type == BaseModelType.tv)
-          RoundedButton(
+          RoundedButton.controller(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -216,7 +239,7 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
               ],
             ),
             onPressed: () {},
-            type: RoundedButtonType.outlined,
+            controller: controllers[SEASON_TRAILER_BUTTON],
           ),
       ],
     );
@@ -260,7 +283,9 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
                 Observer(builder: (_) {
                   if (widget.detailsStore.genres == null ||
                       (widget.detailsStore.genres?.isEmpty ?? false)) {
-                    return Style.getVerticalSpacing(context: context);
+                    return SizedBox(
+                      height: 20,
+                    );
                   }
                   return Wrap(
                     children: List.generate(
