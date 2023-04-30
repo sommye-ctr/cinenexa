@@ -68,10 +68,23 @@ class _RoundedButtonState extends State<RoundedButton> {
       ),
     );
 
+    var text = TextButton(
+      onPressed: widget.onPressed,
+      child: widget.child,
+      focusNode: widget.focusNode,
+      style: ElevatedButton.styleFrom(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
+        ),
+      ),
+    );
+
     if (type == RoundedButtonType.filled) {
       return rounded;
     } else if (type == RoundedButtonType.outlined) {
       return outlined;
+    } else if (type == RoundedButtonType.text) {
+      return text;
     }
     throw FlutterError("Invalid button type");
   }
@@ -92,4 +105,5 @@ class RoundedButtonController extends ChangeNotifier {
 enum RoundedButtonType {
   filled,
   outlined,
+  text,
 }

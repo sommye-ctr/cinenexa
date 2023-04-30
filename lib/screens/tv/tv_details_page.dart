@@ -8,12 +8,16 @@ import 'package:cinenexa/utils/screen_size.dart';
 import 'package:cinenexa/widgets/custom_back_button.dart';
 import 'package:cinenexa/widgets/rounded_button.dart';
 import 'package:cinenexa/widgets/screen_background_image.dart';
+import 'package:cinenexa/widgets/tv_drawer.dart';
 import 'package:cinenexa/widgets/vote_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:glass/glass.dart';
 
+import '../../components/mobile/details_episode_tile.dart';
+import '../../components/tv/tv_details_episodes.dart';
+import '../../components/tv/tv_episode_tile.dart';
 import '../../components/tv/tv_info_card.dart';
 import '../../models/network/base_model.dart';
 
@@ -49,10 +53,9 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
   @override
   void initState() {
     super.initState();
-    /*  WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       FocusScope.of(context).requestFocus(homefocus);
-      FocusScope.of(context).requestFocus(homefocus);
-    }); */
+    });
   }
 
   @override
@@ -158,6 +161,13 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
         xFocus--;
         controllers[xFocus].changeType(RoundedButtonType.filled);
         break;
+      case KEY_CENTER:
+        if (xFocus == SEASON_TRAILER_BUTTON) {
+          if (widget.detailsStore.baseModel.type == BaseModelType.tv) {
+            _onSeasonsClicked();
+          }
+        }
+        break;
       default:
     }
   }
@@ -238,10 +248,21 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
                 Icon(Icons.tv_rounded),
               ],
             ),
-            onPressed: () {},
+            onPressed: _onSeasonsClicked,
             controller: controllers[SEASON_TRAILER_BUTTON],
           ),
       ],
+    );
+  }
+
+  void _onSeasonsClicked() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return TvDetailsEpisodes(
+          detailsStore: widget.detailsStore,
+        );
+      },
     );
   }
 

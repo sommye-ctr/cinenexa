@@ -10,10 +10,11 @@ import '../resources/custom_scroll_behavior.dart';
 class TvHorizontalList<T> extends StatefulWidget {
   final int? limitItems;
   final String heading;
-  final Function(List<T> items)? onRightTrailClicked;
-  final double height;
+  final double? height;
   final double widthPercentItem;
   final TvListStore<T> tvListStore;
+
+  final Axis direction;
 
   final Widget Function(T item)? onWidgetBuild;
 
@@ -23,20 +24,20 @@ class TvHorizontalList<T> extends StatefulWidget {
     required this.height,
     required this.widthPercentItem,
     required this.tvListStore,
-    this.onRightTrailClicked,
     this.onWidgetBuild,
+    this.direction = Axis.horizontal,
   })  : limitItems = null,
         super(key: key);
 
   TvHorizontalList.fromInititalValues({
     Key? key,
     required this.heading,
-    required this.height,
-    this.onRightTrailClicked,
     required this.widthPercentItem,
     required this.tvListStore,
+    this.height,
     this.limitItems,
     this.onWidgetBuild,
+    this.direction = Axis.horizontal,
   }) : super(key: key);
 
   @override
@@ -75,23 +76,14 @@ class _TvHorizontalListState<T> extends State<TvHorizontalList<T>> {
                     widget.heading,
                     style: Style.headingStyle,
                   ),
-                  if (_showRightTrail())
-                    IconButton(
-                      onPressed: () {
-                        if (widget.onRightTrailClicked != null)
-                          widget
-                              .onRightTrailClicked!(widget.tvListStore.items!);
-                      },
-                      icon: Icon(
-                        Icons.keyboard_arrow_right_rounded,
-                      ),
-                    ),
                 ],
               ),
             SizedBox(
               height: 4,
             ),
-            _buildContent(),
+            if (widget.direction == Axis.vertical)
+              Expanded(child: _buildContent()),
+            if (widget.direction == Axis.horizontal) _buildContent()
           ],
         );
       },
@@ -100,15 +92,16 @@ class _TvHorizontalListState<T> extends State<TvHorizontalList<T>> {
 
   Widget _buildContent() {
     if (widget.tvListStore.items!.isEmpty) {
-      return _buildList(
-        (context, index) {
-          return Style.getMovieTileBackdropPlaceHolder(
-            context: context,
-            widthPercent: widget.widthPercentItem,
-          );
-        },
-        Constants.placeHolderListLimit,
-      );
+      if (widget.onWidgetBuild == null)
+        return _buildList(
+          (context, index) {
+            return Style.getMovieTileBackdropPlaceHolder(
+              context: context,
+              widthPercent: widget.widthPercentItem,
+            );
+          },
+          Constants.placeHolderListLimit,
+        );
     }
     return Observer(
       builder: (context) {
@@ -118,8 +111,14 @@ class _TvHorizontalListState<T> extends State<TvHorizontalList<T>> {
 
         return _buildList(
           (context, index) {
+            bool focused = widget.tvListStore.isListFocused &&
+                widget.tvListStore.focusedIndex == index;
+
             if (widget.onWidgetBuild != null) {
-              return widget.onWidgetBuild!(widget.tvListStore.items![index]);
+              return Transform.scale(
+                scale: focused ? 1 : 0.9,
+                child: widget.onWidgetBuild!(widget.tvListStore.items![index]),
+              );
             }
             return Style.getTvMovieTile(
               item: widget.tvListStore.items![index] as BaseModel,
@@ -127,10 +126,7 @@ class _TvHorizontalListState<T> extends State<TvHorizontalList<T>> {
               showTitle: false,
               context: context,
               onClick: (baseModel) {},
-              scale: widget.tvListStore.isListFocused &&
-                      widget.tvListStore.focusedIndex == index
-                  ? 1
-                  : 0.9,
+              scale: focused ? 1 : 0.9,
             );
           },
           _getLength(),
@@ -143,22 +139,37 @@ class _TvHorizontalListState<T> extends State<TvHorizontalList<T>> {
     Widget Function(BuildContext context, int index) builder,
     int count,
   ) {
-    return Container(
-      height: widget.height,
-      child: ScrollConfiguration(
-        behavior: CustomScrollBehavior(),
-        child: ScrollablePositionedList.separated(
-          itemScrollController: scrollController,
-          shrinkWrap: true,
-          scrollDirection: Axis.horizontal,
-          separatorBuilder: (context, index) {
-            return SizedBox(
-              width: 8,
-            );
-          },
-          itemCount: count,
-          itemBuilder: builder,
+    if (widget.direction == Axis.horizontal) {
+      return Container(
+        height: widget.height,
+        child: ScrollConfiguration(
+          behavior: CustomScrollBehavior(),
+          child: ScrollablePositionedList.separated(
+            itemScrollController: scrollController,
+            shrinkWrap: true,
+            scrollDirection: Axis.horizontal,
+            separatorBuilder: (context, index) {
+              return SizedBox(
+                width: 8,
+              );
+            },
+            itemCount: count,
+            itemBuilder: builder,
+          ),
         ),
+      );
+    }
+    return ScrollConfiguration(
+      behavior: CustomScrollBehavior(),
+      child: ScrollablePositionedList.separated(
+        itemScrollController: scrollController,
+        shrinkWrap: true,
+        scrollDirection: Axis.vertical,
+        separatorBuilder: (context, index) {
+          return Divider();
+        },
+        itemCount: count,
+        itemBuilder: builder,
       ),
     );
   }
@@ -169,12 +180,5 @@ class _TvHorizontalListState<T> extends State<TvHorizontalList<T>> {
       return widget.limitItems!;
     }
     return widget.tvListStore.items!.length;
-  }
-
-  bool _showRightTrail() {
-    if (widget.onRightTrailClicked == null) return false;
-    if (widget.limitItems == null) return true;
-    if (widget.tvListStore.items!.length >= widget.limitItems!) return true;
-    return false;
   }
 }

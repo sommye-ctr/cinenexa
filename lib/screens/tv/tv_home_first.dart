@@ -287,9 +287,7 @@ class _TvHomeFirstState extends State<TvHomeFirst> {
 
   Widget _buildNavigationRail() {
     return Focus(
-      onFocusChange: (value) {
-        print(value);
-      },
+      onFocusChange: (value) {},
       focusNode: railFocus,
       skipTraversal: true,
       child: NavigationRail(

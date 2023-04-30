@@ -27,15 +27,60 @@ class TvEpisodeTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
-        child: ScreenBackgroundImage(
-          image: Utils.getStillUrl(episode.stillPath),
-          child: Align(
-            alignment: Alignment.bottomCenter,
-            child: Text(episode.name),
-          ),
-          stops: [0, 0.3, 0.5, 0.8, 1],
+      child: Card(
+        color: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
+        ),
+        child: Row(
+          children: [
+            RoundedImage(
+              image: Utils.getStillUrl(episode.stillPath),
+              width: ScreenSize.getPercentOfWidth(context, 0.15),
+              ratio: Constants.stillAspectRatio,
+              radius: Style.smallRoundEdgeRadius,
+            ),
+            SizedBox(
+              width: 4,
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "${episode.episodeNumber}. ${episode.name}",
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    "${episode.runtime} minutes",
+                    style: TextStyle(color: Theme.of(context).hintColor),
+                  ),
+                  SizedBox(
+                    height: 4,
+                  ),
+                  Text(
+                    episode.overview,
+                    style: TextStyle(color: Theme.of(context).hintColor),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (watched)
+                    Padding(
+                      padding: EdgeInsets.only(
+                        right: ScreenSize.getPercentOfWidth(context, 0.01),
+                      ),
+                      child: Icon(
+                        Icons.check_box_rounded,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
