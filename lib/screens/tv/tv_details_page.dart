@@ -14,12 +14,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:glass/glass.dart';
+import 'package:provider/provider.dart';
 
 import '../../components/mobile/details_episode_tile.dart';
 import '../../components/tv/tv_details_episodes.dart';
 import '../../components/tv/tv_episode_tile.dart';
 import '../../components/tv/tv_info_card.dart';
 import '../../models/network/base_model.dart';
+import '../../store/favorites/favorites_store.dart';
+import '../../store/user/user_store.dart';
 
 class TvDetailsPage extends StatefulWidget {
   final DetailsStore detailsStore;
@@ -162,10 +165,14 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
         controllers[xFocus].changeType(RoundedButtonType.filled);
         break;
       case KEY_CENTER:
-        if (xFocus == SEASON_TRAILER_BUTTON) {
-          if (widget.detailsStore.baseModel.type == BaseModelType.tv) {
-            _onSeasonsClicked();
-          }
+        switch (xFocus) {
+          case SEASON_TRAILER_BUTTON:
+            if (widget.detailsStore.baseModel.type == BaseModelType.tv) {
+              _onSeasonsClicked();
+            }
+            break;
+          case ADD_BUTTON:
+            _onAddRemFavoritesClicked(context);
         }
         break;
       default:
@@ -212,17 +219,7 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
           controller: controllers[PLAY_BUTTON],
         ),
         Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
-        RoundedButton.controller(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Text(Strings.addToFav),
-              Icon(Icons.favorite),
-            ],
-          ),
-          onPressed: () {},
-          controller: controllers[ADD_BUTTON],
-        ),
+        _buildAddFavButton(),
         Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
         if (widget.detailsStore.baseModel.type == BaseModelType.movie)
           RoundedButton.controller(
@@ -253,6 +250,72 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
           ),
       ],
     );
+  }
+
+  Widget _buildAddFavButton() {
+    return Observer(builder: (_) {
+      return AnimatedCrossFade(
+        duration: Duration(milliseconds: 500),
+        sizeCurve: Curves.decelerate,
+        firstChild: RoundedButton.controller(
+          controller: controllers[ADD_BUTTON],
+          onPressed: () => _onAddRemFavoritesClicked(context),
+          child: Row(
+            children: [
+              Text(Strings.addToFav),
+              Icon(Icons.favorite, size: 20),
+            ],
+          ),
+        ),
+        secondChild: RoundedButton.controller(
+          controller: controllers[ADD_BUTTON],
+          onPressed: () => _onAddRemFavoritesClicked(context),
+          child: Row(
+            children: [
+              Text(Strings.removeFromFav),
+              Icon(Icons.favorite),
+            ],
+          ),
+        ),
+        layoutBuilder: (topChild, topKey, bottomChild, bottomKey) {
+          return Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Positioned(
+                top: 0,
+                child: bottomChild,
+                key: bottomKey,
+              ),
+              Positioned(
+                child: topChild,
+                key: topKey,
+              ),
+            ],
+          );
+        },
+        crossFadeState: widget.detailsStore.isAddedToFav
+            ? CrossFadeState.showSecond
+            : CrossFadeState.showFirst,
+      );
+    });
+  }
+
+  void _onAddRemFavoritesClicked(context) async {
+    bool remove = widget.detailsStore.isAddedToFav;
+    Style.showLoadingDialog(context: context);
+    if (remove) {
+      await widget.detailsStore.removeFromListCLicked(
+        Provider.of<FavoritesStore>(context, listen: false),
+        Provider.of<UserStore>(context, listen: false),
+      );
+      Navigator.pop(context);
+      return;
+    }
+    await widget.detailsStore.addToListClicked(
+      Provider.of<FavoritesStore>(context, listen: false),
+      Provider.of<UserStore>(context, listen: false),
+    );
+    Navigator.pop(context);
   }
 
   void _onSeasonsClicked() {
