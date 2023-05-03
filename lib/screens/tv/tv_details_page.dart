@@ -23,6 +23,7 @@ import '../../components/tv/tv_info_card.dart';
 import '../../models/network/base_model.dart';
 import '../../store/favorites/favorites_store.dart';
 import '../../store/user/user_store.dart';
+import '../youtube_video_player.dart';
 
 class TvDetailsPage extends StatefulWidget {
   final DetailsStore detailsStore;
@@ -169,6 +170,12 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
           case SEASON_TRAILER_BUTTON:
             if (widget.detailsStore.baseModel.type == BaseModelType.tv) {
               _onSeasonsClicked();
+            } else {
+              Navigator.pushNamed(
+                context,
+                YoutubeVideoPlayer.routeName,
+                arguments: widget.detailsStore.video?.key,
+              );
             }
             break;
           case ADD_BUTTON:
@@ -221,18 +228,7 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
         Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
         _buildAddFavButton(),
         Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
-        if (widget.detailsStore.baseModel.type == BaseModelType.movie)
-          RoundedButton.controller(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Text(Strings.watchTrailer),
-                Icon(Icons.movie_filter_rounded),
-              ],
-            ),
-            onPressed: () {},
-            controller: controllers[SEASON_TRAILER_BUTTON],
-          ),
+        _buildTrailerButton(),
         if (widget.detailsStore.baseModel.type == BaseModelType.tv)
           RoundedButton.controller(
             child: Row(
@@ -249,6 +245,28 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
             controller: controllers[SEASON_TRAILER_BUTTON],
           ),
       ],
+    );
+  }
+
+  Widget _buildTrailerButton() {
+    return Observer(
+      builder: (context) {
+        if (widget.detailsStore.baseModel.type == BaseModelType.movie &&
+            widget.detailsStore.video != null) {
+          return RoundedButton.controller(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Text(Strings.watchTrailer),
+                Icon(Icons.movie_filter_rounded),
+              ],
+            ),
+            onPressed: () {},
+            controller: controllers[SEASON_TRAILER_BUTTON],
+          );
+        }
+        return Container();
+      },
     );
   }
 
