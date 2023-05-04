@@ -315,7 +315,8 @@ mixin _$DetailsStore on _DetailsStore, Store {
       AsyncAction('_DetailsStore.removeFromListCLicked', context: context);
 
   @override
-  Future removeFromListCLicked(FavoritesStore store, UserStore userStore) {
+  Future<dynamic> removeFromListCLicked(
+      FavoritesStore store, UserStore userStore) {
     return _$removeFromListCLickedAsyncAction
         .run(() => super.removeFromListCLicked(store, userStore));
   }

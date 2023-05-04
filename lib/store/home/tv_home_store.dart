@@ -11,6 +11,9 @@ abstract class _TvHomeStoreBase with Store {
   @observable
   BaseModel? currentFocused;
 
+  @observable
+  bool railFocused = false;
+
   @action
   void changeIndex(int index) {
     tabIndex = index;
@@ -19,5 +22,10 @@ abstract class _TvHomeStoreBase with Store {
   @action
   void changeCurrentFocused(BaseModel baseModel) {
     currentFocused = baseModel;
+  }
+
+  @action
+  void changeRailFocused(bool value) {
+    railFocused = value;
   }
 }

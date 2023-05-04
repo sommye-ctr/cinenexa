@@ -41,6 +41,22 @@ mixin _$TvHomeStore on _TvHomeStoreBase, Store {
     });
   }
 
+  late final _$railFocusedAtom =
+      Atom(name: '_TvHomeStoreBase.railFocused', context: context);
+
+  @override
+  bool get railFocused {
+    _$railFocusedAtom.reportRead();
+    return super.railFocused;
+  }
+
+  @override
+  set railFocused(bool value) {
+    _$railFocusedAtom.reportWrite(value, super.railFocused, () {
+      super.railFocused = value;
+    });
+  }
+
   late final _$_TvHomeStoreBaseActionController =
       ActionController(name: '_TvHomeStoreBase', context: context);
 
@@ -67,10 +83,22 @@ mixin _$TvHomeStore on _TvHomeStoreBase, Store {
   }
 
   @override
+  void changeRailFocused(bool value) {
+    final _$actionInfo = _$_TvHomeStoreBaseActionController.startAction(
+        name: '_TvHomeStoreBase.changeRailFocused');
+    try {
+      return super.changeRailFocused(value);
+    } finally {
+      _$_TvHomeStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 tabIndex: ${tabIndex},
-currentFocused: ${currentFocused}
+currentFocused: ${currentFocused},
+railFocused: ${railFocused}
     ''';
   }
 }
