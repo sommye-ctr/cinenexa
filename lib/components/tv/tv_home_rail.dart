@@ -1,7 +1,8 @@
 import 'package:cinenexa/store/home/tv_home_store.dart';
+import 'package:cinenexa/utils/keycode.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:glass/glass.dart';
 
 import '../../resources/asset.dart';
 import '../../resources/strings.dart';
@@ -19,6 +20,10 @@ class TvHomeRail extends StatefulWidget {
 }
 
 class _TvHomeRailState extends State<TvHomeRail> {
+  final FocusNode focusNode = FocusNode();
+
+  int yFocus = 1;
+
   @override
   Widget build(BuildContext context) {
     return Observer(builder: (_) {
@@ -29,9 +34,6 @@ class _TvHomeRailState extends State<TvHomeRail> {
           minWidth: TvHomeRail.NAVIGATION_RAIL_WIDTH,
           backgroundColor: Colors.transparent,
           minExtendedWidth: ScreenSize.getPercentOfWidth(context, 0.15),
-          onDestinationSelected: (value) {
-            widget.store.changeIndex(value);
-          },
           leading: Container(
             width: 40,
             child: Image.asset(Asset.icon),
@@ -44,6 +46,7 @@ class _TvHomeRailState extends State<TvHomeRail> {
     });
   }
 
+  // CHANGE RAIL_COUNT IN HOME FOR NAVIGATION BEFORE CHANGING ANY PROPERTY HERE
   List<NavigationRailDestination> _getNavigationTrails() {
     return [
       NavigationRailDestination(

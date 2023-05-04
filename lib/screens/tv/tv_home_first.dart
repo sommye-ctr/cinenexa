@@ -1,4 +1,3 @@
-import 'package:cinenexa/resources/asset.dart';
 import 'package:cinenexa/resources/strings.dart';
 import 'package:cinenexa/screens/details_page.dart';
 import 'package:cinenexa/services/network/utils.dart';
@@ -32,10 +31,10 @@ class TvHomeFirst extends StatefulWidget {
 class _TvHomeFirstState extends State<TvHomeFirst> {
   final double TILE_WIDTH_PERCENT = 0.145;
   final int TOTAL_LIST_COUNT = 4;
+  final int RAIL_COUNT = 6;
   final Duration animationDuration = Duration(milliseconds: 500);
 
   final FocusNode homeFocus = FocusNode();
-  final FocusNode railFocus = FocusNode();
   final ItemScrollController homeScrollController = ItemScrollController();
 
   late TvHomeStore store;
@@ -156,6 +155,8 @@ class _TvHomeFirstState extends State<TvHomeFirst> {
             index: yFocus,
             duration: animationDuration,
           );
+        } else if (store.railFocused && store.tabIndex != 0) {
+          store.changeIndex(store.tabIndex - 1);
         }
         break;
       case KEY_DOWN:
@@ -167,6 +168,8 @@ class _TvHomeFirstState extends State<TvHomeFirst> {
             index: yFocus,
             duration: animationDuration,
           );
+        } else if (store.railFocused && store.tabIndex != RAIL_COUNT - 1) {
+          store.changeIndex(store.tabIndex + 1);
         }
         break;
       case KEY_LEFT:

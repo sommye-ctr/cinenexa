@@ -21,22 +21,5 @@ class TvInfoCard extends StatelessWidget {
         ),
       ),
     );
-    return Padding(
-      padding: EdgeInsets.all(8),
-      child: Material(
-        elevation: Style.cardElevation,
-        color: Colors.transparent,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(
-              sigmaX: 20,
-              sigmaY: 20,
-            ),
-            child: text,
-          ),
-        ),
-      ),
-    );
   }
 }
