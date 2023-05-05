@@ -1,9 +1,9 @@
-import 'package:cinenexa/components/home_bottom_nav_bar.dart';
-import 'package:cinenexa/components/trakt_list_tile.dart';
+import 'package:cinenexa/components/mobile/trakt_list_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+import '../components/mobile/home_bottom_nav_bar.dart';
 import '../models/network/trakt/trakt_list.dart';
 import '../resources/asset.dart';
 import '../resources/strings.dart';
@@ -11,7 +11,6 @@ import '../resources/style.dart';
 import '../store/user/user_store.dart';
 import '../store/watchlist/watchlist_store.dart';
 import '../utils/screen_size.dart';
-import '../widgets/custom_checkbox_list.dart';
 import 'list_details_page.dart';
 
 class WatchListPage extends StatefulWidget {

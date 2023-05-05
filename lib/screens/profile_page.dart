@@ -19,8 +19,7 @@ import 'package:cinenexa/screens/intro_page.dart';
 import 'package:cinenexa/screens/settings_page.dart';
 import 'package:cinenexa/store/user/user_store.dart';
 import 'package:cinenexa/utils/screen_size.dart';
-
-import '../components/home_bottom_nav_bar.dart';
+import '../components/mobile/home_bottom_nav_bar.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);

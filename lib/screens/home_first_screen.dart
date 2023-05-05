@@ -7,7 +7,7 @@ import 'package:cinenexa/screens/search_page.dart';
 import 'package:provider/provider.dart';
 
 import '../components/mobile/home_bottom_nav_bar.dart';
-import '../components/mobile/home_favourites.dart';
+import 'favourites_page.dart';
 
 class HomeFirstScreen extends StatefulWidget {
   static const String routeName = "/home";

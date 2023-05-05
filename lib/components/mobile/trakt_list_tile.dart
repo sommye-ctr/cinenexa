@@ -6,7 +6,7 @@ import 'package:cinenexa/widgets/rounded_image.dart';
 import 'package:cinenexa/widgets/stacked_images.dart';
 import 'package:flutter/material.dart';
 
-import '../utils/screen_size.dart';
+import '../../utils/screen_size.dart';
 
 class TraktListTile extends StatelessWidget {
   final TraktList list;

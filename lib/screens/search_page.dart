@@ -1,6 +1,6 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:avatar_glow/avatar_glow.dart';
-import 'package:cinenexa/components/trakt_list_tile.dart';
+import 'package:cinenexa/components/mobile/trakt_list_tile.dart';
 import 'package:cinenexa/models/network/trakt/trakt_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';

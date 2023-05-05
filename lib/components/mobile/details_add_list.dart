@@ -4,11 +4,10 @@ import 'package:cinenexa/widgets/custom_checkbox_list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../models/network/base_model.dart';
-import '../models/network/trakt/trakt_list.dart';
-import '../resources/strings.dart';
-import '../utils/screen_size.dart';
-import '../widgets/rounded_button.dart';
+import '../../models/network/base_model.dart';
+import '../../models/network/trakt/trakt_list.dart';
+import '../../resources/strings.dart';
+import '../../widgets/rounded_button.dart';
 
 class DetailsAddList extends StatefulWidget {
   final BaseModel baseModel;

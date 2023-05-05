@@ -20,7 +20,7 @@ import '../../services/network/utils.dart';
 import '../../utils/date_time_formatter.dart';
 import '../../widgets/rounded_button.dart';
 import '../../widgets/screen_background_image.dart';
-import '../details_add_list.dart';
+import 'details_add_list.dart';
 
 class DetailsHeader extends SliverPersistentHeaderDelegate {
   final double maxHeight, minHeight;

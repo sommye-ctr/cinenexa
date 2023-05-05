@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cinenexa/components/search_result_tile.dart';
 import 'package:cinenexa/models/network/base_model.dart';
 import 'package:cinenexa/models/network/trakt/trakt_list.dart';
 import 'package:cinenexa/resources/style.dart';
@@ -13,8 +12,8 @@ import 'package:cinenexa/widgets/custom_back_button.dart';
 import 'package:cinenexa/widgets/rounded_image.dart';
 import 'package:flutter/material.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
-import 'package:like_button/like_button.dart';
 
+import '../components/mobile/search_result_tile.dart';
 import 'details_page.dart';
 
 class ListDetailsPage extends StatefulWidget {
