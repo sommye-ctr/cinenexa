@@ -34,6 +34,9 @@ class Style {
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: Colors.orange,
     ),
+    colorScheme: ColorScheme.light(
+      background: Color.fromARGB(255, 249, 246, 246),
+    ),
   );
 
   static TextStyle headingStyle = TextStyle(
@@ -53,6 +56,9 @@ class Style {
         backgroundColor: Color.fromARGB(255, 27, 27, 27),
         floatingActionButtonTheme: FloatingActionButtonThemeData(
           backgroundColor: Colors.orange,
+        ),
+        colorScheme: ColorScheme.dark(
+          background: Color.fromARGB(255, 27, 27, 27),
         ),
       );
 
