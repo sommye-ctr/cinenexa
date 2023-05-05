@@ -1,9 +1,12 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:amplitude_flutter/amplitude.dart';
 import 'package:cinenexa/screens/extension_config_page.dart';
+import 'package:cinenexa/screens/extensions_page.dart';
+import 'package:cinenexa/screens/list_details_page.dart';
 import 'package:cinenexa/services/local/database.dart';
 import 'package:cinenexa/services/network/analytics.dart';
 import 'package:cinenexa/store/platform/platform_store.dart';
+import 'package:cinenexa/store/watchlist/watchlist_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -38,6 +41,7 @@ import 'package:cinenexa/store/favorites/favorites_store.dart';
 import 'package:cinenexa/store/user/user_store.dart';
 
 import 'components/mobile/settings_subtitle_setting.dart';
+import 'models/local/lists.dart';
 import 'models/network/base_model.dart';
 
 void main() async {
@@ -62,6 +66,7 @@ void main() async {
       ShowHistorySchema,
       LastActivitiesSchema,
       InstalledExtensionsSchema,
+      ListsSchema,
     ],
     directory: (await getApplicationSupportDirectory()).path,
   );
@@ -105,7 +110,11 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     FavoritesStore favoritesStore = FavoritesStore();
+    WatchListStore watchListStore = WatchListStore();
+    ExtensionsStore extensionsStore = ExtensionsStore();
     Widget homeWidget;
+
+    extensionsStore.init();
 
     if (Supabase.instance.client.auth.currentUser != null ||
         (widget.anonStatus ?? false)) {
@@ -120,10 +129,16 @@ class _MyAppState extends State<MyApp> {
       providers: [
         Provider.Provider(create: (_) => favoritesStore),
         Provider.Provider(
-          create: (_) => UserStore(favoritesStore: favoritesStore),
+          create: (_) => UserStore(
+            favoritesStore: favoritesStore,
+            watchListsStore: watchListStore,
+          ),
         ),
         Provider.Provider(
-          create: (_) => ExtensionsStore(),
+          create: (_) => extensionsStore,
+        ),
+        Provider.Provider(
+          create: (_) => watchListStore,
         ),
         Provider.Provider(
           create: (_) => widget.platformStore,
@@ -174,12 +189,22 @@ class _MyAppState extends State<MyApp> {
         return MaterialPageRoute(
           builder: (context) => HomeFirstScreen(),
         );
-
+      case ListDetailsPage.routeName:
+        return MaterialPageRoute(
+          builder: (context) => ListDetailsPage(
+            traktList: settings.arguments['list'],
+            isPersonal: settings.arguments['personal'] ?? false,
+          ),
+        );
       case SettingsPage.routeName:
         return MaterialPageRoute(
           builder: (context) => SettingsPage(
             type: settings.arguments as int,
           ),
+        );
+      case ExtensionsPage.routeName:
+        return MaterialPageRoute(
+          builder: (context) => ExtensionsPage(),
         );
       case RegisterPage.routeName:
         return MaterialPageRoute(

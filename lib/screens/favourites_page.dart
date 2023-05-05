@@ -11,10 +11,10 @@ import 'package:cinenexa/services/network/utils.dart';
 import 'package:cinenexa/store/favorites/favorites_store.dart';
 import 'package:cinenexa/store/user/user_store.dart';
 import 'package:cinenexa/utils/screen_size.dart';
-import '../../models/network/base_model.dart';
-import '../../screens/details_page.dart';
-import 'favorites_entity_tile.dart';
-import 'home_bottom_nav_bar.dart';
+import '../components/mobile/favorites_entity_tile.dart';
+import '../components/mobile/home_bottom_nav_bar.dart';
+import '../models/network/base_model.dart';
+import 'details_page.dart';
 
 class FavoritesPage extends StatefulWidget {
   const FavoritesPage({Key? key}) : super(key: key);

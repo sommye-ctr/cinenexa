@@ -5,6 +5,7 @@ enum EntityType {
   tv,
   people,
   all,
+  list,
 }
 
 extension EntityTypeConverter on BaseModelType {

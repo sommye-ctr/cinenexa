@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:cinenexa/services/network/trakt_oauth_client.dart';
+import 'package:cinenexa/services/network/trakt_repository.dart';
 import 'package:mobx/mobx.dart';
 import 'package:cinenexa/models/local/search_history.dart';
 import 'package:cinenexa/services/local/database.dart';
@@ -6,6 +8,7 @@ import 'package:cinenexa/services/network/repository.dart';
 
 import '../../models/network/base_model.dart';
 import '../../models/network/enums/entity_type.dart';
+import '../../models/network/trakt/trakt_list.dart';
 
 part 'search_store.g.dart';
 
@@ -15,12 +18,16 @@ enum SearchType {
   movie,
   tv,
   people,
+  lists,
 }
 
 abstract class _SearchStore with Store {
   static const Duration _debounceDuration = Duration(milliseconds: 300);
 
   static ObservableFuture<List<BaseModel>> emptyResponse =
+      ObservableFuture.value([]);
+
+  static ObservableFuture<List<TraktList>> emptyResponse1 =
       ObservableFuture.value([]);
 
   @observable
@@ -47,13 +54,20 @@ abstract class _SearchStore with Store {
   ObservableFuture<List<BaseModel>> fetchItemsFuture = emptyResponse;
 
   @observable
+  ObservableFuture<List<TraktList>> fetchListsFuture = emptyResponse1;
+
+  @observable
   ObservableFuture<List<BaseModel>> autoCompleteTerms = emptyResponse;
 
   @observable
   ObservableList<BaseModel> results = <BaseModel>[].asObservable();
 
+  @observable
+  ObservableList<TraktList> listResults = <TraktList>[].asObservable();
+
   @computed
-  bool get searchDone => fetchItemsFuture != emptyResponse;
+  bool get searchDone =>
+      fetchItemsFuture != emptyResponse || fetchListsFuture != emptyResponse1;
 
   Timer? _debounceTimer;
 
@@ -66,6 +80,8 @@ abstract class _SearchStore with Store {
         return EntityType.tv;
       case SearchType.people:
         return EntityType.people;
+      case SearchType.lists:
+        return EntityType.list;
     }
   }
 
@@ -119,6 +135,7 @@ abstract class _SearchStore with Store {
   @action
   void searchClicked(String? term) {
     page = 1;
+    changeSearchType(SearchType.movie);
     if (speaking) {
       speakToTextClicked(false);
     }
@@ -137,6 +154,11 @@ abstract class _SearchStore with Store {
   @action
   Future _fetchItems(Future<List<BaseModel>> future,
       {bool pageEndReached = false}) async {
+    if (searchType == SearchType.lists) {
+      _fetchLists(pageEndReached: pageEndReached);
+      return;
+    }
+
     if (!pageEndReached) {
       results.clear();
     }
@@ -149,11 +171,31 @@ abstract class _SearchStore with Store {
   }
 
   @action
+  Future _fetchLists({bool pageEndReached = false}) async {
+    if (!pageEndReached) {
+      listResults.clear();
+    }
+
+    fetchListsFuture = ObservableFuture(
+        TraktRepository(client: TraktOAuthClient()).getSearchList(
+      searchTerm: searchTerm,
+      page: page,
+    ));
+
+    fetchListsFuture.whenComplete(() {
+      if (fetchListsFuture.status == FutureStatus.fulfilled) {
+        listResults.addAll(fetchListsFuture.value!);
+      }
+    });
+  }
+
+  @action
   void backClicked() {
     searchType = SearchType.movie;
     searchTerm = "";
     searchFocused = false;
     fetchItemsFuture = emptyResponse;
+    fetchListsFuture = emptyResponse1;
   }
 
   @action
@@ -184,7 +226,7 @@ abstract class _SearchStore with Store {
   @action
   void searchHistoryTermClicked(String term) {
     searchTerm = term;
-    searchClicked(null);
+    searchClicked(term);
   }
 
   @action

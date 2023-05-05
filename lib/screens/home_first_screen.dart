@@ -1,14 +1,13 @@
 import 'package:cinenexa/screens/tv/tv_home_first.dart';
 import 'package:cinenexa/store/platform/platform_store.dart';
 import 'package:flutter/material.dart';
-import 'package:cinenexa/screens/extensions_page.dart';
 import 'package:cinenexa/screens/home_page.dart';
 import 'package:cinenexa/screens/profile_page.dart';
 import 'package:cinenexa/screens/search_page.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../components/mobile/home_bottom_nav_bar.dart';
+import '../components/mobile/home_favourites.dart';
 
 class HomeFirstScreen extends StatefulWidget {
   static const String routeName = "/home";
@@ -43,28 +42,10 @@ class _HomeFirstScreenState extends State<HomeFirstScreen> {
               IndexedStack(
                 index: _pageIndex,
                 children: [
-                  HomePage(
-                    onBack: () async {
-                      await Future.delayed(Duration(milliseconds: 500));
-                      _changeBottomNavIndex(1);
-                    },
-                  ),
-                  ExtensionsPage(),
-                  SearchPage(
-                    onBack: ({index}) async {
-                      if (_pageIndex != 0) {
-                        await Future.delayed(Duration(milliseconds: 500));
-                        _changeBottomNavIndex(index ?? 0);
-                        return;
-                      }
-                      SystemNavigator.pop();
-                    },
-                  ),
-                  ProfilePage(
-                    onBack: () {
-                      _changeBottomNavIndex(0);
-                    },
-                  ),
+                  HomePage(),
+                  FavoritesPage(),
+                  SearchPage(),
+                  ProfilePage(),
                 ],
               ),
               Align(
@@ -80,12 +61,5 @@ class _HomeFirstScreenState extends State<HomeFirstScreen> {
         ),
       ),
     );
-  }
-
-  void _changeBottomNavIndex(int index) {
-    setState(() {
-      _pageIndex = index;
-      (bottomNavigationKey.currentWidget as BottomNavigationBar).onTap!(index);
-    });
   }
 }

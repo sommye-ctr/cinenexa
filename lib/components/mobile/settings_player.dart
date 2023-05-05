@@ -15,8 +15,7 @@ class SettingsPlayer extends StatefulWidget {
 }
 
 class _SettingsPlayerState extends State<SettingsPlayer> {
-  bool autoPlay = false;
-  int? seekDuration, nextEpDuration;
+  int? seekDuration;
   int? defaultFit, maxCache;
 
   late Database database;
@@ -30,10 +29,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
 
   void _fetch() async {
     seekDuration = await database.getSeekDuration();
-    autoPlay = await database.getAutoPlay();
     defaultFit = await database.getDefaultFit();
     maxCache = await database.getMaxCache();
-    nextEpDuration = await database.getNextEpDuration();
     if (mounted) setState(() {});
   }
 
@@ -166,56 +163,6 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                         ),
                       )
                     : null,
-              ),
-              Style.getListTile(
-                context: context,
-                title: Strings.autoPlayPopup,
-                subtitle: Strings.autoPlayPopupSub,
-                trailing: CupertinoSwitch(
-                  value: autoPlay,
-                  onChanged: (value) async {
-                    autoPlay = value;
-                    await database.addAutoPlay(value);
-                    setState(() {});
-                  },
-                ),
-              ),
-              Style.getListTile(
-                context: context,
-                enabled: autoPlay,
-                title: Strings.autoPlayDuration,
-                subtitle: Strings.autoPlayDurationSub,
-                trailing: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.remove),
-                      onPressed: autoPlay
-                          ? () {
-                              setState(() {
-                                final newValue = nextEpDuration! - 5;
-                                nextEpDuration = newValue.clamp(5, 120);
-                              });
-                              database.addNextEpDuration(nextEpDuration!);
-                            }
-                          : null,
-                    ),
-                    Text('${nextEpDuration} s'),
-                    IconButton(
-                      icon: Icon(Icons.add),
-                      onPressed: autoPlay
-                          ? () {
-                              setState(() {
-                                final newValue = nextEpDuration! + 5;
-                                nextEpDuration = newValue.clamp(5, 120);
-                              });
-                              database.addNextEpDuration(nextEpDuration!);
-                            }
-                          : null,
-                    ),
-                  ],
-                ),
               ),
               Style.getListTile(
                 context: context,

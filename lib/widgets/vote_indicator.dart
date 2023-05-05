@@ -14,7 +14,7 @@ class VoteIndicator extends StatelessWidget {
       children: [
         CircularProgressIndicator(
           value: double.parse((vote / 10).toStringAsFixed(1)),
-          strokeWidth: 2,
+          strokeWidth: 1,
           backgroundColor: Theme.of(context).hintColor,
         ),
         Text("${(vote * 10).toInt()}")

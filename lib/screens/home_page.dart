@@ -1,4 +1,5 @@
 import 'package:badges/badges.dart' as Badge;
+import 'package:cinenexa/screens/watchlist_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
@@ -22,10 +23,8 @@ import '../components/mobile/movie_tile.dart';
 import '../store/home/home_store.dart';
 
 class HomePage extends StatefulWidget {
-  final VoidCallback? onBack;
   const HomePage({
     Key? key,
-    this.onBack,
   }) : super(key: key);
 
   @override
@@ -38,7 +37,7 @@ class _HomePageState extends State<HomePage>
     defaultMovieIndex: 1,
     defaultTvIndex: 2,
   );
-  late final Widget myList = HomeFavorites();
+  late final Widget myList = FavoritesPage();
 
   late final Widget featured = HomeFeatured(
       onItemClicked: _onItemClicked, onSeeMoreClicked: _onSeeMoreClicked);
@@ -78,6 +77,7 @@ class _HomePageState extends State<HomePage>
             ),
             indicatorSize: TabBarIndicatorSize.tab,
             indicatorPadding: EdgeInsets.all(8),
+            labelColor: Colors.black,
             splashBorderRadius: BorderRadius.circular(40),
             isScrollable: true,
             onTap: homeStore.tabChanged,
@@ -92,7 +92,7 @@ class _HomePageState extends State<HomePage>
                 text: Strings.shows,
               ),
               Tab(
-                text: Strings.favorites,
+                text: Strings.lists,
               ),
             ],
           ),
@@ -103,7 +103,7 @@ class _HomePageState extends State<HomePage>
                 featured,
                 _buildMovieBody(),
                 _buildTvBody(),
-                myList,
+                WatchListPage(),
               ],
             ),
           ),
@@ -199,10 +199,7 @@ class _HomePageState extends State<HomePage>
   }
 
   void _onItemClicked(BaseModel baseModel) async {
-    var isRedirect = await homeStore.onItemClicked(context, baseModel);
-    if (isRedirect != null && isRedirect) {
-      widget.onBack?.call();
-    }
+    homeStore.onItemClicked(context, baseModel);
   }
 
   void _onSeeMoreClicked(String future, List<BaseModel> items, String heading,
@@ -216,24 +213,14 @@ class _HomePageState extends State<HomePage>
       List<BaseModel> items,
       String heading,
       SeeMoreChildType seeMoreChildType) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
+    Style.showBottomSheet(
+      context,
+      SeeMorePage(
+        future: future,
+        initialItems: items,
+        heading: heading,
+        type: seeMoreChildType,
       ),
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return FractionallySizedBox(
-          heightFactor: 0.75,
-          child: SeeMorePage(
-            future: future,
-            initialItems: items,
-            heading: heading,
-            type: seeMoreChildType,
-          ),
-        );
-      },
     );
   }
 

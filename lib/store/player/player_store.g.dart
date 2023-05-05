@@ -73,54 +73,6 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
     });
   }
 
-  late final _$nextEpAtom =
-      Atom(name: '_PlayerStoreBase.nextEp', context: context);
-
-  @override
-  bool get nextEp {
-    _$nextEpAtom.reportRead();
-    return super.nextEp;
-  }
-
-  @override
-  set nextEp(bool value) {
-    _$nextEpAtom.reportWrite(value, super.nextEp, () {
-      super.nextEp = value;
-    });
-  }
-
-  late final _$nextEpInitAtom =
-      Atom(name: '_PlayerStoreBase.nextEpInit', context: context);
-
-  @override
-  bool get nextEpInit {
-    _$nextEpInitAtom.reportRead();
-    return super.nextEpInit;
-  }
-
-  @override
-  set nextEpInit(bool value) {
-    _$nextEpInitAtom.reportWrite(value, super.nextEpInit, () {
-      super.nextEpInit = value;
-    });
-  }
-
-  late final _$nextEpCancelAtom =
-      Atom(name: '_PlayerStoreBase.nextEpCancel', context: context);
-
-  @override
-  bool get nextEpCancel {
-    _$nextEpCancelAtom.reportRead();
-    return super.nextEpCancel;
-  }
-
-  @override
-  set nextEpCancel(bool value) {
-    _$nextEpCancelAtom.reportWrite(value, super.nextEpCancel, () {
-      super.nextEpCancel = value;
-    });
-  }
-
   late final _$speedIndexAtom =
       Atom(name: '_PlayerStoreBase.speedIndex', context: context);
 
@@ -280,28 +232,6 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
   }
 
   @override
-  void setNextEpFlag(bool value) {
-    final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
-        name: '_PlayerStoreBase.setNextEpFlag');
-    try {
-      return super.setNextEpFlag(value);
-    } finally {
-      _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void setNextEpCancel(bool value) {
-    final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
-        name: '_PlayerStoreBase.setNextEpCancel');
-    try {
-      return super.setNextEpCancel(value);
-    } finally {
-      _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   void setDuration(Duration duration) {
     final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
         name: '_PlayerStoreBase.setDuration');
@@ -401,6 +331,17 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
   }
 
   @override
+  void addSubtitle(Subtitle sub) {
+    final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
+        name: '_PlayerStoreBase.addSubtitle');
+    try {
+      return super.addSubtitle(sub);
+    } finally {
+      _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setSelectedSubtitle(int? subtitle) {
     final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
         name: '_PlayerStoreBase.setSelectedSubtitle');
@@ -429,9 +370,6 @@ showControls: ${showControls},
 buffering: ${buffering},
 locked: ${locked},
 casting: ${casting},
-nextEp: ${nextEp},
-nextEpInit: ${nextEpInit},
-nextEpCancel: ${nextEpCancel},
 speedIndex: ${speedIndex},
 fitIndex: ${fitIndex},
 subtitleDelay: ${subtitleDelay},

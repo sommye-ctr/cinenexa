@@ -73,12 +73,12 @@ mixin _$ExtensionsStore on _ExtensionsStoreBase, Store {
     });
   }
 
-  late final _$_initAsyncAction =
-      AsyncAction('_ExtensionsStoreBase._init', context: context);
+  late final _$initAsyncAction =
+      AsyncAction('_ExtensionsStoreBase.init', context: context);
 
   @override
-  Future<dynamic> _init() {
-    return _$_initAsyncAction.run(() => super._init());
+  Future<dynamic> init() {
+    return _$initAsyncAction.run(() => super.init());
   }
 
   late final _$fetchAsyncAction =

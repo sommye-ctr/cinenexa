@@ -27,6 +27,11 @@ const SubtitleSchema = Schema(
       id: 2,
       name: r'url',
       type: IsarType.string,
+    ),
+    r'zPath': PropertySchema(
+      id: 3,
+      name: r'zPath',
+      type: IsarType.string,
     )
   },
   estimateSize: _subtitleEstimateSize,
@@ -53,6 +58,12 @@ int _subtitleEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
+  {
+    final value = object.path;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   return bytesCount;
 }
 
@@ -65,6 +76,7 @@ void _subtitleSerialize(
   writer.writeLong(offsets[0], object.hashCode);
   writer.writeString(offsets[1], object.title);
   writer.writeString(offsets[2], object.url);
+  writer.writeString(offsets[3], object.path);
 }
 
 Subtitle _subtitleDeserialize(
@@ -76,6 +88,7 @@ Subtitle _subtitleDeserialize(
   final object = Subtitle();
   object.title = reader.readStringOrNull(offsets[1]);
   object.url = reader.readStringOrNull(offsets[2]);
+  object.path = reader.readStringOrNull(offsets[3]);
   return object;
 }
 
@@ -91,6 +104,8 @@ P _subtitleDeserializeProp<P>(
     case 1:
       return (reader.readStringOrNull(offset)) as P;
     case 2:
+      return (reader.readStringOrNull(offset)) as P;
+    case 3:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -439,6 +454,152 @@ extension SubtitleQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'url',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Subtitle, Subtitle, QAfterFilterCondition> pathIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'zPath',
+      ));
+    });
+  }
+
+  QueryBuilder<Subtitle, Subtitle, QAfterFilterCondition> pathIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'zPath',
+      ));
+    });
+  }
+
+  QueryBuilder<Subtitle, Subtitle, QAfterFilterCondition> pathEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'zPath',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Subtitle, Subtitle, QAfterFilterCondition> pathGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'zPath',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Subtitle, Subtitle, QAfterFilterCondition> pathLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'zPath',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Subtitle, Subtitle, QAfterFilterCondition> pathBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'zPath',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Subtitle, Subtitle, QAfterFilterCondition> pathStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'zPath',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Subtitle, Subtitle, QAfterFilterCondition> pathEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'zPath',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Subtitle, Subtitle, QAfterFilterCondition> pathContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'zPath',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Subtitle, Subtitle, QAfterFilterCondition> pathMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'zPath',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Subtitle, Subtitle, QAfterFilterCondition> pathIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'zPath',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Subtitle, Subtitle, QAfterFilterCondition> pathIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'zPath',
         value: '',
       ));
     });

@@ -135,6 +135,22 @@ mixin _$SearchStore on _SearchStore, Store {
     });
   }
 
+  late final _$fetchListsFutureAtom =
+      Atom(name: '_SearchStore.fetchListsFuture', context: context);
+
+  @override
+  ObservableFuture<List<TraktList>> get fetchListsFuture {
+    _$fetchListsFutureAtom.reportRead();
+    return super.fetchListsFuture;
+  }
+
+  @override
+  set fetchListsFuture(ObservableFuture<List<TraktList>> value) {
+    _$fetchListsFutureAtom.reportWrite(value, super.fetchListsFuture, () {
+      super.fetchListsFuture = value;
+    });
+  }
+
   late final _$autoCompleteTermsAtom =
       Atom(name: '_SearchStore.autoCompleteTerms', context: context);
 
@@ -167,6 +183,22 @@ mixin _$SearchStore on _SearchStore, Store {
     });
   }
 
+  late final _$listResultsAtom =
+      Atom(name: '_SearchStore.listResults', context: context);
+
+  @override
+  ObservableList<TraktList> get listResults {
+    _$listResultsAtom.reportRead();
+    return super.listResults;
+  }
+
+  @override
+  set listResults(ObservableList<TraktList> value) {
+    _$listResultsAtom.reportWrite(value, super.listResults, () {
+      super.listResults = value;
+    });
+  }
+
   late final _$_fetchHistoryAsyncAction =
       AsyncAction('_SearchStore._fetchHistory', context: context);
 
@@ -192,6 +224,15 @@ mixin _$SearchStore on _SearchStore, Store {
       {bool pageEndReached = false}) {
     return _$_fetchItemsAsyncAction
         .run(() => super._fetchItems(future, pageEndReached: pageEndReached));
+  }
+
+  late final _$_fetchListsAsyncAction =
+      AsyncAction('_SearchStore._fetchLists', context: context);
+
+  @override
+  Future<dynamic> _fetchLists({bool pageEndReached = false}) {
+    return _$_fetchListsAsyncAction
+        .run(() => super._fetchLists(pageEndReached: pageEndReached));
   }
 
   late final _$_addToHistoryAsyncAction =
@@ -336,8 +377,10 @@ searchType: ${searchType},
 searchFocused: ${searchFocused},
 speaking: ${speaking},
 fetchItemsFuture: ${fetchItemsFuture},
+fetchListsFuture: ${fetchListsFuture},
 autoCompleteTerms: ${autoCompleteTerms},
 results: ${results},
+listResults: ${listResults},
 searchDone: ${searchDone},
 entityType: ${entityType}
     ''';

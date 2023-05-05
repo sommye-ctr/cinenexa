@@ -141,8 +141,8 @@ class _CustomCheckBoxListState extends State<CustomCheckBoxList> {
       widget.onSelectionAdded?.call(selectedItems);
     } else {
       if (!widget.alwaysEnabled) {
-        selectedItems.remove(widget.children[index]);
         widget.onSelectionRemoved?.call(selectedItems);
+        selectedItems.remove(widget.children[index]);
       } else {
         notifiers[index].value = true;
       }

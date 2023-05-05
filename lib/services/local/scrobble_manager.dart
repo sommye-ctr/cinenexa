@@ -154,6 +154,10 @@ class ScrobbleManager {
   }
 
   double _getProgress() {
+    if (playerController.videoPlayerController == null ||
+        playerController.videoPlayerController?.value.duration == null) {
+      return 0;
+    }
     return (playerController.videoPlayerController!.value.position.inSeconds /
             playerController.videoPlayerController!.value.duration!.inSeconds) *
         100;

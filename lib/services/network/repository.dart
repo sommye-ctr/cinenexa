@@ -127,6 +127,7 @@ class Repository {
     final response = await api.getRequest(
       "${Constants.movie}/${id}?append_to_response=credits,recommendations,videos,watch/providers",
       haveQueries: true,
+      cache: true,
     );
     final selectedCountryName = await Database().getProviderCountry();
 
@@ -148,6 +149,7 @@ class Repository {
   static Future<Movie> getMovieDetails({required int id}) async {
     final response = await api.getRequest(
       "${Constants.movie}/${id}",
+      cache: true,
     );
     return Movie.fromMap(response);
   }
@@ -155,6 +157,7 @@ class Repository {
   static Future<Tv> getTvDetails({required int id}) async {
     final response = await api.getRequest(
       "${Constants.tv}/${id}",
+      cache: true,
     );
     return Tv.fromMap(response);
   }
@@ -163,6 +166,7 @@ class Repository {
     final response = await api.getRequest(
       "${Constants.tv}/${id}?append_to_response=credits,recommendations,videos,watch/providers",
       haveQueries: true,
+      cache: true,
     );
     final selectedCountryName = await Database().getProviderCountry();
 
@@ -185,6 +189,7 @@ class Repository {
     final response = await api.getRequest(
       "${Constants.person}/${id}?append_to_response=combined_credits",
       haveQueries: true,
+      cache: true,
     );
     return {
       "person": People.fromMap(response),
