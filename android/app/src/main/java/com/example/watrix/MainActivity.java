@@ -30,8 +30,6 @@ public class MainActivity
     } catch (Exception e) {
       // TODO: handle exception
     }
-    startService(new Intent(this, NotificationService.class));
-
     methodChannel = new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), TORRENT_STREAM_EVENT_NAME);
    methodChannel.setMethodCallHandler(this);
   }

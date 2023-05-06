@@ -26,24 +26,27 @@ class _TvHomeRailState extends State<TvHomeRail> {
 
   @override
   Widget build(BuildContext context) {
-    return Observer(builder: (_) {
-      widget.store.railFocused;
-      return GlassyContainer(
-        child: NavigationRail(
-          groupAlignment: 0,
-          minWidth: TvHomeRail.NAVIGATION_RAIL_WIDTH,
-          backgroundColor: Colors.transparent,
-          minExtendedWidth: ScreenSize.getPercentOfWidth(context, 0.15),
-          leading: Container(
-            width: 40,
-            child: Image.asset(Asset.icon),
+    return ExcludeFocus(
+      child: Observer(builder: (_) {
+        widget.store.railFocused;
+        return GlassyContainer(
+          child: NavigationRail(
+            groupAlignment: 0,
+            minWidth: TvHomeRail.NAVIGATION_RAIL_WIDTH,
+            backgroundColor: Colors.transparent,
+            minExtendedWidth: ScreenSize.getPercentOfWidth(context, 0.15),
+            leading: Container(
+              width: 40,
+              child: Image.asset(Asset.icon),
+            ),
+            destinations: _getNavigationTrails(),
+            selectedIndex: widget.store.tabIndex,
+            extended: widget.store.railFocused,
+            useIndicator: false,
           ),
-          destinations: _getNavigationTrails(),
-          selectedIndex: widget.store.tabIndex,
-          extended: widget.store.railFocused,
-        ),
-      );
-    });
+        );
+      }),
+    );
   }
 
   // CHANGE RAIL_COUNT IN HOME FOR NAVIGATION BEFORE CHANGING ANY PROPERTY HERE
