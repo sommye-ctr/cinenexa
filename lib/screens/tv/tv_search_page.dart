@@ -153,6 +153,7 @@ class _TvSearchPageState extends State<TvSearchPage> {
 
         if (!railFocused) {
           widget.tvHomeStore.changeRailFocused(true);
+          textFocus.unfocus();
           return;
         }
 
