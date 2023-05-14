@@ -90,6 +90,7 @@ dependencies:
   glass: ^1.0.1+1
   like_button: ^2.0.5
   file_picker: ^5.2.7
+  onscreen_keyboard: ^1.0.3
 
 dev_dependencies:
   flutter_test:

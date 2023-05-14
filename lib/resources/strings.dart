@@ -93,6 +93,7 @@ class Strings {
 
 //Search
   static const String searchHint = "You can search for";
+  static const String searchTextFieldHint = "Search for movies and shows....";
   static const String moviesTvShows = "Movies, Shows...";
   static const String actorsDirectors = "Actors, Directors...";
   static const String noResultsFound = "No results found!";

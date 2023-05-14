@@ -8,7 +8,7 @@ class TvListStore<T> = _TvListStoreBase<T> with _$TvListStore;
 
 abstract class _TvListStoreBase<T> with Store {
   ItemScrollController? scrollController;
-  final Future<List<T>>? future;
+  Future<List<T>>? future;
   Function(T item) focusChange;
 
   @observable
@@ -41,6 +41,13 @@ abstract class _TvListStoreBase<T> with Store {
     if (isListFocused) {
       focusChange.call(items![focusedIndex]);
     }
+  }
+
+  @action
+  void changeFuture(Future<List<T>>? future) {
+    this.future = future;
+    focusedIndex = 0;
+    _init();
   }
 
   @action

@@ -69,14 +69,9 @@ class _TvHorizontalListState<T> extends State<TvHorizontalList<T>> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             if (widget.heading.isNotEmpty)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    widget.heading,
-                    style: Style.headingStyle,
-                  ),
-                ],
+              Text(
+                widget.heading,
+                style: Style.headingStyle,
               ),
             SizedBox(
               height: 4,

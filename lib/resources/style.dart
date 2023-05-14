@@ -24,6 +24,8 @@ class Style {
   static const double iconSize = 60;
   static const double smallIconSize = 40;
 
+  static const double tvTileWidth = 0.145;
+
   static ThemeData themeData = ThemeData(
       primarySwatch: Colors.orange,
       brightness: Brightness.light,

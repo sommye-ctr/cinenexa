@@ -5,12 +5,14 @@ import '../resources/style.dart';
 
 class GlassyContainer extends StatelessWidget {
   final Widget child;
-  const GlassyContainer({required this.child, Key? key}) : super(key: key);
+  final Color? color;
+  const GlassyContainer({required this.child, this.color, Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.transparent,
+      color: color ?? Colors.transparent,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
         child: BackdropFilter(

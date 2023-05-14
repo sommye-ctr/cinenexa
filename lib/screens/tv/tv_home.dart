@@ -23,20 +23,18 @@ import '../../utils/keycode.dart';
 
 class TvHome extends StatefulWidget {
   final TvHomeStore store;
-  const TvHome({required this.store, Key? key}) : super(key: key);
+  final Stream<int> clickEvents;
+  const TvHome({required this.store, required this.clickEvents, Key? key})
+      : super(key: key);
 
   @override
   State<TvHome> createState() => _TvHomeState();
 }
 
-class TvHomewidget {}
-
 class _TvHomeState extends State<TvHome> {
-  final double TILE_WIDTH_PERCENT = 0.145;
   final int TOTAL_LIST_COUNT = 4;
   final Duration animationDuration = Duration(milliseconds: 500);
 
-  final FocusNode homeFocus = FocusNode();
   final ItemScrollController homeScrollController = ItemScrollController();
 
   final List<TvListStore> controllers = [];
@@ -47,10 +45,9 @@ class _TvHomeState extends State<TvHome> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      FocusScope.of(context).requestFocus(homeFocus);
       controllers[0].changeFocus(true);
-      FocusScope.of(context).requestFocus(homeFocus);
     });
+    widget.clickEvents.listen(_handleKeyboardEvents);
   }
 
   @override
@@ -61,78 +58,68 @@ class _TvHomeState extends State<TvHome> {
 
   @override
   Widget build(BuildContext context) {
-    return RawKeyboardListener(
-      focusNode: homeFocus,
-      onKey: _handleKeyboardEvents,
-      child: Stack(
-        children: [
-          Observer(builder: (_) {
-            return ScreenBackgroundImage(
-              colors: _getColorStopsBackground(),
-              stops: _getStopsBackground(),
-              child: Container(),
-              image: Utils.getBackdropUrl(
-                widget.store.currentFocused?.backdropPath ?? "",
-                hq: true,
-              ),
-            );
-          }),
-          Container(
-            height: ScreenSize.getPercentOfHeight(context, 1),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.topRight,
-                colors: [
-                  Colors.black87,
-                  Colors.black45,
-                  Colors.transparent,
-                  Colors.transparent
-                ],
-              ),
+    return Stack(
+      children: [
+        Observer(builder: (_) {
+          return ScreenBackgroundImage(
+            colors: _getColorStopsBackground(),
+            stops: _getStopsBackground(),
+            child: Container(),
+            image: Utils.getBackdropUrl(
+              widget.store.currentFocused?.backdropPath ?? "",
+              hq: true,
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(
-              top: 36,
-              right: 8,
-            ),
-            child: Column(
-              children: [
-                TvHomeSelectedTile(store: widget.store),
-                Style.getVerticalSpacing(
-                  context: context,
-                  percent: 0.05,
-                ),
-                ScrollConfiguration(
-                  behavior: CustomScrollBehavior(),
-                  child: Expanded(
-                    child: ScrollablePositionedList.separated(
-                      itemBuilder: (context, index) => listWidgets[index],
-                      separatorBuilder: (context, index) =>
-                          Style.getVerticalSpacing(context: context),
-                      itemCount: TOTAL_LIST_COUNT,
-                      itemScrollController: homeScrollController,
-                    ),
-                  ),
-                ),
-                Style.getVerticalSpacing(context: context),
+          );
+        }),
+        Container(
+          height: ScreenSize.getPercentOfHeight(context, 1),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.topRight,
+              colors: [
+                Colors.black87,
+                Colors.black45,
+                Colors.transparent,
+                Colors.transparent
               ],
             ),
           ),
-        ],
-      ),
+        ),
+        Padding(
+          padding: EdgeInsets.only(
+            top: TvHomeFirst.CHILDREN_PADDING_TOP,
+            right: TvHomeFirst.CHILDREN_PADDING_RIGHT,
+          ),
+          child: Column(
+            children: [
+              TvHomeSelectedTile(store: widget.store),
+              Style.getVerticalSpacing(
+                context: context,
+                percent: 0.05,
+              ),
+              ScrollConfiguration(
+                behavior: CustomScrollBehavior(),
+                child: Expanded(
+                  child: ScrollablePositionedList.separated(
+                    itemBuilder: (context, index) => listWidgets[index],
+                    separatorBuilder: (context, index) =>
+                        Style.getVerticalSpacing(context: context),
+                    itemCount: TOTAL_LIST_COUNT,
+                    itemScrollController: homeScrollController,
+                  ),
+                ),
+              ),
+              Style.getVerticalSpacing(context: context),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
-  void _handleKeyboardEvents(RawKeyEvent event) {
-    if (!(event is RawKeyDownEvent)) {
-      return;
-    }
-    RawKeyEventDataAndroid rawKeyEventData =
-        event.data as RawKeyEventDataAndroid;
-
-    switch (rawKeyEventData.keyCode) {
+  void _handleKeyboardEvents(int keyCode) {
+    switch (keyCode) {
       case KEY_UP:
         if (yFocus > 0 && !widget.store.railFocused) {
           controllers[yFocus].changeFocus(false);
@@ -223,36 +210,36 @@ class _TvHomeState extends State<TvHome> {
         heading: Strings.popularMovies,
         height: Style.getMovieTileHeight(
           context: context,
-          widthPercent: TILE_WIDTH_PERCENT,
+          widthPercent: Style.tvTileWidth,
         ),
-        widthPercentItem: TILE_WIDTH_PERCENT,
+        widthPercentItem: Style.tvTileWidth,
         tvListStore: controllers[0],
       ),
       TvHorizontalList(
         heading: Strings.popularTv,
         height: Style.getMovieTileHeight(
           context: context,
-          widthPercent: TILE_WIDTH_PERCENT,
+          widthPercent: Style.tvTileWidth,
         ),
-        widthPercentItem: TILE_WIDTH_PERCENT,
+        widthPercentItem: Style.tvTileWidth,
         tvListStore: controllers[1],
       ),
       TvHorizontalList(
         heading: Strings.weeklyTrendingMovies,
         height: Style.getMovieTileHeight(
           context: context,
-          widthPercent: TILE_WIDTH_PERCENT,
+          widthPercent: Style.tvTileWidth,
         ),
-        widthPercentItem: TILE_WIDTH_PERCENT,
+        widthPercentItem: Style.tvTileWidth,
         tvListStore: controllers[2],
       ),
       TvHorizontalList(
         heading: Strings.weeklyTrendingTv,
         height: Style.getMovieTileHeight(
           context: context,
-          widthPercent: TILE_WIDTH_PERCENT,
+          widthPercent: Style.tvTileWidth,
         ),
-        widthPercentItem: TILE_WIDTH_PERCENT,
+        widthPercentItem: Style.tvTileWidth,
         tvListStore: controllers[3],
       )
     ]);
