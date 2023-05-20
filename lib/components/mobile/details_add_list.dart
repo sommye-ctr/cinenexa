@@ -133,8 +133,6 @@ class _DetailsAddListState extends State<DetailsAddList> {
               );
             },
             onSelectionRemoved: (values) {
-              print(values);
-
               watchListStore.removeItemtoList(
                 baseModel: widget.baseModel,
                 listId: watchListStore.watchLists

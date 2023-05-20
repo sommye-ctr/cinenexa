@@ -112,6 +112,10 @@ class _MyAppState extends State<MyApp> {
     FavoritesStore favoritesStore = FavoritesStore();
     WatchListStore watchListStore = WatchListStore();
     ExtensionsStore extensionsStore = ExtensionsStore();
+    UserStore userStore = UserStore(
+      favoritesStore: favoritesStore,
+      watchListsStore: watchListStore,
+    );
     Widget homeWidget;
 
     extensionsStore.init();
@@ -129,10 +133,7 @@ class _MyAppState extends State<MyApp> {
       providers: [
         Provider.Provider(create: (_) => favoritesStore),
         Provider.Provider(
-          create: (_) => UserStore(
-            favoritesStore: favoritesStore,
-            watchListsStore: watchListStore,
-          ),
+          create: (_) => userStore,
         ),
         Provider.Provider(
           create: (_) => extensionsStore,

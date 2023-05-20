@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cinenexa/screens/tv/tv_favorites.dart';
 import 'package:cinenexa/screens/tv/tv_home.dart';
 import 'package:cinenexa/screens/tv/tv_search_page.dart';
 import 'package:flutter/material.dart';
@@ -25,8 +26,11 @@ class _TvHomeFirstState extends State<TvHomeFirst> {
   late TvHomeStore store;
   final FocusNode focusNode = FocusNode();
 
-  final StreamController<int> homeStream = StreamController();
-  final StreamController<int> searchStream = StreamController();
+  final List<StreamController<int>> streams = [
+    StreamController(),
+    StreamController(),
+    StreamController()
+  ];
 
   @override
   void initState() {
@@ -40,8 +44,9 @@ class _TvHomeFirstState extends State<TvHomeFirst> {
 
   @override
   void dispose() {
-    homeStream.close();
-    searchStream.close();
+    for (var element in streams) {
+      element..close();
+    }
     super.dispose();
   }
 
@@ -56,11 +61,7 @@ class _TvHomeFirstState extends State<TvHomeFirst> {
         RawKeyEventDataAndroid rawKeyEventData =
             event.data as RawKeyEventDataAndroid;
 
-        if (store.tabIndex == 0) {
-          searchStream.add(rawKeyEventData.keyCode);
-        } else if (store.tabIndex == 1) {
-          homeStream.add(rawKeyEventData.keyCode);
-        }
+        streams[store.tabIndex].add(rawKeyEventData.keyCode);
       },
       child: Material(
         child: SafeArea(
@@ -76,9 +77,15 @@ class _TvHomeFirstState extends State<TvHomeFirst> {
                       index: store.tabIndex,
                       children: [
                         TvSearchPage(
-                            clickEvents: searchStream.stream,
-                            tvHomeStore: store),
-                        TvHome(store: store, clickEvents: homeStream.stream),
+                            clickEvents: streams[0].stream, tvHomeStore: store),
+                        TvHome(
+                          store: store,
+                          clickEvents: streams[1].stream,
+                        ),
+                        TvFavorites(
+                          onClickEvents: streams[2].stream,
+                          homeStore: store,
+                        ),
                       ],
                     );
                   }),
