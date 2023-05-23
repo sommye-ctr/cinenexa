@@ -8,7 +8,6 @@ import 'package:cinenexa/utils/screen_size.dart';
 import 'package:cinenexa/widgets/custom_back_button.dart';
 import 'package:cinenexa/widgets/rounded_button.dart';
 import 'package:cinenexa/widgets/screen_background_image.dart';
-import 'package:cinenexa/widgets/tv_drawer.dart';
 import 'package:cinenexa/widgets/vote_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,9 +15,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:glass/glass.dart';
 import 'package:provider/provider.dart';
 
-import '../../components/mobile/details_episode_tile.dart';
 import '../../components/tv/tv_details_episodes.dart';
-import '../../components/tv/tv_episode_tile.dart';
 import '../../components/tv/tv_info_card.dart';
 import '../../models/network/base_model.dart';
 import '../../store/favorites/favorites_store.dart';
@@ -180,7 +177,9 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
             break;
           case ADD_BUTTON:
             _onAddRemFavoritesClicked(context);
+            break;
         }
+
         break;
       default:
     }
