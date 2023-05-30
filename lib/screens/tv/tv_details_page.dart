@@ -1,9 +1,11 @@
+import 'package:cinenexa/models/network/extensions/extension_stream.dart';
 import 'package:cinenexa/resources/strings.dart';
 import 'package:cinenexa/resources/style.dart';
 import 'package:cinenexa/services/network/utils.dart';
 import 'package:cinenexa/store/details/details_store.dart';
 import 'package:cinenexa/utils/date_time_formatter.dart';
 import 'package:cinenexa/utils/keycode.dart';
+import 'package:cinenexa/utils/link_opener.dart';
 import 'package:cinenexa/utils/screen_size.dart';
 import 'package:cinenexa/widgets/custom_back_button.dart';
 import 'package:cinenexa/widgets/rounded_button.dart';
@@ -177,6 +179,19 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
             break;
           case ADD_BUTTON:
             _onAddRemFavoritesClicked(context);
+            break;
+          case PLAY_BUTTON:
+            print("h");
+            LinkOpener.navigateToVideoPlayer(
+              stream: ExtensionStream.url(
+                  url:
+                      "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"),
+              id: widget.detailsStore.baseModel.id!,
+              baseModel: widget.detailsStore.baseModel,
+              context: context,
+              detailsStore: widget.detailsStore,
+              movie: widget.detailsStore.movie,
+            );
             break;
         }
 

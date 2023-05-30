@@ -16,7 +16,7 @@ class TvDetailsDrawer<T> extends StatefulWidget {
   final List<T> rightChildren;
   final int? initialyFocusLeft;
   final Function(int index) onLeftChildClicked;
-  final Widget Function(T item) onRightWidgetBuild;
+  final Container Function(Object item) onRightWidgetBuild;
 
   const TvDetailsDrawer(
       {required this.leftChildren,
@@ -91,7 +91,7 @@ class _TvDetailsDrawerState<T> extends State<TvDetailsDrawer> {
             heading: "",
             widthPercentItem: ScreenSize.getPercentOfWidth(context, 0.2),
             tvListStore: tvListStore,
-            onWidgetBuild: widget.onRightWidgetBuild,
+            onWidgetBuild: (T) => widget.onRightWidgetBuild(T as Object),
             direction: Axis.vertical,
           );
         }),

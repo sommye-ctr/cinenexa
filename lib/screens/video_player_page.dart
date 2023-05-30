@@ -4,12 +4,15 @@ import 'package:cinenexa/models/local/progress.dart';
 import 'package:cinenexa/models/local/show_history.dart';
 import 'package:cinenexa/services/local/database.dart';
 import 'package:cinenexa/store/details/details_store.dart';
+import 'package:cinenexa/store/platform/platform_store.dart';
 import 'package:cinenexa/utils/settings_indexer.dart';
 import 'package:cinenexa/widgets/custom_back_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cinenexa/components/mobile/video_player_controls.dart';
+import 'package:provider/provider.dart';
 
+import '../components/tv/tv_video_player_controls.dart';
 import '../models/network/base_model.dart';
 import '../models/network/extensions/extension_stream.dart';
 import '../models/network/movie.dart';
@@ -18,6 +21,7 @@ import '../resources/style.dart';
 import '../services/local/torrent_streamer.dart';
 
 class VideoPlayerPage extends StatefulWidget {
+  static const Duration hideDuration = Duration(seconds: 4);
   static const routeName = "/videoPlayer";
 
   final int? id;
@@ -86,58 +90,58 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
     AdaptiveTheme.of(context).setDark();
 
     configuration = BetterPlayerConfiguration(
-        allowedScreenSleep: false,
-        autoPlay: true,
-        autoDispose: true,
-        fullScreenByDefault: true,
-        expandToFill: true,
-        useRootNavigator: true,
-        handleLifecycle: false,
-        fit: SettingsIndexer.getFit(fitIndex!),
-        looping: false,
-        errorBuilder: (context, errorMessage) {
-          return Center(
-            child: Text(errorMessage ?? "The player encountered an error"),
-          );
-        },
-        deviceOrientationsOnFullScreen: [
-          DeviceOrientation.landscapeLeft,
-          DeviceOrientation.landscapeRight
-        ],
-        eventListener: (p0) {
-          if (p0.betterPlayerEventType ==
-              BetterPlayerEventType.hideFullscreen) {
-            Navigator.pop(context);
-          }
-        },
-        subtitlesConfiguration: BetterPlayerSubtitlesConfiguration(
-          outlineEnabled: subBackground ?? false,
-          bottomPadding: subPosition?.toDouble() ?? 20,
-          fontSize: subFontSize?.toDouble() ?? 14,
-          backgroundColor:
-              (subBackground ?? false) ? Colors.black : Colors.transparent,
+      allowedScreenSleep: false,
+      // autoPlay: true, TODO CHANGE HERE
+      autoDispose: true,
+      fullScreenByDefault: true,
+      expandToFill: true,
+      useRootNavigator: true,
+      handleLifecycle: false,
+      fit: SettingsIndexer.getFit(fitIndex!),
+      looping: false,
+      errorBuilder: (context, errorMessage) {
+        return Center(
+          child: Text(errorMessage ?? "The player encountered an error"),
+        );
+      },
+      deviceOrientationsOnFullScreen: [
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight
+      ],
+      eventListener: (p0) {
+        if (p0.betterPlayerEventType == BetterPlayerEventType.hideFullscreen) {
+          Navigator.pop(context);
+        }
+      },
+      subtitlesConfiguration: BetterPlayerSubtitlesConfiguration(
+        outlineEnabled: subBackground ?? false,
+        bottomPadding: subPosition?.toDouble() ?? 20,
+        fontSize: subFontSize?.toDouble() ?? 14,
+        backgroundColor:
+            (subBackground ?? false) ? Colors.black : Colors.transparent,
+      ),
+      controlsConfiguration: BetterPlayerControlsConfiguration(
+        playerTheme: BetterPlayerTheme.custom,
+        customControlsBuilder: (controller, onPlayerVisibilityChanged) =>
+            VideoPlayerControls(
+          controller: controller,
+          stream: widget.extensionStream,
+          baseModel: widget.baseModel,
+          episode: widget.episode,
+          season: widget.season,
+          movie: widget.movie,
+          show: widget.show,
+          progress: widget.progress,
+          id: widget.id,
+          fitIndex: fitIndex,
+          autoSubtitle: autoSubtitle,
+          detailsStore: widget.detailsStore,
+          initialDark: initalDark,
+          showHistory: widget.showHistory,
+          torrentStreamer: torrentStreamer,
         ),
-        controlsConfiguration: BetterPlayerControlsConfiguration(
-          playerTheme: BetterPlayerTheme.custom,
-          customControlsBuilder: (controller, onPlayerVisibilityChanged) =>
-              VideoPlayerControls(
-            controller: controller,
-            stream: widget.extensionStream,
-            baseModel: widget.baseModel,
-            episode: widget.episode,
-            season: widget.season,
-            movie: widget.movie,
-            show: widget.show,
-            progress: widget.progress,
-            id: widget.id,
-            fitIndex: fitIndex,
-            autoSubtitle: autoSubtitle,
-            detailsStore: widget.detailsStore,
-            initialDark: initalDark,
-            showHistory: widget.showHistory,
-            torrentStreamer: torrentStreamer,
-          ),
-        ));
+      ),
+    );
 
     _getUrl();
   }
@@ -176,11 +180,11 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
       configuration,
       betterPlayerDataSource: BetterPlayerDataSource.network(
         url,
-        cacheConfiguration: BetterPlayerCacheConfiguration(
+        /* cacheConfiguration: BetterPlayerCacheConfiguration(
           useCache: true,
           maxCacheSize:
               SettingsIndexer.getMaxCache(maxCacheIndex!) * 1024 * 1024,
-        ),
+        ), */
       ),
     );
   }

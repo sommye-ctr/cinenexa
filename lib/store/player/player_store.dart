@@ -132,6 +132,27 @@ abstract class _PlayerStoreBase with Store {
   }
 
   @action
+  void seekFoward() {
+    Duration forward = Duration(
+      seconds: position.inSeconds + seekDuration,
+    );
+
+    if (forward > controller.videoPlayerController!.value.duration!) {
+      controller.seekTo(Duration(seconds: 0));
+    } else {
+      controller.seekTo(forward);
+    }
+  }
+
+  @action
+  void seekBackward() {
+    Duration rewind = Duration(
+      seconds: position.inSeconds - seekDuration,
+    );
+    controller.seekTo(rewind);
+  }
+
+  @action
   void setDuration(Duration duration) {
     this.duration = duration;
   }

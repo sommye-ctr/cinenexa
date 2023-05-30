@@ -27,9 +27,11 @@ class _TvDetailsEpisodesState extends State<TvDetailsEpisodes> {
         initialyFocusLeft: widget.detailsStore.chosenSeason,
         onLeftChildClicked: (index) =>
             widget.detailsStore.onSeasonChanged(index),
-        onRightWidgetBuild: (item) => TvEpisodeTile(
-          episode: widget.detailsStore
-              .episodes[widget.detailsStore.episodes.indexOf(item)],
+        onRightWidgetBuild: (item) => Container(
+          child: TvEpisodeTile(
+            episode: widget.detailsStore
+                .episodes[widget.detailsStore.episodes.indexOf(item)],
+          ),
         ),
       );
     });

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:better_player/better_player.dart';
+import 'package:cinenexa/components/mobile/video_player_progress_bar.dart';
 import 'package:cinenexa/models/local/show_history.dart';
 import 'package:cinenexa/services/local/torrent_streamer.dart';
 import 'package:cinenexa/services/network/utils.dart';
@@ -27,11 +28,14 @@ import '../../models/network/movie.dart';
 import '../../models/network/trakt/trakt_show_history_season.dart';
 import '../../models/network/trakt/trakt_show_history_season_ep.dart';
 import '../../models/network/tv.dart';
+import '../../screens/video_player_page.dart';
 import '../../services/local/scrobble_manager.dart';
+import '../../store/platform/platform_store.dart';
 import '../../store/player/player_store.dart';
 import '../../store/user/user_store.dart';
 import '../../utils/file_opener.dart';
 import '../../widgets/rounded_button.dart';
+import '../tv/tv_video_player_controls.dart';
 import 'details_episode_tile.dart';
 
 class VideoPlayerControls extends StatefulWidget {
@@ -78,8 +82,6 @@ class VideoPlayerControls extends StatefulWidget {
 }
 
 class _VideoPlayerControlsState extends State<VideoPlayerControls> {
-  static const Duration hideDuration = Duration(seconds: 5);
-
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   Timer? hideTimer;
@@ -88,9 +90,14 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
   ChromeCastController? chromeCastController;
   Widget drawerWidget = Container();
 
+  late bool isTv;
+
   @override
   void initState() {
     super.initState();
+    isTv = Provider.of<PlatformStore>(context, listen: false).isAndroidTv;
+    if (isTv) return;
+
     bool traktLogged =
         Provider.of<UserStore>(context, listen: false).isTraktLogged;
 
@@ -130,6 +137,25 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
 
   @override
   Widget build(BuildContext context) {
+    if (isTv)
+      return TvVideoPlayerControls(
+        controller: widget.controller,
+        stream: widget.stream,
+        baseModel: widget.baseModel,
+        episode: widget.episode,
+        season: widget.season,
+        movie: widget.movie,
+        show: widget.show,
+        progress: widget.progress,
+        id: widget.id,
+        fitIndex: widget.fitIndex,
+        autoSubtitle: widget.autoSubtitle,
+        detailsStore: widget.detailsStore,
+        initialDark: widget.initialDark,
+        showHistory: widget.showHistory,
+        torrentStreamer: widget.torrentStreamer,
+      );
+
     return WillPopScope(
       onWillPop: _onBack,
       child: Scaffold(
@@ -219,7 +245,10 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
                                   mainAxisSize: MainAxisSize.min,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    _buildProgressBar(),
+                                    VideoPlayerProgressBar(
+                                      controller: widget.controller,
+                                      playerStore: playerStore,
+                                    ),
                                     _buildBottomControls(),
                                   ],
                                 ),
@@ -267,7 +296,7 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
   void _cancelAndRestartTimer() {
     hideTimer?.cancel();
     playerStore.setShowControls(true);
-    hideTimer = Timer(hideDuration, () => _hideControls());
+    hideTimer = Timer(VideoPlayerPage.hideDuration, () => _hideControls());
   }
 
   void _hideControls() {
@@ -421,38 +450,13 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
     return subs;
   }
 
-  Widget _buildProgressBar() {
-    return Observer(builder: (_) {
-      Duration? duration =
-          playerStore.controller.videoPlayerController!.value.duration;
-      return Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: ScreenSize.getPercentOfHeight(context, 0.05),
-        ),
-        child: ProgressBar(
-          progress: playerStore.position,
-          total: duration ?? Duration(),
-          barHeight: 3,
-          timeLabelLocation: TimeLabelLocation.sides,
-          buffered: playerStore.buffered,
-          onSeek: (value) {
-            widget.controller.seekTo(value);
-          },
-          baseBarColor: Colors.white24,
-          bufferedBarColor: Colors.grey,
-        ),
-      );
-    });
-  }
-
   Widget _buildTitle() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Align(
         alignment: Alignment.topCenter,
         child: Text(
-          widget.baseModel!.title!,
+          widget.baseModel?.title ?? "",
           style: TextStyle(
             fontSize: 20,
           ),
@@ -721,7 +725,6 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
   }
 
   Widget _buildMainControls() {
-    int interval = playerStore.seekDuration == 30 ? 30 : 10;
     return Observer(builder: (_) {
       if (playerStore.buffering) {
         hideTimer?.cancel();
@@ -738,11 +741,7 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
                   ? Icons.replay_30_rounded
                   : Icons.replay_10_rounded,
               onTap: () {
-                Duration rewind = Duration(
-                  seconds: playerStore.position.inSeconds - interval,
-                );
-
-                widget.controller.seekTo(rewind);
+                playerStore.seekBackward();
               },
             ),
             if (playerStore.buffering) CircularProgressIndicator(),
@@ -764,16 +763,7 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
                   ? Icons.forward_30_rounded
                   : Icons.forward_10_rounded,
               onTap: () {
-                Duration forward = Duration(
-                  seconds: playerStore.position.inSeconds + interval,
-                );
-
-                if (forward >
-                    widget.controller.videoPlayerController!.value.duration!) {
-                  widget.controller.seekTo(Duration(seconds: 0));
-                } else {
-                  widget.controller.seekTo(forward);
-                }
+                playerStore.seekFoward();
               },
             ),
           ],

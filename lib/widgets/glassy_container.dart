@@ -6,7 +6,9 @@ import '../resources/style.dart';
 class GlassyContainer extends StatelessWidget {
   final Widget child;
   final Color? color;
-  const GlassyContainer({required this.child, this.color, Key? key})
+  final double? borderRadius;
+  const GlassyContainer(
+      {required this.child, this.borderRadius, this.color, Key? key})
       : super(key: key);
 
   @override
@@ -14,7 +16,8 @@ class GlassyContainer extends StatelessWidget {
     return Material(
       color: color ?? Colors.transparent,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
+        borderRadius:
+            BorderRadius.circular(borderRadius ?? Style.smallRoundEdgeRadius),
         child: BackdropFilter(
           filter: ImageFilter.blur(
             sigmaX: 20,
