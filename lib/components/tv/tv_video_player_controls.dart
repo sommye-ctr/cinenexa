@@ -1,10 +1,12 @@
 import "dart:async";
-
 import "package:better_player/better_player.dart";
+import "package:cinenexa/components/tv/tv_details_drawer.dart";
+import "package:cinenexa/components/tv/tv_details_episodes.dart";
 import "package:cinenexa/services/constants.dart";
 import "package:cinenexa/services/network/utils.dart";
 import "package:cinenexa/utils/keycode.dart";
 import "package:cinenexa/utils/screen_size.dart";
+import "package:cinenexa/utils/settings_indexer.dart";
 import "package:cinenexa/widgets/glassy_container.dart";
 import "package:cinenexa/widgets/rounded_image.dart";
 import "package:flutter/material.dart";
@@ -16,6 +18,7 @@ import "../../models/local/progress.dart";
 import "../../models/local/show_history.dart";
 import "../../models/network/base_model.dart";
 import "../../models/network/extensions/extension_stream.dart";
+import "../../models/network/extensions/subtitle.dart";
 import "../../models/network/movie.dart";
 import "../../models/network/tv.dart";
 import "../../resources/strings.dart";
@@ -73,23 +76,37 @@ class TvVideoPlayerControls extends StatefulWidget {
 }
 
 class _TvVideoPlayerControlsState extends State<TvVideoPlayerControls> {
-  static const int PLAY = 0;
-  static const int FORWARD = 1;
-  static const int BACKWARD = -1;
-  static const int SUBTITLE = -2;
-  static const int SCALE = -3;
-  static const int SPEED = -4;
-  static const int NEXT_PLAY = 2;
-  static const int EPISODES = 3;
+  static const int SCALE = 0;
+  static const int SPEED = 1;
+  static const int SUBTITLE = 2;
+  static const int BACKWARD = 3;
+  static const int PLAY = 4;
+  static const int FORWARD = 5;
+  static const int EPISODES = 6;
+  static const int NEXT_PLAY = 7;
+  static const int PROGRESS_BAR = 8;
 
   Timer? hideTimer;
   ScrobbleManager? scrobbleManager;
   late PlayerStore playerStore;
+  VideoProgressBarController progressBarController =
+      VideoProgressBarController(showThumb: true);
 
   FocusNode focusNode = FocusNode();
 
-  int xfocus = PLAY;
+  int xfocus = PROGRESS_BAR;
   bool isSeeking = false;
+
+  late Map<int, GlassyController> controllers = {
+    PLAY: GlassyController(),
+    FORWARD: GlassyController(),
+    BACKWARD: GlassyController(),
+    SUBTITLE: GlassyController(),
+    SCALE: GlassyController(),
+    SPEED: GlassyController(),
+    NEXT_PLAY: GlassyController(),
+    EPISODES: GlassyController(),
+  };
 
   @override
   void initState() {
@@ -131,12 +148,15 @@ class _TvVideoPlayerControlsState extends State<TvVideoPlayerControls> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       FocusScope.of(context).requestFocus(focusNode);
     });
+
+    _cancelAndRestartTimer();
     super.initState();
   }
 
   @override
   void dispose() {
     hideTimer?.cancel();
+    widget.controller.dispose();
     super.dispose();
   }
 
@@ -166,6 +186,10 @@ class _TvVideoPlayerControlsState extends State<TvVideoPlayerControls> {
                           child: _buildHeading(),
                         ),
                         _buildProgressControlsRow(),
+                        if (playerStore.buffering)
+                          Center(
+                            child: CircularProgressIndicator(),
+                          ),
                       ],
                     ),
                   ),
@@ -188,6 +212,7 @@ class _TvVideoPlayerControlsState extends State<TvVideoPlayerControls> {
           VideoPlayerProgressBar(
             controller: widget.controller,
             playerStore: playerStore,
+            progressBarController: progressBarController,
           ),
           _buildBottomRow(),
         ],
@@ -196,66 +221,80 @@ class _TvVideoPlayerControlsState extends State<TvVideoPlayerControls> {
   }
 
   Widget _buildBottomRow() {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Observer(builder: (_) {
-          return Row(
+    return Observer(builder: (_) {
+      playerStore;
+      playerStore.speedIndex;
+      return Stack(
+        alignment: Alignment.center,
+        children: [
+          Row(
             children: [
-              _buildControls(Text(Strings.fitTypes[playerStore.fitIndex])),
+              _buildControls(
+                Text(Strings.fitTypes[playerStore.fitIndex]),
+                controllers[SCALE]!,
+              ),
               SizedBox(
                 width: 5,
               ),
               _buildControls(
-                  Text(Strings.playbackSpeeds[playerStore.speedIndex])),
-              SizedBox(
-                width: 5,
-              ),
-              _buildProgressButton(Icons.closed_caption_rounded, size: 30),
-            ],
-          );
-        }),
-        Align(
-          alignment: Alignment.center,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _buildProgressButton(
-                playerStore.seekDuration == 30
-                    ? Icons.replay_30_rounded
-                    : Icons.replay_10_rounded,
-              ),
-              SizedBox(
-                width: 5,
-              ),
-              _buildProgressButton(Icons.play_arrow_rounded),
+                  Text(Strings.playbackSpeeds[playerStore.speedIndex]),
+                  controllers[SPEED]!),
               SizedBox(
                 width: 5,
               ),
               _buildProgressButton(
-                playerStore.seekDuration == 30
-                    ? Icons.forward_30_rounded
-                    : Icons.forward_10_rounded,
-              ),
+                  Icons.closed_caption_rounded, controllers[SUBTITLE]!,
+                  size: 30),
             ],
           ),
-        ),
-        if (widget.baseModel?.type == BaseModelType.tv)
           Align(
-            alignment: Alignment.topRight,
+            alignment: Alignment.center,
             child: Row(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildProgressButton(Icons.list, size: 30),
+                _buildProgressButton(
+                    playerStore.seekDuration == 30
+                        ? Icons.replay_30_rounded
+                        : Icons.replay_10_rounded,
+                    controllers[BACKWARD]!),
                 SizedBox(
                   width: 5,
                 ),
-                _buildControls(Text("Next Episode")),
+                _buildProgressButton(
+                    widget.controller.isPlaying()!
+                        ? Icons.pause_rounded
+                        : Icons.play_arrow_rounded,
+                    controllers[PLAY]!),
+                SizedBox(
+                  width: 5,
+                ),
+                _buildProgressButton(
+                  playerStore.seekDuration == 30
+                      ? Icons.forward_30_rounded
+                      : Icons.forward_10_rounded,
+                  controllers[FORWARD]!,
+                ),
               ],
             ),
           ),
-      ],
-    );
+          if (widget.baseModel?.type == BaseModelType.tv)
+            Align(
+              alignment: Alignment.topRight,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildProgressButton(Icons.list, controllers[EPISODES]!,
+                      size: 30),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  _buildControls(Text("Next Episode"), controllers[NEXT_PLAY]!),
+                ],
+              ),
+            ),
+        ],
+      );
+    });
   }
 
   Widget _buildHeading() {
@@ -289,9 +328,11 @@ class _TvVideoPlayerControlsState extends State<TvVideoPlayerControls> {
     );
   }
 
-  Widget _buildProgressButton(IconData data, {double? size}) {
+  Widget _buildProgressButton(IconData data, GlassyController controller,
+      {double? size}) {
     return GlassyContainer(
       borderRadius: Style.largeRoundEdgeRadius,
+      controller: controller,
       child: IconButton(
         iconSize: 40,
         onPressed: () {},
@@ -301,8 +342,9 @@ class _TvVideoPlayerControlsState extends State<TvVideoPlayerControls> {
     );
   }
 
-  Widget _buildControls(Widget widget) {
+  Widget _buildControls(Widget widget, GlassyController controller) {
     return GlassyContainer(
+      controller: controller,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: widget,
@@ -310,14 +352,78 @@ class _TvVideoPlayerControlsState extends State<TvVideoPlayerControls> {
     );
   }
 
-  void _cancelAndRestartTimer() {
+  void _buildSubtitlePopup() {
+    int selected = 0;
+    if (widget.stream.subtitles != null &&
+        playerStore.selectedSubtitle != null &&
+        playerStore.selectedSubtitle! >= 0 &&
+        playerStore.selectedSubtitle! <= widget.stream.subtitles!.length) {
+      selected = playerStore.selectedSubtitle! + 1;
+    }
+
+    List<String> allSubtitles = [
+      Strings.none,
+    ];
+
+    if (widget.stream.subtitles != null) {
+      allSubtitles.addAll(
+          widget.stream.subtitles!.map((e) => e.title.toString()).toList());
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return TvDetailsDrawer<Subtitle>(
+          leftChildren: allSubtitles,
+          rightChildren: [],
+          initialyFocusLeft: selected,
+          onLeftChildClicked: (index) {
+            if (index == 0) {
+              playerStore.changeSubtitle(-1);
+              return;
+            }
+            playerStore.changeSubtitle(index + 1);
+            Navigator.pop(context);
+          },
+          onRightWidgetBuild: (item) => Container(),
+        );
+      },
+    );
+  }
+
+  void _buildEpisodesPopup() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return TvDetailsEpisodes(
+          detailsStore: widget.detailsStore!,
+        );
+      },
+    );
+  }
+
+  void _cancelAndRestartTimer({bool restart = true}) {
     hideTimer?.cancel();
     playerStore.setShowControls(true);
-    hideTimer = Timer(VideoPlayerPage.hideDuration, () => _hideControls());
+    if (restart)
+      hideTimer = Timer(VideoPlayerPage.hideDuration, () => _hideControls());
   }
 
   void _hideControls() {
-    // playerStore.setShowControls(false); TODO
+    if (widget.controller.isPlaying() ?? false) {
+      playerStore.setShowControls(false);
+    }
+  }
+
+  Future<bool> _onBack() async {
+    scrobbleManager?.exit();
+
+    try {
+      widget.controller.exitFullScreen();
+    } catch (e) {}
+
+    widget.torrentStreamer?.stopStream();
+    return true;
   }
 
   void _onKey(RawKeyEvent event) {
@@ -327,21 +433,72 @@ class _TvVideoPlayerControlsState extends State<TvVideoPlayerControls> {
     RawKeyEventDataAndroid rawKeyEventData =
         event.data as RawKeyEventDataAndroid;
 
+    _cancelAndRestartTimer();
     switch (rawKeyEventData.keyCode) {
       case KEY_CENTER:
         _onCentre();
         break;
+      case KEY_LEFT:
+        _onLeft();
+        break;
+      case KEY_RIGHT:
+        _onRight();
+        break;
+      case KEY_BACKSPACE:
+        if (playerStore.showControls) {
+          _hideControls();
+        } else {
+          _onBack();
+        }
+        break;
+      case KEY_UP:
+        _onUp();
+        break;
+      case KEY_DOWN:
+        _onDown();
+        break;
+
       default:
     }
   }
 
-  void _onCentre() {
-    playerStore.showControls ? _hideControls() : _cancelAndRestartTimer();
+  void _onDown() {
+    if (!playerStore.showControls) {
+      _changeFocus(PROGRESS_BAR);
+      return;
+    }
 
+    if (xfocus == PROGRESS_BAR) {
+      _changeFocus(PLAY);
+    }
+  }
+
+  void _onUp() {
+    if (!playerStore.showControls) {
+      _changeFocus(PROGRESS_BAR);
+      return;
+    }
+
+    _changeFocus(PROGRESS_BAR);
+  }
+
+  void _onCentre() async {
+    if (!playerStore.showControls) {
+      _changeFocus(PROGRESS_BAR);
+      return;
+    }
     switch (xfocus) {
       case PLAY:
         if (widget.controller.videoPlayerController?.value.isPlaying ?? false) {
           widget.controller.pause();
+        } else {
+          widget.controller.play();
+        }
+        break;
+      case PROGRESS_BAR:
+        if (widget.controller.videoPlayerController?.value.isPlaying ?? false) {
+          widget.controller.pause();
+          _cancelAndRestartTimer(restart: false);
         } else {
           widget.controller.play();
         }
@@ -352,7 +509,93 @@ class _TvVideoPlayerControlsState extends State<TvVideoPlayerControls> {
       case BACKWARD:
         playerStore.seekBackward();
         break;
+      case SPEED:
+        if (playerStore.speedIndex == Strings.playbackSpeeds.length - 1) {
+          playerStore.setSpeedIndex(0);
+          widget.controller.setSpeed(1);
+          return;
+        }
+        playerStore.setSpeedIndex(playerStore.speedIndex + 1);
+        widget.controller
+            .setSpeed(SettingsIndexer.getSpeed(playerStore.speedIndex));
+        break;
+      case SCALE:
+        if (playerStore.fitIndex == Strings.fitTypes.length - 1) {
+          playerStore.setFitIndex(0);
+          widget.controller.pause();
+          widget.controller.setOverriddenFit(BoxFit.contain);
+          widget.controller.play();
+          return;
+        }
+        playerStore.setFitIndex(playerStore.fitIndex + 1);
+        widget.controller.pause();
+        widget.controller
+            .setOverriddenFit(SettingsIndexer.getFit(playerStore.fitIndex));
+        widget.controller.play();
+        break;
+      case NEXT_PLAY:
+        if (widget.detailsStore!.chosenEpisode ==
+            widget.detailsStore!.episodes.length - 1) {
+          Style.showLoadingDialog(context: context);
+          await playerStore.fetchNewEps();
+          Navigator.pop(context);
+          Navigator.maybePop(context);
+          return;
+        }
+        playerStore.setEpisode();
+        Navigator.maybePop(context);
+        break;
+      case SUBTITLE:
+        _buildSubtitlePopup();
+        break;
+      case EPISODES:
+        _buildEpisodesPopup();
+        break;
       default:
+    }
+  }
+
+  void _onLeft() {
+    if (!playerStore.showControls) {
+      _changeFocus(PROGRESS_BAR);
+      return;
+    }
+    if (xfocus == PROGRESS_BAR) {
+      playerStore.seekBackward();
+      return;
+    }
+    if (xfocus != SCALE) {
+      _changeFocus(xfocus - 1);
+    }
+  }
+
+  void _onRight() {
+    if (!playerStore.showControls) {
+      _changeFocus(PROGRESS_BAR);
+      return;
+    }
+    if (xfocus == PROGRESS_BAR) {
+      playerStore.seekFoward();
+      return;
+    }
+
+    if (xfocus != NEXT_PLAY) {
+      _changeFocus(xfocus + 1);
+    }
+  }
+
+  void _changeFocus(int index) {
+    _changeFocusUi(isNull: true);
+    xfocus = index;
+    _changeFocusUi();
+  }
+
+  void _changeFocusUi({bool isNull = false}) {
+    if (xfocus != PROGRESS_BAR) {
+      controllers[xfocus]
+          ?.changeColor(isNull ? null : Theme.of(context).colorScheme.primary);
+    } else {
+      progressBarController.changeThumbVisibility(isNull ? false : true);
     }
   }
 }

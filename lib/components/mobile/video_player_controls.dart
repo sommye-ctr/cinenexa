@@ -7,6 +7,7 @@ import 'package:cinenexa/models/local/show_history.dart';
 import 'package:cinenexa/services/local/torrent_streamer.dart';
 import 'package:cinenexa/services/network/utils.dart';
 import 'package:cinenexa/store/details/details_store.dart';
+import 'package:cinenexa/utils/settings_indexer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -678,50 +679,18 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
   }
 
   void _fitChanged(String value) {
-    BoxFit boxFit = BoxFit.contain;
-    if (value == Strings.fitTypes[0]) {
-      boxFit = BoxFit.contain;
-      playerStore.setFitIndex(0);
-    } else if (value == Strings.fitTypes[1]) {
-      boxFit = BoxFit.fill;
-      playerStore.setFitIndex(1);
-    } else if (value == Strings.fitTypes[2]) {
-      boxFit = BoxFit.cover;
-      playerStore.setFitIndex(2);
-    }
+    Map<int, BoxFit> res = SettingsIndexer.getFitFromValue(value);
+
+    playerStore.setFitIndex(res.keys.first);
     widget.controller.pause();
-    widget.controller.setOverriddenFit(boxFit);
+    widget.controller.setOverriddenFit(res.values.first);
     widget.controller.play();
   }
 
   void _speedChanged(String value) {
-    double speed = 1;
-    if (value == Strings.playbackSpeeds[1]) {
-      speed = 0.25;
-      playerStore.setSpeedIndex(1);
-    } else if (value == Strings.playbackSpeeds[2]) {
-      speed = 0.5;
-      playerStore.setSpeedIndex(2);
-    } else if (value == Strings.playbackSpeeds[3]) {
-      speed = 0.75;
-      playerStore.setSpeedIndex(3);
-    } else if (value == Strings.playbackSpeeds[4]) {
-      speed = 1.25;
-      playerStore.setSpeedIndex(4);
-    } else if (value == Strings.playbackSpeeds[5]) {
-      speed = 1.5;
-      playerStore.setSpeedIndex(5);
-    } else if (value == Strings.playbackSpeeds[6]) {
-      speed = 2;
-      playerStore.setSpeedIndex(6);
-    } else if (value == Strings.playbackSpeeds[0]) {
-      speed = 1;
-      playerStore.setSpeedIndex(7);
-    } else if (value == Strings.playbackSpeeds[7]) {
-      speed = 1.75;
-      playerStore.setSpeedIndex(8);
-    }
-    widget.controller.setSpeed(speed);
+    Map<int, double> result = SettingsIndexer.getSpeedFromValue(value);
+    playerStore.setSpeedIndex(result.keys.first);
+    widget.controller.setSpeed(result.values.first);
   }
 
   Widget _buildMainControls() {

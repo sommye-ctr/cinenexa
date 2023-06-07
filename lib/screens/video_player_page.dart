@@ -4,15 +4,12 @@ import 'package:cinenexa/models/local/progress.dart';
 import 'package:cinenexa/models/local/show_history.dart';
 import 'package:cinenexa/services/local/database.dart';
 import 'package:cinenexa/store/details/details_store.dart';
-import 'package:cinenexa/store/platform/platform_store.dart';
 import 'package:cinenexa/utils/settings_indexer.dart';
 import 'package:cinenexa/widgets/custom_back_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cinenexa/components/mobile/video_player_controls.dart';
-import 'package:provider/provider.dart';
 
-import '../components/tv/tv_video_player_controls.dart';
 import '../models/network/base_model.dart';
 import '../models/network/extensions/extension_stream.dart';
 import '../models/network/movie.dart';
@@ -91,7 +88,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
 
     configuration = BetterPlayerConfiguration(
       allowedScreenSleep: false,
-      // autoPlay: true, TODO CHANGE HERE
+      autoPlay: true,
       autoDispose: true,
       fullScreenByDefault: true,
       expandToFill: true,
@@ -185,6 +182,10 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
           maxCacheSize:
               SettingsIndexer.getMaxCache(maxCacheIndex!) * 1024 * 1024,
         ), */
+        bufferingConfiguration: BetterPlayerBufferingConfiguration(
+          maxBufferMs: 1000 * 20,
+          minBufferMs: 1000 * 10,
+        ),
       ),
     );
   }

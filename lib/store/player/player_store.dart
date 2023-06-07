@@ -21,7 +21,7 @@ abstract class _PlayerStoreBase with Store {
   bool casting = false;
 
   @observable
-  int speedIndex = 0;
+  int speedIndex = 1;
   @observable
   int fitIndex = 0;
   @observable
@@ -142,6 +142,7 @@ abstract class _PlayerStoreBase with Store {
     } else {
       controller.seekTo(forward);
     }
+    controller.play();
   }
 
   @action
@@ -150,6 +151,7 @@ abstract class _PlayerStoreBase with Store {
       seconds: position.inSeconds - seekDuration,
     );
     controller.seekTo(rewind);
+    controller.play();
   }
 
   @action
