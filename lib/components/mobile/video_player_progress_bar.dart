@@ -1,7 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
-import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_meedu_videoplayer/meedu_player.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
 import '../../store/player/player_store.dart';
@@ -9,7 +9,7 @@ import '../../utils/screen_size.dart';
 
 class VideoPlayerProgressBar extends StatefulWidget {
   final PlayerStore playerStore;
-  final BetterPlayerController controller;
+  final MeeduPlayerController controller;
   final VideoProgressBarController? progressBarController;
 
   const VideoPlayerProgressBar({
@@ -36,7 +36,7 @@ class _VideoPlayerProgressBarState extends State<VideoPlayerProgressBar> {
   Widget build(BuildContext context) {
     return Observer(builder: (_) {
       Duration? duration =
-          widget.playerStore.controller.videoPlayerController!.value.duration;
+          widget.playerStore.controller.videoPlayerController?.value.duration;
 
       return Padding(
         padding: EdgeInsets.symmetric(

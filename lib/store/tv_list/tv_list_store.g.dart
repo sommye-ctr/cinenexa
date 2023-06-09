@@ -69,6 +69,17 @@ mixin _$TvListStore<T> on _TvListStoreBase<T>, Store {
       ActionController(name: '_TvListStoreBase', context: context);
 
   @override
+  void changeFuture(Future<List<T>>? future) {
+    final _$actionInfo = _$_TvListStoreBaseActionController.startAction(
+        name: '_TvListStoreBase.changeFuture');
+    try {
+      return super.changeFuture(future);
+    } finally {
+      _$_TvListStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void changeIndex(int tap) {
     final _$actionInfo = _$_TvListStoreBaseActionController.startAction(
         name: '_TvListStoreBase.changeIndex');

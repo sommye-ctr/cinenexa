@@ -1,5 +1,4 @@
 import "dart:async";
-import "package:better_player/better_player.dart";
 import "package:cinenexa/components/tv/tv_details_drawer.dart";
 import "package:cinenexa/components/tv/tv_details_episodes.dart";
 import "package:cinenexa/services/constants.dart";
@@ -11,6 +10,7 @@ import "package:cinenexa/widgets/glassy_container.dart";
 import "package:cinenexa/widgets/rounded_image.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
+import "package:flutter_meedu_videoplayer/meedu_player.dart";
 import "package:flutter_mobx/flutter_mobx.dart";
 import "package:provider/provider.dart";
 
@@ -33,7 +33,7 @@ import "../../utils/date_time_formatter.dart";
 import "../mobile/video_player_progress_bar.dart";
 
 class TvVideoPlayerControls extends StatefulWidget {
-  final BetterPlayerController controller;
+  final MeeduPlayerController controller;
 
   final int? id;
   final BaseModel? baseModel;
@@ -48,13 +48,14 @@ class TvVideoPlayerControls extends StatefulWidget {
   final ShowHistory? showHistory;
   final TorrentStreamer? torrentStreamer;
 
-  final GlobalKey? playerKey;
+  final Stream<int> onKeyEvents;
 
   final ExtensionStream stream;
   const TvVideoPlayerControls({
     Key? key,
     required this.controller,
     required this.stream,
+    required this.onKeyEvents,
     this.baseModel,
     this.id,
     this.movie,
@@ -62,7 +63,6 @@ class TvVideoPlayerControls extends StatefulWidget {
     this.episode,
     this.season,
     this.progress,
-    this.playerKey,
     this.fitIndex,
     this.autoSubtitle,
     this.detailsStore,
@@ -91,8 +91,6 @@ class _TvVideoPlayerControlsState extends State<TvVideoPlayerControls> {
   late PlayerStore playerStore;
   VideoProgressBarController progressBarController =
       VideoProgressBarController(showThumb: true);
-
-  FocusNode focusNode = FocusNode();
 
   int xfocus = PROGRESS_BAR;
   bool isSeeking = false;
@@ -145,11 +143,7 @@ class _TvVideoPlayerControlsState extends State<TvVideoPlayerControls> {
       playerStore.changeSubtitle(widget.progress!.subtitle!);
     }
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      FocusScope.of(context).requestFocus(focusNode);
-    });
-
-    _cancelAndRestartTimer();
+    widget.onKeyEvents.listen(_onKey);
     super.initState();
   }
 
@@ -162,44 +156,37 @@ class _TvVideoPlayerControlsState extends State<TvVideoPlayerControls> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: RawKeyboardListener(
-        focusNode: focusNode,
-        onKey: _onKey,
-        child: Observer(
-          builder: (context) {
-            if (playerStore.showControls) {
-              return Stack(
-                children: [
-                  Container(
-                    height: double.infinity,
-                    width: double.infinity,
-                    color: Colors.black54,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Stack(
-                      children: [
-                        Align(
-                          alignment: Alignment.topCenter,
-                          child: _buildHeading(),
-                        ),
-                        _buildProgressControlsRow(),
-                        if (playerStore.buffering)
-                          Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                      ],
+    return Observer(
+      builder: (context) {
+        if (playerStore.showControls) {
+          return Stack(
+            children: [
+              Container(
+                height: double.infinity,
+                width: double.infinity,
+                color: Colors.black54,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Stack(
+                  children: [
+                    Align(
+                      alignment: Alignment.topCenter,
+                      child: _buildHeading(),
                     ),
-                  ),
-                ],
-              );
-            }
-            return Container();
-          },
-        ),
-      ),
+                    _buildProgressControlsRow(),
+                    if (playerStore.buffering)
+                      Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          );
+        }
+        return Container();
+      },
     );
   }
 
@@ -261,7 +248,7 @@ class _TvVideoPlayerControlsState extends State<TvVideoPlayerControls> {
                   width: 5,
                 ),
                 _buildProgressButton(
-                    widget.controller.isPlaying()!
+                    widget.controller.playerStatus.playing
                         ? Icons.pause_rounded
                         : Icons.play_arrow_rounded,
                     controllers[PLAY]!),
@@ -410,7 +397,7 @@ class _TvVideoPlayerControlsState extends State<TvVideoPlayerControls> {
   }
 
   void _hideControls() {
-    if (widget.controller.isPlaying() ?? false) {
+    if (widget.controller.playerStatus.playing) {
       playerStore.setShowControls(false);
     }
   }
@@ -419,22 +406,18 @@ class _TvVideoPlayerControlsState extends State<TvVideoPlayerControls> {
     scrobbleManager?.exit();
 
     try {
-      widget.controller.exitFullScreen();
+      widget.controller.setFullScreen(false, context);
     } catch (e) {}
 
     widget.torrentStreamer?.stopStream();
     return true;
   }
 
-  void _onKey(RawKeyEvent event) {
-    if (!(event is RawKeyDownEvent)) {
-      return;
-    }
-    RawKeyEventDataAndroid rawKeyEventData =
-        event.data as RawKeyEventDataAndroid;
+  void _onKey(int event) {
+    print("keyyyyyyyy");
 
     _cancelAndRestartTimer();
-    switch (rawKeyEventData.keyCode) {
+    switch (event) {
       case KEY_CENTER:
         _onCentre();
         break;
@@ -512,25 +495,25 @@ class _TvVideoPlayerControlsState extends State<TvVideoPlayerControls> {
       case SPEED:
         if (playerStore.speedIndex == Strings.playbackSpeeds.length - 1) {
           playerStore.setSpeedIndex(0);
-          widget.controller.setSpeed(1);
+          widget.controller.setPlaybackSpeed(1);
           return;
         }
         playerStore.setSpeedIndex(playerStore.speedIndex + 1);
         widget.controller
-            .setSpeed(SettingsIndexer.getSpeed(playerStore.speedIndex));
+            .setPlaybackSpeed(SettingsIndexer.getSpeed(playerStore.speedIndex));
         break;
       case SCALE:
         if (playerStore.fitIndex == Strings.fitTypes.length - 1) {
           playerStore.setFitIndex(0);
           widget.controller.pause();
-          widget.controller.setOverriddenFit(BoxFit.contain);
+          widget.controller.onVideoFitChange(BoxFit.contain);
           widget.controller.play();
           return;
         }
         playerStore.setFitIndex(playerStore.fitIndex + 1);
         widget.controller.pause();
         widget.controller
-            .setOverriddenFit(SettingsIndexer.getFit(playerStore.fitIndex));
+            .onVideoFitChange(SettingsIndexer.getFit(playerStore.fitIndex));
         widget.controller.play();
         break;
       case NEXT_PLAY:

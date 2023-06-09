@@ -105,22 +105,6 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
     });
   }
 
-  late final _$subtitleDelayAtom =
-      Atom(name: '_PlayerStoreBase.subtitleDelay', context: context);
-
-  @override
-  int get subtitleDelay {
-    _$subtitleDelayAtom.reportRead();
-    return super.subtitleDelay;
-  }
-
-  @override
-  set subtitleDelay(int value) {
-    _$subtitleDelayAtom.reportWrite(value, super.subtitleDelay, () {
-      super.subtitleDelay = value;
-    });
-  }
-
   late final _$positionAtom =
       Atom(name: '_PlayerStoreBase.position', context: context);
 
@@ -232,22 +216,33 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
   }
 
   @override
-  void setDuration(Duration duration) {
+  void seekFoward() {
     final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
-        name: '_PlayerStoreBase.setDuration');
+        name: '_PlayerStoreBase.seekFoward');
     try {
-      return super.setDuration(duration);
+      return super.seekFoward();
     } finally {
       _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  void setSubtitleDelay(int delay) {
+  void seekBackward() {
     final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
-        name: '_PlayerStoreBase.setSubtitleDelay');
+        name: '_PlayerStoreBase.seekBackward');
     try {
-      return super.setSubtitleDelay(delay);
+      return super.seekBackward();
+    } finally {
+      _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setDuration(Duration duration) {
+    final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
+        name: '_PlayerStoreBase.setDuration');
+    try {
+      return super.setDuration(duration);
     } finally {
       _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
     }
@@ -372,7 +367,6 @@ locked: ${locked},
 casting: ${casting},
 speedIndex: ${speedIndex},
 fitIndex: ${fitIndex},
-subtitleDelay: ${subtitleDelay},
 position: ${position},
 buffered: ${buffered},
 selectedSubtitle: ${selectedSubtitle},

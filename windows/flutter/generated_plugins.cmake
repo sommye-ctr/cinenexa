@@ -4,13 +4,21 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   app_links_windows
+  flutter_meedu_videoplayer
   flutter_secure_storage_windows
+  fullscreen_window
   isar_flutter_libs
+  media_kit_libs_windows_video
+  media_kit_video
+  screen_brightness_windows
+  screen_retriever
   sentry_flutter
   url_launcher_windows
+  window_manager
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
+  media_kit_native_event_loop
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)
