@@ -72,7 +72,7 @@ class ScrobbleManager {
       traktRepository
           .scrobbleStart(
         type: item.type!,
-        tmdbId: item.id!,
+        tmdbId: item.type == BaseModelType.movie ? item.id! : episodeId!,
         progress: _getProgress(),
       )
           .then(
@@ -118,7 +118,7 @@ class ScrobbleManager {
     if (isTraktLogged)
       traktRepository.scrobblePause(
         type: item.type!,
-        tmdbId: item.id!,
+        tmdbId: item.type == BaseModelType.movie ? item.id! : episodeId!,
         progress: _getProgress(),
       );
   }
@@ -128,7 +128,7 @@ class ScrobbleManager {
       traktRepository
           .scrobbleStop(
         type: item.type!,
-        tmdbId: item.id!,
+        tmdbId: item.type == BaseModelType.movie ? item.id! : episodeId!,
         progress: _getProgress(),
       )
           .whenComplete(() {
