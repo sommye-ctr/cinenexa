@@ -73,6 +73,22 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
     });
   }
 
+  late final _$playingAtom =
+      Atom(name: '_PlayerStoreBase.playing', context: context);
+
+  @override
+  bool get playing {
+    _$playingAtom.reportRead();
+    return super.playing;
+  }
+
+  @override
+  set playing(bool value) {
+    _$playingAtom.reportWrite(value, super.playing, () {
+      super.playing = value;
+    });
+  }
+
   late final _$speedIndexAtom =
       Atom(name: '_PlayerStoreBase.speedIndex', context: context);
 
@@ -102,22 +118,6 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
   set fitIndex(int value) {
     _$fitIndexAtom.reportWrite(value, super.fitIndex, () {
       super.fitIndex = value;
-    });
-  }
-
-  late final _$subtitleDelayAtom =
-      Atom(name: '_PlayerStoreBase.subtitleDelay', context: context);
-
-  @override
-  int get subtitleDelay {
-    _$subtitleDelayAtom.reportRead();
-    return super.subtitleDelay;
-  }
-
-  @override
-  set subtitleDelay(int value) {
-    _$subtitleDelayAtom.reportWrite(value, super.subtitleDelay, () {
-      super.subtitleDelay = value;
     });
   }
 
@@ -232,6 +232,28 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
   }
 
   @override
+  void seekFoward() {
+    final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
+        name: '_PlayerStoreBase.seekFoward');
+    try {
+      return super.seekFoward();
+    } finally {
+      _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void seekBackward() {
+    final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
+        name: '_PlayerStoreBase.seekBackward');
+    try {
+      return super.seekBackward();
+    } finally {
+      _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setDuration(Duration duration) {
     final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
         name: '_PlayerStoreBase.setDuration');
@@ -243,22 +265,22 @@ mixin _$PlayerStore on _PlayerStoreBase, Store {
   }
 
   @override
-  void setSubtitleDelay(int delay) {
+  void setSpeedIndex(int index) {
     final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
-        name: '_PlayerStoreBase.setSubtitleDelay');
+        name: '_PlayerStoreBase.setSpeedIndex');
     try {
-      return super.setSubtitleDelay(delay);
+      return super.setSpeedIndex(index);
     } finally {
       _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  void setSpeedIndex(int index) {
+  void setPlaying(bool value) {
     final _$actionInfo = _$_PlayerStoreBaseActionController.startAction(
-        name: '_PlayerStoreBase.setSpeedIndex');
+        name: '_PlayerStoreBase.setPlaying');
     try {
-      return super.setSpeedIndex(index);
+      return super.setPlaying(value);
     } finally {
       _$_PlayerStoreBaseActionController.endAction(_$actionInfo);
     }
@@ -370,9 +392,9 @@ showControls: ${showControls},
 buffering: ${buffering},
 locked: ${locked},
 casting: ${casting},
+playing: ${playing},
 speedIndex: ${speedIndex},
 fitIndex: ${fitIndex},
-subtitleDelay: ${subtitleDelay},
 position: ${position},
 buffered: ${buffered},
 selectedSubtitle: ${selectedSubtitle},

@@ -1,5 +1,8 @@
-import 'package:better_player/better_player.dart';
+import 'dart:io';
+
+import 'package:cinenexa/utils/file_opener.dart';
 import 'package:cinenexa/models/network/extensions/subtitle.dart';
+import 'package:flutter_meedu_videoplayer/meedu_player.dart';
 import 'package:mobx/mobx.dart';
 import 'package:cinenexa/models/network/extensions/extension_stream.dart';
 import 'package:cinenexa/services/local/database.dart';
@@ -19,13 +22,13 @@ abstract class _PlayerStoreBase with Store {
   bool locked = false;
   @observable
   bool casting = false;
+  @observable
+  bool playing = false;
 
   @observable
-  int speedIndex = 0;
+  int speedIndex = 1;
   @observable
   int fitIndex = 0;
-  @observable
-  int subtitleDelay = 0;
 
   @observable
   Duration position = Duration();
@@ -42,8 +45,9 @@ abstract class _PlayerStoreBase with Store {
   int seekDuration = 30;
 
   Duration duration = Duration();
+  bool initDone = false;
 
-  final BetterPlayerController controller;
+  final MeeduPlayerController controller;
   final ExtensionStream extensionStream;
   final DetailsStore detailsStore;
   final double? progress;
@@ -63,42 +67,42 @@ abstract class _PlayerStoreBase with Store {
   @action
   Future init() async {
     seekDuration = await Database().getSeekDuration();
-
-    controller.addEventsListener((event) {
-      switch (event.betterPlayerEventType) {
-        case BetterPlayerEventType.bufferingStart:
-          setBuffering(true);
-          break;
-        case BetterPlayerEventType.bufferingEnd:
-          setBuffering(false);
-          break;
-        case BetterPlayerEventType.initialized:
-          initSeek();
-          break;
-        case BetterPlayerEventType.progress:
-          if (buffering == true) {
-            setBuffering(false);
-          }
-          setBuffered(
-              controller.videoPlayerController!.value.buffered.first.end);
-          setPosition(controller.videoPlayerController!.value.position);
-          break;
-        case BetterPlayerEventType.play:
-          if (casting) controller.pause();
-          break;
-        default:
+    controller.onPlayerStatusChanged.listen((event) {
+      if (event == PlayerStatus.playing) {
+        if (casting) controller.pause();
+        setPlaying(true);
+      } else if (event == PlayerStatus.paused) {
+        setPlaying(false);
+      }
+    });
+    controller.isBuffering.stream.listen((event) {
+      if (event) {
+        setBuffering(true);
+      } else {
+        setBuffering(false);
+      }
+    });
+    controller.onPositionChanged.listen((event) {
+      setBuffered(controller.videoPlayerController!.value.buffered.first.end);
+      setPosition(controller.videoPlayerController!.value.position);
+    });
+    controller.onDataStatusChanged.listen((event) {
+      if (event == DataStatus.loaded && !initDone) {
+        initSeek();
+        setBuffering(false);
       }
     });
   }
 
   Future initSeek() async {
     controller.videoPlayerController!.seekTo(position);
-    duration = controller.videoPlayerController!.value.duration!;
+    duration = controller.videoPlayerController!.value.duration;
     int seconds = (duration.inMilliseconds * (progress ?? 0)) ~/ 100;
 
     await controller.play();
     await controller.seekTo(Duration(milliseconds: seconds));
     await controller.play();
+    initDone = true;
   }
 
   @action
@@ -132,18 +136,41 @@ abstract class _PlayerStoreBase with Store {
   }
 
   @action
+  void seekFoward() {
+    Duration forward = Duration(
+      seconds: position.inSeconds + seekDuration,
+    );
+
+    if (forward > controller.videoPlayerController!.value.duration) {
+      controller.seekTo(Duration(seconds: 0));
+    } else {
+      controller.seekTo(forward);
+    }
+    controller.play();
+  }
+
+  @action
+  void seekBackward() {
+    Duration rewind = Duration(
+      seconds: position.inSeconds - seekDuration,
+    );
+    controller.seekTo(rewind);
+    controller.play();
+  }
+
+  @action
   void setDuration(Duration duration) {
     this.duration = duration;
   }
 
   @action
-  void setSubtitleDelay(int delay) {
-    subtitleDelay = delay;
+  void setSpeedIndex(int index) {
+    speedIndex = index;
   }
 
   @action
-  void setSpeedIndex(int index) {
-    speedIndex = index;
+  void setPlaying(bool value) {
+    playing = value;
   }
 
   @action
@@ -185,21 +212,22 @@ abstract class _PlayerStoreBase with Store {
   @action
   Future changeSubtitle(int index) async {
     if (index < 0) {
-      await controller.setupSubtitleSource(BetterPlayerSubtitlesSource());
+      controller.setClosedCaptionFile(null);
       setSelectedSubtitle(null);
       return;
     }
     Subtitle sub = extensionStream.subtitles![index];
-    await controller.setupSubtitleSource(
-      BetterPlayerSubtitlesSource(
-        name: sub.title,
-        type: sub.path != null
-            ? BetterPlayerSubtitlesSourceType.file
-            : BetterPlayerSubtitlesSourceType.network,
-        urls: [sub.url ?? sub.path],
-        selectedByDefault: true,
-      ),
-    );
+
+    Future<ClosedCaptionFile>? srtFuture;
+    if (sub.path != null) {
+      File file = File(sub.path!);
+      srtFuture = FileOpener.loadSubRipCaptionFile(file);
+    } else {
+      srtFuture = FileOpener.downloadSrtFile(sub.url!);
+    }
+
+    controller.onClosedCaptionEnabled(true);
+    controller.setClosedCaptionFile(srtFuture);
     setSelectedSubtitle(index);
     /* if (index == -1) {
       controller.setSpuTrack(-1);

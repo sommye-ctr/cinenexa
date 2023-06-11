@@ -199,7 +199,6 @@ class Database {
   }
 
   Future clearTraktInfo() async {
-    print("clearing info");
     await isar.writeTxn(() async {
       LastActivities? lastActivities = await isar.lastActivities.get(0);
       LastActivities newLastActivities = LastActivities()
