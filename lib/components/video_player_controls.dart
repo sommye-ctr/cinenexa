@@ -171,6 +171,14 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
                             icon: Icons.lock_outline_rounded,
                             onTap: () {
                               setState(() {
+                                widget.controller
+                                    .changeEnabledControls(EnabledControls(
+                                  brightnessSwipes: true,
+                                  doubleTapToSeek: true,
+                                  seekSwipes: true,
+                                  onLongPressSpeedUp: true,
+                                  volumeSwipes: true,
+                                ));
                                 playerStore.setLocked(false);
                               });
                             },
@@ -463,7 +471,14 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
           _buildControlButton(
             icon: Icons.lock_open_rounded,
             onTap: () {
-              playerStore.setLocked(!playerStore.locked);
+              widget.controller.changeEnabledControls(EnabledControls(
+                brightnessSwipes: false,
+                doubleTapToSeek: false,
+                seekSwipes: false,
+                onLongPressSpeedUp: false,
+                volumeSwipes: false,
+              ));
+              playerStore.setLocked(true);
             },
             size: 25,
             text: Strings.lock,

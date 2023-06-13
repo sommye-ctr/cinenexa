@@ -128,10 +128,14 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
       autoHideControls: false,
       errorText: "The player encountered an error",
       initialFit: SettingsIndexer.getFit(fitIndex!),
-      colorTheme: Theme.of(context).colorScheme.primary,
       excludeFocus: false,
       screenManager: ScreenManager(
         forceLandScapeInFullscreen: true,
+      ),
+      responsive: Responsive(
+        subtitleBg: subBackground ?? false,
+        subtitleSize: subFontSize?.toDouble() ?? 14,
+        subtitlePadding: subPosition?.toDouble() ?? 40,
       ),
     );
     controller.onFullscreenChanged.listen((event) {
@@ -146,6 +150,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
       autoplay: true,
       looping: false,
     );
+    controller.onClosedCaptionEnabled(true);
   }
 
   @override
@@ -189,7 +194,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
 
     return MeeduVideoPlayer(
       controller: controller,
-      closedCaptionDistanceFromBottom: 200,
       customControls: (context, controller, responsive) {
         return VideoPlayerControls(
           controller: controller,
