@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:flutter_svg/svg.dart';
-import '../resources/asset.dart';
 import '../store/extensions/extensions_store.dart';
-import '../utils/screen_size.dart';
 import 'extensions_extension_tile.dart';
 
 class ExtensionsDiscover extends StatefulWidget {
@@ -19,12 +16,6 @@ class ExtensionsDiscover extends StatefulWidget {
 
 class _ExtensionsDiscoverState extends State<ExtensionsDiscover>
     with AutomaticKeepAliveClientMixin {
-  @override
-  void initState() {
-    widget.extensionsStore.fetch();
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     super.build(context);

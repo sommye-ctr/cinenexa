@@ -114,6 +114,7 @@ class _MyAppState extends State<MyApp> {
     Widget homeWidget;
 
     extensionsStore.init();
+    extensionsStore.fetch();
 
     if (Supabase.instance.client.auth.currentUser != null ||
         (widget.anonStatus ?? false)) {
