@@ -55,7 +55,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
 
   late MeeduPlayerController controller;
 
-  int? fitIndex, maxCacheIndex;
+  int? fitIndex;
   bool? autoSubtitle;
   bool? initalDark;
   bool? subBackground;
@@ -78,7 +78,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   Future _getDefaultValues() async {
     Database database = Database();
     fitIndex = await database.getDefaultFit();
-    maxCacheIndex = await database.getMaxCache();
     autoSubtitle = await database.getAutoSelectSubtitle();
     subBackground = await database.getSubBg();
     subFontSize = await database.getSubFontSize();
