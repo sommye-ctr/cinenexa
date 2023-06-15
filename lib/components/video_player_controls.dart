@@ -1,41 +1,42 @@
 import 'dart:async';
 import 'package:adaptive_theme/adaptive_theme.dart';
-import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
-import 'package:better_player/better_player.dart';
-import 'package:cinenexa/models/local/show_history.dart';
-import 'package:cinenexa/services/local/torrent_streamer.dart';
-import 'package:cinenexa/services/network/utils.dart';
-import 'package:cinenexa/store/details/details_store.dart';
+import 'package:cinenexa/components/video_player_progress_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_meedu_videoplayer/meedu_player.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:cinenexa/resources/strings.dart';
-import 'package:cinenexa/resources/style.dart';
-import 'package:cinenexa/utils/screen_size.dart';
-import 'package:cinenexa/widgets/custom_checkbox_list.dart';
 import 'package:glass/glass.dart';
 import 'package:provider/provider.dart';
 import 'package:video_cast/chrome_cast_media_type.dart';
 import 'package:video_cast/chrome_cast_subtitle.dart';
 import 'package:video_cast/video_cast.dart';
 
-import '../models/local/progress.dart';
-import '../models/network/base_model.dart';
-import '../models/network/extensions/extension_stream.dart';
-import '../models/network/extensions/subtitle.dart';
-import '../models/network/movie.dart';
-import '../models/network/trakt/trakt_show_history_season.dart';
-import '../models/network/trakt/trakt_show_history_season_ep.dart';
-import '../models/network/tv.dart';
-import '../services/local/scrobble_manager.dart';
-import '../store/player/player_store.dart';
-import '../store/user/user_store.dart';
-import '../utils/file_opener.dart';
-import '../widgets/rounded_button.dart';
+import 'package:cinenexa/models/local/show_history.dart';
+import 'package:cinenexa/resources/strings.dart';
+import 'package:cinenexa/resources/style.dart';
+import 'package:cinenexa/services/local/torrent_streamer.dart';
+import 'package:cinenexa/services/network/utils.dart';
+import 'package:cinenexa/store/details/details_store.dart';
+import 'package:cinenexa/utils/settings_indexer.dart';
+import 'package:cinenexa/widgets/custom_checkbox_list.dart';
+
+import '../../models/local/progress.dart';
+import '../../models/network/base_model.dart';
+import '../../models/network/extensions/extension_stream.dart';
+import '../../models/network/extensions/subtitle.dart';
+import '../../models/network/movie.dart';
+import '../../models/network/trakt/trakt_show_history_season.dart';
+import '../../models/network/trakt/trakt_show_history_season_ep.dart';
+import '../../models/network/tv.dart';
+import '../../screens/video_player_page.dart';
+import '../../services/local/scrobble_manager.dart';
+import '../../store/player/player_store.dart';
+import '../../store/user/user_store.dart';
+import '../../utils/file_opener.dart';
+import '../../widgets/rounded_button.dart';
 import 'details_episode_tile.dart';
 
 class VideoPlayerControls extends StatefulWidget {
-  final BetterPlayerController controller;
+  final MeeduPlayerController controller;
 
   final int? id;
   final BaseModel? baseModel;
@@ -49,14 +50,14 @@ class VideoPlayerControls extends StatefulWidget {
   final bool? initialDark;
   final ShowHistory? showHistory;
   final TorrentStreamer? torrentStreamer;
-
-  final GlobalKey? playerKey;
+  final String streamUrl;
 
   final ExtensionStream stream;
   const VideoPlayerControls({
     Key? key,
     required this.controller,
     required this.stream,
+    required this.streamUrl,
     this.baseModel,
     this.id,
     this.movie,
@@ -64,7 +65,6 @@ class VideoPlayerControls extends StatefulWidget {
     this.episode,
     this.season,
     this.progress,
-    this.playerKey,
     this.fitIndex,
     this.autoSubtitle,
     this.detailsStore,
@@ -78,8 +78,6 @@ class VideoPlayerControls extends StatefulWidget {
 }
 
 class _VideoPlayerControlsState extends State<VideoPlayerControls> {
-  static const Duration hideDuration = Duration(seconds: 5);
-
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   Timer? hideTimer;
@@ -87,6 +85,7 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
   late PlayerStore playerStore;
   ChromeCastController? chromeCastController;
   Widget drawerWidget = Container();
+  FocusNode focus = FocusNode();
 
   @override
   void initState() {
@@ -125,7 +124,10 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
         widget.progress?.subtitle != null) {
       playerStore.changeSubtitle(widget.progress!.subtitle!);
     }
-    _cancelAndRestartTimer();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _cancelAndRestartTimer();
+    });
   }
 
   @override
@@ -169,6 +171,14 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
                             icon: Icons.lock_outline_rounded,
                             onTap: () {
                               setState(() {
+                                widget.controller
+                                    .changeEnabledControls(EnabledControls(
+                                  brightnessSwipes: true,
+                                  doubleTapToSeek: true,
+                                  seekSwipes: true,
+                                  onLongPressSpeedUp: true,
+                                  volumeSwipes: true,
+                                ));
                                 playerStore.setLocked(false);
                               });
                             },
@@ -219,7 +229,10 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
                                   mainAxisSize: MainAxisSize.min,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    _buildProgressBar(),
+                                    VideoPlayerProgressBar(
+                                      controller: widget.controller,
+                                      playerStore: playerStore,
+                                    ),
                                     _buildBottomControls(),
                                   ],
                                 ),
@@ -246,15 +259,7 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
       AdaptiveTheme.of(context).setLight();
     if (playerStore.casting) chromeCastController?.endSession();
 
-    try {
-      widget.controller.exitFullScreen();
-    } catch (e) {}
-
     widget.torrentStreamer?.stopStream();
-    await SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
     return true;
   }
 
@@ -267,7 +272,7 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
   void _cancelAndRestartTimer() {
     hideTimer?.cancel();
     playerStore.setShowControls(true);
-    hideTimer = Timer(hideDuration, () => _hideControls());
+    hideTimer = Timer(VideoPlayerPage.hideDuration, () => _hideControls());
   }
 
   void _hideControls() {
@@ -329,7 +334,7 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
                     type: widget.baseModel!.type == BaseModelType.movie
                         ? ChromeCastMediaType.movie
                         : ChromeCastMediaType.show,
-                    url: widget.controller.betterPlayerDataSource!.url,
+                    url: widget.streamUrl,
                     title: widget.baseModel!.title!,
                     autoplay: true,
                     image: Utils.getPosterUrl(widget.baseModel!.posterPath!),
@@ -421,41 +426,28 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
     return subs;
   }
 
-  Widget _buildProgressBar() {
-    return Observer(builder: (_) {
-      Duration? duration =
-          playerStore.controller.videoPlayerController!.value.duration;
-      return Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: ScreenSize.getPercentOfHeight(context, 0.05),
-        ),
-        child: ProgressBar(
-          progress: playerStore.position,
-          total: duration ?? Duration(),
-          barHeight: 3,
-          timeLabelLocation: TimeLabelLocation.sides,
-          buffered: playerStore.buffered,
-          onSeek: (value) {
-            widget.controller.seekTo(value);
-          },
-          baseBarColor: Colors.white24,
-          bufferedBarColor: Colors.grey,
-        ),
-      );
-    });
-  }
-
   Widget _buildTitle() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Align(
         alignment: Alignment.topCenter,
-        child: Text(
-          widget.baseModel!.title!,
-          style: TextStyle(
-            fontSize: 20,
-          ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.baseModel?.title ?? "",
+              style: TextStyle(
+                fontSize: 20,
+              ),
+            ),
+            if (widget.baseModel?.type == BaseModelType.tv)
+              Text(
+                "S${widget.season} EP${widget.episode}",
+                style: TextStyle(
+                  color: Colors.grey,
+                ),
+              )
+          ],
         ),
       ),
     );
@@ -479,7 +471,14 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
           _buildControlButton(
             icon: Icons.lock_open_rounded,
             onTap: () {
-              playerStore.setLocked(!playerStore.locked);
+              widget.controller.changeEnabledControls(EnabledControls(
+                brightnessSwipes: false,
+                doubleTapToSeek: false,
+                seekSwipes: false,
+                onLongPressSpeedUp: false,
+                volumeSwipes: false,
+              ));
+              playerStore.setLocked(true);
             },
             size: 25,
             text: Strings.lock,
@@ -674,55 +673,23 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
   }
 
   void _fitChanged(String value) {
-    BoxFit boxFit = BoxFit.contain;
-    if (value == Strings.fitTypes[0]) {
-      boxFit = BoxFit.contain;
-      playerStore.setFitIndex(0);
-    } else if (value == Strings.fitTypes[1]) {
-      boxFit = BoxFit.fill;
-      playerStore.setFitIndex(1);
-    } else if (value == Strings.fitTypes[2]) {
-      boxFit = BoxFit.cover;
-      playerStore.setFitIndex(2);
-    }
+    Map<int, BoxFit> res = SettingsIndexer.getFitFromValue(value);
+
+    playerStore.setFitIndex(res.keys.first);
     widget.controller.pause();
-    widget.controller.setOverriddenFit(boxFit);
+    widget.controller.onVideoFitChange(res.values.first);
     widget.controller.play();
   }
 
   void _speedChanged(String value) {
-    double speed = 1;
-    if (value == Strings.playbackSpeeds[1]) {
-      speed = 0.25;
-      playerStore.setSpeedIndex(1);
-    } else if (value == Strings.playbackSpeeds[2]) {
-      speed = 0.5;
-      playerStore.setSpeedIndex(2);
-    } else if (value == Strings.playbackSpeeds[3]) {
-      speed = 0.75;
-      playerStore.setSpeedIndex(3);
-    } else if (value == Strings.playbackSpeeds[4]) {
-      speed = 1.25;
-      playerStore.setSpeedIndex(4);
-    } else if (value == Strings.playbackSpeeds[5]) {
-      speed = 1.5;
-      playerStore.setSpeedIndex(5);
-    } else if (value == Strings.playbackSpeeds[6]) {
-      speed = 2;
-      playerStore.setSpeedIndex(6);
-    } else if (value == Strings.playbackSpeeds[0]) {
-      speed = 1;
-      playerStore.setSpeedIndex(7);
-    } else if (value == Strings.playbackSpeeds[7]) {
-      speed = 1.75;
-      playerStore.setSpeedIndex(8);
-    }
-    widget.controller.setSpeed(speed);
+    Map<int, double> result = SettingsIndexer.getSpeedFromValue(value);
+    playerStore.setSpeedIndex(result.keys.first);
+    widget.controller.setPlaybackSpeed(result.values.first);
   }
 
   Widget _buildMainControls() {
-    int interval = playerStore.seekDuration == 30 ? 30 : 10;
     return Observer(builder: (_) {
+      playerStore.playing;
       if (playerStore.buffering) {
         hideTimer?.cancel();
       }
@@ -738,42 +705,39 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
                   ? Icons.replay_30_rounded
                   : Icons.replay_10_rounded,
               onTap: () {
-                Duration rewind = Duration(
-                  seconds: playerStore.position.inSeconds - interval,
-                );
-
-                widget.controller.seekTo(rewind);
+                playerStore.seekBackward();
               },
             ),
-            if (playerStore.buffering) CircularProgressIndicator(),
-            if (!playerStore.buffering)
-              _buildControlButton(
-                icon: widget.controller.isPlaying()!
-                    ? Icons.pause_rounded
-                    : Icons.play_arrow_rounded,
-                onTap: () {
-                  setState(() {
-                    widget.controller.isPlaying()!
-                        ? widget.controller.pause()
-                        : widget.controller.play();
-                  });
-                },
-              ),
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                _buildControlButton(
+                  icon: playerStore.playing
+                      ? Icons.pause_rounded
+                      : Icons.play_arrow_rounded,
+                  onTap: () {
+                    setState(() {
+                      playerStore.playing
+                          ? widget.controller.pause()
+                          : widget.controller.play();
+                    });
+                  },
+                ),
+                if (playerStore.buffering)
+                  SizedBox.square(
+                    dimension: 80,
+                    child: SizedBox.expand(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+              ],
+            ),
             _buildControlButton(
               icon: playerStore.seekDuration == 30
                   ? Icons.forward_30_rounded
                   : Icons.forward_10_rounded,
               onTap: () {
-                Duration forward = Duration(
-                  seconds: playerStore.position.inSeconds + interval,
-                );
-
-                if (forward >
-                    widget.controller.videoPlayerController!.value.duration!) {
-                  widget.controller.seekTo(Duration(seconds: 0));
-                } else {
-                  widget.controller.seekTo(forward);
-                }
+                playerStore.seekFoward();
               },
             ),
           ],
