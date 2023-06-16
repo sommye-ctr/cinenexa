@@ -92,6 +92,7 @@ class _TvHomeState extends State<TvHome> {
             right: TvHomeFirst.CHILDREN_PADDING_RIGHT,
           ),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TvHomeSelectedTile(store: widget.store),
               Style.getVerticalSpacing(

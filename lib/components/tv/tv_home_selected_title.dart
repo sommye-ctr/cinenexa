@@ -21,7 +21,6 @@ class TvHomeSelectedTile extends StatefulWidget {
 class _TvHomeSelectedTileState extends State<TvHomeSelectedTile>
     with TickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _animation;
 
   @override
   void initState() {
@@ -31,8 +30,6 @@ class _TvHomeSelectedTileState extends State<TvHomeSelectedTile>
         value: 0,
         lowerBound: 0,
         upperBound: 1);
-    _animation =
-        CurvedAnimation(parent: _controller, curve: Curves.fastOutSlowIn);
     super.initState();
   }
 
@@ -54,13 +51,10 @@ class _TvHomeSelectedTileState extends State<TvHomeSelectedTile>
           children: [
             Wrap(
               children: [
-                Hero(
-                  tag: "tag-title",
-                  child: Text(
-                    "${widget.store.currentFocused?.title} $year",
-                    style: Style.largeHeadingStyle.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                Text(
+                  "${widget.store.currentFocused?.title} $year",
+                  style: Style.largeHeadingStyle.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
                 Style.getVerticalHorizontalSpacing(context: context),
@@ -105,33 +99,6 @@ class _TvHomeSelectedTileState extends State<TvHomeSelectedTile>
               ),
             ),
             Style.getVerticalSpacing(context: context),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    RoundedButton(
-                      child: Text(Strings.play),
-                      onPressed: () {},
-                      type: RoundedButtonType.filled,
-                    ),
-                    Style.getVerticalHorizontalSpacing(context: context),
-                    RoundedButton(
-                      child: Text(Strings.moreInfo),
-                      onPressed: () {},
-                      type: RoundedButtonType.outlined,
-                    ),
-                  ],
-                ),
-                Container(
-                  width: 200,
-                  child: CustomProgressIndicator(
-                    progress: 0.5,
-                  ),
-                ),
-              ],
-            ),
           ],
         );
       },
