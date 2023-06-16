@@ -59,7 +59,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
 
   late MeeduPlayerController controller;
 
-  int? fitIndex, maxCacheIndex;
+  int? fitIndex;
   bool? autoSubtitle;
   bool? initalDark;
   bool? subBackground;
@@ -82,7 +82,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   Future _getDefaultValues() async {
     Database database = Database();
     fitIndex = await database.getDefaultFit();
-    maxCacheIndex = await database.getMaxCache();
     autoSubtitle = await database.getAutoSelectSubtitle();
     subBackground = await database.getSubBg();
     subFontSize = await database.getSubFontSize();
@@ -128,22 +127,18 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   void _setController(String url) {
     controller = MeeduPlayerController(
       controlsStyle: ControlsStyle.custom,
-      loadingWidget: CircularProgressIndicator(),
-      durations: Durations(
-        controlsDuration: Duration(
-          seconds: 100,
-        ),
-
-        controlsAutoHideDuration: Duration(
-          seconds: 100,
-        ), //this is set too high so that it doesnt obstruct with our system
-      ),
+      loadingWidget: Container(),
+      autoHideControls: false,
       errorText: "The player encountered an error",
       initialFit: SettingsIndexer.getFit(fitIndex!),
-      colorTheme: Theme.of(context).colorScheme.primary,
       excludeFocus: false,
       screenManager: ScreenManager(
         forceLandScapeInFullscreen: true,
+      ),
+      responsive: Responsive(
+        subtitleBg: subBackground ?? false,
+        subtitleSize: subFontSize?.toDouble() ?? 14,
+        subtitlePadding: subPosition?.toDouble() ?? 40,
       ),
     );
     controller.onFullscreenChanged.listen((event) {
@@ -158,6 +153,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
       autoplay: true,
       looping: false,
     );
+    controller.onClosedCaptionEnabled(true);
   }
 
   @override
@@ -214,8 +210,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
         },
         child: MeeduVideoPlayer(
           controller: controller,
-          customCaptionView: (context, controller, responsive, text) =>
-              _buildCustomCaptionView(text),
           customControls: (context, controller, responsive) {
             return TvVideoPlayerControls(
               controller: controller,

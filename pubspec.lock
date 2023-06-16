@@ -521,11 +521,12 @@ packages:
   flutter_meedu_videoplayer:
     dependency: "direct main"
     description:
-      name: flutter_meedu_videoplayer
-      sha256: fc06d387505ff62593300c8494ecc6d9d1507088d123728d944ba5651b3e0eab
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.2.12+1"
+      path: package
+      ref: "7bac6b2ed0738f67c3a07ecfcd83d26d0baeabf0"
+      resolved-ref: "7bac6b2ed0738f67c3a07ecfcd83d26d0baeabf0"
+      url: "https://github.com/sommye-ctr/flutter_meedu_videoplayer.git"
+    source: git
+    version: "4.2.13"
   flutter_mobx:
     dependency: "direct main"
     description:
@@ -1129,7 +1130,7 @@ packages:
     source: hosted
     version: "0.3.3+2"
   path:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path
       sha256: db9d4f58c908a4ba5953fcee2ae317c94889433e5024c27ce74a37f94267945b

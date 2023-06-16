@@ -22,6 +22,8 @@ abstract class _PlayerStoreBase with Store {
   bool locked = false;
   @observable
   bool casting = false;
+  @observable
+  bool playing = false;
 
   @observable
   int speedIndex = 1;
@@ -43,6 +45,7 @@ abstract class _PlayerStoreBase with Store {
   int seekDuration = 30;
 
   Duration duration = Duration();
+  bool initDone = false;
 
   final MeeduPlayerController controller;
   final ExtensionStream extensionStream;
@@ -65,8 +68,11 @@ abstract class _PlayerStoreBase with Store {
   Future init() async {
     seekDuration = await Database().getSeekDuration();
     controller.onPlayerStatusChanged.listen((event) {
-      if (casting && event == PlayerStatus.playing) {
-        controller.pause();
+      if (event == PlayerStatus.playing) {
+        if (casting) controller.pause();
+        setPlaying(true);
+      } else if (event == PlayerStatus.paused) {
+        setPlaying(false);
       }
     });
     controller.isBuffering.stream.listen((event) {
@@ -80,6 +86,12 @@ abstract class _PlayerStoreBase with Store {
       setBuffered(controller.videoPlayerController!.value.buffered.first.end);
       setPosition(controller.videoPlayerController!.value.position);
     });
+    controller.onDataStatusChanged.listen((event) {
+      if (event == DataStatus.loaded && !initDone) {
+        initSeek();
+        setBuffering(false);
+      }
+    });
   }
 
   Future initSeek() async {
@@ -90,6 +102,7 @@ abstract class _PlayerStoreBase with Store {
     await controller.play();
     await controller.seekTo(Duration(milliseconds: seconds));
     await controller.play();
+    initDone = true;
   }
 
   @action
@@ -156,6 +169,11 @@ abstract class _PlayerStoreBase with Store {
   }
 
   @action
+  void setPlaying(bool value) {
+    playing = value;
+  }
+
+  @action
   void setFitIndex(int index) {
     fitIndex = index;
   }
@@ -194,7 +212,7 @@ abstract class _PlayerStoreBase with Store {
   @action
   Future changeSubtitle(int index) async {
     if (index < 0) {
-      controller.videoPlayerController?.setClosedCaptionFile(null);
+      controller.setClosedCaptionFile(null);
       setSelectedSubtitle(null);
       return;
     }
@@ -211,7 +229,6 @@ abstract class _PlayerStoreBase with Store {
     controller.onClosedCaptionEnabled(true);
     controller.setClosedCaptionFile(srtFuture);
     setSelectedSubtitle(index);
-    print("updaedd");
     /* if (index == -1) {
       controller.setSpuTrack(-1);
       setSelectedSubtitle(null);
