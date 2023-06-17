@@ -20,6 +20,8 @@ import 'package:cinenexa/screens/settings_page.dart';
 import 'package:cinenexa/store/user/user_store.dart';
 import 'package:cinenexa/utils/screen_size.dart';
 import '../components/mobile/home_bottom_nav_bar.dart';
+import '../resources/settings_tile_obj.dart';
+import '../widgets/user_profile.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -46,7 +48,7 @@ class _ProfilePageState extends State<ProfilePage> {
         body: ListView(
           children: [
             Style.getVerticalHorizontalSpacing(context: context),
-            _buildProfileTile(),
+            UserProfile(),
             Style.getVerticalHorizontalSpacing(context: context),
             _buildStatCardsTile(),
             Style.getVerticalHorizontalSpacing(context: context),
@@ -80,117 +82,61 @@ class _ProfilePageState extends State<ProfilePage> {
 
   List<Widget> _buildSettingsTabs() {
     return [
-      ListTile(
-        title: Text(Strings.general),
-        leading: CircleAvatar(
-          child: Icon(
-            Icons.settings,
-            color: Colors.black,
-          ),
-          backgroundColor: Color.fromRGBO(46, 196, 182, 1),
-        ),
-        trailing: Icon(Icons.arrow_right_outlined),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
-        ),
-        onTap: () => _navigateToSettings(SettingsPage.GENERAL),
+      _buildTile(
+        Style.settingTiles[0],
+        () => _navigateToSettings(SettingsPage.GENERAL),
       ),
       Style.getVerticalSpacing(context: context, percent: 0.01),
-      ListTile(
-        title: Text(Strings.extensions),
-        leading: CircleAvatar(
-          child: Icon(
-            Icons.extension_rounded,
-            color: Colors.black,
-          ),
-          backgroundColor: Color.fromRGBO(255, 159, 28, 1),
-        ),
-        trailing: Icon(Icons.arrow_right_outlined),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
-        ),
-        onTap: () => Navigator.pushNamed(context, ExtensionsPage.routeName),
+      _buildTile(
+        Style.settingTiles[1],
+        () => Navigator.pushNamed(context, ExtensionsPage.routeName),
       ),
       Style.getVerticalSpacing(context: context, percent: 0.01),
-      ListTile(
-        title: Text(Strings.integrations),
-        leading: CircleAvatar(
-          child: Icon(
-            Icons.merge,
-            color: Colors.black,
-          ),
-          backgroundColor: Color.fromRGBO(255, 191, 105, 1),
-        ),
-        trailing: Icon(Icons.arrow_right_outlined),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
-        ),
-        onTap: () => _navigateToSettings(SettingsPage.INTEGRATIONS),
+      _buildTile(
+        Style.settingTiles[2],
+        () => _navigateToSettings(SettingsPage.INTEGRATIONS),
       ),
       Style.getVerticalSpacing(context: context, percent: 0.01),
-      ListTile(
-        title: Text(Strings.player),
-        leading: CircleAvatar(
-          child: Icon(
-            Icons.play_arrow_rounded,
-            color: Colors.black,
-          ),
-          backgroundColor: Color.fromRGBO(203, 243, 240, 1),
-        ),
-        trailing: Icon(Icons.arrow_right_outlined),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
-        ),
-        onTap: () => _navigateToSettings(SettingsPage.PLAYER),
+      _buildTile(
+        Style.settingTiles[3],
+        () => _navigateToSettings(SettingsPage.PLAYER),
       ),
       Style.getVerticalSpacing(context: context, percent: 0.01),
-      ListTile(
-        title: Text(Strings.more),
-        leading: CircleAvatar(
-          child: Icon(
-            Icons.more_horiz,
-            color: Colors.black,
-          ),
-          backgroundColor: Color.fromRGBO(233, 196, 106, 1),
-        ),
-        trailing: Icon(Icons.arrow_right_outlined),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
-        ),
-        onTap: () => _navigateToSettings(SettingsPage.MORE),
+      _buildTile(
+        Style.settingTiles[4],
+        () => _navigateToSettings(SettingsPage.MORE),
       ),
       Style.getVerticalSpacing(context: context, percent: 0.01),
-      Style.getListTile(
-        context: context,
-        title: Strings.reportBug,
-        trailing: Icon(Icons.arrow_right_outlined),
-        leading: CircleAvatar(
-          child: Icon(
-            Icons.bug_report_rounded,
-            color: Colors.black,
-          ),
-          backgroundColor: Color.fromRGBO(231, 111, 81, 1),
-        ),
-        onTap: _reportBug,
+      _buildTile(
+        Style.settingTiles[5],
+        _reportBug,
       ),
-      Style.getListTile(
-        context: context,
-        title: "Rate CineNexa",
-        leading: CircleAvatar(
-          child: Icon(
-            Icons.star_rounded,
-            color: Colors.black,
-          ),
-          backgroundColor: Color.fromRGBO(255, 159, 28, 1),
-        ),
-        trailing: Icon(Icons.arrow_right_outlined),
-        onTap: () {
+      Style.getVerticalSpacing(context: context, percent: 0.01),
+      _buildTile(
+        Style.settingTiles[6],
+        () {
           InAppReview.instance.openStoreListing();
         },
       ),
       Style.getVerticalSpacing(context: context),
       _buildAttribution(),
     ];
+  }
+
+  Widget _buildTile(SettingsTileObj obj, VoidCallback onClick) {
+    return Style.getListTile(
+      context: context,
+      title: obj.string,
+      leading: CircleAvatar(
+        child: Icon(
+          obj.icon,
+          color: Colors.black,
+        ),
+        backgroundColor: obj.bgColor,
+      ),
+      trailing: Icon(Icons.arrow_right_outlined),
+      onTap: onClick,
+    );
   }
 
   void _reportBug() {
@@ -235,92 +181,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void _navigateToSettings(int type) {
     Navigator.pushNamed(context, SettingsPage.routeName, arguments: type);
-  }
-
-  Widget _buildProfileTile() {
-    return Observer(builder: (_) {
-      bool traktConnected =
-          Provider.of<UserStore>(context, listen: false).traktStatus;
-
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (userStore.user?.id != null)
-                randomAvatar(
-                  userStore.user!.id,
-                  width: ScreenSize.getPercentOfWidth(context, 0.1),
-                  height: ScreenSize.getPercentOfWidth(context, 0.1),
-                ),
-              if (userStore.user == null)
-                randomAvatar(
-                  SizeFormatter.getRandomString(10),
-                  width: ScreenSize.getPercentOfWidth(context, 0.1),
-                  height: ScreenSize.getPercentOfWidth(context, 0.1),
-                ),
-              SizedBox(
-                width: 8,
-              ),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    userStore.user?.name ?? Strings.anonymous,
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
-                  ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(Strings.trakt),
-                      Padding(padding: EdgeInsets.all(2)),
-                      Icon(
-                        Icons.circle,
-                        color: traktConnected ? Colors.green : Colors.red,
-                        size: 12,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
-          if (userStore.user != null)
-            IconButton(
-              onPressed: () {
-                Style.showConfirmationDialog(
-                  context: context,
-                  text: Strings.logoutConfirm,
-                  onPressed: () => logout(),
-                );
-              },
-              icon: Icon(Icons.logout_rounded),
-            ),
-          if (userStore.guestLogin)
-            RoundedButton(
-              child: Text(Strings.signIn),
-              onPressed: () => logout(),
-              type: RoundedButtonType.outlined,
-            ),
-        ],
-      );
-    });
-  }
-
-  void logout() async {
-    Style.showLoadingDialog(context: context);
-    await Provider.of<UserStore>(context, listen: false).logout();
-    AdaptiveTheme.of(context).setLight();
-    Navigator.pop(context);
-    Navigator.pushNamedAndRemoveUntil(
-      context,
-      IntroPage.routeName,
-      (route) => false,
-    );
   }
 
   Widget _buildStatCardsTile() {

@@ -191,6 +191,7 @@ class Strings {
   static const String minSpentShows = "Minutes spent\non shows";
   static const String logoutConfirm = "You are going to logout. Are you sure?";
   static const String reportBug = "Report a bug";
+  static const String rateCineNexa = "Rate CineNexa";
   static const String reportBugInfo =
       "You are going to report a bug. Be as specific as you can and try to elaborate what actually happened. You can attach screenshots (if any). Kindly do not remove the auto-generated app and device info from the mail. Thank You!";
 

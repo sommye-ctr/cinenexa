@@ -130,8 +130,6 @@ class _TvHomeState extends State<TvHome> {
             index: yFocus,
             duration: animationDuration,
           );
-        } else if (widget.store.railFocused && widget.store.tabIndex != 0) {
-          widget.store.changeIndex(widget.store.tabIndex - 1);
         }
         break;
       case KEY_DOWN:
@@ -143,9 +141,6 @@ class _TvHomeState extends State<TvHome> {
             index: yFocus,
             duration: animationDuration,
           );
-        } else if (widget.store.railFocused &&
-            widget.store.tabIndex != TvHomeFirst.RAIL_COUNT - 1) {
-          widget.store.changeIndex(widget.store.tabIndex + 1);
         }
         break;
       case KEY_LEFT:

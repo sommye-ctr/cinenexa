@@ -1,5 +1,6 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cinenexa/resources/settings_tile_obj.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -25,6 +26,44 @@ class Style {
   static const double smallIconSize = 40;
 
   static const double tvTileWidth = 0.145;
+
+  static List<SettingsTileObj> settingTiles = [
+    SettingsTileObj(
+      Strings.general,
+      Icons.settings,
+      Color.fromRGBO(46, 196, 182, 1),
+    ),
+    SettingsTileObj(
+      Strings.extensions,
+      Icons.extension_rounded,
+      Color.fromRGBO(255, 159, 28, 1),
+    ),
+    SettingsTileObj(
+      Strings.integrations,
+      Icons.merge,
+      Color.fromRGBO(255, 191, 105, 1),
+    ),
+    SettingsTileObj(
+      Strings.player,
+      Icons.play_arrow_rounded,
+      Color.fromRGBO(203, 243, 240, 1),
+    ),
+    SettingsTileObj(
+      Strings.more,
+      Icons.more_horiz,
+      Color.fromRGBO(233, 196, 106, 1),
+    ),
+    SettingsTileObj(
+      Strings.reportBug,
+      Icons.bug_report_rounded,
+      Color.fromRGBO(231, 111, 81, 1),
+    ),
+    SettingsTileObj(
+      Strings.rateCineNexa,
+      Icons.star_rounded,
+      Color.fromRGBO(255, 159, 28, 1),
+    ),
+  ];
 
   static ThemeData themeData = ThemeData(
       primarySwatch: Colors.orange,
@@ -204,6 +243,29 @@ class Style {
         trailing: trailing,
         enabled: enabled,
         onTap: onTap,
+      ),
+    );
+  }
+
+  static Widget getCardListTile({
+    required BuildContext context,
+    required String title,
+    Widget? leading,
+  }) {
+    return Container(
+      width: ScreenSize.getPercentOfWidth(context, 0.12),
+      child: Card(
+        margin: EdgeInsets.only(
+            bottom: ScreenSize.getPercentOfHeight(context, 0.01)),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (leading != null) leading,
+              Text(title),
+            ],
+          ),
+        ),
       ),
     );
   }

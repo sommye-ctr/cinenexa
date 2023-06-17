@@ -62,11 +62,6 @@ class _TvFavoritesState extends State<TvFavorites> {
       bool railFocused = widget.homeStore.railFocused;
       switch (event) {
         case KEY_UP:
-          if (railFocused) {
-            widget.homeStore.changeIndex(1);
-            return;
-          }
-
           if (listStores[1].isListFocused) {
             listStores[0].changeFocus(true);
             listStores[1].changeFocus(false);
@@ -101,10 +96,6 @@ class _TvFavoritesState extends State<TvFavorites> {
           }
           break;
         case KEY_DOWN:
-          if (railFocused) {
-            widget.homeStore.changeIndex(3);
-            return;
-          }
           if (listStores[0].isListFocused) {
             listStores[0].changeFocus(false);
             listStores[1].changeFocus(true);

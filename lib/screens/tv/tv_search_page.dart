@@ -172,11 +172,6 @@ class _TvSearchPageState extends State<TvSearchPage> {
         if (showListStore.isListFocused) showListStore.changeIndex(KEY_RIGHT);
         break;
       case KEY_DOWN:
-        if (railFocused) {
-          widget.tvHomeStore.changeIndex(1);
-          return;
-        }
-
         if (movieListStore.isListFocused) {
           movieListStore.changeFocus(false);
           showListStore.changeFocus(true);
