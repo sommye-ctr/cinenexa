@@ -12,11 +12,24 @@ import '../store/user/user_store.dart';
 import '../utils/screen_size.dart';
 import '../utils/size_formatter.dart';
 
-class UserProfile extends StatelessWidget {
+class UserProfile extends StatefulWidget {
   final bool showSignIn;
   final bool vertical;
   const UserProfile({this.showSignIn = true, this.vertical = false, Key? key})
       : super(key: key);
+
+  @override
+  State<UserProfile> createState() => _UserProfileState();
+}
+
+class _UserProfileState extends State<UserProfile> {
+  late String text;
+
+  @override
+  void initState() {
+    text = SizeFormatter.getRandomString(10);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +37,7 @@ class UserProfile extends StatelessWidget {
       bool traktConnected =
           Provider.of<UserStore>(context, listen: false).traktStatus;
       UserStore userStore = Provider.of<UserStore>(context, listen: false);
-      if (vertical) {
+      if (widget.vertical) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -36,7 +49,7 @@ class UserProfile extends StatelessWidget {
               ),
             if (userStore.user == null)
               randomAvatar(
-                SizeFormatter.getRandomString(10),
+                text,
                 width: ScreenSize.getPercentOfWidth(context, 0.08),
                 height: ScreenSize.getPercentOfWidth(context, 0.08),
               ),
@@ -112,7 +125,7 @@ class UserProfile extends StatelessWidget {
               ),
             ],
           ),
-          if (userStore.user != null && showSignIn)
+          if (userStore.user != null && widget.showSignIn)
             IconButton(
               onPressed: () {
                 Style.showConfirmationDialog(
@@ -123,7 +136,7 @@ class UserProfile extends StatelessWidget {
               },
               icon: Icon(Icons.logout_rounded),
             ),
-          if (userStore.guestLogin && showSignIn)
+          if (userStore.guestLogin && widget.showSignIn)
             RoundedButton(
               child: Text(Strings.signIn),
               onPressed: () => logout(context),
