@@ -13,14 +13,57 @@ import '../utils/screen_size.dart';
 import '../utils/size_formatter.dart';
 
 class UserProfile extends StatelessWidget {
-  const UserProfile({Key? key}) : super(key: key);
+  final bool showSignIn;
+  final bool vertical;
+  const UserProfile({this.showSignIn = true, this.vertical = false, Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Observer(builder: (_) {
       bool traktConnected =
           Provider.of<UserStore>(context, listen: false).traktStatus;
-      UserStore userStore = Provider.of<UserStore>(context);
+      UserStore userStore = Provider.of<UserStore>(context, listen: false);
+      if (vertical) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            if (userStore.user?.id != null)
+              randomAvatar(
+                userStore.user!.id,
+                width: ScreenSize.getPercentOfWidth(context, 0.08),
+                height: ScreenSize.getPercentOfWidth(context, 0.08),
+              ),
+            if (userStore.user == null)
+              randomAvatar(
+                SizeFormatter.getRandomString(10),
+                width: ScreenSize.getPercentOfWidth(context, 0.08),
+                height: ScreenSize.getPercentOfWidth(context, 0.08),
+              ),
+            SizedBox(
+              width: 8,
+            ),
+            Text(
+              userStore.user?.name ?? Strings.anonymous,
+              style: TextStyle(
+                fontSize: 20,
+              ),
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(Strings.trakt),
+                Padding(padding: EdgeInsets.all(2)),
+                Icon(
+                  Icons.circle,
+                  color: traktConnected ? Colors.green : Colors.red,
+                  size: 12,
+                ),
+              ],
+            ),
+          ],
+        );
+      }
 
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -69,7 +112,7 @@ class UserProfile extends StatelessWidget {
               ),
             ],
           ),
-          if (userStore.user != null)
+          if (userStore.user != null && showSignIn)
             IconButton(
               onPressed: () {
                 Style.showConfirmationDialog(
@@ -80,7 +123,7 @@ class UserProfile extends StatelessWidget {
               },
               icon: Icon(Icons.logout_rounded),
             ),
-          if (userStore.guestLogin)
+          if (userStore.guestLogin && showSignIn)
             RoundedButton(
               child: Text(Strings.signIn),
               onPressed: () => logout(context),

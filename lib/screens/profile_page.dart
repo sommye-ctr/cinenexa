@@ -1,8 +1,3 @@
-import 'package:adaptive_theme/adaptive_theme.dart';
-import 'package:cinenexa/resources/asset.dart';
-import 'package:cinenexa/screens/extensions_page.dart';
-import 'package:cinenexa/utils/size_formatter.dart';
-import 'package:cinenexa/widgets/rounded_button.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,16 +7,19 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
-import 'package:random_avatar/random_avatar.dart';
+
+import 'package:cinenexa/resources/asset.dart';
 import 'package:cinenexa/resources/strings.dart';
 import 'package:cinenexa/resources/style.dart';
-import 'package:cinenexa/screens/intro_page.dart';
+import 'package:cinenexa/screens/extensions_page.dart';
 import 'package:cinenexa/screens/settings_page.dart';
 import 'package:cinenexa/store/user/user_store.dart';
 import 'package:cinenexa/utils/screen_size.dart';
+
 import '../components/mobile/home_bottom_nav_bar.dart';
 import '../resources/settings_tile_obj.dart';
 import '../widgets/user_profile.dart';
+import '../widgets/user_stat_card.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -194,54 +192,26 @@ class _ProfilePageState extends State<ProfilePage> {
             scrollDirection: Axis.horizontal,
             physics: BouncingScrollPhysics(),
             children: [
-              _buildStatCard(
-                  userStore.userStats!.moviesWatched, Strings.watchedMovies),
-              _buildStatCard(
-                  userStore.userStats!.showsWatched, Strings.watchedShows),
-              _buildStatCard(
-                  userStore.userStats!.moviesMinutes, Strings.minSpentMovies),
-              _buildStatCard(
-                  userStore.userStats!.showsMinutes, Strings.minSpentShows),
+              UserStatCard(
+                title: userStore.userStats!.moviesWatched,
+                heading: Strings.watchedMovies,
+              ),
+              UserStatCard(
+                title: userStore.userStats!.showsWatched,
+                heading: Strings.watchedShows,
+              ),
+              UserStatCard(
+                title: userStore.userStats!.moviesMinutes,
+                heading: Strings.minSpentMovies,
+              ),
+              UserStatCard(
+                title: userStore.userStats!.showsMinutes,
+                heading: Strings.minSpentShows,
+              ),
             ],
           ),
         );
       },
-    );
-  }
-
-  Widget _buildStatCard(int title, String heading) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(Style.largeRoundEdgeRadius),
-      ),
-      child: Padding(
-        padding: EdgeInsets.only(
-          top: 4,
-          bottom: 4,
-          right: ScreenSize.getPercentOfWidth(context, 0.1),
-          left: ScreenSize.getPercentOfWidth(context, 0.1),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              title.toString(),
-              style: TextStyle(
-                fontSize: 35,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              heading,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 18,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 

@@ -65,6 +65,39 @@ class Style {
     ),
   ];
 
+  static List<SettingsTileObj> tvSettingTiles = [
+    SettingsTileObj(
+      Strings.connectTrakt,
+      Icons.merge,
+      Color.fromRGBO(255, 191, 105, 1),
+    ),
+    SettingsTileObj(
+      Strings.syncInstalledExt,
+      Icons.sync_rounded,
+      Color.fromRGBO(236, 192, 192, 1),
+    ),
+    SettingsTileObj(
+      Strings.seekDuration,
+      Icons.play_arrow_rounded,
+      Color.fromRGBO(203, 243, 240, 1),
+    ),
+    SettingsTileObj(
+      Strings.defaultFit,
+      Icons.screen_rotation_alt_rounded,
+      Color.fromRGBO(233, 196, 106, 1),
+    ),
+    SettingsTileObj(
+      Strings.subtitle,
+      Icons.closed_caption_off_rounded,
+      Color.fromRGBO(255, 159, 28, 1),
+    ),
+    SettingsTileObj(
+      Strings.logout,
+      Icons.logout_rounded,
+      Color.fromRGBO(46, 196, 182, 1),
+    ),
+  ];
+
   static ThemeData themeData = ThemeData(
       primarySwatch: Colors.orange,
       brightness: Brightness.light,
@@ -262,7 +295,10 @@ class Style {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (leading != null) leading,
-              Text(title),
+              SizedBox(
+                height: 2,
+              ),
+              Text(title, textAlign: TextAlign.center),
             ],
           ),
         ),

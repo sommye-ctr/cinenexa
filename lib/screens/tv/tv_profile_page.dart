@@ -6,9 +6,10 @@ import 'package:cinenexa/utils/screen_size.dart';
 import 'package:cinenexa/widgets/tv_horizontal_list.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
+import 'package:provider/provider.dart';
 import '../../resources/style.dart';
-import '../../store/home/home_store.dart';
 import '../../store/home/tv_home_store.dart';
+import '../../store/user/user_store.dart';
 import '../../widgets/user_profile.dart';
 
 class TvProfilePage extends StatefulWidget {
@@ -29,7 +30,7 @@ class _TvProfilePageState extends State<TvProfilePage> {
   void initState() {
     tvListStore = TvListStore(
       focusChange: (item) {},
-      items: Style.settingTiles.asObservable(),
+      items: Style.tvSettingTiles.asObservable(),
     );
     widget.clickEvents.listen((event) {
       switch (event) {
@@ -60,15 +61,19 @@ class _TvProfilePageState extends State<TvProfilePage> {
     return Padding(
       padding: EdgeInsets.only(
         right: TvHomeFirst.CHILDREN_PADDING_RIGHT,
-        top: TvHomeFirst.CHILDREN_PADDING_TOP,
+        top: 4,
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          UserProfile(),
+          UserProfile(
+            showSignIn: false,
+            vertical: true,
+          ),
           Style.getVerticalSpacing(context: context),
           TvHorizontalList<SettingsTileObj>.fromInititalValues(
             heading: "",
-            widthPercentItem: 0.1,
+            widthPercentItem: 0.12,
             height: ScreenSize.getPercentOfHeight(context, 0.24),
             tvListStore: tvListStore,
             direction: Axis.horizontal,
@@ -85,7 +90,8 @@ class _TvProfilePageState extends State<TvProfilePage> {
                 ),
               );
             },
-          )
+          ),
+          Text("Trakt info will show up here"),
         ],
       ),
     );

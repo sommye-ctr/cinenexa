@@ -189,6 +189,7 @@ class Strings {
   static const String watchedShows = "Shows\nWatched";
   static const String minSpentMovies = "Minutes spent\non movies";
   static const String minSpentShows = "Minutes spent\non shows";
+  static const String logout = "Logout";
   static const String logoutConfirm = "You are going to logout. Are you sure?";
   static const String reportBug = "Report a bug";
   static const String rateCineNexa = "Rate CineNexa";
