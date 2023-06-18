@@ -96,6 +96,11 @@ class Style {
       Icons.logout_rounded,
       Color.fromRGBO(46, 196, 182, 1),
     ),
+    SettingsTileObj(
+      Strings.rateCineNexa,
+      Icons.star_rounded,
+      Color.fromRGBO(255, 159, 28, 1),
+    ),
   ];
 
   static ThemeData themeData = ThemeData(

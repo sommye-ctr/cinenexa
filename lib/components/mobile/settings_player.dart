@@ -15,7 +15,7 @@ class SettingsPlayer extends StatefulWidget {
 
 class _SettingsPlayerState extends State<SettingsPlayer> {
   int? seekDuration;
-  int? defaultFit, maxCache;
+  int? defaultFit;
 
   late Database database;
 
@@ -29,7 +29,6 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
   void _fetch() async {
     seekDuration = await database.getSeekDuration();
     defaultFit = await database.getDefaultFit();
-    maxCache = await database.getMaxCache();
     if (mounted) setState(() {});
   }
 
@@ -106,56 +105,6 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                             if (value != Strings.fitTypes[defaultFit!]) {
                               defaultFit = Strings.fitTypes.indexOf(value!);
                               await database.addDefaultFit(defaultFit!);
-                              setState(() {});
-                            }
-                          },
-                        ),
-                      )
-                    : null,
-              ),
-              Style.getListTile(
-                context: context,
-                title: Strings.maxCacheSize,
-                subtitle: Strings.maxCacheSub,
-                trailing: maxCache != null
-                    ? /* Container(
-                        width: ScreenSize.getPercentOfWidth(context, 0.2),
-                        child: CustomCheckBoxList(
-                          children: Strings.maxCacheSizes,
-                          type: CheckBoxListType.grid,
-                          selectedItems: [defaultFit!],
-                          alwaysEnabled: true,
-                          delegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                          ),
-                          singleSelect: true,
-                          onSelectionAdded: (values) async {
-                            await database.addMaxCache(
-                                Strings.maxCacheSizes.indexOf(values.first));
-                            Style.showToast(
-                                context: context,
-                                text: Strings.restartAppToEffective);
-                          },
-                        ),
-                      ) */
-                    DropdownButtonHideUnderline(
-                        child: DropdownButton<String>(
-                          alignment: Alignment.centerLeft,
-                          borderRadius:
-                              BorderRadius.circular(Style.largeRoundEdgeRadius),
-                          value: Strings.maxCacheSizes[maxCache!],
-                          menuMaxHeight:
-                              ScreenSize.getPercentOfHeight(context, 0.25),
-                          items: Strings.maxCacheSizes.map((e) {
-                            return DropdownMenuItem(
-                              child: Text(e),
-                              value: e,
-                            );
-                          }).toList(),
-                          onChanged: (value) async {
-                            if (value != Strings.maxCacheSizes[maxCache!]) {
-                              maxCache = Strings.maxCacheSizes.indexOf(value!);
-                              await database.addMaxCache(maxCache!);
                               setState(() {});
                             }
                           },

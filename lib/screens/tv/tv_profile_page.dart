@@ -3,13 +3,15 @@ import 'package:cinenexa/screens/tv/tv_home_first.dart';
 import 'package:cinenexa/store/tv_list/tv_list_store.dart';
 import 'package:cinenexa/utils/keycode.dart';
 import 'package:cinenexa/utils/screen_size.dart';
+import 'package:cinenexa/utils/settings_indexer.dart';
 import 'package:cinenexa/widgets/tv_horizontal_list.dart';
 import 'package:flutter/material.dart';
+import 'package:in_app_review/in_app_review.dart';
 import 'package:mobx/mobx.dart';
-import 'package:provider/provider.dart';
+import '../../resources/strings.dart';
 import '../../resources/style.dart';
+import '../../services/local/database.dart';
 import '../../store/home/tv_home_store.dart';
-import '../../store/user/user_store.dart';
 import '../../widgets/user_profile.dart';
 
 class TvProfilePage extends StatefulWidget {
@@ -24,14 +26,32 @@ class TvProfilePage extends StatefulWidget {
 }
 
 class _TvProfilePageState extends State<TvProfilePage> {
+  final int SEEK_INDEX = 2;
+  final int FIT_INDEX = 3;
+  Database database = Database();
+
   late TvListStore<SettingsTileObj> tvListStore;
+  late List<VoidCallback> onClicks;
+  late int seekDuration;
+  late int defaultFit;
 
   @override
   void initState() {
+    _fetch();
     tvListStore = TvListStore(
       focusChange: (item) {},
       items: Style.tvSettingTiles.asObservable(),
     );
+    onClicks = [
+      () {}, //trakt
+      () {}, //sync
+      _onSeek, // seek
+      _onFit, // default fit
+      () {}, // subtitle
+      () {}, //logout
+      InAppReview.instance.openStoreListing, //rate
+    ];
+
     widget.clickEvents.listen((event) {
       switch (event) {
         case KEY_RIGHT:
@@ -50,10 +70,20 @@ class _TvProfilePageState extends State<TvProfilePage> {
           }
           tvListStore.changeIndex(KEY_LEFT);
           break;
+        case KEY_CENTER:
+          if (widget.homeStore.railFocused) return;
+          onClicks[tvListStore.focusedIndex].call();
+          break;
         default:
       }
     });
     super.initState();
+  }
+
+  void _fetch() async {
+    seekDuration = await database.getSeekDuration();
+    defaultFit = await database.getDefaultFit();
+    if (mounted) setState(() {});
   }
 
   @override
@@ -77,10 +107,16 @@ class _TvProfilePageState extends State<TvProfilePage> {
             height: ScreenSize.getPercentOfHeight(context, 0.24),
             tvListStore: tvListStore,
             direction: Axis.horizontal,
-            onWidgetBuild: (item) {
+            onWidgetBuildIndex: (item, index) {
+              String title = item.string;
+              if (index == SEEK_INDEX) {
+                title += "\n${seekDuration.toString()}";
+              } else if (index == FIT_INDEX) {
+                title += "\n${Strings.fitTypes[defaultFit]}";
+              }
               return Style.getCardListTile(
                 context: context,
-                title: item.string,
+                title: title,
                 leading: CircleAvatar(
                   child: Icon(
                     item.icon,
@@ -95,5 +131,22 @@ class _TvProfilePageState extends State<TvProfilePage> {
         ],
       ),
     );
+  }
+
+  void _onSeek() {
+    if (seekDuration == 10) {
+      seekDuration = 30;
+      database.addSeekDuration(30);
+    } else {
+      seekDuration = 10;
+      database.addSeekDuration(10);
+    }
+    setState(() {});
+  }
+
+  void _onFit() {
+    defaultFit = SettingsIndexer.getToggledFitIndex(defaultFit);
+    database.addDefaultFit(defaultFit);
+    setState(() {});
   }
 }

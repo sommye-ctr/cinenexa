@@ -35,6 +35,13 @@ class SettingsIndexer {
     throw UnimplementedError("No fit index found");
   }
 
+  static int getToggledFitIndex(int index) {
+    if (index == 2) {
+      return 0;
+    }
+    return index + 1;
+  }
+
   static double getSpeed(int index) {
     double speed = 1;
     if (index == 0) {

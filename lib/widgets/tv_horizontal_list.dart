@@ -17,6 +17,7 @@ class TvHorizontalList<T> extends StatefulWidget {
   final Axis direction;
 
   final Widget Function(T item)? onWidgetBuild;
+  final Widget Function(T item, int index)? onWidgetBuildIndex;
 
   TvHorizontalList({
     Key? key,
@@ -25,6 +26,7 @@ class TvHorizontalList<T> extends StatefulWidget {
     required this.widthPercentItem,
     required this.tvListStore,
     this.onWidgetBuild,
+    this.onWidgetBuildIndex,
     this.direction = Axis.horizontal,
   })  : limitItems = null,
         super(key: key);
@@ -37,6 +39,7 @@ class TvHorizontalList<T> extends StatefulWidget {
     this.height,
     this.limitItems,
     this.onWidgetBuild,
+    this.onWidgetBuildIndex,
     this.direction = Axis.horizontal,
   }) : super(key: key);
 
@@ -87,7 +90,7 @@ class _TvHorizontalListState<T> extends State<TvHorizontalList<T>> {
 
   Widget _buildContent() {
     if (widget.tvListStore.items!.isEmpty) {
-      if (widget.onWidgetBuild == null)
+      if (widget.onWidgetBuild == null && widget.onWidgetBuildIndex == null)
         return _buildList(
           (context, index) {
             return Style.getMovieTileBackdropPlaceHolder(
@@ -113,6 +116,13 @@ class _TvHorizontalListState<T> extends State<TvHorizontalList<T>> {
               return Transform.scale(
                 scale: focused ? 1 : 0.9,
                 child: widget.onWidgetBuild!(widget.tvListStore.items![index]),
+              );
+            }
+            if (widget.onWidgetBuildIndex != null) {
+              return Transform.scale(
+                scale: focused ? 1 : 0.9,
+                child: widget.onWidgetBuildIndex!(
+                    widget.tvListStore.items![index], index),
               );
             }
             return Style.getTvMovieTile(
