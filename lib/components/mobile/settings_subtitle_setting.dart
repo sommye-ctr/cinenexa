@@ -8,6 +8,14 @@ import 'package:flutter/material.dart';
 import '../../services/local/database.dart';
 
 class SubtitleSettings extends StatefulWidget {
+  static const double FONT_SIZE_MIN = 10;
+  static const double FONT_SIZE_MAX = 30;
+  static const double POSITION_MIN = 20;
+  static const double POSITION_MAX = 200;
+
+  static const int POSITION_STEP = 10;
+  static const int FONT_SIZE_STEP = 5;
+
   static const String routeName = "/subtitle_settings";
   const SubtitleSettings({Key? key}) : super(key: key);
 
@@ -16,11 +24,6 @@ class SubtitleSettings extends StatefulWidget {
 }
 
 class _SubtitleSettingsState extends State<SubtitleSettings> {
-  final double FONT_SIZE_MIN = 10;
-  final double FONT_SIZE_MAX = 30;
-  final double POSITION_MIN = 20;
-  final double POSITION_MAX = 200;
-
   int _fontSize = 14;
   int _position = 20;
   bool enableBg = false;
@@ -153,8 +156,11 @@ class _SubtitleSettingsState extends State<SubtitleSettings> {
           IconButton(
             icon: Icon(Icons.remove),
             onPressed: () async {
-              final newValue = _position - 10;
-              _position = newValue.clamp(POSITION_MIN, POSITION_MAX).toInt();
+              final newValue = _position - SubtitleSettings.POSITION_STEP;
+              _position = newValue
+                  .clamp(SubtitleSettings.POSITION_MIN,
+                      SubtitleSettings.POSITION_MAX)
+                  .toInt();
               await database.addSubPosition(_position);
               setState(() {});
             },
@@ -163,8 +169,11 @@ class _SubtitleSettingsState extends State<SubtitleSettings> {
           IconButton(
             icon: Icon(Icons.add),
             onPressed: () async {
-              final newValue = _position + 10;
-              _position = newValue.clamp(POSITION_MIN, POSITION_MAX).toInt();
+              final newValue = _position + SubtitleSettings.POSITION_STEP;
+              _position = newValue
+                  .clamp(SubtitleSettings.POSITION_MIN,
+                      SubtitleSettings.POSITION_MAX)
+                  .toInt();
               await database.addSubPosition(_position);
               setState(() {});
             },
@@ -185,8 +194,11 @@ class _SubtitleSettingsState extends State<SubtitleSettings> {
           IconButton(
             icon: Icon(Icons.remove),
             onPressed: () async {
-              final newValue = _fontSize - 5;
-              _fontSize = newValue.clamp(FONT_SIZE_MIN, FONT_SIZE_MAX).toInt();
+              final newValue = _fontSize - SubtitleSettings.FONT_SIZE_STEP;
+              _fontSize = newValue
+                  .clamp(SubtitleSettings.FONT_SIZE_MIN,
+                      SubtitleSettings.FONT_SIZE_MAX)
+                  .toInt();
               await database.addSubFontSize(_fontSize);
               setState(() {});
             },
@@ -195,8 +207,11 @@ class _SubtitleSettingsState extends State<SubtitleSettings> {
           IconButton(
             icon: Icon(Icons.add),
             onPressed: () async {
-              final newValue = _fontSize + 5;
-              _fontSize = newValue.clamp(FONT_SIZE_MIN, FONT_SIZE_MAX).toInt();
+              final newValue = _fontSize + SubtitleSettings.FONT_SIZE_STEP;
+              _fontSize = newValue
+                  .clamp(SubtitleSettings.FONT_SIZE_MIN,
+                      SubtitleSettings.FONT_SIZE_MAX)
+                  .toInt();
               await database.addSubFontSize(_fontSize);
               setState(() {});
             },

@@ -269,12 +269,14 @@ class Style {
     Widget? trailing,
     VoidCallback? onTap,
     bool enabled = true,
+    bool transparent = false,
   }) {
     return Container(
       width: ScreenSize.getPercentOfWidth(context, 0.95),
       margin:
           EdgeInsets.only(bottom: ScreenSize.getPercentOfHeight(context, 0.01)),
       child: ListTile(
+        tileColor: transparent ? Colors.transparent : null,
         title: Text(title),
         subtitle: subtitle != null ? Text(subtitle) : null,
         leading: leading,

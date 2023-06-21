@@ -1,3 +1,4 @@
+import 'package:cinenexa/components/tv/tv_subtitle_settings.dart';
 import 'package:cinenexa/resources/settings_tile_obj.dart';
 import 'package:cinenexa/screens/tv/tv_home_first.dart';
 import 'package:cinenexa/store/tv_list/tv_list_store.dart';
@@ -47,7 +48,7 @@ class _TvProfilePageState extends State<TvProfilePage> {
       () {}, //sync
       _onSeek, // seek
       _onFit, // default fit
-      () {}, // subtitle
+      _onSubtitle, // subtitle
       () {}, //logout
       InAppReview.instance.openStoreListing, //rate
     ];
@@ -148,5 +149,14 @@ class _TvProfilePageState extends State<TvProfilePage> {
     defaultFit = SettingsIndexer.getToggledFitIndex(defaultFit);
     database.addDefaultFit(defaultFit);
     setState(() {});
+  }
+
+  void _onSubtitle() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return TvSubtitleSettings();
+      },
+    );
   }
 }

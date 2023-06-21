@@ -15,9 +15,10 @@ class TvDrawer extends StatelessWidget {
         backgroundColor: Colors.transparent,
         child: Flex(
           direction: Axis.horizontal,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Flexible(flex: 3, child: leftChild),
-            Flexible(flex: 5, child: rightChild)
+            Flexible(flex: 3, child: Center(child: leftChild)),
+            Flexible(flex: 5, child: Center(child: rightChild))
           ],
         ),
       ),

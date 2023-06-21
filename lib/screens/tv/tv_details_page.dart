@@ -181,7 +181,6 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
             _onAddRemFavoritesClicked(context);
             break;
           case PLAY_BUTTON:
-            print("h");
             LinkOpener.navigateToVideoPlayer(
               stream: ExtensionStream.url(
                   url:
