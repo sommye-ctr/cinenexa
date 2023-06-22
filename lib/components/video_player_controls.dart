@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:better_player/better_player.dart';
 import 'package:cinenexa/components/video_player_progress_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_meedu_videoplayer/meedu_player.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:glass/glass.dart';
 import 'package:provider/provider.dart';
@@ -36,7 +37,7 @@ import '../../widgets/rounded_button.dart';
 import 'details_episode_tile.dart';
 
 class VideoPlayerControls extends StatefulWidget {
-  final MeeduPlayerController controller;
+  final BetterPlayerController controller;
 
   final int? id;
   final BaseModel? baseModel;
@@ -50,14 +51,12 @@ class VideoPlayerControls extends StatefulWidget {
   final bool? initialDark;
   final ShowHistory? showHistory;
   final TorrentStreamer? torrentStreamer;
-  final String streamUrl;
 
   final ExtensionStream stream;
   const VideoPlayerControls({
     Key? key,
     required this.controller,
     required this.stream,
-    required this.streamUrl,
     this.baseModel,
     this.id,
     this.movie,
@@ -171,14 +170,6 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
                             icon: Icons.lock_outline_rounded,
                             onTap: () {
                               setState(() {
-                                widget.controller
-                                    .changeEnabledControls(EnabledControls(
-                                  brightnessSwipes: true,
-                                  doubleTapToSeek: true,
-                                  seekSwipes: true,
-                                  onLongPressSpeedUp: true,
-                                  volumeSwipes: true,
-                                ));
                                 playerStore.setLocked(false);
                               });
                             },
@@ -255,11 +246,15 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
 
   Future<bool> _onBack() async {
     scrobbleManager?.exit();
-    if (widget.initialDark != null && !widget.initialDark!)
-      AdaptiveTheme.of(context).setLight();
+    /*  if (widget.initialDark != null && !widget.initialDark!)
+      AdaptiveTheme.of(context).setLight(); */
     if (playerStore.casting) chromeCastController?.endSession();
 
+    /*  try {
+      widget.controller.exitFullScreen();
+    } catch (e) {} */
     widget.torrentStreamer?.stopStream();
+    widget.controller.exitFullScreen();
     return true;
   }
 
@@ -334,7 +329,7 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
                     type: widget.baseModel!.type == BaseModelType.movie
                         ? ChromeCastMediaType.movie
                         : ChromeCastMediaType.show,
-                    url: widget.streamUrl,
+                    url: widget.controller.betterPlayerDataSource!.url,
                     title: widget.baseModel!.title!,
                     autoplay: true,
                     image: Utils.getPosterUrl(widget.baseModel!.posterPath!),
@@ -471,13 +466,6 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
           _buildControlButton(
             icon: Icons.lock_open_rounded,
             onTap: () {
-              widget.controller.changeEnabledControls(EnabledControls(
-                brightnessSwipes: false,
-                doubleTapToSeek: false,
-                seekSwipes: false,
-                onLongPressSpeedUp: false,
-                volumeSwipes: false,
-              ));
               playerStore.setLocked(true);
             },
             size: 25,
@@ -677,19 +665,18 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
 
     playerStore.setFitIndex(res.keys.first);
     widget.controller.pause();
-    widget.controller.onVideoFitChange(res.values.first);
+    widget.controller.setOverriddenFit(res.values.first);
     widget.controller.play();
   }
 
   void _speedChanged(String value) {
     Map<int, double> result = SettingsIndexer.getSpeedFromValue(value);
     playerStore.setSpeedIndex(result.keys.first);
-    widget.controller.setPlaybackSpeed(result.values.first);
+    widget.controller.setSpeed(result.values.first);
   }
 
   Widget _buildMainControls() {
     return Observer(builder: (_) {
-      playerStore.playing;
       if (playerStore.buffering) {
         hideTimer?.cancel();
       }
@@ -712,12 +699,12 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
               alignment: Alignment.center,
               children: [
                 _buildControlButton(
-                  icon: playerStore.playing
+                  icon: widget.controller.isPlaying()!
                       ? Icons.pause_rounded
                       : Icons.play_arrow_rounded,
                   onTap: () {
                     setState(() {
-                      playerStore.playing
+                      widget.controller.isPlaying()!
                           ? widget.controller.pause()
                           : widget.controller.play();
                     });

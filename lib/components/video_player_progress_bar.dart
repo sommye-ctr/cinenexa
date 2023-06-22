@@ -1,6 +1,6 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
+import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_meedu_videoplayer/meedu_player.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
 import '../../store/player/player_store.dart';
@@ -8,7 +8,7 @@ import '../../utils/screen_size.dart';
 
 class VideoPlayerProgressBar extends StatefulWidget {
   final PlayerStore playerStore;
-  final MeeduPlayerController controller;
+  final BetterPlayerController controller;
   final VideoProgressBarController? progressBarController;
 
   const VideoPlayerProgressBar({

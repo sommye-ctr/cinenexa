@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:better_player/better_player.dart';
 import 'package:cinenexa/models/local/progress.dart';
 import 'package:cinenexa/models/local/show_history.dart';
 import 'package:cinenexa/services/local/database.dart';
@@ -9,7 +10,6 @@ import 'package:cinenexa/utils/settings_indexer.dart';
 import 'package:cinenexa/widgets/custom_back_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_meedu_videoplayer/meedu_player.dart';
 import '../components/video_player_controls.dart';
 import '../models/network/base_model.dart';
 import '../models/network/extensions/extension_stream.dart';
@@ -53,7 +53,8 @@ class VideoPlayerPage extends StatefulWidget {
 class _VideoPlayerPageState extends State<VideoPlayerPage> {
   bool loading = true;
 
-  late MeeduPlayerController controller;
+  late BetterPlayerConfiguration configuration;
+  late BetterPlayerController controller;
 
   int? fitIndex;
   bool? autoSubtitle;
@@ -64,9 +65,8 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
 
   TorrentStreamer? torrentStreamer;
   int? progress;
-  late String streamUrl;
 
-  StreamController<int> keyController = StreamController();
+  final GlobalKey betterPlayerKey = GlobalKey();
 
   @override
   void initState() {
@@ -84,7 +84,66 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
     subPosition = await database.getSubPosition();
 
     initalDark = AdaptiveTheme.of(context).mode == AdaptiveThemeMode.dark;
-    AdaptiveTheme.of(context).setDark();
+    //AdaptiveTheme.of(context).setDark();
+
+    configuration = BetterPlayerConfiguration(
+        allowedScreenSleep: false,
+        autoPlay: true,
+        autoDispose: true,
+        fullScreenByDefault: true,
+        expandToFill: true,
+        handleLifecycle: true,
+        fit: SettingsIndexer.getFit(fitIndex!),
+        looping: false,
+        errorBuilder: (context, errorMessage) {
+          return Center(
+            child: Text(errorMessage ?? "The player encountered an error"),
+          );
+        },
+        deviceOrientationsOnFullScreen: [
+          DeviceOrientation.landscapeLeft,
+          DeviceOrientation.landscapeRight
+        ],
+        deviceOrientationsAfterFullScreen: [
+          DeviceOrientation.portraitDown,
+          DeviceOrientation.portraitUp,
+        ],
+        eventListener: (p0) {
+          if (p0.betterPlayerEventType ==
+              BetterPlayerEventType.hideFullscreen) {
+            Navigator.pop(context);
+          }
+        },
+        subtitlesConfiguration: BetterPlayerSubtitlesConfiguration(
+          outlineEnabled: subBackground ?? false,
+          bottomPadding: subPosition?.toDouble() ?? 20,
+          fontSize: subFontSize?.toDouble() ?? 14,
+          fontFamily: "Poppins",
+          backgroundColor: (subBackground ?? false)
+              ? const Color(0xB8000000)
+              : Colors.transparent,
+        ),
+        controlsConfiguration: BetterPlayerControlsConfiguration(
+          playerTheme: BetterPlayerTheme.custom,
+          customControlsBuilder: (controller, onPlayerVisibilityChanged) =>
+              VideoPlayerControls(
+            controller: controller,
+            stream: widget.extensionStream,
+            baseModel: widget.baseModel,
+            episode: widget.episode,
+            season: widget.season,
+            movie: widget.movie,
+            show: widget.show,
+            progress: widget.progress,
+            id: widget.id,
+            fitIndex: fitIndex,
+            autoSubtitle: autoSubtitle,
+            detailsStore: widget.detailsStore,
+            initialDark: initalDark,
+            showHistory: widget.showHistory,
+            torrentStreamer: torrentStreamer,
+          ),
+        ));
 
     _getUrl();
   }
@@ -103,7 +162,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
           });
         },
         onServerReady: (url) {
-          streamUrl = url;
           _setController(url);
           setState(() {
             loading = false;
@@ -113,7 +171,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
       torrentStreamer?.startStream();
       return;
     }
-    streamUrl = widget.extensionStream.url!;
     _setController(widget.extensionStream.url!);
     setState(() {
       loading = false;
@@ -121,35 +178,15 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   }
 
   void _setController(String url) {
-    controller = MeeduPlayerController(
-      controlsStyle: ControlsStyle.custom,
-      loadingWidget: Container(),
-      autoHideControls: false,
-      errorText: "The player encountered an error",
-      initialFit: SettingsIndexer.getFit(fitIndex!),
-      excludeFocus: false,
-      screenManager: ScreenManager(
-        forceLandScapeInFullscreen: true,
-      ),
-      responsive: Responsive(
-        subtitleBg: subBackground ?? false,
-        subtitleSize: subFontSize?.toDouble() ?? 14,
-        subtitlePadding: subPosition?.toDouble() ?? 40,
+    controller = BetterPlayerController(
+      configuration,
+      betterPlayerDataSource: BetterPlayerDataSource.network(
+        url,
+        bufferingConfiguration: BetterPlayerBufferingConfiguration(
+          maxBufferMs: 240000,
+        ),
       ),
     );
-    controller.onFullscreenChanged.listen((event) {
-      if (!event) Navigator.pop(context);
-    });
-    controller.launchAsFullscreen(
-      context,
-      dataSource: DataSource(
-        type: DataSourceType.network,
-        source: url,
-      ),
-      autoplay: true,
-      looping: false,
-    );
-    controller.onClosedCaptionEnabled(true);
   }
 
   @override
@@ -191,28 +228,9 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
       );
     }
 
-    return MeeduVideoPlayer(
+    return BetterPlayer(
+      key: betterPlayerKey,
       controller: controller,
-      customControls: (context, controller, responsive) {
-        return VideoPlayerControls(
-          controller: controller,
-          streamUrl: streamUrl,
-          stream: widget.extensionStream,
-          baseModel: widget.baseModel,
-          episode: widget.episode,
-          season: widget.season,
-          movie: widget.movie,
-          show: widget.show,
-          progress: widget.progress,
-          id: widget.id,
-          fitIndex: fitIndex,
-          autoSubtitle: autoSubtitle,
-          detailsStore: widget.detailsStore,
-          initialDark: initalDark,
-          showHistory: widget.showHistory,
-          torrentStreamer: torrentStreamer,
-        );
-      },
     );
   }
 }
