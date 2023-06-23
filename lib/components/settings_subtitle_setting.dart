@@ -189,7 +189,7 @@ class _SubtitleSettingsState extends State<SubtitleSettings> {
               _fontSize = newValue.clamp(FONT_SIZE_MIN, FONT_SIZE_MAX).toInt();
               await database.addSubFontSize(_fontSize);
               setState(() {});
-            },
+      },
           ),
           Text('${_fontSize}'),
           IconButton(
