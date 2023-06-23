@@ -35,6 +35,7 @@ class Database {
   static const String _SUBTITLE_FONT_SIZE = "SUBTITLE_FONT_SIZE";
   static const String _SUBTITLE_POSITION = "SUBTITLE_POSITION";
   static const String _SUBTITLE_BG = "SUBTITLE_BG";
+  static const String _SUBTITLE_OPACITY = "SUBTITLE_OPACITY";
 
   late Isar isar;
 
@@ -97,6 +98,11 @@ class Database {
     await prefs.setBool(_SUBTITLE_BG, enabled);
   }
 
+  Future addSubBgOpacity(int value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_SUBTITLE_OPACITY, value);
+  }
+
   Future addDefaultFit(int indexFit) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_DEFAULT_FIT, indexFit);
@@ -145,6 +151,11 @@ class Database {
   Future<bool> getSubBg() async {
     final prefs = await SharedPreferences.getInstance();
     return (prefs.getBool(_SUBTITLE_BG) ?? false);
+  }
+
+  Future<int> getSubOpacity() async {
+    final prefs = await SharedPreferences.getInstance();
+    return (prefs.getInt(_SUBTITLE_OPACITY) ?? 100);
   }
 
   Future<int> getDefaultFit() async {

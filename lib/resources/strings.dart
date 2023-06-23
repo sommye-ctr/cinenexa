@@ -244,6 +244,8 @@ class Strings {
   static const String subtitlePreview = "Subtitles look like this";
   static const String backGround = "Background";
   static const String position = "Position";
+  static const String opacity = "Opacity";
+
   static const String fontSize = "Font Size";
 
   //video player

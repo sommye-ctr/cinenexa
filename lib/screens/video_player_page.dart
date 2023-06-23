@@ -62,6 +62,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   bool? subBackground;
   int? subFontSize;
   int? subPosition;
+  int? subOpacity;
 
   TorrentStreamer? torrentStreamer;
   int? progress;
@@ -82,6 +83,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
     subBackground = await database.getSubBg();
     subFontSize = await database.getSubFontSize();
     subPosition = await database.getSubPosition();
+    subOpacity = await database.getSubOpacity();
 
     initalDark = AdaptiveTheme.of(context).mode == AdaptiveThemeMode.dark;
     //AdaptiveTheme.of(context).setDark();
@@ -120,7 +122,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
           fontSize: subFontSize?.toDouble() ?? 14,
           fontFamily: "Poppins",
           backgroundColor: (subBackground ?? false)
-              ? const Color(0xB8000000)
+              ? Colors.black.withOpacity((subOpacity ?? 100) / 100)
               : Colors.transparent,
         ),
         controlsConfiguration: BetterPlayerControlsConfiguration(
@@ -228,9 +230,12 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
       );
     }
 
-    return BetterPlayer(
-      key: betterPlayerKey,
-      controller: controller,
+    return Theme(
+      data: AdaptiveTheme.of(context).darkTheme,
+      child: BetterPlayer(
+        key: betterPlayerKey,
+        controller: controller,
+      ),
     );
   }
 }

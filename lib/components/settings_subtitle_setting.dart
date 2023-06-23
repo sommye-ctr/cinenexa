@@ -20,11 +20,14 @@ class _SubtitleSettingsState extends State<SubtitleSettings> {
   final double FONT_SIZE_MAX = 30;
   final double POSITION_MIN = 20;
   final double POSITION_MAX = 200;
+  final double OPACITY_MAX = 100;
+  final double OPACITY_MIN = 10;
 
   int _fontSize = 14;
   int _position = 20;
   bool enableBg = false;
   bool autoSubtitle = false;
+  int opacity = 100;
 
   final Database database = Database();
 
@@ -39,6 +42,7 @@ class _SubtitleSettingsState extends State<SubtitleSettings> {
     _position = await database.getSubPosition();
     enableBg = await database.getSubBg();
     autoSubtitle = await database.getAutoSelectSubtitle();
+    opacity = await database.getSubOpacity();
     if (mounted) setState(() {});
   }
 
@@ -96,7 +100,9 @@ class _SubtitleSettingsState extends State<SubtitleSettings> {
                     textScaleFactor: MediaQuery.of(context).size.aspectRatio,
                     style: TextStyle(
                       fontSize: _fontSize.toDouble(),
-                      backgroundColor: enableBg ? Colors.black : null,
+                      backgroundColor: enableBg
+                          ? Colors.black.withOpacity(opacity / 100)
+                          : null,
                     ),
                   ),
                 ),
@@ -105,6 +111,7 @@ class _SubtitleSettingsState extends State<SubtitleSettings> {
             Style.getVerticalSpacing(context: context),
             _buildFontSize(),
             _buildPosition(),
+            _buildOpacity(),
             _buildBgColor(),
             Style.getVerticalSpacing(context: context),
             Divider(),
@@ -138,6 +145,38 @@ class _SubtitleSettingsState extends State<SubtitleSettings> {
           await database.addSubBgEnabled(value);
           setState(() {});
         },
+      ),
+    );
+  }
+
+  Widget _buildOpacity() {
+    return Style.getListTile(
+      context: context,
+      title: Strings.opacity,
+      trailing: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            icon: Icon(Icons.remove),
+            onPressed: () async {
+              final newValue = opacity - 10;
+              opacity = newValue.clamp(OPACITY_MIN, OPACITY_MAX).toInt();
+              await database.addSubBgOpacity(opacity);
+              setState(() {});
+            },
+          ),
+          Text('${opacity}'),
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () async {
+              final newValue = opacity + 10;
+              opacity = newValue.clamp(OPACITY_MIN, OPACITY_MAX).toInt();
+              await database.addSubBgOpacity(opacity);
+              setState(() {});
+            },
+          ),
+        ],
       ),
     );
   }
@@ -189,7 +228,7 @@ class _SubtitleSettingsState extends State<SubtitleSettings> {
               _fontSize = newValue.clamp(FONT_SIZE_MIN, FONT_SIZE_MAX).toInt();
               await database.addSubFontSize(_fontSize);
               setState(() {});
-      },
+            },
           ),
           Text('${_fontSize}'),
           IconButton(

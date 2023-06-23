@@ -131,114 +131,120 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _onBack,
-      child: Scaffold(
-        key: scaffoldKey,
-        drawerEnableOpenDragGesture: false,
-        endDrawerEnableOpenDragGesture: false,
-        endDrawer: Drawer(
-          backgroundColor: Colors.transparent,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: drawerWidget,
+    return Theme(
+      data: AdaptiveTheme.of(context).darkTheme,
+      child: WillPopScope(
+        onWillPop: _onBack,
+        child: Scaffold(
+          key: scaffoldKey,
+          drawerEnableOpenDragGesture: false,
+          endDrawerEnableOpenDragGesture: false,
+          endDrawer: Drawer(
+            backgroundColor: Colors.transparent,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: drawerWidget,
+            ),
+          ).asGlass(
+            blurX: 20,
+            blurY: 20,
+            clipBorderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
           ),
-        ).asGlass(
-          blurX: 20,
-          blurY: 20,
-          clipBorderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
-        ),
-        backgroundColor: Colors.transparent,
-        body: Observer(
-          builder: (_) {
-            return GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: () {
-                playerStore.showControls
-                    ? _hideControls()
-                    : _cancelAndRestartTimer();
-              },
-              child: Observer(
-                builder: (context) {
-                  if (playerStore.showControls) {
-                    if (playerStore.locked) {
-                      return Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Align(
-                          alignment: Alignment.bottomCenter,
-                          child: _buildControlButton(
-                            icon: Icons.lock_outline_rounded,
-                            onTap: () {
-                              setState(() {
-                                playerStore.setLocked(false);
-                              });
-                            },
-                            size: 25,
-                            overlay: true,
-                            text: Strings.locked,
+          backgroundColor: Colors.transparent,
+          body: Observer(
+            builder: (_) {
+              return GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: () {
+                  playerStore.showControls
+                      ? _hideControls()
+                      : _cancelAndRestartTimer();
+                },
+                child: Observer(
+                  builder: (context) {
+                    if (playerStore.showControls) {
+                      if (playerStore.locked) {
+                        return Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: _buildControlButton(
+                              icon: Icons.lock_outline_rounded,
+                              onTap: () {
+                                setState(() {
+                                  playerStore.setLocked(false);
+                                });
+                              },
+                              size: 25,
+                              overlay: true,
+                              text: Strings.locked,
+                            ),
                           ),
-                        ),
-                      );
-                    }
-                    return Stack(
-                      children: [
-                        Container(
-                          height: double.infinity,
-                          width: double.infinity,
-                          color: Colors.black54,
-                        ),
-                        LayoutBuilder(
-                          builder: (p0, p1) {
-                            if (playerStore.casting) {
-                              return Stack(
+                        );
+                      }
+                      return Stack(
+                        children: [
+                          Container(
+                            height: double.infinity,
+                            width: double.infinity,
+                            color: Colors.black54,
+                          ),
+                          LayoutBuilder(
+                            builder: (p0, p1) {
+                              if (playerStore.casting) {
+                                return Stack(
+                                  children: [
+                                    Center(
+                                      child:
+                                          Text("Casting on another device..."),
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        _buildTopPanel(),
+                                        _castingControls(),
+                                      ],
+                                    ),
+                                  ],
+                                );
+                              }
+                              return Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Center(
-                                    child: Text("Casting on another device..."),
-                                  ),
+                                  _buildTopPanel(),
+                                  _buildMainControls(),
                                   Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: [
-                                      _buildTopPanel(),
-                                      _castingControls(),
+                                      VideoPlayerProgressBar(
+                                        controller: widget.controller,
+                                        playerStore: playerStore,
+                                      ),
+                                      _buildBottomControls(),
                                     ],
                                   ),
                                 ],
                               );
-                            }
-                            return Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                _buildTopPanel(),
-                                _buildMainControls(),
-                                Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    VideoPlayerProgressBar(
-                                      controller: widget.controller,
-                                      playerStore: playerStore,
-                                    ),
-                                    _buildBottomControls(),
-                                  ],
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ],
-                    );
-                  }
-                  return Container();
-                },
-              ),
-            );
-          },
+                            },
+                          ),
+                        ],
+                      );
+                    }
+                    return Container();
+                  },
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
