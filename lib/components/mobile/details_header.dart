@@ -18,6 +18,7 @@ import '../../models/network/base_model.dart';
 import '../../resources/strings.dart';
 import '../../services/network/utils.dart';
 import '../../utils/date_time_formatter.dart';
+import '../../utils/progress_utils.dart';
 import '../../widgets/rounded_button.dart';
 import '../../widgets/screen_background_image.dart';
 import 'details_add_list.dart';
@@ -524,25 +525,7 @@ class DetailsHeader extends SliverPersistentHeaderDelegate {
   }
 
   Text _getPlayButton() {
-    if (detailsStore.progress != null) {
-      return Text(_getResumeText());
-    }
-    if (detailsStore.showHistory != null) {
-      return Text(
-          "${Strings.play} S${detailsStore.showHistory!.lastWatchedSeason!} EP${detailsStore.showHistory!.lastWatched!.number}");
-    }
-    return Text(Strings.play);
-  }
-
-  String _getResumeText() {
-    String text = Strings.resume;
-    if (detailsStore.baseModel.type == BaseModelType.tv &&
-        detailsStore.progress?.seasonNo != null &&
-        detailsStore.progress?.episodeNo != null) {
-      text +=
-          " S${detailsStore.progress!.seasonNo!} EP${detailsStore.progress!.episodeNo!}";
-    }
-    return text;
+    return Text(ProgressUtils.getPlayText(detailsStore));
   }
 
   String _getDurationLeft() {

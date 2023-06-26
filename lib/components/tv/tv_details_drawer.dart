@@ -17,14 +17,17 @@ class TvDetailsDrawer<T> extends StatefulWidget {
   final Function(int index) onLeftChildClicked;
   final Container Function(Object item) onRightWidgetBuild;
 
-  const TvDetailsDrawer(
-      {required this.leftChildren,
-      required this.rightChildren,
-      required this.onLeftChildClicked,
-      required this.onRightWidgetBuild,
-      this.initialyFocusLeft,
-      Key? key})
-      : super(key: key);
+  final Function(Object item)? onRightWidgetClicked;
+
+  const TvDetailsDrawer({
+    required this.leftChildren,
+    required this.rightChildren,
+    required this.onLeftChildClicked,
+    required this.onRightWidgetBuild,
+    this.initialyFocusLeft,
+    this.onRightWidgetClicked,
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<TvDetailsDrawer> createState() => _TvDetailsDrawerState();
@@ -42,8 +45,10 @@ class _TvDetailsDrawerState<T> extends State<TvDetailsDrawer> {
     for (var _ in widget.leftChildren) {
       controllers.add(RoundedButtonController(type: RoundedButtonType.text));
     }
+
     yFocusLeft = widget.initialyFocusLeft ?? 0;
-    controllers[yFocusLeft].changeType(RoundedButtonType.filled);
+    if (controllers.isNotEmpty)
+      controllers[yFocusLeft].changeType(RoundedButtonType.filled);
 
     tvListStore = TvListStore<T>(
       focusChange: (item) {},
@@ -140,6 +145,12 @@ class _TvDetailsDrawerState<T> extends State<TvDetailsDrawer> {
           controllers[yFocusLeft].changeType(RoundedButtonType.text);
           yFocusLeft--;
           _changeSeasonConfig();
+        }
+        break;
+      case KEY_CENTER:
+        if (tvListStore.isListFocused) {
+          widget.onRightWidgetClicked
+              ?.call(widget.rightChildren[tvListStore.focusedIndex]);
         }
         break;
       default:

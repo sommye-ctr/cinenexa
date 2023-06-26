@@ -13,6 +13,7 @@ import '../../models/local/installed_extensions.dart';
 import '../../models/local/progress.dart';
 import '../../models/local/show_history.dart';
 import '../../models/network/base_model.dart';
+import '../../models/network/extensions/extension.dart';
 import '../../models/network/genre.dart';
 import '../../models/network/movie.dart';
 import '../../models/network/tv.dart';
@@ -104,6 +105,10 @@ abstract class _DetailsStore with Store {
       <ExtensionStream>[].asObservable();
 
   @observable
+  ObservableSet<Extension> loadedStreamsExtensions =
+      <Extension>{}.asObservable();
+
+  @observable
   ShowHistory? showHistory;
 
   @observable
@@ -163,67 +168,6 @@ abstract class _DetailsStore with Store {
       isTraktLogged: isTraktLogged,
       repository: repository,
     );
-
-    /* TraktShowHistorySeasonEp ep = TraktShowHistorySeasonEp(
-      lastWatchedAt: DateTime.now().toUtc().toIso8601String(),
-      number: episodes[epIndex].episodeNumber,
-      plays: 1,
-    );
-    int? seasonNo = tv!.seasons![chosenSeason!].seasonNumber;
-
-    ShowHistory tempHistory;
-    if (showHistory == null) {
-      tempHistory = ShowHistory()
-        ..id = baseModel.id!
-        ..lastWatched = ep
-        ..show = tv
-        ..seasons = null
-        ..lastWatched = ep
-        ..lastWatchedSeason = seasonNo;
-    } else {
-      tempHistory = showHistory!;
-    }
-
-    int? seasonIndex = tempHistory.seasons
-        ?.indexWhere((element) => element.number == seasonNo);
-    List<TraktShowHistorySeason>? seasons = tempHistory.seasons;
-
-    if (seasonIndex != null && seasonIndex >= 0 && seasons != null) {
-      List<TraktShowHistorySeasonEp> eps = List.of(
-        tempHistory.seasons![seasonIndex].episodes!,
-        growable: true,
-      )..add(ep);
-
-      seasons[seasonIndex].episodes = eps;
-    } else {
-      List<TraktShowHistorySeasonEp> eps = List.of([ep], growable: true);
-
-      TraktShowHistorySeason season = TraktShowHistorySeason(
-        number: seasonNo,
-        episodes: eps,
-      );
-      List<TraktShowHistorySeason> newSeasons =
-          List.of(seasons ?? [], growable: true)..add(season);
-      seasons = newSeasons;
-    }
-
-    showHistory = ShowHistory()
-      ..id = tempHistory.id
-      ..lastUpdatedAt = DateTime.now().toUtc()
-      ..lastWatched = tempHistory.lastWatched
-      ..lastWatchedSeason = tempHistory.lastWatchedSeason
-      ..show = tempHistory.show
-      ..seasons = seasons;
-
-    List<Future> futures = [];
-    futures.add(database.updateShowHistory(item: showHistory!));
-    if (isTraktLogged) {
-      futures.addAll([
-        repository.addToWatched(tmdbEpId: episodes[epIndex].id),
-        database.updateLastActivities(epWatchedAt: DateTime.now().toUtc())
-      ]);
-    }
-    await Future.wait(futures); */
   }
 
   @action
@@ -312,12 +256,12 @@ abstract class _DetailsStore with Store {
       (event) {
         loadedStreams.addAll(event);
 
-        var seen = Set<String>();
-        List list = loadedStreams
-            .where((element) => seen.add(element.extension!.id!))
-            .toList();
+        event.forEach((element) {
+          if (element.extension != null)
+            loadedStreamsExtensions.add(element.extension!);
+        });
 
-        if (list.length == noOfExtensions) {
+        if (loadedStreamsExtensions.length == noOfExtensions) {
           isStreamLoading = false;
           streamSubscription?.cancel();
         }

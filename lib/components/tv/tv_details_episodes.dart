@@ -1,4 +1,5 @@
 import 'package:cinenexa/components/tv/tv_details_drawer.dart';
+import 'package:cinenexa/components/tv/tv_details_streams.dart';
 import 'package:cinenexa/models/network/tv_episode.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -33,6 +34,16 @@ class _TvDetailsEpisodesState extends State<TvDetailsEpisodes> {
                 .episodes[widget.detailsStore.episodes.indexOf(item)],
           ),
         ),
+        onRightWidgetClicked: (item) {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return TvDetailsStreams(
+                detailsStore: widget.detailsStore,
+              );
+            },
+          );
+        },
       );
     });
   }

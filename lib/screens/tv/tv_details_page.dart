@@ -18,10 +18,12 @@ import 'package:glass/glass.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/tv/tv_details_episodes.dart';
+import '../../components/tv/tv_details_streams.dart';
 import '../../components/tv/tv_info_card.dart';
 import '../../models/network/base_model.dart';
 import '../../store/favorites/favorites_store.dart';
 import '../../store/user/user_store.dart';
+import '../../utils/progress_utils.dart';
 import '../youtube_video_player.dart';
 
 class TvDetailsPage extends StatefulWidget {
@@ -38,8 +40,9 @@ class TvDetailsPage extends StatefulWidget {
 class _TvDetailsPageState extends State<TvDetailsPage> {
   static const int BACK_BUTTON = -1;
   static const int PLAY_BUTTON = 0;
-  static const int ADD_BUTTON = 1;
-  static const int SEASON_TRAILER_BUTTON = 2;
+  static const int ADD_BUTTON = 2;
+  static const int SEASON_TRAILER_BUTTON = 3;
+  static const int STREAMS = 1;
 
   static const double widthPercent = 0.6;
 
@@ -49,6 +52,7 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
   int xFocus = PLAY_BUTTON;
   List<RoundedButtonController> controllers = [
     RoundedButtonController(type: RoundedButtonType.filled),
+    RoundedButtonController(type: RoundedButtonType.outlined),
     RoundedButtonController(type: RoundedButtonType.outlined),
     RoundedButtonController(type: RoundedButtonType.outlined)
   ];
@@ -180,7 +184,14 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
           case ADD_BUTTON:
             _onAddRemFavoritesClicked(context);
             break;
+          case STREAMS:
+            _buildStreams();
+            break;
           case PLAY_BUTTON:
+            if (widget.detailsStore.progress == null) {
+              _buildStreams();
+              return;
+            }
             LinkOpener.navigateToVideoPlayer(
               stream: ExtensionStream.url(
                   url:
@@ -199,28 +210,14 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
     }
   }
 
-  Widget _buildStreams() {
-    if (widget.detailsStore.baseModel.type != BaseModelType.movie) {
-      return Container();
-    }
-    return Align(
-      alignment: Alignment.centerRight,
-      child: Container(
-        height: ScreenSize.getPercentOfHeight(context, 1),
-        width: ScreenSize.getPercentOfWidth(context, 0.35),
-        child: Card(
-          color: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
-          ),
-          child: ListView(
-            children: [],
-          ),
-        ).asGlass(
-          clipBorderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
-          frosted: false,
-        ),
-      ),
+  void _buildStreams() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return TvDetailsStreams(
+          detailsStore: widget.detailsStore,
+        );
+      },
     );
   }
 
@@ -231,12 +228,24 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Text(Strings.play),
+              Text(ProgressUtils.getPlayText(widget.detailsStore)),
               Icon(Icons.play_arrow_sharp),
             ],
           ),
           onPressed: () {},
           controller: controllers[PLAY_BUTTON],
+        ),
+        Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
+        RoundedButton.controller(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Text(Strings.streams),
+              Icon(Icons.view_stream_rounded),
+            ],
+          ),
+          onPressed: () {},
+          controller: controllers[STREAMS],
         ),
         Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
         _buildAddFavButton(),
