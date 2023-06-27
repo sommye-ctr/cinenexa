@@ -1,5 +1,7 @@
+import 'package:cinenexa/screens/tv/tv_login_page.dart';
 import 'package:cinenexa/services/local/database.dart';
 import 'package:cinenexa/services/network/analytics.dart';
+import 'package:cinenexa/store/platform/platform_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:cinenexa/resources/asset.dart';
@@ -9,6 +11,7 @@ import 'package:cinenexa/screens/login_page.dart';
 import 'package:cinenexa/screens/register_page.dart';
 import 'package:cinenexa/utils/screen_size.dart';
 import 'package:cinenexa/widgets/rounded_button.dart';
+import 'package:provider/provider.dart';
 
 import 'login_configure_page.dart';
 
@@ -23,6 +26,8 @@ class IntroPage extends StatefulWidget {
 class _IntroPageState extends State<IntroPage> {
   @override
   Widget build(BuildContext context) {
+    if (Provider.of<PlatformStore>(context).isAndroidTv) return TvLoginPage();
+
     return Material(
       child: Scaffold(
         body: Stack(
@@ -43,7 +48,7 @@ class _IntroPageState extends State<IntroPage> {
                     textAlign: TextAlign.center,
                     style: Theme.of(context)
                         .textTheme
-                        .headline5
+                        .headlineSmall
                         ?.apply(color: Colors.black),
                   ),
                   Style.getVerticalSpacing(context: context),

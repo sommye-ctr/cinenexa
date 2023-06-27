@@ -8,6 +8,8 @@ class CustomTextFormField extends StatefulWidget {
   final Icon? icon;
   final TextEditingController? textEditingController;
   final bool? obscure;
+  final FocusNode? focusNode;
+
   const CustomTextFormField({
     Key? key,
     required this.hint,
@@ -16,6 +18,7 @@ class CustomTextFormField extends StatefulWidget {
     this.validator,
     this.textEditingController,
     this.obscure,
+    this.focusNode,
   }) : super(key: key);
 
   @override
@@ -36,6 +39,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
     return Padding(
       padding: const EdgeInsets.all(8),
       child: TextFormField(
+        focusNode: widget.focusNode,
         inputFormatters: widget.inputFormatters,
         validator: widget.validator,
         controller: widget.textEditingController,
