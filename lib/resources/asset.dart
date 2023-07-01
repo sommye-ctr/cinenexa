@@ -21,6 +21,8 @@ class Asset {
 
   static const String icon = "assets/icon/icon.png";
 
+  static const String tvIntro = "assets/images/tv_intro.jpg";
+
   static const String traktBranding = "assets/images/trakt_branding.svg";
   static const String tmdbBranding = "assets/images/tmdb_branding.svg";
 }

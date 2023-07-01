@@ -1,5 +1,4 @@
 import 'package:cinenexa/screens/tv/tv_home_first.dart';
-import 'package:cinenexa/screens/tv/tv_home.dart';
 import 'package:cinenexa/store/platform/platform_store.dart';
 import 'package:flutter/material.dart';
 import 'package:cinenexa/screens/home_page.dart';

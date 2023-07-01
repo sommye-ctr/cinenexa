@@ -13,7 +13,11 @@ import '../../resources/strings.dart';
 import '../../resources/style.dart';
 import '../../services/local/database.dart';
 import '../../store/home/tv_home_store.dart';
+import '../../store/user/user_store.dart';
 import '../../widgets/user_profile.dart';
+import 'package:provider/provider.dart';
+
+import '../intro_page.dart';
 
 class TvProfilePage extends StatefulWidget {
   final Stream<int> clickEvents;
@@ -49,7 +53,16 @@ class _TvProfilePageState extends State<TvProfilePage> {
       _onSeek, // seek
       _onFit, // default fit
       _onSubtitle, // subtitle
-      () {}, //logout
+      () async {
+        Style.showLoadingDialog(context: context);
+        await Provider.of<UserStore>(context, listen: false).logout();
+        Navigator.pop(context);
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          IntroPage.routeName,
+          (route) => false,
+        );
+      }, //logout
       InAppReview.instance.openStoreListing, //rate
     ];
 
