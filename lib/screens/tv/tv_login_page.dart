@@ -244,9 +244,7 @@ class _TvLoginPageState extends State<TvLoginPage> {
               );
               Navigator.pop(context);
 
-              if (resp.session != null && resp.user != null) {
-                Restart.restartApp();
-              }
+              print("heyyy ${Supabase.instance.client.auth.currentUser?.id}");
             } on AuthException catch (error) {
               Navigator.pop(context);
               Style.showToast(context: context, text: error.message);

@@ -1,6 +1,7 @@
 import 'package:cinenexa/components/tv/tv_subtitle_settings.dart';
 import 'package:cinenexa/resources/settings_tile_obj.dart';
 import 'package:cinenexa/screens/tv/tv_home_first.dart';
+import 'package:cinenexa/store/extensions/extensions_store.dart';
 import 'package:cinenexa/store/tv_list/tv_list_store.dart';
 import 'package:cinenexa/utils/keycode.dart';
 import 'package:cinenexa/utils/screen_size.dart';
@@ -49,7 +50,10 @@ class _TvProfilePageState extends State<TvProfilePage> {
     );
     onClicks = [
       () {}, //trakt
-      () {}, //sync
+      () async {
+        Style.showToast(context: context, text: Strings.syncingExt);
+        await Provider.of<ExtensionsStore>(context).syncInstalledExtensions();
+      }, //sync
       _onSeek, // seek
       _onFit, // default fit
       _onSubtitle, // subtitle

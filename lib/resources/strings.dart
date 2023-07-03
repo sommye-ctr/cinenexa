@@ -218,6 +218,7 @@ class Strings {
   static const String disconnectTrakt = "Disconnect Trakt";
 
   static const String syncInstalledExt = "Sync Installed Extensions";
+  static const String syncingExt = "Syncing Extensions";
 
   static const String darkMode = "Dark Mode";
   static const String countryProviders = "Country for JustWatch Providers";
