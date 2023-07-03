@@ -227,6 +227,7 @@ abstract class _DetailsStore with Store {
 
   @action
   void fetchStreams() {
+    print("fecy");
     if (noOfExtensions == 0) {
       isStreamLoading = false;
       return;
@@ -255,7 +256,6 @@ abstract class _DetailsStore with Store {
         .listen(
       (event) {
         loadedStreams.addAll(event);
-
         event.forEach((element) {
           if (element.extension != null)
             loadedStreamsExtensions.add(element.extension!);

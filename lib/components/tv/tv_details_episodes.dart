@@ -39,7 +39,7 @@ class _TvDetailsEpisodesState extends State<TvDetailsEpisodes> {
             context: context,
             builder: (context) {
               return TvDetailsStreams(
-                detailsStore: widget.detailsStore,
+                detailStore: widget.detailsStore,
               );
             },
           );

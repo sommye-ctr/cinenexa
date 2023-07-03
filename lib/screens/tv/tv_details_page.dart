@@ -63,6 +63,9 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       FocusScope.of(context).requestFocus(homefocus);
     });
+    if (widget.detailsStore.baseModel.type == BaseModelType.movie) {
+      widget.detailsStore.fetchStreams();
+    }
   }
 
   @override
@@ -215,7 +218,7 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
       context: context,
       builder: (context) {
         return TvDetailsStreams(
-          detailsStore: widget.detailsStore,
+          detailStore: widget.detailsStore,
         );
       },
     );
