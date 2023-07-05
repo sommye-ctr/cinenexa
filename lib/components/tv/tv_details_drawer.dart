@@ -11,7 +11,7 @@ import '../../widgets/tv_drawer.dart';
 import '../../widgets/tv_horizontal_list.dart';
 
 class TvDetailsDrawer<T> extends StatefulWidget {
-  final List<String> leftChildren;
+  final List<String>? leftChildren;
   final List<T>? rightChildren;
   final int? initialyFocusLeft;
   final Function(int index) onLeftChildClicked;
@@ -20,6 +20,8 @@ class TvDetailsDrawer<T> extends StatefulWidget {
   final Function(Object item)? onRightWidgetClicked;
   final TvDetailsDrawerController? controller;
 
+  final bool blurBg;
+
   const TvDetailsDrawer({
     required this.leftChildren,
     required this.rightChildren,
@@ -27,17 +29,19 @@ class TvDetailsDrawer<T> extends StatefulWidget {
     required this.onRightWidgetBuild,
     this.initialyFocusLeft,
     this.onRightWidgetClicked,
+    this.blurBg = true,
     Key? key,
   })  : controller = null,
         super(key: key);
 
   const TvDetailsDrawer.controller({
-    required this.leftChildren,
+    this.leftChildren,
     required this.controller,
     required this.onLeftChildClicked,
     required this.onRightWidgetBuild,
     this.initialyFocusLeft,
     this.onRightWidgetClicked,
+    this.blurBg = true,
     Key? key,
   })  : rightChildren = null,
         super(key: key);
@@ -53,24 +57,15 @@ class _TvDetailsDrawerState<T> extends State<TvDetailsDrawer> {
 
   late List rightChildren =
       widget.rightChildren ?? widget.controller!.rightChildren;
+  late List leftChildren =
+      widget.leftChildren ?? widget.controller!.leftChildren;
 
   int yFocusLeft = 0;
 
   @override
   void initState() {
-    for (var _ in widget.leftChildren) {
-      controllers.add(RoundedButtonController(type: RoundedButtonType.text));
-    }
-
-    yFocusLeft = widget.initialyFocusLeft ?? 0;
-    if (controllers.isNotEmpty)
-      controllers[yFocusLeft].changeType(RoundedButtonType.filled);
-
-    tvListStore = TvListStore<T>(
-      focusChange: (item) {},
-      items: rightChildren.asObservable() as ObservableList<T>,
-    );
-
+    initControllers();
+    initTvListStore();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       focus.requestFocus();
     });
@@ -78,12 +73,30 @@ class _TvDetailsDrawerState<T> extends State<TvDetailsDrawer> {
 
     widget.controller?.addListener(() {
       rightChildren = widget.controller!.rightChildren;
-      tvListStore = TvListStore<T>(
-        focusChange: (item) {},
-        items: rightChildren.asObservable() as ObservableList<T>,
-      );
+      initTvListStore();
+
+      leftChildren = widget.controller!.leftChildren;
+      initControllers();
+
       setState(() {});
     });
+  }
+
+  void initTvListStore() {
+    tvListStore = TvListStore<T>(
+      focusChange: (item) {},
+      items: rightChildren.asObservable() as ObservableList<T>,
+    );
+  }
+
+  void initControllers() {
+    for (var _ in leftChildren) {
+      controllers.add(RoundedButtonController(type: RoundedButtonType.text));
+    }
+
+    yFocusLeft = widget.initialyFocusLeft ?? 0;
+    if (controllers.isNotEmpty)
+      controllers[yFocusLeft].changeType(RoundedButtonType.filled);
   }
 
   @override
@@ -92,8 +105,9 @@ class _TvDetailsDrawerState<T> extends State<TvDetailsDrawer> {
       focusNode: focus,
       onKey: _handleKeyboard,
       child: TvDrawer(
+        blurBg: widget.blurBg,
         leftChild: ListView.builder(
-            itemCount: widget.leftChildren.length,
+            itemCount: leftChildren.length,
             itemBuilder: (context, index) {
               return Padding(
                 padding: const EdgeInsets.only(right: 8.0),
@@ -105,7 +119,7 @@ class _TvDetailsDrawerState<T> extends State<TvDetailsDrawer> {
                     },
                     controller: controllers[index],
                     child: Text(
-                      widget.leftChildren[index],
+                      leftChildren[index],
                     ),
                   ),
                 ),
@@ -115,7 +129,6 @@ class _TvDetailsDrawerState<T> extends State<TvDetailsDrawer> {
           if (rightChildren.isEmpty) {
             return Container();
           }
-
           return TvHorizontalList<T>.fromInititalValues(
             heading: "",
             widthPercentItem: ScreenSize.getPercentOfWidth(context, 0.2),
@@ -135,7 +148,7 @@ class _TvDetailsDrawerState<T> extends State<TvDetailsDrawer> {
     RawKeyEventDataAndroid rawKeyEventData =
         event.data as RawKeyEventDataAndroid;
 
-    int left = widget.leftChildren.length;
+    int left = leftChildren.length;
     switch (rawKeyEventData.keyCode) {
       case KEY_RIGHT:
         if (!tvListStore.isListFocused) {
@@ -190,11 +203,16 @@ class _TvDetailsDrawerState<T> extends State<TvDetailsDrawer> {
 
 class TvDetailsDrawerController<T> extends ChangeNotifier {
   List<T> rightChildren;
+  List<String> leftChildren;
 
-  TvDetailsDrawerController(this.rightChildren);
+  TvDetailsDrawerController(
+    this.rightChildren,
+    this.leftChildren,
+  );
 
-  void changeChildren(List<T> newChildren) {
+  void changeChildren(List<T> newChildren, {List<String>? left}) {
     rightChildren = newChildren;
+    if (left != null) leftChildren = left;
     notifyListeners();
   }
 }

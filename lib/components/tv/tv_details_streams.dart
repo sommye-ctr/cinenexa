@@ -4,7 +4,9 @@ import 'package:cinenexa/models/network/extensions/extension_stream.dart';
 import 'package:cinenexa/utils/link_opener.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import '../../resources/style.dart';
 import '../../store/details/details_store.dart';
+import '../../widgets/glassy_container.dart';
 
 class TvDetailsStreams extends StatefulWidget {
   final DetailsStore detailStore;
@@ -17,19 +19,16 @@ class TvDetailsStreams extends StatefulWidget {
 class _TvDetailsStreamsState extends State<TvDetailsStreams> {
   TvDetailsDrawerController? controller;
 
-  @override
-  Widget build(BuildContext context) {
-    return Observer(builder: (_) {
-      if (controller == null)
-        controller = TvDetailsDrawerController(getSelectedStreams(0));
+  late Widget drawer;
 
-      return TvDetailsDrawer<ExtensionStream>.controller(
-        leftChildren: widget.detailStore.loadedStreamsExtensions
-            .map((element) => element.name ?? "")
-            .toList(),
+  @override
+  void initState() {
+    controller = TvDetailsDrawerController(getSelectedStreams(0), []);
+    drawer = Expanded(
+      child: TvDetailsDrawer<ExtensionStream>.controller(
+        blurBg: false,
         controller: controller,
         onRightWidgetClicked: (item) async {
-          print("ck8ck");
           await LinkOpener.navigateToVideoPlayer(
             baseModel: widget.detailStore.baseModel,
             id: widget.detailStore.baseModel.id!,
@@ -52,6 +51,32 @@ class _TvDetailsStreamsState extends State<TvDetailsStreams> {
           child: DetailsStreamTile(
             extensionStream: item as ExtensionStream,
           ),
+        ),
+      ),
+    );
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Observer(builder: (_) {
+      if (widget.detailStore.loadedStreams.isNotEmpty) {
+        controller?.changeChildren(
+          getSelectedStreams(0),
+          left: widget.detailStore.loadedStreamsExtensions
+              .map((element) => element.name ?? "")
+              .toList(),
+        );
+      }
+
+      return GlassyContainer(
+        child: Column(
+          children: [
+            Style.getVerticalSpacing(context: context),
+            if (widget.detailStore.isStreamLoading)
+              Center(child: CircularProgressIndicator()),
+            drawer,
+          ],
         ),
       );
     });

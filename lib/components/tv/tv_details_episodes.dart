@@ -35,6 +35,10 @@ class _TvDetailsEpisodesState extends State<TvDetailsEpisodes> {
           ),
         ),
         onRightWidgetClicked: (item) {
+          widget.detailsStore
+              .onEpiodeClicked(widget.detailsStore.episodes.indexOf(item));
+          widget.detailsStore.fetchStreams();
+
           showDialog(
             context: context,
             builder: (context) {

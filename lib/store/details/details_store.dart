@@ -227,7 +227,6 @@ abstract class _DetailsStore with Store {
 
   @action
   void fetchStreams() {
-    print("fecy");
     if (noOfExtensions == 0) {
       isStreamLoading = false;
       return;
