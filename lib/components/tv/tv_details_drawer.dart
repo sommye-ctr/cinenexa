@@ -90,11 +90,13 @@ class _TvDetailsDrawerState<T> extends State<TvDetailsDrawer> {
   }
 
   void initControllers() {
+    controllers.clear();
     for (var _ in leftChildren) {
       controllers.add(RoundedButtonController(type: RoundedButtonType.text));
     }
 
-    yFocusLeft = widget.initialyFocusLeft ?? 0;
+    yFocusLeft =
+        widget.initialyFocusLeft ?? widget.controller?.initialyFocusLeft ?? 0;
     if (controllers.isNotEmpty)
       controllers[yFocusLeft].changeType(RoundedButtonType.filled);
   }
@@ -204,15 +206,16 @@ class _TvDetailsDrawerState<T> extends State<TvDetailsDrawer> {
 class TvDetailsDrawerController<T> extends ChangeNotifier {
   List<T> rightChildren;
   List<String> leftChildren;
+  int initialyFocusLeft;
 
-  TvDetailsDrawerController(
-    this.rightChildren,
-    this.leftChildren,
-  );
+  TvDetailsDrawerController(this.rightChildren, this.leftChildren,
+      {this.initialyFocusLeft = 0});
 
-  void changeChildren(List<T> newChildren, {List<String>? left}) {
+  void changeChildren(List<T> newChildren,
+      {List<String>? left, int? indexFocus}) {
     rightChildren = newChildren;
     if (left != null) leftChildren = left;
+    if (indexFocus != null) initialyFocusLeft = indexFocus;
     notifyListeners();
   }
 }

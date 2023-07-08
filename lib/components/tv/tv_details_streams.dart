@@ -45,7 +45,10 @@ class _TvDetailsStreamsState extends State<TvDetailsStreams> {
           );
         },
         onLeftChildClicked: (index) {
-          controller?.changeChildren(getSelectedStreams(index));
+          controller?.changeChildren(
+            getSelectedStreams(index),
+            indexFocus: index,
+          );
         },
         onRightWidgetBuild: (item) => Container(
           child: DetailsStreamTile(
