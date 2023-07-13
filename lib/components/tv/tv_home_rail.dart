@@ -1,7 +1,5 @@
 import 'package:cinenexa/store/home/tv_home_store.dart';
-import 'package:cinenexa/utils/keycode.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
 import '../../resources/asset.dart';
@@ -63,6 +61,10 @@ class _TvHomeRailState extends State<TvHomeRail> {
       NavigationRailDestination(
         icon: Icon(Icons.movie_rounded),
         label: Text(Strings.movies),
+      ),
+      NavigationRailDestination(
+        icon: Icon(Icons.live_tv_rounded),
+        label: Text(Strings.shows),
       ),
       NavigationRailDestination(
         icon: Icon(Icons.favorite_rounded),

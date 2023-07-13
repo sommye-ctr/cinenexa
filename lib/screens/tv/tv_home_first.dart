@@ -1,11 +1,12 @@
 import 'dart:async';
 
-import 'package:cinenexa/screens/tv/tv_discover_page.dart';
+import 'package:cinenexa/screens/tv/tv_movies_page.dart';
 import 'package:cinenexa/screens/tv/tv_favorites.dart';
 import 'package:cinenexa/screens/tv/tv_home.dart';
 import 'package:cinenexa/screens/tv/tv_lists_page.dart';
 import 'package:cinenexa/screens/tv/tv_profile_page.dart';
 import 'package:cinenexa/screens/tv/tv_search_page.dart';
+import 'package:cinenexa/screens/tv/tv_shows_page.dart';
 import 'package:cinenexa/utils/keycode.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,7 +17,7 @@ import '../../store/home/tv_home_store.dart';
 import '../../utils/screen_size.dart';
 
 class TvHomeFirst extends StatefulWidget {
-  static const int RAIL_COUNT = 6;
+  static const int RAIL_COUNT = 7;
   static const double CHILDREN_PADDING_TOP = 36;
   static const double CHILDREN_PADDING_RIGHT = 8;
 
@@ -31,6 +32,7 @@ class _TvHomeFirstState extends State<TvHomeFirst> {
   final FocusNode focusNode = FocusNode();
 
   final List<StreamController<int>> streams = [
+    StreamController(),
     StreamController(),
     StreamController(),
     StreamController(),
@@ -101,15 +103,22 @@ class _TvHomeFirstState extends State<TvHomeFirst> {
                           store: store,
                           clickEvents: streams[1].stream,
                         ),
-                        TvDiscoverPage(),
+                        TvMoviesPage(
+                          store: store,
+                          clickEvents: streams[2].stream,
+                        ),
+                        TvShowsPage(
+                          store: store,
+                          clickEvents: streams[3].stream,
+                        ),
                         TvFavorites(
-                          onClickEvents: streams[2].stream,
+                          onClickEvents: streams[4].stream,
                           homeStore: store,
                         ),
                         TvListsPage(),
                         TvProfilePage(
                           homeStore: store,
-                          clickEvents: streams[5].stream,
+                          clickEvents: streams[6].stream,
                         ),
                       ],
                     );
