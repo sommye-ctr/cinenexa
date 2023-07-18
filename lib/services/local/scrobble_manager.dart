@@ -1,3 +1,4 @@
+import 'package:better_player/better_player.dart';
 import 'package:cinenexa/models/local/progress.dart';
 import 'package:cinenexa/models/local/show_history.dart';
 import 'package:cinenexa/models/network/base_model.dart';
@@ -7,10 +8,9 @@ import 'package:cinenexa/services/local/database.dart';
 import 'package:cinenexa/services/network/trakt_oauth_client.dart';
 import 'package:cinenexa/services/network/trakt_repository.dart';
 import 'package:cinenexa/store/player/player_store.dart';
-import 'package:flutter_meedu_videoplayer/meedu_player.dart';
 
 class ScrobbleManager {
-  final MeeduPlayerController playerController;
+  final BetterPlayerController playerController;
   final BaseModel item;
   final Movie? movie;
   final Tv? show;
@@ -37,18 +37,14 @@ class ScrobbleManager {
     this.season,
     this.episode,
   }) {
-    playerController.onPlayerStatusChanged.listen((event) {
-      switch (event) {
-        case PlayerStatus.paused:
-          paused();
-          break;
-        case PlayerStatus.completed:
-          stopped;
-          break;
-        case PlayerStatus.playing:
-          start();
-          break;
-        default:
+    playerController.addEventsListener((event) {
+      if (event.betterPlayerEventType == BetterPlayerEventType.pause) {
+        paused();
+      } else if (event.betterPlayerEventType ==
+          BetterPlayerEventType.finished) {
+        stopped();
+      } else if (event.betterPlayerEventType == BetterPlayerEventType.play) {
+        start();
       }
     });
 
@@ -163,7 +159,7 @@ class ScrobbleManager {
       return 0;
     }
     return (playerController.videoPlayerController!.value.position.inSeconds /
-            playerController.videoPlayerController!.value.duration.inSeconds) *
+            playerController.videoPlayerController!.value.duration!.inSeconds) *
         100;
   }
 }

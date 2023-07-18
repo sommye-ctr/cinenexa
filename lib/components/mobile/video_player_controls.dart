@@ -1,24 +1,25 @@
 import 'dart:async';
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
+import 'package:better_player/better_player.dart';
+import 'package:cinenexa/components/mobile/video_player_progress_bar.dart';
+import 'package:cinenexa/models/local/show_history.dart';
+import 'package:cinenexa/services/local/torrent_streamer.dart';
+import 'package:cinenexa/services/network/utils.dart';
+import 'package:cinenexa/store/details/details_store.dart';
+import 'package:cinenexa/utils/settings_indexer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_meedu_videoplayer/meedu_player.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:cinenexa/resources/strings.dart';
+import 'package:cinenexa/resources/style.dart';
+import 'package:cinenexa/utils/screen_size.dart';
+import 'package:cinenexa/widgets/custom_checkbox_list.dart';
 import 'package:glass/glass.dart';
 import 'package:provider/provider.dart';
 import 'package:video_cast/chrome_cast_media_type.dart';
 import 'package:video_cast/chrome_cast_subtitle.dart';
 import 'package:video_cast/video_cast.dart';
-
-import 'package:cinenexa/components/mobile/video_player_progress_bar.dart';
-import 'package:cinenexa/models/local/show_history.dart';
-import 'package:cinenexa/resources/strings.dart';
-import 'package:cinenexa/resources/style.dart';
-import 'package:cinenexa/services/local/torrent_streamer.dart';
-import 'package:cinenexa/services/network/utils.dart';
-import 'package:cinenexa/store/details/details_store.dart';
-import 'package:cinenexa/utils/settings_indexer.dart';
-import 'package:cinenexa/widgets/custom_checkbox_list.dart';
 
 import '../../models/local/progress.dart';
 import '../../models/network/base_model.dart';
@@ -30,14 +31,16 @@ import '../../models/network/trakt/trakt_show_history_season_ep.dart';
 import '../../models/network/tv.dart';
 import '../../screens/video_player_page.dart';
 import '../../services/local/scrobble_manager.dart';
+import '../../store/platform/platform_store.dart';
 import '../../store/player/player_store.dart';
 import '../../store/user/user_store.dart';
 import '../../utils/file_opener.dart';
 import '../../widgets/rounded_button.dart';
+import '../tv/tv_video_player_controls.dart';
 import 'details_episode_tile.dart';
 
 class VideoPlayerControls extends StatefulWidget {
-  final MeeduPlayerController controller;
+  final BetterPlayerController controller;
 
   final int? id;
   final BaseModel? baseModel;
@@ -51,14 +54,14 @@ class VideoPlayerControls extends StatefulWidget {
   final bool? initialDark;
   final ShowHistory? showHistory;
   final TorrentStreamer? torrentStreamer;
-  final String streamUrl;
+
+  final GlobalKey? playerKey;
 
   final ExtensionStream stream;
   const VideoPlayerControls({
     Key? key,
     required this.controller,
     required this.stream,
-    required this.streamUrl,
     this.baseModel,
     this.id,
     this.movie,
@@ -66,6 +69,7 @@ class VideoPlayerControls extends StatefulWidget {
     this.episode,
     this.season,
     this.progress,
+    this.playerKey,
     this.fitIndex,
     this.autoSubtitle,
     this.detailsStore,
@@ -86,11 +90,15 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
   late PlayerStore playerStore;
   ChromeCastController? chromeCastController;
   Widget drawerWidget = Container();
-  FocusNode focus = FocusNode();
+
+  late bool isTv;
 
   @override
   void initState() {
     super.initState();
+    isTv = Provider.of<PlatformStore>(context, listen: false).isAndroidTv;
+    if (isTv) return;
+
     bool traktLogged =
         Provider.of<UserStore>(context, listen: false).isTraktLogged;
 
@@ -125,14 +133,30 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
         widget.progress?.subtitle != null) {
       playerStore.changeSubtitle(widget.progress!.subtitle!);
     }
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _cancelAndRestartTimer();
-    });
+    _cancelAndRestartTimer();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (isTv)
+      return TvVideoPlayerControls(
+        controller: widget.controller,
+        stream: widget.stream,
+        baseModel: widget.baseModel,
+        episode: widget.episode,
+        season: widget.season,
+        movie: widget.movie,
+        show: widget.show,
+        progress: widget.progress,
+        id: widget.id,
+        fitIndex: widget.fitIndex,
+        autoSubtitle: widget.autoSubtitle,
+        detailsStore: widget.detailsStore,
+        initialDark: widget.initialDark,
+        showHistory: widget.showHistory,
+        torrentStreamer: widget.torrentStreamer,
+      );
+
     return WillPopScope(
       onWillPop: _onBack,
       child: Scaffold(
@@ -252,7 +276,15 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
       AdaptiveTheme.of(context).setLight();
     if (playerStore.casting) chromeCastController?.endSession();
 
+    try {
+      widget.controller.exitFullScreen();
+    } catch (e) {}
+
     widget.torrentStreamer?.stopStream();
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return true;
   }
 
@@ -327,7 +359,7 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
                     type: widget.baseModel!.type == BaseModelType.movie
                         ? ChromeCastMediaType.movie
                         : ChromeCastMediaType.show,
-                    url: widget.streamUrl,
+                    url: widget.controller.betterPlayerDataSource!.url,
                     title: widget.baseModel!.title!,
                     autoplay: true,
                     image: Utils.getPosterUrl(widget.baseModel!.posterPath!),
@@ -651,14 +683,14 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
 
     playerStore.setFitIndex(res.keys.first);
     widget.controller.pause();
-    widget.controller.onVideoFitChange(res.values.first);
+    widget.controller.setOverriddenFit(res.values.first);
     widget.controller.play();
   }
 
   void _speedChanged(String value) {
     Map<int, double> result = SettingsIndexer.getSpeedFromValue(value);
     playerStore.setSpeedIndex(result.keys.first);
-    widget.controller.setPlaybackSpeed(result.values.first);
+    widget.controller.setSpeed(result.values.first);
   }
 
   Widget _buildMainControls() {
@@ -684,12 +716,12 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
             if (playerStore.buffering) CircularProgressIndicator(),
             if (!playerStore.buffering)
               _buildControlButton(
-                icon: widget.controller.playerStatus.playing
+                icon: widget.controller.isPlaying()!
                     ? Icons.pause_rounded
                     : Icons.play_arrow_rounded,
                 onTap: () {
                   setState(() {
-                    widget.controller.playerStatus.playing
+                    widget.controller.isPlaying()!
                         ? widget.controller.pause()
                         : widget.controller.play();
                   });
