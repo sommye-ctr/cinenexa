@@ -13,7 +13,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:cinenexa/resources/strings.dart';
 import 'package:cinenexa/resources/style.dart';
-import 'package:cinenexa/utils/screen_size.dart';
 import 'package:cinenexa/widgets/custom_checkbox_list.dart';
 import 'package:glass/glass.dart';
 import 'package:provider/provider.dart';

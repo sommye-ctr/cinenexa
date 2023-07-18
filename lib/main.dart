@@ -10,7 +10,6 @@ import 'package:cinenexa/store/watchlist/watchlist_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_meedu_videoplayer/init_meedu_player.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
@@ -120,8 +119,6 @@ class _MyAppState extends State<MyApp> {
     Widget homeWidget;
 
     extensionsStore.init();
-    initMeeduPlayer(androidUseMediaKit: true);
-
     if (Supabase.instance.client.auth.currentUser != null ||
         (widget.anonStatus ?? false)) {
       homeWidget = HomeFirstScreen();

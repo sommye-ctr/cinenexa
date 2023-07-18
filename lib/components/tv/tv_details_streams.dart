@@ -4,6 +4,7 @@ import 'package:cinenexa/models/network/extensions/extension_stream.dart';
 import 'package:cinenexa/utils/link_opener.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import '../../models/network/base_model.dart';
 import '../../resources/style.dart';
 import '../../store/details/details_store.dart';
 import '../../widgets/glassy_container.dart';
@@ -33,8 +34,21 @@ class _TvDetailsStreamsState extends State<TvDetailsStreams> {
             baseModel: widget.detailStore.baseModel,
             id: widget.detailStore.baseModel.id!,
             context: context,
-            ep: widget.detailStore.progress?.episodeNo,
-            season: widget.detailStore.progress?.seasonNo,
+            ep: widget.detailStore.progress?.episodeNo ??
+                (widget.detailStore.baseModel.type == BaseModelType.tv
+                    ? widget
+                        .detailStore
+                        .episodes[widget.detailStore.chosenEpisode!]
+                        .episodeNumber
+                    : null),
+            season: widget.detailStore.progress?.seasonNo ??
+                (widget.detailStore.baseModel.type == BaseModelType.tv
+                    ? widget
+                        .detailStore
+                        .tv
+                        ?.seasons![widget.detailStore.chosenSeason!]
+                        .seasonNumber
+                    : null),
             progress: widget.detailStore.progress,
             movie: widget.detailStore.movie,
             tv: widget.detailStore.tv,

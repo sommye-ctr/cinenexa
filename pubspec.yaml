@@ -90,12 +90,6 @@ dependencies:
   glass: ^1.0.1+1
   file_picker: ^5.2.7
   path: ^1.8.2
-  flutter_meedu_videoplayer:
-    git:
-      url: https://github.com/sommye-ctr/flutter_meedu_videoplayer.git
-      path: package/
-      ref: 7bac6b2ed0738f67c3a07ecfcd83d26d0baeabf0
-  media_kit_libs_android_video: ^1.0.3
 
 dev_dependencies:
   flutter_test:

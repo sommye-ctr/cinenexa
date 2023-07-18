@@ -13,7 +13,6 @@ import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_mobx/flutter_mobx.dart";
 import "package:provider/provider.dart";
-
 import "../../models/local/progress.dart";
 import "../../models/local/show_history.dart";
 import "../../models/network/base_model.dart";
@@ -412,6 +411,7 @@ class _TvVideoPlayerControlsState extends State<TvVideoPlayerControls> {
   void _hideControls() {
     if (widget.controller.isPlaying() ?? false) {
       playerStore.setShowControls(false);
+      _changeFocus(PROGRESS_BAR);
     }
   }
 
@@ -423,6 +423,7 @@ class _TvVideoPlayerControlsState extends State<TvVideoPlayerControls> {
     } catch (e) {}
 
     widget.torrentStreamer?.stopStream();
+    Navigator.pop(context);
     return true;
   }
 
