@@ -436,7 +436,6 @@ class _TvVideoPlayerControlsState extends State<TvVideoPlayerControls> {
 
     widget.torrentStreamer?.stopStream();
     Navigator.pop(context);
-    Navigator.pop(context);
     return true;
   }
 

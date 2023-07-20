@@ -90,14 +90,9 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
   ChromeCastController? chromeCastController;
   Widget drawerWidget = Container();
 
-  late bool isTv;
-
   @override
   void initState() {
     super.initState();
-    isTv = Provider.of<PlatformStore>(context, listen: false).isAndroidTv;
-    if (isTv) return;
-
     bool traktLogged =
         Provider.of<UserStore>(context, listen: false).isTraktLogged;
 
@@ -137,25 +132,6 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
 
   @override
   Widget build(BuildContext context) {
-    if (isTv)
-      return TvVideoPlayerControls(
-        controller: widget.controller,
-        stream: widget.stream,
-        baseModel: widget.baseModel,
-        episode: widget.episode,
-        season: widget.season,
-        movie: widget.movie,
-        show: widget.show,
-        progress: widget.progress,
-        id: widget.id,
-        fitIndex: widget.fitIndex,
-        autoSubtitle: widget.autoSubtitle,
-        detailsStore: widget.detailsStore,
-        initialDark: widget.initialDark,
-        showHistory: widget.showHistory,
-        torrentStreamer: widget.torrentStreamer,
-      );
-
     return WillPopScope(
       onWillPop: _onBack,
       child: Scaffold(

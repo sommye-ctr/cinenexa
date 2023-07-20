@@ -9,13 +9,16 @@ import 'package:cinenexa/widgets/custom_back_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cinenexa/components/mobile/video_player_controls.dart';
+import 'package:provider/provider.dart';
 
+import '../components/tv/tv_video_player_controls.dart';
 import '../models/network/base_model.dart';
 import '../models/network/extensions/extension_stream.dart';
 import '../models/network/movie.dart';
 import '../models/network/tv.dart';
 import '../resources/style.dart';
 import '../services/local/torrent_streamer.dart';
+import '../store/platform/platform_store.dart';
 
 class VideoPlayerPage extends StatefulWidget {
   static const Duration hideDuration = Duration(seconds: 4);
@@ -64,6 +67,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
 
   TorrentStreamer? torrentStreamer;
   int? progress;
+  late bool isTv;
 
   final GlobalKey betterPlayerKey = GlobalKey();
 
@@ -82,6 +86,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
     subBackground = await database.getSubBg();
     subFontSize = await database.getSubFontSize();
     subPosition = await database.getSubPosition();
+    isTv = Provider.of<PlatformStore>(context, listen: false).isAndroidTv;
 
     initalDark = AdaptiveTheme.of(context).mode == AdaptiveThemeMode.dark;
     AdaptiveTheme.of(context).setDark();
@@ -119,24 +124,41 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
       ),
       controlsConfiguration: BetterPlayerControlsConfiguration(
         playerTheme: BetterPlayerTheme.custom,
-        customControlsBuilder: (controller, onPlayerVisibilityChanged) =>
-            VideoPlayerControls(
-          controller: controller,
-          stream: widget.extensionStream,
-          baseModel: widget.baseModel,
-          episode: widget.episode,
-          season: widget.season,
-          movie: widget.movie,
-          show: widget.show,
-          progress: widget.progress,
-          id: widget.id,
-          fitIndex: fitIndex,
-          autoSubtitle: autoSubtitle,
-          detailsStore: widget.detailsStore,
-          initialDark: initalDark,
-          showHistory: widget.showHistory,
-          torrentStreamer: torrentStreamer,
-        ),
+        customControlsBuilder: (controller, onPlayerVisibilityChanged) => isTv
+            ? TvVideoPlayerControls(
+                controller: controller,
+                stream: widget.extensionStream,
+                baseModel: widget.baseModel,
+                episode: widget.episode,
+                season: widget.season,
+                movie: widget.movie,
+                show: widget.show,
+                progress: widget.progress,
+                id: widget.id,
+                fitIndex: fitIndex,
+                autoSubtitle: autoSubtitle,
+                detailsStore: widget.detailsStore,
+                initialDark: initalDark,
+                showHistory: widget.showHistory,
+                torrentStreamer: torrentStreamer,
+              )
+            : VideoPlayerControls(
+                controller: controller,
+                stream: widget.extensionStream,
+                baseModel: widget.baseModel,
+                episode: widget.episode,
+                season: widget.season,
+                movie: widget.movie,
+                show: widget.show,
+                progress: widget.progress,
+                id: widget.id,
+                fitIndex: fitIndex,
+                autoSubtitle: autoSubtitle,
+                detailsStore: widget.detailsStore,
+                initialDark: initalDark,
+                showHistory: widget.showHistory,
+                torrentStreamer: torrentStreamer,
+              ),
       ),
     );
 

@@ -12,7 +12,6 @@ class ProgressUtils {
         text +=
             " S${detailsStore.progress!.seasonNo!} EP${detailsStore.progress!.episodeNo!}";
       }
-      print("text is $text");
       return text;
     }
     if (detailsStore.showHistory != null) {
