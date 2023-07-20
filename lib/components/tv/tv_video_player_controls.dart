@@ -2,6 +2,7 @@ import "dart:async";
 import "package:better_player/better_player.dart";
 import "package:cinenexa/components/tv/tv_details_drawer.dart";
 import "package:cinenexa/components/tv/tv_details_episodes.dart";
+import "package:cinenexa/components/tv/tv_details_streams.dart";
 import "package:cinenexa/services/constants.dart";
 import "package:cinenexa/services/network/utils.dart";
 import "package:cinenexa/utils/keycode.dart";
@@ -382,7 +383,6 @@ class _TvVideoPlayerControlsState extends State<TvVideoPlayerControls> {
               return;
             }
             playerStore.changeSubtitle(index + 1);
-            Navigator.pop(context);
           },
           onRightWidgetBuild: (item) => Container(),
         );
@@ -396,6 +396,18 @@ class _TvVideoPlayerControlsState extends State<TvVideoPlayerControls> {
       builder: (context) {
         return TvDetailsEpisodes(
           detailsStore: widget.detailsStore!,
+        );
+      },
+    );
+  }
+
+  void _buildNextPlayPopup() {
+    playerStore.setEpisode();
+    showDialog(
+      context: context,
+      builder: (context) {
+        return TvDetailsStreams(
+          detailStore: widget.detailsStore!,
         );
       },
     );
@@ -423,6 +435,7 @@ class _TvVideoPlayerControlsState extends State<TvVideoPlayerControls> {
     } catch (e) {}
 
     widget.torrentStreamer?.stopStream();
+    Navigator.pop(context);
     Navigator.pop(context);
     return true;
   }
@@ -540,11 +553,17 @@ class _TvVideoPlayerControlsState extends State<TvVideoPlayerControls> {
           Style.showLoadingDialog(context: context);
           await playerStore.fetchNewEps();
           Navigator.pop(context);
-          Navigator.maybePop(context);
+          showDialog(
+            context: context,
+            builder: (context) {
+              return TvDetailsStreams(
+                detailStore: widget.detailsStore!,
+              );
+            },
+          );
           return;
         }
-        playerStore.setEpisode();
-        Navigator.maybePop(context);
+        _buildNextPlayPopup();
         break;
       case SUBTITLE:
         _buildSubtitlePopup();

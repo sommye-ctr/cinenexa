@@ -39,14 +39,16 @@ class TvDetailsPage extends StatefulWidget {
 class _TvDetailsPageState extends State<TvDetailsPage> {
   static const int BACK_BUTTON = -1;
   static const int PLAY_BUTTON = 0;
-  static const int ADD_BUTTON = 2;
-  static const int SEASON_TRAILER_BUTTON = 3;
-  static const int STREAMS = 1;
+  static const int ADD_BUTTON = 1;
+  static const int SEASON_TRAILER_BUTTON = 2;
+  static const int STREAMS = 3;
 
   static const double widthPercent = 0.6;
 
   FocusNode homefocus = FocusNode();
   FocusNode backFocus = FocusNode();
+
+  late bool isMovie = widget.detailsStore.baseModel.type == BaseModelType.movie;
 
   int xFocus = PLAY_BUTTON;
   List<RoundedButtonController> controllers = [
@@ -62,7 +64,7 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       FocusScope.of(context).requestFocus(homefocus);
     });
-    if (widget.detailsStore.baseModel.type == BaseModelType.movie) {
+    if (isMovie) {
       widget.detailsStore.fetchStreams();
     }
   }
@@ -143,7 +145,8 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
 
     switch (rawKeyEventData.keyCode) {
       case KEY_RIGHT:
-        if (xFocus == SEASON_TRAILER_BUTTON) {
+        if ((isMovie && xFocus == STREAMS) ||
+            (!isMovie && xFocus == SEASON_TRAILER_BUTTON)) {
           return;
         }
         if (xFocus == BACK_BUTTON) {
@@ -173,7 +176,7 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
       case KEY_CENTER:
         switch (xFocus) {
           case SEASON_TRAILER_BUTTON:
-            if (widget.detailsStore.baseModel.type == BaseModelType.tv) {
+            if (!isMovie) {
               _onSeasonsClicked();
             } else {
               Navigator.pushNamed(
@@ -190,26 +193,42 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
             _buildStreams();
             break;
           case PLAY_BUTTON:
-            if (widget.detailsStore.progress == null) {
-              _buildStreams();
-              return;
+            if (isMovie) {
+              if (widget.detailsStore.progress == null) {
+                _buildStreams();
+                return;
+              }
+              _openLink();
+            } else {
+              if (widget.detailsStore.progress == null) {
+                _onSeasonsClicked();
+                return;
+              }
+              _openLink();
             }
-            LinkOpener.navigateToVideoPlayer(
-              stream: ExtensionStream.url(
-                  url:
-                      "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"),
-              id: widget.detailsStore.baseModel.id!,
-              baseModel: widget.detailsStore.baseModel,
-              context: context,
-              detailsStore: widget.detailsStore,
-              movie: widget.detailsStore.movie,
-            );
+
             break;
         }
 
         break;
       default:
     }
+  }
+
+  void _openLink() {
+    LinkOpener.navigateToVideoPlayer(
+      stream: widget.detailsStore.progress!.stream!,
+      id: widget.detailsStore.baseModel.id!,
+      baseModel: widget.detailsStore.baseModel,
+      context: context,
+      detailsStore: widget.detailsStore,
+      movie: widget.detailsStore.movie,
+      progress: widget.detailsStore.progress,
+      ep: widget.detailsStore.progress?.episodeNo,
+      season: widget.detailsStore.progress?.seasonNo,
+      tv: widget.detailsStore.tv,
+      showHistory: widget.detailsStore.showHistory,
+    );
   }
 
   void _buildStreams() {
@@ -226,34 +245,25 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
   Widget _buildButtons() {
     return Row(
       children: [
-        RoundedButton.controller(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Text(ProgressUtils.getPlayText(widget.detailsStore)),
-              Icon(Icons.play_arrow_sharp),
-            ],
-          ),
-          onPressed: () {},
-          controller: controllers[PLAY_BUTTON],
-        ),
-        Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
-        RoundedButton.controller(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Text(Strings.streams),
-              Icon(Icons.view_stream_rounded),
-            ],
-          ),
-          onPressed: () {},
-          controller: controllers[STREAMS],
-        ),
+        Observer(builder: (_) {
+          widget.detailsStore.progress;
+          return RoundedButton.controller(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Text(ProgressUtils.getPlayText(widget.detailsStore)),
+                Icon(Icons.play_arrow_sharp),
+              ],
+            ),
+            onPressed: () {},
+            controller: controllers[PLAY_BUTTON],
+          );
+        }),
         Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
         _buildAddFavButton(),
         Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
         _buildTrailerButton(),
-        if (widget.detailsStore.baseModel.type == BaseModelType.tv)
+        if (!isMovie)
           RoundedButton.controller(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -268,6 +278,19 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
             onPressed: _onSeasonsClicked,
             controller: controllers[SEASON_TRAILER_BUTTON],
           ),
+        Style.getVerticalHorizontalSpacing(context: context, percent: 0.01),
+        if (isMovie)
+          RoundedButton.controller(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Text(Strings.streams),
+                Icon(Icons.view_stream_rounded),
+              ],
+            ),
+            onPressed: () {},
+            controller: controllers[STREAMS],
+          ),
       ],
     );
   }
@@ -275,8 +298,7 @@ class _TvDetailsPageState extends State<TvDetailsPage> {
   Widget _buildTrailerButton() {
     return Observer(
       builder: (context) {
-        if (widget.detailsStore.baseModel.type == BaseModelType.movie &&
-            widget.detailsStore.video != null) {
+        if (isMovie && widget.detailsStore.video != null) {
           return RoundedButton.controller(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
