@@ -51,6 +51,13 @@ abstract class _TvListStoreBase<T> with Store {
   }
 
   @action
+  void changeItems(List<T> items) {
+    this.items = items.asObservable();
+    focusedIndex = 0;
+    _init();
+  }
+
+  @action
   void changeIndex(int tap) {
     switch (tap) {
       case KEY_LEFT:

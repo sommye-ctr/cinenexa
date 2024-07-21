@@ -1,21 +1,28 @@
 import 'package:cinenexa/components/tv/tv_home_selected_title.dart';
+import 'package:cinenexa/components/tv/tv_movie_tile.dart';
+import 'package:cinenexa/resources/strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:mobx/src/api/observable_collections.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
+import '../../models/local/progress.dart';
 import '../../models/network/base_model.dart';
 import '../../resources/custom_scroll_behavior.dart';
 import '../../resources/style.dart';
 import '../../screens/details_page.dart';
 import '../../screens/tv/tv_home_first.dart';
+import '../../services/constants.dart';
 import '../../services/network/utils.dart';
 import '../../store/home/tv_home_store.dart';
 import '../../store/tv_list/tv_list_store.dart';
 import '../../utils/keycode.dart';
 import '../../utils/screen_size.dart';
+import '../../widgets/custom_progress_indicator.dart';
 import '../../widgets/screen_background_image.dart';
 import '../../widgets/tv_horizontal_list.dart';
+import '../mobile/movie_tile.dart';
 
 class TvFeed extends StatefulWidget {
   final TvHomeStore store;
@@ -24,12 +31,16 @@ class TvFeed extends StatefulWidget {
   final List<Future<List<BaseModel>>> items;
   final List<String> headings;
   final int count;
+
+  final List<Progress>? progressItems;
+
   const TvFeed({
     required this.store,
     required this.clickEvents,
     required this.items,
     required this.headings,
     required this.count,
+    this.progressItems,
     Key? key,
   }) : super(key: key);
 
@@ -63,6 +74,11 @@ class _TvFeedState extends State<TvFeed> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.progressItems != null &&
+        controllers[0].items?.length != widget.progressItems?.length) {
+      _updateProgress();
+    }
+
     return Stack(
       children: [
         Observer(builder: (_) {
@@ -111,7 +127,9 @@ class _TvFeedState extends State<TvFeed> {
                     itemBuilder: (context, index) => listWidgets[index],
                     separatorBuilder: (context, index) =>
                         Style.getVerticalSpacing(context: context),
-                    itemCount: widget.count,
+                    itemCount: widget.progressItems == null
+                        ? widget.count
+                        : widget.count + 1,
                     itemScrollController: homeScrollController,
                   ),
                 ),
@@ -124,21 +142,72 @@ class _TvFeedState extends State<TvFeed> {
     );
   }
 
+  void _updateProgress() {
+    controllers[0].changeItems(widget.progressItems!);
+  }
+
   void _init() {
+    if (widget.progressItems != null) {
+      print("pri " + widget.progressItems.toString());
+      controllers.add(TvListStore<Progress>(
+        focusChange: (item) {
+          widget.store.changeCurrentFocused(item.getBaseModel());
+        },
+      ));
+      listWidgets.add(
+        TvHorizontalList<Progress>(
+          heading: Strings.pickupLeft,
+          height: Style.getMovieTileHeight(
+            context: context,
+            widthPercent: Style.tvTileWidth,
+          ),
+          widthPercentItem: Style.tvTileWidth,
+          tvListStore: controllers[0] as TvListStore<Progress>,
+          onWidgetBuild: (item) {
+            return Stack(
+              children: [
+                Positioned(
+                  child: Container(
+                    width: ScreenSize.getPercentOfWidth(
+                        context, Style.tvTileWidth),
+                    margin: EdgeInsets.all(4),
+                    child: CustomProgressIndicator(
+                      progress: item.progress / 100,
+                      transparent: true,
+                    ),
+                  ),
+                ),
+                Style.getTvMovieTile(
+                  item: item.getBaseModel(),
+                  widhtPercent: Style.tvTileWidth,
+                  showTitle: false,
+                  context: context,
+                  onClick: (baseModel) {},
+                  scale: 1,
+                ),
+              ],
+            );
+          },
+        ),
+      );
+    }
+
     for (int i = 0; i < widget.items.length; i++) {
       controllers.add(_createController(widget.items[i], initialFocus: i == 0));
     }
 
     for (int i = 0; i < widget.headings.length; i++) {
-      listWidgets.add(TvHorizontalList(
-        heading: widget.headings[i],
-        height: Style.getMovieTileHeight(
-          context: context,
-          widthPercent: Style.tvTileWidth,
+      listWidgets.add(
+        TvHorizontalList(
+          heading: widget.headings[i],
+          height: Style.getMovieTileHeight(
+            context: context,
+            widthPercent: Style.tvTileWidth,
+          ),
+          widthPercentItem: Style.tvTileWidth,
+          tvListStore: controllers[i],
         ),
-        widthPercentItem: Style.tvTileWidth,
-        tvListStore: controllers[i],
-      ));
+      );
     }
   }
 
