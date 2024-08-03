@@ -1,5 +1,4 @@
 import 'package:mobx/mobx.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:cinenexa/models/local/last_activities.dart';
 import 'package:cinenexa/models/local/show_history.dart';
 import 'package:cinenexa/models/network/base_model.dart';
@@ -41,7 +40,7 @@ abstract class _UserStoreBase with Store {
 
   TraktRepository repository = TraktRepository(client: TraktOAuthClient());
   Database localDb = Database();
-  SupabaseClient supabaseClient = Supabase.instance.client;
+  //SupabaseClient supabaseClient = Supabase.instance.client;
   bool traktStatus = false;
   bool guestLogin = false;
 
@@ -59,13 +58,14 @@ abstract class _UserStoreBase with Store {
     traktStatus = await localDb.getUserTraktStatus();
     guestLogin = await localDb.getGuestSignupStatus();
 
-    if (supabaseClient.auth.currentUser != null) {
+    /* if (supabaseClient.auth.currentUser != null) {
       user = CineNexaUser(
         id: supabaseClient.auth.currentUser!.id,
         name: supabaseClient.auth.currentUser!.userMetadata?['name'],
         email: supabaseClient.auth.currentUser!.email!,
       );
-    }
+    } */
+    //TODO - HANDLE USER OBJECT ASIGNING
 
     if (isTraktLogged) {
       fetchUserStats();
@@ -215,7 +215,7 @@ abstract class _UserStoreBase with Store {
   @action
   Future logout() async {
     return Future.wait([
-      supabaseClient.auth.signOut(),
+      //supabaseClient.auth.signOut()  TODO - HANDLE SIGN OUT,
       localDb.clearAll(),
     ]);
   }

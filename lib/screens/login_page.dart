@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cinenexa/resources/strings.dart';
 import 'package:cinenexa/resources/style.dart';
-import 'package:cinenexa/screens/login_configure_page.dart';
 import 'package:cinenexa/widgets/custom_back_button.dart';
 import 'package:cinenexa/widgets/custom_text_form.dart';
 import 'package:cinenexa/widgets/rounded_button.dart';
@@ -131,7 +130,9 @@ class _LoginPageState extends State<LoginPage> {
 
   void _onClick() async {
     Style.showLoadingDialog(context: context);
-    try {
+
+    //TODO - HANDLE LOGIN
+    /* try {
       final AuthResponse resp =
           await Supabase.instance.client.auth.signInWithPassword(
         password: passController.text.trim(),
@@ -152,6 +153,6 @@ class _LoginPageState extends State<LoginPage> {
     } catch (error) {
       Navigator.pop(context);
       Style.showToast(context: context, text: Strings.unexpecedError);
-    }
+    } */
   }
 }

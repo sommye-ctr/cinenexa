@@ -69,12 +69,13 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
                       onPressed: () async {
                         Style.showLoadingDialog(context: context);
                         try {
-                          await Supabase.instance.client.auth
+                          /* await Supabase.instance.client.auth
                               .resetPasswordForEmail(
                             emailController.value.text,
                             redirectTo:
                                 "https://www.cinenexa.com/reset-password/",
-                          );
+                          ); */
+                          //TODO - HANDLE PASSWORD RESET
                           Style.showToast(
                             context: context,
                             text:

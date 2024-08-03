@@ -4,7 +4,6 @@ import 'package:cinenexa/screens/extension_config_page.dart';
 import 'package:cinenexa/screens/extensions_page.dart';
 import 'package:cinenexa/screens/list_details_page.dart';
 import 'package:cinenexa/services/local/database.dart';
-import 'package:cinenexa/services/network/analytics.dart';
 import 'package:cinenexa/store/watchlist/watchlist_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -34,7 +33,6 @@ import 'package:cinenexa/screens/register_page.dart';
 import 'package:cinenexa/screens/settings_page.dart';
 import 'package:cinenexa/screens/video_player_page.dart';
 import 'package:cinenexa/screens/youtube_video_player.dart';
-import 'package:cinenexa/store/extensions/extensions_store.dart';
 import 'package:cinenexa/store/favorites/favorites_store.dart';
 import 'package:cinenexa/store/user/user_store.dart';
 
@@ -100,20 +98,16 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     FavoritesStore favoritesStore = FavoritesStore();
     WatchListStore watchListStore = WatchListStore();
-    ExtensionsStore extensionsStore = ExtensionsStore();
     Widget homeWidget;
 
-    extensionsStore.init();
-    extensionsStore.fetch();
-
-    if (Supabase.instance.client.auth.currentUser != null ||
+    /* if (Supabase.instance.client.auth.currentUser != null ||
         (widget.anonStatus ?? false)) {
       homeWidget = HomeFirstScreen();
     } else {
       homeWidget = IntroPage();
-    }
+    } */ //TODO - HANDLE THIS
+    homeWidget = Container();
     FlutterNativeSplash.remove();
-    Analytics().logStartup();
 
     return Provider.MultiProvider(
       providers: [
@@ -123,9 +117,6 @@ class _MyAppState extends State<MyApp> {
             favoritesStore: favoritesStore,
             watchListsStore: watchListStore,
           ),
-        ),
-        Provider.Provider(
-          create: (_) => extensionsStore,
         ),
         Provider.Provider(
           create: (_) => watchListStore,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import '../store/extensions/extensions_store.dart';
 import 'extensions_extension_tile.dart';
 
 class ExtensionsDiscover extends StatefulWidget {

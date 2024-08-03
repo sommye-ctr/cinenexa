@@ -1,8 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:restart_app/restart_app.dart';
-import 'package:cinenexa/screens/login_page.dart';
 import 'package:cinenexa/utils/form_validator.dart';
 import 'package:cinenexa/utils/link_opener.dart';
 
@@ -167,7 +165,8 @@ class _RegisterPageState extends State<RegisterPage> {
   void _onClick() async {
     Style.showLoadingDialog(context: context);
 
-    try {
+//TODO - HANDLE SIGNUP
+    /*  try {
       final AuthResponse res = await Supabase.instance.client.auth.signUp(
         password: passController.text.trim(),
         email: emailController.text.trim(),
@@ -195,7 +194,7 @@ class _RegisterPageState extends State<RegisterPage> {
       Navigator.pop(context);
       Style.showToast(
           context: context, text: Strings.unexpecedError, long: true);
-    }
+    } */
   }
 
   void _launchUrl(String url) async {

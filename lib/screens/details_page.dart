@@ -1,12 +1,9 @@
-import 'package:cinenexa/store/user/user_store.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:cinenexa/components/details_header.dart';
 import 'package:cinenexa/components/details_more_details.dart';
 
 import 'package:cinenexa/services/constants.dart';
 import 'package:cinenexa/store/details/details_store.dart';
-import 'package:cinenexa/store/extensions/extensions_store.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '../models/network/base_model.dart';
@@ -37,7 +34,7 @@ class _DetailsPageState extends State<DetailsPage> {
 
   @override
   void initState() {
-    var list = Provider.of<ExtensionsStore>(context, listen: false)
+    /*  var list = Provider.of<ExtensionsStore>(context, listen: false)
         .installedExtensions;
     bool trakt = Provider.of<UserStore>(context, listen: false).isTraktLogged;
 
@@ -46,7 +43,7 @@ class _DetailsPageState extends State<DetailsPage> {
       noOfExtensions: list.length,
       installedExtensions: list,
       isTraktLogged: trakt,
-    );
+    ); */
     super.initState();
   }
 

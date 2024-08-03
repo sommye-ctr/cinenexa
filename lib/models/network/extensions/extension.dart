@@ -2,7 +2,6 @@
 import 'dart:convert';
 
 import 'package:isar/isar.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:cinenexa/models/local/installed_extensions.dart';
 
@@ -45,9 +44,11 @@ class Extension {
     this.rating,
     this.ratingCount,
     this.configJson,
-  }) : icon = Supabase.instance.client.storage
+  }) /* :icon = Supabase.instance.client.storage
             .from('extensions-icons')
-            .getPublicUrl("$id.jpg");
+            .getPublicUrl("$id.jpg") */
+  ;
+  //TODO HANDLE EXTENSION ICON
 
   Extension copyWith({
     String? id,
