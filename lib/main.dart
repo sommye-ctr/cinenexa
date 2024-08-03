@@ -15,7 +15,6 @@ import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart' as Provider;
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:cinenexa/models/local/favorites.dart';
 import 'package:cinenexa/models/local/installed_extensions.dart';
 import 'package:cinenexa/models/local/last_activities.dart';
@@ -48,11 +47,6 @@ void main() async {
 
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await dotenv.load(fileName: "lib/.env");
-
-  await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL'] ?? "",
-    anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? "",
-  );
 
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
