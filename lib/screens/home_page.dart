@@ -149,7 +149,6 @@ class _HomePageState extends State<HomePage>
             right: HomeBottomNavBar.bottomNavPadding,
             child: FloatingActionButton(
               child: Badge.Badge(
-                alignment: Alignment.topRight,
                 showBadge: homeStore.isFilterApplied,
                 child: Icon(
                   homeStore.isFilterApplied

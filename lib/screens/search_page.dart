@@ -190,7 +190,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
 
   Widget _buildSpeakingOverlay() {
     return AvatarGlow(
-      endRadius: 80,
+      glowBorderRadius: BorderRadius.circular(80),
       animate: searchStore.speaking,
       glowColor: Theme.of(context).colorScheme.primary,
       child: FloatingActionButton(

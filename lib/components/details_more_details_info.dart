@@ -3,7 +3,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:cinenexa/screens/youtube_video_player.dart';
 import 'package:cinenexa/store/details/details_store.dart';
 import 'package:cinenexa/widgets/rounded_image.dart';
-import 'package:youtube/youtube_thumbnail.dart';
+import 'package:youtube/youtube.dart';
 
 import '../models/network/base_model.dart';
 import '../resources/strings.dart';
@@ -26,9 +26,23 @@ class DetailsMoreDetailsInfo extends StatefulWidget {
 }
 
 class _DetailsMoreDetailsInfoState extends State<DetailsMoreDetailsInfo> {
+  String? thumbnailHd;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchYtData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return _build();
+  }
+
+  void _fetchYtData() async {
+    await Youtube.config(videoId: widget.detailsStore.video!.key);
+    thumbnailHd = Youtube.thumbnails.hd;
+    setState(() {});
   }
 
   Widget _build() {
@@ -88,9 +102,7 @@ class _DetailsMoreDetailsInfoState extends State<DetailsMoreDetailsInfo> {
                   children: [
                     Center(
                       child: RoundedImage(
-                        image: YoutubeThumbnail(
-                          youtubeId: widget.detailsStore.video!.key,
-                        ).hd(),
+                        image: thumbnailHd ?? "",
                         width: ScreenSize.getPercentOfWidth(context, 0.9),
                         ratio: 16 / 9,
                       ),

@@ -94,8 +94,8 @@ class ExtensionsRepository {
         } else {
           response = await getResponse(extension, query);
         }
-      } on DioError catch (e) {
-        if (e.type == DioErrorType) {
+      } on DioException catch (e) {
+        if (e.type == DioExceptionType) {
           return [];
         }
         return [];
@@ -116,7 +116,7 @@ class ExtensionsRepository {
         "params": extension.userData,
       },
       options: Options(
-        receiveTimeout: 30000,
+        receiveTimeout: Duration(milliseconds: 30000),
       ),
     );
     return result;
@@ -128,7 +128,7 @@ class ExtensionsRepository {
       extension.endpoint!,
       queryParameters: query,
       options: Options(
-        receiveTimeout: 30000,
+        receiveTimeout: Duration(milliseconds: 30000),
       ),
     );
     return resp;
