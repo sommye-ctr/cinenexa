@@ -78,7 +78,7 @@ class _HomeFeaturedState extends State<HomeFeatured>
                 ? BaseModel.fromMovie(item.movie!)
                 : BaseModel.fromTv(item.show!));
           },
-          backgroundColor: Theme.of(context).backgroundColor,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         ),
         FocusedMenuItem(
           title: Text(Strings.remove),
@@ -89,7 +89,7 @@ class _HomeFeaturedState extends State<HomeFeatured>
                 .removeProgress(item)
                 .whenComplete(() => Navigator.pop(context));
           },
-          backgroundColor: Theme.of(context).backgroundColor,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         ),
       ],
       onPressed: () {},

@@ -380,7 +380,7 @@ class _DetailsMoreDetailsStreamsState extends State<DetailsMoreDetailsStreams> {
               ? Icons.playlist_remove_rounded
               : Icons.playlist_add_check_rounded,
         ),
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         onPressed: () {
           Style.showLoadingDialog(context: context);
           epWatched

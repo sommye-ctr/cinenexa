@@ -330,6 +330,7 @@ class Database {
         int id = await isar.installedExtensions.put(ext);
         return isar.installedExtensions.get(id);
       }
+      return null;
     });
   }
 

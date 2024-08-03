@@ -81,7 +81,7 @@ class FormBuilderState extends State<FormBuilder> {
         child: child,
       ),
       margin: EdgeInsets.all(16),
-      color: Theme.of(context).backgroundColor,
+      color: Theme.of(context).scaffoldBackgroundColor,
       shape: RoundedRectangleBorder(
         side: BorderSide(
           color: Colors.grey.shade800,

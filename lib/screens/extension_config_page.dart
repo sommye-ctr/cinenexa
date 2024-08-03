@@ -29,7 +29,7 @@ class _ExtensionConfigState extends State<ExtensionConfig> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       floatingActionButton: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -80,7 +80,7 @@ class _ExtensionConfigState extends State<ExtensionConfig> {
               ),
             ),
             Card(
-              color: Theme.of(context).backgroundColor,
+              color: Theme.of(context).scaffoldBackgroundColor,
               shape: RoundedRectangleBorder(
                 side: BorderSide(color: Colors.grey.shade700),
                 borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),

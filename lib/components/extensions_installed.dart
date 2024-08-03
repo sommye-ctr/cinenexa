@@ -1,7 +1,6 @@
 import 'package:cinenexa/resources/style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:lottie/lottie.dart';
 import 'package:cinenexa/resources/strings.dart';
 import 'package:cinenexa/store/extensions/extensions_store.dart';
 

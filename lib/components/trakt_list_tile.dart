@@ -2,7 +2,6 @@ import 'package:cinenexa/models/network/trakt/trakt_list.dart';
 import 'package:cinenexa/resources/style.dart';
 import 'package:cinenexa/services/constants.dart';
 import 'package:cinenexa/services/network/utils.dart';
-import 'package:cinenexa/widgets/rounded_image.dart';
 import 'package:cinenexa/widgets/stacked_images.dart';
 import 'package:flutter/material.dart';
 

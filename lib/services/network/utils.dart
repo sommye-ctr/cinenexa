@@ -124,6 +124,7 @@ class Utils {
     if (trailers.isNotEmpty) {
       return Video.fromMap(trailers.first);
     }
+    return null;
   }
 
   static List<BaseModel> convertToBaseModelListWithSkipLimit(

@@ -53,7 +53,7 @@ class _CustomCheckBoxState extends State<CustomCheckBox> {
         decoration: BoxDecoration(
           color: value
               ? Theme.of(context).colorScheme.primary
-              : Theme.of(context).colorScheme.surfaceVariant,
+              : Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(Style.smallRoundEdgeRadius),
         ),
         child: Padding(

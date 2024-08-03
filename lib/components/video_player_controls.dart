@@ -3,7 +3,6 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:better_player/better_player.dart';
 import 'package:cinenexa/components/video_player_progress_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:glass/glass.dart';
 import 'package:provider/provider.dart';

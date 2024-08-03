@@ -11,7 +11,6 @@ import '../resources/style.dart';
 import '../store/user/user_store.dart';
 import '../store/watchlist/watchlist_store.dart';
 import '../utils/screen_size.dart';
-import '../widgets/custom_checkbox_list.dart';
 import 'list_details_page.dart';
 
 class WatchListPage extends StatefulWidget {

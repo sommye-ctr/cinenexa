@@ -73,6 +73,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               if (!val!.isValidName) {
                                 return Strings.nameError;
                               }
+                              return null;
                             },
                             icon: Icon(
                               Icons.person_outline_rounded,
@@ -86,6 +87,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               if (!val!.isValidEmail) {
                                 return Strings.emailError;
                               }
+                              return null;
                             },
                             icon: Icon(
                               Icons.mail_outline_rounded,
@@ -100,6 +102,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               if (!val!.isValidPassword) {
                                 return Strings.passwordError;
                               }
+                              return null;
                             },
                             icon: Icon(
                               Icons.lock_outline_rounded,

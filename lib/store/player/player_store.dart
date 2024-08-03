@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:better_player/better_player.dart';
-import 'package:cinenexa/utils/file_opener.dart';
 import 'package:cinenexa/models/network/extensions/subtitle.dart';
 import 'package:mobx/mobx.dart';
 import 'package:cinenexa/models/network/extensions/extension_stream.dart';

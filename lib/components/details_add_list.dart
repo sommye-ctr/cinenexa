@@ -7,7 +7,6 @@ import 'package:provider/provider.dart';
 import '../models/network/base_model.dart';
 import '../models/network/trakt/trakt_list.dart';
 import '../resources/strings.dart';
-import '../utils/screen_size.dart';
 import '../widgets/rounded_button.dart';
 
 class DetailsAddList extends StatefulWidget {

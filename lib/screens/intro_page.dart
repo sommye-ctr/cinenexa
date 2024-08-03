@@ -43,7 +43,7 @@ class _IntroPageState extends State<IntroPage> {
                     textAlign: TextAlign.center,
                     style: Theme.of(context)
                         .textTheme
-                        .headline5
+                        .headlineMedium
                         ?.apply(color: Colors.black),
                   ),
                   Style.getVerticalSpacing(context: context),

@@ -97,7 +97,7 @@ class _SubtitleSettingsState extends State<SubtitleSettings> {
                       EdgeInsets.only(bottom: (_calculatePosition(_position))),
                   child: Text(
                     Strings.subtitlePreview,
-                    textScaleFactor: MediaQuery.of(context).size.aspectRatio,
+                    textScaler: MediaQuery.of(context).textScaler,
                     style: TextStyle(
                       fontSize: _fontSize.toDouble(),
                       backgroundColor: enableBg

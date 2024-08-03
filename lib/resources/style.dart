@@ -1,6 +1,5 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cinenexa/resources/asset.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -41,7 +40,7 @@ class Style {
         tileColor: Colors.white,
       ),
       colorScheme: ColorScheme.light(
-        background: Colors.white,
+        surface: Colors.white,
         primary: Colors.orange,
       ),
       bottomSheetTheme: BottomSheetThemeData(
@@ -70,7 +69,7 @@ class Style {
         selectedTileColor: Colors.black,
       ),
       colorScheme: ColorScheme.dark(
-        background: Colors.black,
+        surface: Colors.black,
         primary: Colors.orange,
       ),
       bottomSheetTheme: BottomSheetThemeData(

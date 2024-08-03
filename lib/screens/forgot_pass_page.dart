@@ -54,6 +54,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
                         if (!val!.isValidEmail) {
                           return Strings.emailError;
                         }
+                        return null;
                       },
                       icon: Icon(
                         Icons.mail_outline_rounded,

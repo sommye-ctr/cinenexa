@@ -68,6 +68,7 @@ class _LoginPageState extends State<LoginPage> {
                               if (!val!.isValidEmail) {
                                 return Strings.emailError;
                               }
+                              return null;
                             },
                             icon: Icon(
                               Icons.mail_outline_rounded,
@@ -82,6 +83,7 @@ class _LoginPageState extends State<LoginPage> {
                               if (!val!.isValidPassword) {
                                 return Strings.passwordError;
                               }
+                              return null;
                             },
                             icon: Icon(
                               Icons.lock_outline_rounded,
