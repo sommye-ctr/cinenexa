@@ -1,5 +1,4 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
-import 'package:amplitude_flutter/amplitude.dart';
 import 'package:cinenexa/components/settings_subtitle_setting.dart';
 import 'package:cinenexa/screens/extension_config_page.dart';
 import 'package:cinenexa/screens/extensions_page.dart';
@@ -52,9 +51,6 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-
-  final Amplitude amplitude = Amplitude.getInstance();
-  amplitude.init(dotenv.env['AMPLITUDE_KEY'] ?? "");
 
   await Isar.open(
     [

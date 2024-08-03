@@ -17,14 +17,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.1"
-  amplitude_flutter:
-    dependency: "direct main"
-    description:
-      name: amplitude_flutter
-      sha256: bded35da481f3c3868389c043a066b41cfd3f74be15dba9383a78031b07f826b
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.13.0"
   analyzer:
     dependency: transitive
     description:

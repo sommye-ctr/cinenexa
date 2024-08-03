@@ -2,7 +2,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:restart_app/restart_app.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:cinenexa/screens/login_page.dart';
 import 'package:cinenexa/utils/form_validator.dart';
 import 'package:cinenexa/utils/link_opener.dart';
