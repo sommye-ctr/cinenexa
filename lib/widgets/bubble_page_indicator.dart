@@ -10,7 +10,7 @@ class BubblePageIndicator extends StatelessWidget {
   final int length;
   final int currentPage;
 
-  Color? selectedColor;
+  final Color? selectedColor;
   BubblePageIndicator({
     Key? key,
     required this.length,
