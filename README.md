@@ -1,3 +1,3 @@
 # CineNexa
 
-A movie streaming flutter app.
+A Movie/TV Show discovery app with support for external extensions
