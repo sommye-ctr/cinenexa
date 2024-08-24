@@ -265,6 +265,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
               indicatorPadding: EdgeInsets.all(8),
               splashBorderRadius: BorderRadius.circular(40),
               isScrollable: true,
+              dividerColor: Colors.transparent,
               onTap: _onSearchTypeChanged,
               controller: tabController,
               tabs: [

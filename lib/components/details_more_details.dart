@@ -59,6 +59,7 @@ class _DetailsMoreDetailsState extends State<DetailsMoreDetails>
             indicatorPadding: EdgeInsets.all(8),
             splashBorderRadius: BorderRadius.circular(40),
             isScrollable: true,
+            dividerColor: Colors.transparent,
             tabs: [
               Tab(text: Strings.streams),
               Tab(text: Strings.otherInfo),

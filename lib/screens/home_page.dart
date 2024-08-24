@@ -80,6 +80,7 @@ class _HomePageState extends State<HomePage>
             labelColor: Colors.black,
             splashBorderRadius: BorderRadius.circular(40),
             isScrollable: true,
+            dividerColor: Colors.transparent,
             onTap: homeStore.tabChanged,
             tabs: [
               Tab(

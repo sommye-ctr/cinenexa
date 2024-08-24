@@ -85,6 +85,7 @@ class _ExtensionsPageState extends State<ExtensionsPage> {
                     indicatorPadding: EdgeInsets.all(8),
                     splashBorderRadius: BorderRadius.circular(40),
                     isScrollable: true,
+                    dividerColor: Colors.transparent,
                     tabs: [
                       Tab(
                         text: Strings.discover,
