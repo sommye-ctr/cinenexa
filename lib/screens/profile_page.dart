@@ -250,13 +250,13 @@ class _ProfilePageState extends State<ProfilePage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (userStore.user?.id != null)
-                randomAvatar(
+                RandomAvatar(
                   userStore.user!.id,
                   width: ScreenSize.getPercentOfWidth(context, 0.1),
                   height: ScreenSize.getPercentOfWidth(context, 0.1),
                 ),
               if (userStore.user == null)
-                randomAvatar(
+                RandomAvatar(
                   SizeFormatter.getRandomString(10),
                   width: ScreenSize.getPercentOfWidth(context, 0.1),
                   height: ScreenSize.getPercentOfWidth(context, 0.1),

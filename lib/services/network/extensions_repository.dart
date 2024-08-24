@@ -116,7 +116,7 @@ class ExtensionsRepository {
         "params": extension.userData,
       },
       options: Options(
-        receiveTimeout: 30000,
+        receiveTimeout: Duration(milliseconds: 30000),
       ),
     );
     return result;
@@ -128,7 +128,7 @@ class ExtensionsRepository {
       extension.endpoint!,
       queryParameters: query,
       options: Options(
-        receiveTimeout: 30000,
+        receiveTimeout: Duration(milliseconds: 30000),
       ),
     );
     return resp;

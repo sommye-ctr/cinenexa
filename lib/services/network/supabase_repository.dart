@@ -57,7 +57,7 @@ class SupabaseRepository {
       await client
           .from('user_extensions')
           .delete()
-          .eq('extension_id', extension.id);
+          .eq('extension_id', extension.id ?? "");
       return Success(unit);
     } catch (e) {
       return Error(e as PostgrestException);
