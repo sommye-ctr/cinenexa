@@ -17,7 +17,7 @@ import path_provider_foundation
 import rive_common
 import shared_preferences_foundation
 import speech_to_text_macos
-import sqflite
+import sqflite_darwin
 import url_launcher_macos
 import wakelock_plus
 import window_to_front

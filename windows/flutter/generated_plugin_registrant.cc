@@ -7,6 +7,7 @@
 #include "generated_plugin_registrant.h"
 
 #include <app_links/app_links_plugin_c_api.h>
+#include <flutter_inappwebview_windows/flutter_inappwebview_windows_plugin_c_api.h>
 #include <flutter_secure_storage_windows/flutter_secure_storage_windows_plugin.h>
 #include <isar_flutter_libs/isar_flutter_libs_plugin.h>
 #include <rive_common/rive_plugin.h>
@@ -16,6 +17,8 @@
 void RegisterPlugins(flutter::PluginRegistry* registry) {
   AppLinksPluginCApiRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("AppLinksPluginCApi"));
+  FlutterInappwebviewWindowsPluginCApiRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("FlutterInappwebviewWindowsPluginCApi"));
   FlutterSecureStorageWindowsPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("FlutterSecureStorageWindowsPlugin"));
   IsarFlutterLibsPluginRegisterWithRegistrar(
