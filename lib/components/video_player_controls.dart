@@ -6,15 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:glass/glass.dart';
 import 'package:provider/provider.dart';
-import 'package:video_cast/chrome_cast_media_type.dart';
-import 'package:video_cast/chrome_cast_subtitle.dart';
-import 'package:video_cast/video_cast.dart';
 
 import 'package:cinenexa/models/local/show_history.dart';
 import 'package:cinenexa/resources/strings.dart';
 import 'package:cinenexa/resources/style.dart';
 import 'package:cinenexa/services/local/torrent_streamer.dart';
-import 'package:cinenexa/services/network/utils.dart';
 import 'package:cinenexa/store/details/details_store.dart';
 import 'package:cinenexa/utils/settings_indexer.dart';
 import 'package:cinenexa/widgets/custom_checkbox_list.dart';
@@ -81,7 +77,6 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
   Timer? hideTimer;
   ScrobbleManager? scrobbleManager;
   late PlayerStore playerStore;
-  ChromeCastController? chromeCastController;
   Widget drawerWidget = Container();
   FocusNode focus = FocusNode();
 
@@ -253,7 +248,6 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
     scrobbleManager?.exit();
     /*  if (widget.initialDark != null && !widget.initialDark!)
       AdaptiveTheme.of(context).setLight(); */
-    if (playerStore.casting) chromeCastController?.endSession();
 
     /*  try {
       widget.controller.exitFullScreen();
@@ -322,43 +316,6 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
               SizedBox(
                 width: 8,
               ),
-              ChromeCastButton(
-                onButtonCreated: (controller) {
-                  chromeCastController = controller;
-                  chromeCastController?.addSessionListener();
-                },
-                onSessionStarted: () {
-                  playerStore.setCasting(true);
-                  widget.controller.pause();
-                  chromeCastController?.loadMedia(
-                    type: widget.baseModel!.type == BaseModelType.movie
-                        ? ChromeCastMediaType.movie
-                        : ChromeCastMediaType.show,
-                    url: widget.controller.betterPlayerDataSource!.url,
-                    title: widget.baseModel!.title!,
-                    autoplay: true,
-                    image: Utils.getPosterUrl(widget.baseModel!.posterPath!),
-                    position: playerStore.position.inMilliseconds.toDouble(),
-                    showEpisode: widget.episode,
-                    showSeason: widget.season,
-                    subtitles: _getCastSubtitles(),
-                  );
-                  playerStore.setShowControls(false);
-
-                  if (playerStore.selectedSubtitle != null) {
-                    chromeCastController?.setTrack(
-                        subId: playerStore.selectedSubtitle!.toDouble());
-                  }
-                },
-                onSessionEnding: (position) {
-                  playerStore.setCasting(false);
-                  scrobbleManager?.paused();
-                  if (position != null)
-                    widget.controller.seekTo(Duration(milliseconds: position));
-
-                  widget.controller.play();
-                },
-              ),
             ],
           ),
         ],
@@ -406,24 +363,6 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
       },
     );
     openDrawer();
-  }
-
-  List<ChromeCastSubtitle> _getCastSubtitles() {
-    List<ChromeCastSubtitle> subs = [];
-    if (widget.stream.subtitles != null) {
-      for (int i = 0; i < widget.stream.subtitles!.length; i++) {
-        var element = widget.stream.subtitles![i];
-        subs.add(
-          ChromeCastSubtitle(
-            id: i.toDouble(),
-            name: element.title ?? "",
-            source: element.url ?? "",
-            language: "en-US",
-          ),
-        );
-      }
-    }
-    return subs;
   }
 
   Widget _buildTitle() {
@@ -585,29 +524,14 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
           ),
           onSelectionAdded: (values) {
             if (values.first == Strings.none) {
-              if (playerStore.casting) {
-                chromeCastController?.disableTrack();
-                playerStore.setSelectedSubtitle(null);
-                Navigator.pop(context);
-                return;
-              }
               playerStore.changeSubtitle(-1);
               return;
             }
             int selectedIndex = widget.stream.subtitles!
                 .indexWhere((element) => element.title == values.first);
 
-            if (playerStore.casting) {
-              if (selectedIndex < 0) {
-                chromeCastController?.disableTrack();
-                playerStore.setSelectedSubtitle(null);
-              } else {
-                chromeCastController?.setTrack(subId: selectedIndex.toDouble());
-                playerStore.setSelectedSubtitle(selectedIndex);
-              }
-            } else {
-              playerStore.changeSubtitle(selectedIndex);
-            }
+            playerStore.changeSubtitle(selectedIndex);
+
             Navigator.pop(context);
           },
         ),

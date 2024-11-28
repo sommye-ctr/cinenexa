@@ -1,4 +1,4 @@
-package com.example.android
+package com.cinenexa
 
 import io.flutter.embedding.android.FlutterActivity
 

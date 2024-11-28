@@ -1,67 +1,46 @@
-def localProperties = new Properties()
-def localPropertiesFile = rootProject.file('local.properties')
-if (localPropertiesFile.exists()) {
-    localPropertiesFile.withReader('UTF-8') { reader ->
-        localProperties.load(reader)
-    }
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    id "dev.flutter.flutter-gradle-plugin"
 }
 
 def keystoreProperties = new Properties()
-   def keystorePropertiesFile = rootProject.file('key.properties')
-   if (keystorePropertiesFile.exists()) {
-       keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-   }
-
-def flutterRoot = localProperties.getProperty('flutter.sdk')
-if (flutterRoot == null) {
-    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
-
-def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
-if (flutterVersionCode == null) {
-    flutterVersionCode = '1'
-}
-
-def flutterVersionName = localProperties.getProperty('flutter.versionName')
-if (flutterVersionName == null) {
-    flutterVersionName = '1.0'
-}
-
-apply plugin: 'com.android.application'
-apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdkVersion 34
-    ndkVersion flutter.ndkVersion
+    namespace "com.cinenexa"
+    compileSdk = flutter.compileSdkVersion
+    ndkVersion = flutter.ndkVersion
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
     }
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.cinenexa"
+        applicationId = "com.cinenexa"
         // You can update the following values to match your application needs.
-        // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-build-configuration.
-        minSdkVersion 21
-        targetSdkVersion flutter.targetSdkVersion
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
-        multiDexEnabled true
-    }
-
-    packagingOptions {
-        // Fixes duplicate libraries build issue,
-        // when your project uses more than one plugin that depend on C++ libs.
-        pickFirst 'lib/**/libc++_shared.so'
+        // For more information, see: https://flutter.dev/to/review-gradle-config.
+        minSdk = flutter.minSdkVersion
+        targetSdk = flutter.targetSdkVersion
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
     }
 
     signingConfigs {
        release {
+           storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
            keyAlias keystoreProperties['keyAlias']
            keyPassword keystoreProperties['keyPassword']
-           storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
            storePassword keystoreProperties['storePassword']
        }
    }
@@ -78,23 +57,6 @@ android {
     }
 }
 
-allprojects {
-    repositories {
-        maven { url 'https://www.jitpack.io' }
-    }
-}
-
-dependencies {
-    implementation 'androidx.multidex:multidex:2.0.1'
-    implementation "com.github.TorrentStream:TorrentStream-Android:3.0.0"
-    implementation "com.github.TorrentStream:TorrentStreamServer-Android:2.0.0"
-
-    implementation 'org.jetbrains:annotations:15.0'
-
-    implementation 'com.google.android.gms:play-services-cast-framework:21.2.0'
-    implementation 'com.google.android.exoplayer:extension-cast:2.17.1'
-}
-
 flutter {
-    source '../..'
+    source = "../.."
 }
