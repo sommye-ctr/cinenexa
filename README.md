@@ -42,22 +42,10 @@ Take a closer look at CineNexa's intuitive interface and powerful features:
 
 ## ⚙️ Installation
 
-![Installation Process](https://example.com/installation.png "Simple Installation Steps")
-
-### Requirements
-1. **📱 Platform:**  
-   - Android or iOS for mobile apps  
-   - Windows, Mac, or Linux for desktop apps *(if applicable)*  
-
-2. **🌐 Trakt.tv Account:**  
-   Sign up at [Trakt.tv](https://trakt.tv) to sync your progress and enjoy cross-platform usage.
-
 ### Steps
-1. Download the CineNexa app from the official store:
-   - [📲 Google Play Store](#) *(Insert link when available)*
-   - [🍎 Apple App Store](#) *(Insert link when available)*
+1. Go to Releases section on github.
 
-2. Launch the app and sign in using your Trakt.tv account.
+2. Download and install the .apk file according to your device architecture.
 
 3. Explore CineNexa's features, configure your library, and start tracking!
 
