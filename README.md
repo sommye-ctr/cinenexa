@@ -2,52 +2,50 @@
 
 **Track what you see, Resume where you left.**
 
-![CineNexa Banner](https://example.com/banner.png "CineNexa Banner")
-
 CineNexa is your ultimate movie and show tracker, powered by [Trakt.tv](https://trakt.tv) and [TMDB](https://www.themoviedb.org). Whether you're binge-watching your all-time favorites or exploring new content, CineNexa tracks your progress, allowing you to resume seamlessly from where you left off. With features like plugin-based extensions, clean UI, and powerful discovery tools, CineNexa enhances your viewing experience.
+
+---
+
+## 📸 Screenshots
+
+Take a closer look at CineNexa's intuitive interface and powerful features:
+
+| ![Screenshot 1](home.jpeg "Home Screen") | ![Screenshot 2](search.jpeg "Search Movies") | ![Screenshot 3](filters.jpeg "Discover Content") |
+|:-------------------------------------------------------------------:|:---------------------------------------------------------------------:|:----------------------------------------------------------------------:|
+| **Home Screen**                                                    | **Search Movies**                                                     | **Discover Content**                                                   |
+
+| ![Screenshot 4](fav.jpeg "Favorites") | ![Screenshot 5](profile.jpeg "Profile") | ![Screenshot 6](details.jpeg "Details") |
+|:-----------------------------------------------------------------:|:-------------------------------------------------------------------:|:----------------------------------------------------------------:|
+| **Favorites**                                                     | **Profile**                                                      | **Details**                                                    |
+
+| ![Screenshot 7](episodes.jpeg "Episodes") |
+|:-------------------------------------------------------------------------:|
+| **Episodes**                                                    |
 
 ---
 
 ## ✨ Features
 
-![CineNexa Icon](https://example.com/icon.png "CineNexa Icon")
-
 - **🔍 Search, Filter & Discover**  
-  ![Search Screenshot](https://example.com/search-screenshot.png "Search & Discover")  
   Find new movies and shows effortlessly. Filter results to suit your preferences and discover trending content worldwide.
 
 - **🛠️ Install Extensions & Binge**  
-  ![Extensions Screenshot](https://example.com/extensions-screenshot.png "Install Extensions")  
   Enhance CineNexa by installing third-party extensions, allowing you to access content from all over the globe.
 
 - **⏱️ Track, Resume & Repeat**  
-  ![Tracking Screenshot](https://example.com/tracking-screenshot.png "Track Progress")  
   Never lose track of your progress. CineNexa syncs with [Trakt.tv](https://trakt.tv) to save your viewing history and resume across devices.
 
 - **🎨 Clean UI**  
-  ![Clean UI Screenshot](https://example.com/ui-screenshot.png "Clean UI")  
   Enjoy an eye-pleasing interface with beautiful animations and dark mode support for a seamless browsing experience.
 
 ---
 
 ## ⚙️ Installation
 
-![Installation Process](https://example.com/installation.png "Simple Installation Steps")
-
-### Requirements
-1. **📱 Platform:**  
-   - Android or iOS for mobile apps  
-   - Windows, Mac, or Linux for desktop apps *(if applicable)*  
-
-2. **🌐 Trakt.tv Account:**  
-   Sign up at [Trakt.tv](https://trakt.tv) to sync your progress and enjoy cross-platform usage.
-
 ### Steps
-1. Download the CineNexa app from the official store:
-   - [📲 Google Play Store](#) *(Insert link when available)*
-   - [🍎 Apple App Store](#) *(Insert link when available)*
+1. Go to Releases section on github.
 
-2. Launch the app and sign in using your Trakt.tv account.
+2. Download and install the .apk file according to your device architecture.
 
 3. Explore CineNexa's features, configure your library, and start tracking!
 
