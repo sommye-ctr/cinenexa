@@ -1,3 +1,7 @@
+![CineNexa Logo](./126606298.png)
+
+---
+
 # 🎥 CineNexa
 
 **Track what you see, Resume where you left.**
